@@ -22,11 +22,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/build.mjs
+      - id: find
+        name: Find site folder
+        run: |
+          f=$(find . -path ./node_modules -prune -o -path '*/scripts/build.mjs' -print | head -1)
+          if [ -z "$f" ]; then echo "scripts/build.mjs was not found. Please upload the scripts folder."; ls -R | head -50; exit 1; fi
+          root=$(dirname "$(dirname "$f")")
+          echo "site folder: $root"
+          echo "root=$root" >> "$GITHUB_OUTPUT"
+      - name: Build
+        run: node "${{ steps.find.outputs.root }}/scripts/build.mjs"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: ${{ steps.find.outputs.root }}/_site
 
   deploy:
     needs: build
