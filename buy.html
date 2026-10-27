@@ -141,7 +141,7 @@ function render(){
     try{ const d=await A.call('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:sel.s,period:sel.p})});
       try{window.mnTrack&&mnTrack('begin_checkout',{plan:sel.s+'-'+sel.p,value:price,currency:'JPY'});}catch(e){}
       location.href=d.url;
-    }catch(e){ bt.disabled=false; bt.textContent=yen(price)+'を支払う'; document.getElementById('err').textContent=A.ERR[e.error]||'決済画面を開けませんでした。時間をおいてもう一度ためしてください。'; }
+    }catch(e){ bt.disabled=false; bt.textContent=yen(price)+'を支払う'; document.getElementById('err').textContent=(A.ERR[e.error]||'決済画面を開けませんでした。時間をおいてもう一度ためしてください。')+(e.message?'（くわしく：'+e.message+'）':''); }
   };
 }
 async function thanks(id){
