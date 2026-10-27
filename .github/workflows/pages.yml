@@ -1,5 +1,4 @@
-yaml
-name: サイトを公開する
+name: Deploy site
 
 on:
   push:
