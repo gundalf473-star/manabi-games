@@ -153,6 +153,8 @@ export default {
         const name = `まなびゲーム箱 有料版（${SUBJECTS[b.subject]}・${PERIODS[b.period].name}）`;
         const s = await stripe(env, "POST", "checkout/sessions", {
           mode: "payment", locale: "ja",
+          // Stripe が販売者になる「Managed Payments」は使わない（販売者は当サイト。特商法の表記もこちら）
+          "managed_payments[enabled]": "false",
           "line_items[0][quantity]": "1",
           "line_items[0][price_data][currency]": "jpy",
           "line_items[0][price_data][unit_amount]": String(amount),
