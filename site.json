@@ -11,7 +11,7 @@
     "思考力"
   ],
   "feedbackForm": "",
-  "apiBase": "",
+  "apiBase": "https://manabi-api.gundalf473.workers.dev",
   "seller": {
     "name": "",
     "manager": "",
