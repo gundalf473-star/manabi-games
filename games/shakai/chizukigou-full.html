@@ -1,0 +1,378 @@
+<title>地図記号クイズ 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="社会">
+<meta name="game:unit" content="地理・地図記号">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="地図記号クイズの有料版。記号を見て答える・名前から記号をえらぶ・記号のなりたち・まぎらわしい記号と新しい記号・地形図の読み方の5分野、全100問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。分野の札 → 地図記号の図つき4択（選択肢が記号の問題もある）→ 正解の印と解説 → 結果と復習。緑を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#1f4d3a; --seal:#1d7a4c; --sealsoft:#e0f0e6; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.q{margin:0;font-size:18px;font-weight:700;line-height:1.7;white-space:pre-line}
+.q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.5}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{display:flex;gap:14px;align-items:flex-start}
+.seal{flex:none;width:64px;height:64px;border-radius:8px;border:3px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:26px;transform:rotate(-6deg)}
+.seal.x{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.res .t{display:flex;flex-direction:column;gap:6px}
+.res .v{font-family:var(--display);font-size:20px}
+.res .v.ok{color:var(--ok)} .res .v.ng{color:var(--ng)}
+.ex{font-size:15px;border-left:4px solid var(--seal);padding:2px 0 2px 12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.matome{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.matome dt{font-weight:700;color:var(--seal)}
+.matome dd{margin:0}
+.fig .gh{fill:#d9c8fb;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gw{fill:#fbfaf6;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gn{fill:none;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gd{stroke-dasharray:4 3;stroke-width:1.2}
+.fig .gthin{stroke-width:1.1}
+.fig .gdot{fill:#232a36}
+.fig .gdim{stroke:#6b5a8e;stroke-width:1}
+.fig .gdt,.fig .glab{font-size:12px;font-weight:700;fill:#3a2f55;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .glab{fill:#232a36}
+.tblw{overflow-x:auto}
+.dtbl{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.tblcap{font-size:13px;color:var(--muted);margin:0 0 6px}
+.dtbl th,.dtbl td{border:1px solid var(--rule);padding:6px 4px;text-align:center}
+.dtbl th{background:var(--sealsoft)}
+.dtbl .rh{text-align:left;width:34%;font-size:13px}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.cats{grid-template-columns:1fr}}
+.cat{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.cat:hover:not(:disabled){border-color:var(--ink)}
+.cat:disabled{opacity:.4;cursor:default}
+.cat .nm{font-weight:700;font-size:17px}
+.cat .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.cat .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right}
+.timeline dd{margin:0}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-family:var(--body)}
+.rank{width:92px;height:92px;border-radius:50%;border:5px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{color:var(--ok)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.memo{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.memo table{border-collapse:collapse;font-size:14px}
+.memo th,.memo td{border:1px solid var(--rule);text-align:center;padding:0}
+.memo th{background:var(--sealsoft);padding:4px 6px;font-weight:700;white-space:nowrap}
+.memo td button{width:38px;height:34px;border:0;background:var(--surface);font-size:18px;font-weight:700;cursor:pointer;color:var(--fg)}
+.memo td button.o{color:var(--ok)} .memo td button.x{color:var(--ng)}
+.memocap{font-size:12px;color:var(--muted);margin:0;text-align:center;width:100%}
+.fig .gf{fill:#ece4fd;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gt{fill:#f6f1ff;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gs{fill:#dcd0f7;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gk{fill:#232a36;stroke:#232a36;stroke-width:1.2}
+.fig .gbig{font-size:16px}
+.sym{width:44px;height:44px;vertical-align:middle;color:var(--fg)}
+.sym.big{width:120px;height:120px;color:#232a36}
+.sym .sk{font-size:30px;font-weight:700;fill:currentColor;stroke:none;font-family:"BIZ UDPGothic","Hiragino Sans",sans-serif}
+.sym .sk.sm{font-size:19px}
+.sym .fill{fill:currentColor}
+.sym .thick{stroke-width:3.4}
+.sym .thin{stroke-width:1.2}
+.res .t b .sym{width:34px;height:34px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>地理クイズ</small>地図記号クイズ 100問</h1>
+    <p class="lead">5つの分野、全100問。分野をえらんで1回10問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
+const PAID=true;
+let QS=[];
+const CATS={"miru":["記号を見て答える","郵便局・警察署・学校・神社・田・畑など"],"erabu":["名前から記号をえらぶ","記号の形を4つからえらぶ"],"yurai":["記号のなりたち","さすまた・逓信省の「テ」・高札・そろばん"],"chigai":["まぎらわしい記号・新しい記号","丸のある・なし、2002年・2006年・2019年の記号"],"chikei":["地形図の読み方","縮尺・等高線・方位・尾根と谷"]};
+const LVN={1:'基本',2:'標準',3:'発展'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>esc(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'chizukigou-p-best':'chizukigou-best',{}), rec=store.get('chizukigou-p-rec',{});
+const saveRec=()=>store.set('chizukigou-p-rec',rec);
+const qkey=q=>q.k?q.q+'|'+q.k:q.q;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const PAIDLINK=`<a class="paid" href="chizukigou-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>地図記号クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt>丸で囲むと別の記号</dt><dd>交番（×）→ 警察署（⊗）　小・中学校（文）→ 高等学校（文を丸で囲む）　町村役場（○）→ 市役所（◎）</dd><dt>新しい記号</dt><dd>図書館・博物館（2002年）、老人ホーム・風車（2006年）、自然災害伝承碑（2019年）</dd><dt>使われなくなった記号</dt><dd>工場・桑畑など（2013年の地形図から）</dd><dt>縮尺</dt><dd>実際の距離＝地図上の長さ×縮尺の分母。2万5千分の1で4cm＝1km</dd><dt>等高線</dt><dd>2万5千分の1：細い線10mごと・太い線50mごと。5万分の1：20mごと・100mごと。間がせまいほど急</dd></dl>`;
+
+async function decrypt(){ return mnAccess.load('chizukigou'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'chizukigou',err:err,free:'chizukigou.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">地図記号と地形図のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">分野をえらぶ（1回10問）</div>
+    <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
+        return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
+      <button class="cat" data-l="all"><span class="nm">地図記号まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
+      <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">地図記号と地形図のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    start(shuffle(pool).slice(0,10));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'chizukigou-p-':'chizukigou-')+course});
+  newQ();
+}
+function geoSVG(G,hmax){
+  /* 図。座標はcm、yは上向き。色つき＝gh、くりぬき＝gw */
+  const P=[]; const add=(x,y)=>P.push([x,y]);
+  const rad=a=>a*Math.PI/180;
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') e[1].forEach(p=>add(p[0],p[1]));
+    if(t==='circ'){add(e[1]-e[3],e[2]-e[3]);add(e[1]+e[3],e[2]+e[3]);}
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e; if(t==='sect')add(cx,cy); for(let a=a1;a<=a2+1e-9;a+=Math.min(15,a2-a1||15)) add(cx+r*Math.cos(rad(a)),cy+r*Math.sin(rad(a))); add(cx+r*Math.cos(rad(a2)),cy+r*Math.sin(rad(a2)));}
+    if(t==='path') e[1].forEach(c=>add(c[c.length-2],c[c.length-1]));
+    if(t==='seg'||t==='dim'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='lab'||t==='dot'||t==='ra') add(e[1],e[2]);
+  });
+  const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+  const mnx=Math.min(...xs), mxx=Math.max(...xs), mny=Math.min(...ys), mxy=Math.max(...ys);
+  const W=Math.max(mxx-mnx,1), H=Math.max(mxy-mny,1), s=Math.min(236/W,(hmax||160)/H), pad=40, VW=320, ox=(VW-W*s)/2;
+  const X=x=>+(ox+(x-mnx)*s).toFixed(1), Y=y=>+(pad+(mxy-y)*s).toFixed(1);
+  const cls=f=>({h:'gh',w:'gw',f:'gf',t:'gt',s:'gs',k:'gk'})[f]||'gn';
+  const pt=(cx,cy,r,a)=>[X(cx+r*Math.cos(rad(a))),Y(cy+r*Math.sin(rad(a)))];
+  let o='';
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') o+=`<path class="${cls(e[2])}" d="M${e[1].map(p=>X(p[0])+','+Y(p[1])).join(' L')} Z"/>`;
+    if(t==='circ') o+=`<circle class="${cls(e[4])}" cx="${X(e[1])}" cy="${Y(e[2])}" r="${(e[3]*s).toFixed(1)}"/>`;
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e, f=e[6], R=(r*s).toFixed(1), p1=pt(cx,cy,r,a1), p2=pt(cx,cy,r,a2), lg=(a2-a1)>180?1:0;
+      o+= t==='sect'?`<path class="${cls(f)}" d="M${X(cx)},${Y(cy)} L${p1} A${R},${R} 0 ${lg} 0 ${p2} Z"/>`:`<path class="gn" d="M${p1} A${R},${R} 0 ${lg} 0 ${p2}"/>`;}
+    if(t==='path'){ let d=''; e[1].forEach(c=>{ if(c[0]==='M')d+=`M${X(c[1])},${Y(c[2])} `; if(c[0]==='L')d+=`L${X(c[1])},${Y(c[2])} `; if(c[0]==='A'){const R=(c[1]*s).toFixed(1); d+=`A${R},${R} 0 ${c[2]} ${c[3]?0:1} ${X(c[4])},${Y(c[5])} `;} }); o+=`<path class="${cls(e[2])}" d="${d}Z"/>`; }
+    if(t==='seg') o+=`<line class="gn${e[5]?' gd':''}" x1="${X(e[1])}" y1="${Y(e[2])}" x2="${X(e[3])}" y2="${Y(e[4])}"/>`;
+    if(t==='dot') o+=`<circle class="gdot" cx="${X(e[1])}" cy="${Y(e[2])}" r="2.6"/>`;
+    if(t==='lab') o+=`<text class="glab${e[4]?' gbig':''}" x="${X(e[1])}" y="${Y(e[2])+4}" text-anchor="middle">${esc(e[3])}</text>`;
+    if(t==='ra'){const [,x,y,ux,uy,vx,vy]=e, lu=Math.hypot(ux,uy), lv=Math.hypot(vx,vy), k=7;
+      const a=[X(x)+ux/lu*k, Y(y)-uy/lu*k], b=[X(x)+ux/lu*k+vx/lv*k, Y(y)-uy/lu*k-vy/lv*k], c=[X(x)+vx/lv*k, Y(y)-vy/lv*k];
+      o+=`<path class="gn gthin" d="M${a} L${b} L${c}"/>`;}
+    if(t==='dim'){const [,x1,y1,x2,y2,txt,off]=e; const sx1=X(x1),sy1=Y(y1),sx2=X(x2),sy2=Y(y2); const dx=sx2-sx1, dy=sy2-sy1, L=Math.hypot(dx,dy)||1;
+      const nx=dy/L, ny=-dx/L, k=off*13; const a=[sx1+nx*k,sy1+ny*k], b=[sx2+nx*k,sy2+ny*k];
+      const tk=(p)=>`<line class="gdim" x1="${p[0]-nx*4}" y1="${p[1]-ny*4}" x2="${p[0]+nx*4}" y2="${p[1]+ny*4}"/>`;
+      const m=[(a[0]+b[0])/2+nx*(off>0?9:-9)*Math.sign(off||1)*0+nx*Math.sign(off||1)*9,(a[1]+b[1])/2+ny*Math.sign(off||1)*9];
+      o+=`<line class="gdim" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>${tk(a)}${tk(b)}<text class="gdt" x="${m[0].toFixed(1)}" y="${(m[1]+4).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`;}
+  });
+  return `<div class="fig"><svg viewBox="0 0 ${VW} ${(H*s+2*pad).toFixed(0)}" role="img" aria-label="問題の図">${o}</svg></div>`;
+}
+
+/* 地図記号（国土地理院の2万5千分1地形図の記号をもとにかいた図） */
+const SYM={
+ shiyakusho:'<circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="7.5"/>',
+ choson:'<circle cx="20" cy="20" r="13"/>',
+ keisatsu:'<circle cx="20" cy="20" r="14"/><path d="M12 12 L28 28 M28 12 L12 28"/>',
+ koban:'<path d="M11 11 L29 29 M29 11 L11 29"/>',
+ yubin:'<circle cx="20" cy="20" r="14"/><path d="M12.5 13.5 H27.5 M12.5 18.5 H27.5 M20 18.5 V30"/>',
+ gakko:'<text x="20" y="31" text-anchor="middle" class="sk">文</text>',
+ koko:'<circle cx="20" cy="20" r="15"/><text x="20" y="27.5" text-anchor="middle" class="sk sm">文</text>',
+ toshokan:'<path d="M7 12 Q13.5 9 20 12 Q26.5 9 33 12 V30 Q26.5 27 20 30 Q13.5 27 7 30 Z M20 12 V30"/>',
+ hakubutsu:'<path d="M7 15 L20 7 L33 15 Z M7 31 H33 M11 15 V31 M20 15 V31 M29 15 V31"/>',
+ rojin:'<path d="M9 32 V17 L20 8 L31 17 V32 Z M18 30 V19 Q18 15.5 21.5 15.5 Q25 15.5 25 19"/>',
+ jinja:'<path d="M6 10 Q20 12.5 34 10 M10 16 H30 M13 10.8 V33 M27 10.8 V33"/>',
+ tera:'<text x="20" y="31" text-anchor="middle" class="sk">卍</text>',
+ kinenhi:'<path d="M14 31 V13 L19.5 7 L25 13 V31 M8 32 H32"/><path d="M27.5 13.5 V31" class="thick"/>',
+ denshouhi:'<path d="M14 31 V13 L19.5 7 L25 13 V31 M8 32 H32"/><path d="M17 15 V28 M19.5 15 V28 M22 15 V28" class="thin"/><path d="M27.5 13.5 V31" class="thick"/>',
+ shiseki:'<circle cx="20" cy="11" r="3.4" class="fill"/><circle cx="11.5" cy="27" r="3.4" class="fill"/><circle cx="28.5" cy="27" r="3.4" class="fill"/>',
+ kojo:'<circle cx="20" cy="20" r="9"/><circle cx="20" cy="20" r="3.5"/><path d="M20 6 V11 M20 29 V34 M6 20 H11 M29 20 H34 M10.1 10.1 L13.6 13.6 M26.4 26.4 L29.9 29.9 M29.9 10.1 L26.4 13.6 M13.6 26.4 L10.1 29.9" class="thick"/>',
+ onsen:'<path d="M10 22 Q10 34 20 34 Q30 34 30 22 M15 20 q-3 -4 0 -7 q3 -4 0 -7 M20 20 q-3 -4 0 -7 q3 -4 0 -7 M25 20 q-3 -4 0 -7 q3 -4 0 -7"/>',
+ kowan:'<circle cx="20" cy="8" r="3"/><path d="M20 11 V33 M13 15 H27 M9 24 Q11 33 20 33 Q29 33 31 24"/>',
+ sankaku:'<path d="M8 32 L20 10 L32 32 Z"/><circle cx="20" cy="25" r="2" class="fill"/>',
+ suijun:'<rect x="10" y="10" width="20" height="20"/><circle cx="20" cy="20" r="2" class="fill"/>',
+ ta:'<path d="M15.5 11 V29 M24.5 11 V29"/>',
+ hata:'<path d="M12 12 Q15 24 20 29 Q25 24 28 12"/>',
+};
+function symSVG(k,big){ return `<svg class="sym${big?' big':''}" viewBox="0 0 40 40" role="img" aria-label="地図記号"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SYM[k]||''}</g></svg>`; }
+function optHTML(c){ c=String(c); return c[0]==='§'?symSVG(c.slice(1)):esc(c); }
+function memoHTML(M){
+  /* ○×のメモ表（答えには関係しない）。マスを押すと 空→○→× と変わる */
+  G.mm=G.mm||{};
+  return `<div class="memo">${M.map((t,ti)=>`<table><tr><th></th>${t.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${t.rows.map((r,ri)=>`<tr><th>${esc(r)}</th>${t.cols.map((c,ci)=>{const k=ti+'-'+ri+'-'+ci,v=G.mm[k]||'';return `<td><button type="button" class="mcell ${v==='○'?'o':v==='×'?'x':''}" data-k="${k}" aria-label="${esc(r)}と${esc(c)}">${v}</button></td>`;}).join('')}</tr>`).join('')}</table>`).join('')}<p class="memocap">メモ用の表です。マスを押すと ○ → × → 空 と変わります。</p></div>`;
+}
+function figSVG(f){
+  if(Array.isArray(f)) return f.map(figSVG).join('');
+  if(f.memo) return memoHTML(f.memo);
+  if(f.sym) return `<div class="fig">${symSVG(f.sym,1)}</div>`;
+  if(f.geo) return geoSVG(f.geo,f.h);
+  if(f.tbl){ const t=f.tbl; return `<div class="tblw">${t.cap?`<p class="tblcap">${esc(t.cap)}</p>`:''}<table class="dtbl"><tr>${t.head.map((h,i)=>`<th${i?'':' class="rh"'}>${esc(h)}</th>`).join('')}</tr>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th class="rh">${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`; }
+  /* てこ・棒・ばねの図。線は濃い色、おもりは四角、ばねばかりの引く力は矢印 */
+  const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`;
+  const T=(x,y,t,cls,anc)=>`<text x="${x}" y="${y}" class="${cls||'lb'}" text-anchor="${anc||'middle'}">${esc(t)}</text>`;
+  const W=(x,y,lb)=>`<rect x="${x-14}" y="${y}" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(x,y+36,lb);
+  const UP=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2+9} L${x},${y2} L${x+6},${y2+9}"/>`+T(x,y2-6,lb);
+  const DN=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2-9} L${x},${y2} L${x+6},${y2-9}"/>`+T(x,y2+16,lb);
+  const spr=(x,y1,y2)=>{const n=8,h=(y2-y1-12)/n;let d=`M${x},${y1} L${x},${y1+6}`;for(let i=0;i<n;i++)d+=` L${x+(i%2?-9:9)},${y1+6+h*(i+.5)}`;d+=` L${x},${y2-6} L${x},${y2}`;return `<path d="${d}"/>`;};
+  const sprH=(x1,x2,y)=>{const n=8,w=(x2-x1-12)/n;let d=`M${x1},${y} L${x1+6},${y}`;for(let i=0;i<n;i++)d+=` L${x1+6+w*(i+.5)},${y+(i%2?-9:9)}`;d+=` L${x2-6},${y} L${x2},${y}`;return `<path d="${d}"/>`;};
+  const ceil=(a,b)=>L(a,14,b,14)+Array.from({length:Math.floor((b-a)/12)},(_,i)=>L(a+6+i*12,14,a+i*12,6)).join('');
+  let g='',vb='0 0 320 170';
+  if(f.lev){ const o=f.lev,c=160,u=22,y=48; vb='0 0 320 140';
+    g+=`<rect x="${c-6*u-10}" y="${y-3}" width="${12*u+20}" height="6" rx="2" fill="#c9ced8"/>`;
+    for(let i=1;i<=6;i++){ g+=L(c-i*u,y-3,c-i*u,y+3)+L(c+i*u,y-3,c+i*u,y+3)+T(c-i*u,y-9,String(i),'tk')+T(c+i*u,y-9,String(i),'tk'); }
+    g+=`<path d="M${c},${y+3} L${c-10},${y+28} L${c+10},${y+28} Z" fill="#c9ced8"/>`+L(c-15,y+28,c+15,y+28);
+    const hang=(x,lb,k)=>{ if(lb[0]==='↓') return DN(x,y+3,y+60,lb.slice(1)); return L(x,y+3,x,y+42+k*0)+W(x,y+42,lb); };
+    o.L.forEach(([p,lb])=>g+=hang(c-p*u,lb,0)); o.R.forEach(([p,lb])=>g+=hang(c+p*u,lb,0));
+  }
+  if(f.bar){ const o=f.bar,x0=30,x1=290,y=74,X=p=>x0+p/o.len*(x1-x0); vb='0 0 320 175';
+    g+=`<rect x="${x0}" y="${y-4}" width="${x1-x0}" height="8" rx="2" fill="#c9ced8"/>`+T(160,y-34,'棒の長さ '+o.len+'cm','tk');
+    g+=L(x0,y-24,x0,y-16)+L(x1,y-24,x1,y-16)+L(x0,y-20,x1,y-20);
+    if(o.f!=null){ const fx=X(o.f); g+=`<path d="M${fx},${y+4} L${fx-12},${y+28} L${fx+12},${y+28} Z" fill="#c9ced8"/>`+T(fx,y+42,'支点','tk'); if(o.f>0&&o.f<o.len) g+=T((x0+fx)/2,y+18,o.f+'cm','tk'); }
+    if(o.m) g+=`<circle cx="160" cy="${y}" r="3.5" fill="#232a36" stroke="none"/>`+T(160,y+60,'棒の重さ '+o.m+'（一様）','tk');
+    (o.w||[]).forEach(([p,lb])=>{const x=X(p); g+=L(x,y+4,x,y+20)+W(x,y+20,lb); if(p>0&&p<o.len) g+=T((x0+x)/2,y+18,p+'cm','tk');});
+    (o.up||[]).forEach(([p,lb])=>{const x=X(p); g+=UP(x,y-4,y-46+12,lb).replace('','');});
+  }
+  if(f.spr){ const o=f.spr,w=o.w; vb='0 0 320 200';
+    if(o.t==='one') g+=ceil(130,190)+spr(160,14,110)+W(160,110,w[0]);
+    if(o.t==='ser') g+=ceil(130,190)+spr(160,14,72)+`<circle cx="160" cy="76" r="4" fill="#232a36" stroke="none"/>`+spr(160,80,140)+W(160,140,w[0])+T(184,48,'A','tk','start')+T(184,114,'A','tk','start');
+    if(o.t==='ser2') g+=ceil(130,190)+spr(160,14,66)+`<rect x="146" y="66" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(186,81,w[0],'lb','start')+spr(160,86,142)+W(160,142,w[1]);
+    if(o.t==='par') g+=ceil(80,240)+spr(110,14,104)+spr(210,14,104)+`<rect x="90" y="104" width="140" height="6" rx="2" fill="#c9ced8"/>`+L(160,110,160,124)+W(160,124,w[0]);
+    if(o.t==='paroff') g+=ceil(80,240)+spr(100,14,104)+spr(220,14,104)+`<rect x="96" y="104" width="128" height="6" rx="2" fill="#c9ced8"/>`+L(140,110,140,124)+W(140,124,w[0])+T(120,100,'10cm','tk')+T(180,100,'20cm','tk');
+    if(o.t==='wall') g+=sprH(100,220,40)+L(70,40,100,40)+L(220,40,250,40)+`<circle cx="70" cy="52" r="12"/><circle cx="250" cy="52" r="12"/>`+L(58,52,58,110)+L(262,52,262,110)+W(58,110,w[0])+W(262,110,w[1])+L(70,64,250,64);
+  }
+  return `<div class="fig"><svg viewBox="${vb}" role="img" aria-label="問題の図"><g stroke="#232a36" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg></div>`;
+}
+function newQ(){ const q=G.list[G.i]; G.ch=shuffle([q.a,...q.d]); G.done=false; G.pick=null; G.mm={}; render(); }
+function render(){
+  const q=G.list[G.i], d=G.done;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}</span></div>
+    <p class="q">${qhtml(q.q)}</p>
+    ${q.fig?figSVG(q.fig):''}
+    <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${optHTML(c)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(G.ch[+b.dataset.i]));
+  app.querySelectorAll('.mcell').forEach(b=>b.onclick=()=>{const k=b.dataset.k,v=G.mm[k]||'',n=v===''?'○':v==='○'?'×':'';G.mm[k]=n;b.textContent=n;b.className='mcell '+(n==='○'?'o':n==='×'?'x':'');});
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'chizukigou-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="res"><div class="seal ${G.ok?'':'x'}" aria-hidden="true">${G.ok?'正':'惜'}</div>
+      <div class="t"><span class="v ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</span>
+      <span>答え：<b>${optHTML(q.a)}</b></span></div></div>
+    <div class="ex">${esc(q.e)}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'chizukigou-p-':'chizukigou-')+course,success:s===n,score:s,total:n});
+  const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'chizukigou-p-best':'chizukigou-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！地図記号はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた記号は、形と由来をセットで覚え直そう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}${q.fig&&q.fig.sym?' '+symSVG(q.fig.sym):''}<br>→ <b>${optHTML(q.a)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

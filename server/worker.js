@@ -31,7 +31,7 @@ const GAMES = {
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
   "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", hayasa: "sansu", menseki: "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou",
   nara: "shakai", kamakura: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
-  "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai",
+  "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
   tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika",
 };
