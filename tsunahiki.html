@@ -1,0 +1,406 @@
+<title>つなひき算数バトル</title>
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="特殊算">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="2人">
+<meta name="description" content="2人で交代に和差算・つるかめ算などを解き、正解した分だけ綱を引く対戦ゲーム。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: 上に運動会のつなひき場（常に表示）、下に「カードを選ぶ→解く→解き方を見る」の1枚の舞台が切りかわる */
+:root{
+  --bg:#edf4f7; --surface:#ffffff; --fg:#1d2a33; --muted:#5d6e79; --rule:#cfdde4;
+  --blue:#2667d6; --blue-soft:#dde8fb; --red:#dc4234; --red-soft:#fbe1de;
+  --star:#e8a400; --ok:#1f8a4c; --ground:#d9c9a3; --rope:#9b6b33; --line:#ffffff;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11181d; --surface:#1a232a; --fg:#e6edf1; --muted:#9aabb6; --rule:#2c3943;
+  --blue:#6c9ff0; --blue-soft:#1d2c46; --red:#f07468; --red-soft:#43221f;
+  --star:#f2c040; --ok:#4cc27e; --ground:#4b4130; --rope:#c4955c; --line:#d8d2c2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11181d; --surface:#1a232a; --fg:#e6edf1; --muted:#9aabb6; --rule:#2c3943;
+  --blue:#6c9ff0; --blue-soft:#1d2c46; --red:#f07468; --red-soft:#43221f;
+  --star:#f2c040; --ok:#4cc27e; --ground:#4b4130; --rope:#c4955c; --line:#d8d2c2; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(26px,7vw,36px);line-height:1.2;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--blue)} h1 b{font-weight:500;color:var(--red)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--star);outline-offset:2px}
+
+/* つなひき場 */
+.field{background:var(--ground);border-radius:10px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.teams{display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.team{display:flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;background:var(--surface);min-width:0}
+.team .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.team.blue .dot{background:var(--blue)} .team.red .dot{background:var(--red)}
+.team .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team .sc{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.team.now{box-shadow:0 0 0 3px var(--star)}
+.track{position:relative;height:64px}
+.zone{position:absolute;top:0;bottom:0;width:8%}
+.zone.l{left:0;background:var(--blue);opacity:.35;border-radius:6px 0 0 6px}
+.zone.r{right:0;background:var(--red);opacity:.35;border-radius:0 6px 6px 0}
+.tick{position:absolute;top:22px;bottom:22px;width:2px;background:var(--line);opacity:.6;transform:translateX(-1px)}
+.tick.c{top:4px;bottom:4px;opacity:1;width:3px}
+.rope{position:absolute;left:2%;right:2%;top:29px;height:6px;background:var(--rope);border-radius:3px}
+.flag{position:absolute;top:10px;width:22px;height:44px;transform:translateX(-50%);transition:left .7s cubic-bezier(.3,1.5,.5,1)}
+.flag::before{content:"";position:absolute;left:9px;top:0;width:4px;height:44px;background:var(--fg);border-radius:2px}
+.flag::after{content:"";position:absolute;left:13px;top:2px;width:16px;height:12px;background:var(--star);clip-path:polygon(0 0,100% 50%,0 100%)}
+.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--fg);opacity:.75}
+
+/* 舞台 */
+.stage{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.who{font-family:var(--display);font-size:22px;line-height:1.3}
+.who.blue{color:var(--blue)} .who.red{color:var(--red)}
+.sub{color:var(--muted);font-size:14px;margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:460px){.cards{grid-template-columns:1fr}}
+.card{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:14px 12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.card:hover{border-color:var(--star)}
+.card .stars{color:var(--star);font-size:20px;letter-spacing:2px}
+.card .ty{font-family:var(--display);font-size:20px}
+.card .gain{font-size:13px;color:var(--muted)}
+.qhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--bg)}
+.pill.st{color:var(--star)}
+.q{font-size:18px;line-height:1.9;margin:0;max-width:34em}
+.q b{font-variant-numeric:tabular-nums}
+.ansrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ans{min-width:6em;font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;border-bottom:3px solid var(--fg);text-align:right;padding:0 6px;min-height:1.5em}
+.ans:empty::before{content:"？";color:var(--muted);font-weight:500}
+.unit{font-size:20px;font-weight:700}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px}
+.key{height:48px;border-radius:8px;border:1px solid var(--rule);background:var(--bg);font-size:22px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
+.key:active{transform:translateY(1px)}
+.key.wide{grid-column:span 2;font-size:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--bg)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.hintbox{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:15px}
+.verdict{font-family:var(--display);font-size:28px;line-height:1.2}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--red)}
+.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:34em}
+.steps li{padding-left:2px}
+.dia{overflow-x:auto;background:var(--bg);border-radius:8px;padding:10px}
+.dia svg{display:block;width:100%;max-width:460px;height:auto;margin:0 auto}
+.dia-cap{font-size:13px;color:var(--muted);text-align:center;margin-top:4px}
+svg text{fill:var(--fg);font-family:var(--body);font-size:12px}
+svg .mut{fill:var(--muted)}
+.sb{fill:var(--blue-soft);stroke:var(--blue);stroke-width:1.5}
+.se{fill:var(--red-soft);stroke:var(--red);stroke-width:1.5}
+.sm{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3}
+.sl{stroke:var(--fg);stroke-width:1.5;fill:none}
+.tree{fill:var(--ok)} .tree.off{fill:none;stroke:var(--muted);stroke-width:1.5}
+
+.win{text-align:center;align-items:center}
+.win .big{font-family:var(--display);font-size:clamp(30px,9vw,44px);line-height:1.2}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
+
+details{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:10px 16px}
+summary{cursor:pointer;font-weight:700}
+.set{display:grid;gap:10px;margin-top:10px}
+.set label{display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--muted)}
+.set input,.set select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:6px 8px}
+.set .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.how{font-size:14px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){.flag{transition:none}.confetti{display:none}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <h1><em>つなひき</em>算数<b>バトル</b></h1>
+  </div>
+
+  <div class="field" aria-label="つなひきの様子">
+    <div class="teams">
+      <div class="team blue" id="tb"><span class="dot"></span><span class="nm" id="nb"></span><span class="sc" id="sb"></span></div>
+      <div class="team red" id="tr"><span class="nm" id="nr"></span><span class="sc" id="sr"></span><span class="dot"></span></div>
+    </div>
+    <div class="track" id="track">
+      <div class="zone l"></div><div class="zone r"></div>
+      <div class="rope"></div>
+      <div class="flag" id="flag"></div>
+    </div>
+    <div class="legend"><span>◀ ここまで引けば勝ち</span><span id="pos"></span><span>勝ち ▶</span></div>
+  </div>
+
+  <section class="stage" id="stage" aria-live="polite"></section>
+
+  <details>
+    <summary>あそびかた・せってい</summary>
+    <p class="how">交代でカードを1まい選んで問題を解きます。正解すると★の数だけ綱を自分のほうへ引けます。★3は難しいけど一気に引けるチャンス。ヒントを見ると引ける数が1へります。まちがえても、解き方をよく読めば次に役立ちます。</p>
+    <div class="set">
+      <div class="two">
+        <label for="nameB">あおの名前<input id="nameB" maxlength="10" value="あおチーム"></label>
+        <label for="nameR">あかの名前<input id="nameR" maxlength="10" value="あかチーム"></label>
+      </div>
+      <div class="two">
+        <label for="goal">勝ちまでのマス
+          <select id="goal"><option value="5">5マス（短め）</option><option value="7" selected>7マス</option><option value="10">10マス（長め）</option></select></label>
+        <label for="handi">ハンデ
+          <select id="handi"><option value="0">なし</option><option value="-2">あおが2マス有利</option><option value="2">あかが2マス有利</option></select></label>
+      </div>
+      <div class="row"><button class="btn go" id="restart">この設定で最初から</button></div>
+    </div>
+  </details>
+</div>
+<canvas class="confetti" id="cf" hidden></canvas>
+
+<script>
+(function(){
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const N=n=>`<b>${n}</b>`;
+const CIRC=['','①','②','③','④','⑤','⑥'];
+
+/* ---------- 図 ---------- */
+function bars(rows,total){
+  const X0=58,W=260,gap=40,top=20;
+  const max=Math.max(...rows.map(r=>r.segs.reduce((s,g)=>s+g.v,0)));
+  const k=W/max; let h=top+rows.length*gap; let out='';
+  rows.forEach((r,i)=>{
+    const y=top+i*gap; let x=X0;
+    out+=`<text x="0" y="${y+16}">${r.label}</text>`;
+    r.segs.forEach(g=>{
+      const w=g.v*k, cls=g.k==='extra'?'se':g.k==='miss'?'sm':'sb';
+      out+=`<rect class="${cls}" x="${x}" y="${y}" width="${w}" height="22" rx="2"/>`;
+      if(g.t) out+=`<text x="${x+w/2}" y="${g.k==='miss'?y+36:y+15}" text-anchor="middle" class="${g.k==='miss'?'mut':''}">${g.t}</text>`;
+      x+=w;
+    });
+  });
+  if(total){const x=X0+W+10;out+=`<path class="sl" d="M${x} ${top} h6 V${h-gap+22} h-6"/><text x="${x+10}" y="${(top+h-gap+22)/2+4}">${total}</text>`;}
+  return `<svg viewBox="0 0 ${X0+W+96} ${h+(rows.some(r=>r.segs.some(g=>g.k==='miss'))?12:0)}" role="img" aria-label="線分図">${out}</svg>`;
+}
+function area(n,k,p,q,lab){
+  const W=280,X0=40,base=150, hs=110/q, wk=W/n;
+  const hp=p*hs, hq=(q-p)*hs, xk=X0+(n-k)*wk;
+  return `<svg viewBox="0 0 380 190" role="img" aria-label="面積図">
+  <rect class="sb" x="${X0}" y="${base-hp}" width="${W}" height="${hp}"/>
+  <rect class="se" x="${xk}" y="${base-hp-hq}" width="${k*wk}" height="${hq}"/>
+  <text x="${X0-6}" y="${base-hp/2+4}" text-anchor="end">${lab.p}</text>
+  <text x="${X0+W+6}" y="${base-hp-hq/2+4}">${lab.d}</text>
+  <text x="${X0+W/2}" y="${base+18}" text-anchor="middle">${lab.n}</text>
+  <text x="${xk+k*wk/2}" y="${base-hp-hq-6}" text-anchor="middle">${lab.k}</text>
+  <text x="${X0+(n-k)*wk/2}" y="${base-hp/2+4}" text-anchor="middle" class="mut">${lab.lo}</text>
+  <text x="${X0+W/2}" y="${base+36}" text-anchor="middle" class="mut">${lab.all}</text></svg>`;
+}
+function uekiSvg(mode){
+  if(mode==='circle'){
+    let t='';for(let i=0;i<6;i++){const a=i/6*Math.PI*2-Math.PI/2;t+=`<circle class="tree" cx="${190+60*Math.cos(a)}" cy="${80+50*Math.sin(a)}" r="7"/>`;}
+    return `<svg viewBox="0 0 380 160" role="img" aria-label="池のまわりの木"><ellipse class="sl" cx="190" cy="80" rx="60" ry="50"/>${t}<text x="190" y="152" text-anchor="middle">まるいときは　木の数＝間の数（6つ）</text></svg>`;
+  }
+  let t='';for(let i=0;i<=4;i++){const x=40+i*75, off=(mode==='none'&&(i===0||i===4));t+=`<circle class="tree${off?' off':''}" cx="${x}" cy="50" r="8"/>`;if(i<4)t+=`<text x="${x+37}" y="80" text-anchor="middle" class="mut">間${i+1}</text>`;}
+  const cap=mode==='none'?'両はしに植えないと　木＝間の数−1（3本）':'両はしにも植えると　木＝間の数＋1（5本）';
+  return `<svg viewBox="0 0 380 120" role="img" aria-label="植木算の図"><path class="sl" d="M40 50 H340"/>${t}<text x="190" y="110" text-anchor="middle">${cap}</text></svg>`;
+}
+
+/* ---------- 問題 ---------- */
+const GEN={
+wasa:{name:'和差算',gen(st){
+  if(st===1){const s=ri(6,20),d=ri(2,12),b=s+d,S=b+s;const[A,B,o,u]=pick([['兄','弟','おはじき','こ'],['姉','妹','シール','まい']]);
+    return{text:`${A}と${B}の${o}は、合わせて${N(S)}${u}です。${A}は${B}より${N(d)}${u}多くもっています。${A}は何${u}もっていますか。`,answer:b,unit:u,
+      steps:[`線分図をかくと、${A}は「${B}＋${d}」の長さになります。`,`${B}の線を${d}のばすと、2本とも${A}と同じになります。合計は ${S}＋${d}＝${S+d}`,`それが${A}の2人分なので、${S+d}÷2＝${b}`],
+      dia:bars([{label:A,segs:[{v:s},{v:d,k:'extra',t:`差 ${d}`}]},{label:B,segs:[{v:s,t:'?'}]}],`合計${S}`)};}
+  if(st===2){const s=ri(12,45)*10,d=ri(3,25)*10,b=s+d,S=b+s;
+    return{text:`ゆうとさんとはるかさんの所持金は、合わせて${N(S)}円です。ゆうとさんははるかさんより${N(d)}円多くもっています。はるかさんは何円もっていますか。`,answer:s,unit:'円',
+      steps:[`小さいほう（はるかさん）にそろえて考えます。`,`合計から差をひくと、はるかさんの2人分： ${S}－${d}＝${S-d}`,`${S-d}÷2＝${s}`],
+      dia:bars([{label:'ゆうと',segs:[{v:s},{v:d,k:'extra',t:`差 ${d}`}]},{label:'はるか',segs:[{v:s,t:'?'}]}],`合計${S}`)};}
+  const c=ri(8,25),y=ri(3,10),x=ri(2,10),T=3*c+2*y+x;
+  return{text:`A・B・Cの3人のビー玉は、合わせて${N(T)}こです。AはBより${N(x)}こ多く、BはCより${N(y)}こ多いです。Cは何こもっていますか。`,answer:c,unit:'こ',
+    steps:[`いちばん少ないCにそろえます。BはCより${y}こ、AはCより ${y}＋${x}＝${y+x}こ多い。`,`合計から多い分をひくと、Cの3人分： ${T}－${y}－${y+x}＝${3*c}`,`${3*c}÷3＝${c}`],
+    dia:bars([{label:'A',segs:[{v:c},{v:y,k:'extra',t:y},{v:x,k:'extra',t:x}]},{label:'B',segs:[{v:c},{v:y,k:'extra',t:y}]},{label:'C',segs:[{v:c,t:'?'}]}],`合計${T}`)};
+}},
+tsuru:{name:'つるかめ算',gen(st){
+  if(st===1){const n=ri(8,16),k=ri(2,n-2),L=2*n+2*k;
+    return{text:`つるとかめが合わせて${N(n)}ひきいます。足の数は全部で${N(L)}本です。かめは何びきいますか。`,answer:k,unit:'ひき',
+      steps:[`全部つるだとすると、足は 2×${n}＝${2*n}本。`,`本当は${L}本なので、${L}－${2*n}＝${2*k}本たりません。`,`つるを1ぴきかめにかえると足は2本ふえます。${2*k}÷2＝${k}ひき`],
+      dia:area(n,k,2,4,{p:'2本',d:'+2本',n:`${n}ひき`,k:'かめ?ひき',lo:'全部つるなら'+2*n+'本',all:''})};}
+  if(st===2){const n=ri(10,20),k=ri(2,n-2),M=10*n+40*k;
+    return{text:`10円玉と50円玉が合わせて${N(n)}まいあり、金がくは${N(M)}円です。50円玉は何まいありますか。`,answer:k,unit:'まい',
+      steps:[`全部10円玉だとすると 10×${n}＝${10*n}円。`,`本当との差は ${M}－${10*n}＝${40*k}円。`,`10円玉を50円玉に1まいかえると40円ふえます。${40*k}÷40＝${k}まい`],
+      dia:area(n,k,10,50,{p:'10円',d:'+40円',n:`${n}まい`,k:'50円玉?まい',lo:'全部10円玉',all:''})};}
+  const p=pick([60,80,90]),q=p+pick([30,40,50]),n=ri(10,20),k=ri(3,n-3),M=p*n+(q-p)*k;
+  return{text:`1こ${N(p)}円のみかんと1こ${N(q)}円のりんごを合わせて${N(n)}こ買い、代金は${N(M)}円でした。りんごは何こ買いましたか。`,answer:k,unit:'こ',
+    steps:[`全部みかんだとすると ${p}×${n}＝${p*n}円。`,`本当との差は ${M}－${p*n}＝${M-p*n}円。`,`みかん1こをりんご1こにかえると ${q}－${p}＝${q-p}円ふえます。${M-p*n}÷${q-p}＝${k}こ`],
+    dia:area(n,k,p,q,{p:`${p}円`,d:`+${q-p}円`,n:`${n}こ`,k:'りんご?こ',lo:'全部みかん',all:''})};
+}},
+ueki:{name:'植木算',gen(st){
+  if(st===1){const d=pick([2,3,4,5]),m=ri(6,15),L=d*m;
+    return{text:`長さ${N(L)}mのまっすぐな道に、${N(d)}mおきに木を植えます。道の両はしにも植えると、木は何本いりますか。`,answer:m+1,unit:'本',
+      steps:[`まず「間の数」を出します。${L}÷${d}＝${m}こ`,`両はしにも植えるとき、木の数は間の数より1多い。`,`${m}＋1＝${m+1}本`],dia:uekiSvg('both')};}
+  if(st===2){const d=pick([3,4,5,6]),m=ri(6,15),L=d*m;
+    if(Math.random()<.5)return{text:`長さ${N(L)}mの道に、${N(d)}mおきに旗を立てます。道の両はしには立てません。旗は何本いりますか。`,answer:m-1,unit:'本',
+      steps:[`間の数は ${L}÷${d}＝${m}こ`,`両はしに立てないとき、旗の数は間の数より1少ない。`,`${m}－1＝${m-1}本`],dia:uekiSvg('none')};
+    return{text:`まわりの長さが${N(L)}mの池のまわりに、${N(d)}mおきに木を植えます。木は何本いりますか。`,answer:m,unit:'本',
+      steps:[`間の数は ${L}÷${d}＝${m}こ`,`池のようにひとまわりするときは、はしがないので木の数＝間の数。`,`答えは${m}本`],dia:uekiSvg('circle')};}
+  const d=pick([4,5,6,8]),n=ri(9,21);
+  return{text:`まっすぐな道に、両はしをふくめて${N(n)}本の電柱が${N(d)}mおきに立っています。道の長さは何mですか。`,answer:d*(n-1),unit:'m',
+    steps:[`両はしにあるとき、間の数は電柱の数より1少ない。${n}－1＝${n-1}こ`,`間1つが${d}mなので、道の長さは ${d}×${n-1}`,`＝${d*(n-1)}m`],dia:uekiSvg('both')};
+}},
+kabu:{name:'過不足算',gen(st){
+  if(st<3){const p=ri(4,9),a=ri(2,5),g=pick([1,2]),b=a+g,r=ri(1,g*p-1),s=g*p-r,Nn=a*p+r;
+    const base=`あめを子どもに配ります。1人${N(a)}こずつ配ると${N(r)}こあまり、1人${N(b)}こずつ配ると${N(s)}こたりません。`;
+    const steps=[`1人あたりのちがいは ${b}－${a}＝${g}こ。`,`全体のちがいは「あまり＋たりない」で ${r}＋${s}＝${r+s}こ。`,`${r+s}÷${g}＝${p}人`];
+    const dia=bars([{label:`${a}こずつ`,segs:[{v:a*p,t:`${a}×人数`},{v:r,k:'extra',t:`あまり${r}`}]},{label:`${b}こずつ`,segs:[{v:a*p,t:`${a}×人数`},{v:r,k:'extra',t:r},{v:s,k:'miss',t:`たりない${s}`}]}]);
+    if(st===1)return{text:base+`子どもは何人いますか。`,answer:p,unit:'人',steps,dia};
+    return{text:base+`あめは全部で何こありますか。`,answer:Nn,unit:'こ',steps:[...steps,`あめは ${a}×${p}＋${r}＝${Nn}こ`],dia};}
+  const p=ri(5,12),a=ri(3,5),g=pick([1,2]),b=a+g,r2=ri(1,4),r1=r2+g*p,Nn=b*p+r2;
+  return{text:`おり紙を子どもに配ります。1人${N(a)}まいずつだと${N(r1)}まいあまり、1人${N(b)}まいずつだと${N(r2)}まいあまります。おり紙は全部で何まいありますか。`,answer:Nn,unit:'まい',
+    steps:[`1人あたりのちがいは ${b}－${a}＝${g}まい。`,`全体のちがいは「あまり－あまり」で ${r1}－${r2}＝${r1-r2}まい。人数は ${r1-r2}÷${g}＝${p}人`,`おり紙は ${b}×${p}＋${r2}＝${Nn}まい`],
+    dia:bars([{label:`${a}まいずつ`,segs:[{v:a*p,t:`${a}×人数`},{v:r1,k:'extra',t:`あまり${r1}`}]},{label:`${b}まいずつ`,segs:[{v:a*p,t:`${a}×人数`},{v:g*p,t:'ふえた分'},{v:r2,k:'extra',t:r2}]}])};
+}},
+bunpai:{name:'分配算',gen(st){
+  const k=pick([2,3,4]),c=ri(6,20);
+  const segK=extra=>{const a=[];for(let i=0;i<k;i++)a.push({v:c,t:'①'});if(extra)a.push(extra);return a;};
+  if(st===1){const T=c*(k+1);
+    return{text:`兄と弟のカードは合わせて${N(T)}まいです。兄のまい数は弟の${N(k)}倍です。弟は何まいもっていますか。`,answer:c,unit:'まい',
+      steps:[`弟を①とすると、兄は${CIRC[k]}。`,`合わせて ${CIRC[k+1]} が${T}まい。`,`①は ${T}÷${k+1}＝${c}まい`],
+      dia:bars([{label:'兄',segs:segK()},{label:'弟',segs:[{v:c,t:'①?'}]}],`合計${T}`)};}
+  if(st===2){const e=ri(3,15),T=c*(k+1)+e;
+    return{text:`兄と弟のカードは合わせて${N(T)}まいです。兄は弟の${N(k)}倍より${N(e)}まい多くもっています。弟は何まいもっていますか。`,answer:c,unit:'まい',
+      steps:[`弟を①とすると、兄は「${CIRC[k]}＋${e}」。`,`合計から${e}をひくと ${CIRC[k+1]} になる： ${T}－${e}＝${T-e}`,`①は ${T-e}÷${k+1}＝${c}まい`],
+      dia:bars([{label:'兄',segs:segK({v:e,k:'extra',t:`+${e}`})},{label:'弟',segs:[{v:c,t:'①?'}]}],`合計${T}`)};}
+  const e=ri(2,Math.min(15,c-1)),T=c*(k+1)-e;
+  return{text:`兄と弟のカードは合わせて${N(T)}まいです。兄は弟の${N(k)}倍より${N(e)}まい少ないです。弟は何まいもっていますか。`,answer:c,unit:'まい',
+    steps:[`弟を①とすると、兄は「${CIRC[k]}－${e}」。`,`少ない${e}まいを合計にたすと ${CIRC[k+1]} になる： ${T}＋${e}＝${T+e}`,`①は ${T+e}÷${k+1}＝${c}まい`],
+    dia:bars([{label:'兄',segs:[...segK().slice(0,k-1),{v:c-e,t:"①"},{v:e,k:'miss',t:`−${e}`}]},{label:'弟',segs:[{v:c,t:'①?'}]}],`合計${T}`)};
+}}
+};
+const TYPES=Object.keys(GEN);
+
+/* ---------- 状態 ---------- */
+let S;
+function fresh(){
+  const W=+goalEl.value;
+  S={W,pos:+handiEl.value,turn:0,ok:[0,0],tried:[0,0],phase:'pick',cards:[],cur:null,input:'',hint:false,res:null};
+  deal(); render();
+  window.mnTrack&&mnTrack('level_start',{level_name:'tsunahiki',goal:W});
+}
+function deal(){
+  const ts=shuffle(TYPES).slice(0,3), st=shuffle([1,2,3]);
+  S.cards=ts.map((t,i)=>({t,st:st[i]}));
+}
+const names=()=>[nameB.value.trim()||'あおチーム',nameR.value.trim()||'あかチーム'];
+function choose(i){const c=S.cards[i];S.cur={...GEN[c.t].gen(c.st),type:GEN[c.t].name,st:c.st};S.input='';S.hint=false;S.phase='solve';render();}
+function key(k){
+  if(S.phase!=='solve')return;
+  if(k==='del')S.input=S.input.slice(0,-1);
+  else if(S.input.length<6&&!(S.input===''&&k==='0'))S.input+=k;
+  renderAns();
+}
+function submit(){
+  if(S.phase!=='solve'||!S.input)return;
+  const ok=+S.input===S.cur.answer, gain=ok?Math.max(0,S.cur.st-(S.hint?1:0)):0;
+  S.tried[S.turn]++; if(ok)S.ok[S.turn]++;
+  S.pos+= S.turn===0?-gain:gain;
+  S.pos=Math.max(-S.W,Math.min(S.W,S.pos));
+  S.res={ok,gain,given:S.input};
+  window.mnTrack&&mnTrack('answer_question',{category:S.cur.type,stars:S.cur.st,hint:S.hint,correct:ok});
+  S.phase='result'; render();
+}
+function next(){
+  if(Math.abs(S.pos)>=S.W){window.mnTrack&&mnTrack('level_end',{level_name:'tsunahiki',success:true,questions:S.tried[0]+S.tried[1]});S.phase='win';render();party();return;}
+  S.turn=1-S.turn; deal(); S.phase='pick'; render();
+}
+
+/* ---------- 表示 ---------- */
+const goalEl=document.getElementById('goal'),handiEl=document.getElementById('handi'),nameB=document.getElementById('nameB'),nameR=document.getElementById('nameR');
+const stage=document.getElementById('stage');
+function renderField(){
+  const [b,r]=names();
+  document.getElementById('nb').textContent=b; document.getElementById('nr').textContent=r;
+  document.getElementById('sb').textContent=`${S.ok[0]}/${S.tried[0]}問`;
+  document.getElementById('sr').textContent=`${S.ok[1]}/${S.tried[1]}問`;
+  document.getElementById('tb').classList.toggle('now',S.turn===0&&S.phase!=='win');
+  document.getElementById('tr').classList.toggle('now',S.turn===1&&S.phase!=='win');
+  const tr=document.getElementById('track');
+  tr.querySelectorAll('.tick').forEach(e=>e.remove());
+  const at=p=>4+(p+S.W)/(2*S.W)*92;
+  for(let p=-S.W+1;p<S.W;p++){const t=document.createElement('div');t.className='tick'+(p===0?' c':'');t.style.left=at(p)+'%';tr.appendChild(t);}
+  document.getElementById('flag').style.left=at(S.pos)+'%';
+  const ab=Math.abs(S.pos);
+  document.getElementById('pos').textContent= S.pos===0?'まんなか':`${S.pos<0?b:r}が${ab}マスリード`;
+}
+function render(){
+  renderField();
+  const [b,r]=names(), me=S.turn===0?b:r, col=S.turn===0?'blue':'red';
+  if(S.phase==='pick'){
+    stage.className='stage';
+    stage.innerHTML=`<div class="who ${col}">${esc(me)}の番です</div>
+      <p class="sub">カードを1まい選ぼう。★が多いほど難しいけど、たくさん引けます。</p>
+      <div class="cards">${S.cards.map((c,i)=>`<button class="card" data-c="${i}" id="card${i}">
+        <span class="stars" aria-label="むずかしさ${c.st}">${'★'.repeat(c.st)}<span style="opacity:.25">${'★'.repeat(3-c.st)}</span></span>
+        <span class="ty">${GEN[c.t].name}</span><span class="gain">正解で${c.st}マス引ける</span></button>`).join('')}</div>`;
+    stage.querySelectorAll('.card').forEach(el=>el.onclick=()=>choose(+el.dataset.c));
+    return;
+  }
+  if(S.phase==='solve'){
+    const c=S.cur;
+    stage.className='stage';
+    stage.innerHTML=`<div class="qhead"><span class="who ${col}" style="font-size:18px">${esc(me)}</span><span class="pill">${c.type}</span><span class="pill st">${'★'.repeat(c.st)}</span></div>
+      <p class="q">${c.text}</p>
+      ${S.hint?`<div class="hintbox"><b>ヒント</b>　${c.steps[0]}</div>`:''}
+      <div class="ansrow"><span class="ans" id="ans"></span><span class="unit">${c.unit}</span></div>
+      <div class="pad">${['1','2','3','4','5','6','7','8','9','0'].map(k=>`<button class="key" data-k="${k}">${k}</button>`).join('')}
+        <button class="key wide" data-k="del">1字けす</button></div>
+      <div class="row"><button class="btn go" id="sub">こたえる</button>
+        <button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント（引ける数−1）</button></div>`;
+    stage.querySelectorAll('.key').forEach(el=>el.onclick=()=>key(el.dataset.k));
+    document.getElementById('sub').onclick=submit;
+    document.getElementById('hint').onclick=()=>{S.hint=true;render();};
+    renderAns(); return;
+  }
+  if(S.phase==='result'){
+    const c=S.cur,R=S.res, done=Math.abs(S.pos)>=S.W;
+    stage.className='stage';
+    stage.innerHTML=`<div class="verdict ${R.ok?'ok':'ng'}">${R.ok?(R.gain?`正解！ ${R.gain}マス引いた`:'正解！（ヒントを使ったので今回は0マス）'):'ざんねん…'}</div>
+      <p class="q" style="font-size:16px">${c.text}</p>
+      <p class="sub">こたえ：<b style="color:var(--fg);font-size:18px">${c.answer}${c.unit}</b>${R.ok?'':`　（${esc(me)}の答え：${esc(R.given)}${c.unit}）`}</p>
+      <div><div style="font-weight:700;margin-bottom:6px">解き方</div><ol class="steps">${c.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+      <div class="dia">${c.dia}</div>
+      <div class="row"><button class="btn go" id="nx">${done?'けっかを見る':`${esc(S.turn===0?r:b)}の番へ`}</button></div>`;
+    document.getElementById('nx').onclick=next; return;
+  }
+  const w=S.pos<0?b:r, wc=S.pos<0?'blue':'red', wi=S.pos<0?0:1;
+  stage.className='stage win';
+  stage.innerHTML=`<div class="big who ${wc}">${esc(w)}の勝ち！</div>
+    <p class="sub">${esc(b)}：${S.ok[0]}問正解／${S.tried[0]}問　・　${esc(r)}：${S.ok[1]}問正解／${S.tried[1]}問</p>
+    <div class="row"><button class="btn go" id="again">もう1回あそぶ</button></div>`;
+  document.getElementById('again').onclick=fresh;
+}
+function renderAns(){const a=document.getElementById('ans');if(a)a.textContent=S.input;const s=document.getElementById('sub');if(s)s.disabled=!S.input;}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(S.phase==='solve'){
+    if(/^[0-9]$/.test(e.key))key(e.key);
+    else if(e.key==='Backspace')key('del');
+    else if(e.key==='Enter'){e.preventDefault();submit();}
+  }
+});
+document.getElementById('restart').onclick=fresh;
+[nameB,nameR].forEach(el=>el.addEventListener('input',()=>{renderField();if(S.phase==='pick')render();}));
+
+/* 紙ふぶき */
+function party(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=document.getElementById('cf'),x=cv.getContext('2d');cv.hidden=false;
+  cv.width=innerWidth;cv.height=innerHeight;
+  const cs=getComputedStyle(document.documentElement),cols=['--blue','--red','--star','--ok'].map(v=>cs.getPropertyValue(v).trim());
+  const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,v:2+Math.random()*3,r:Math.random()*6,c:pick(cols),w:6+Math.random()*6}));
+  let t=0;(function f(){x.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x+Math.sin(p.r)*10,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-3,p.w,6);x.restore();});
+    if(++t<240)requestAnimationFrame(f);else cv.hidden=true;})();
+}
+
+fresh();
+})();
+</script>

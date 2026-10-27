@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>管理画面 | まなびゲーム箱</title>
+<style>
+/* このファイルは公開しません。自分のパソコンでダブルクリックして開いて使います。 */
+:root{--bg:#f2f5f9;--surface:#fff;--fg:#1d2b3d;--muted:#5d6a7c;--rule:#d6dde7;--ink:#1f3a6e;--ok:#1d8150;--ng:#c8352d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#10151d;--surface:#18212d;--fg:#e4e9f1;--muted:#9aa6b8;--rule:#2a3546;--ink:#8fb0f0;--ok:#4cc184;--ng:#f07468;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;line-height:1.7;padding:24px 16px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{margin:0;font-size:26px;color:var(--ink)}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+h2{margin:0;font-size:17px;color:var(--ink)}
+label{font-weight:700;font-size:14px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--fg);box-sizing:border-box;width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.row>*{flex:1;min-width:140px}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;background:var(--fg);color:var(--surface)}
+button.sub{background:var(--rule);color:var(--fg)}
+button.warn{background:var(--ng);color:#fff}
+pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-all;font-size:13px;margin:0;min-height:2em}
+.note{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>まなびゲーム箱 管理画面</h1>
+  <p class="note">このファイルはGitHubに入れず、自分のパソコンだけで使ってください。管理キーは、このパソコンのブラウザにだけ保存されます。</p>
+
+  <section class="box"><h2>1. サーバーとの接続</h2>
+    <label for="api">サーバーのアドレス（例 https://manabi-api.xxxx.workers.dev）</label><input id="api">
+    <label for="key">管理キー（ADMIN_KEY）</label><input id="key" type="password">
+    <div><button id="save">保存して接続を確かめる</button></div><pre id="o1"></pre></section>
+
+  <section class="box"><h2>2. 有料版の問題データを入れる</h2>
+    <p class="note">packs フォルダの JSON ファイルをまとめてえらびます（ファイル名＝ゲーム名、例 chusho.json）。問題を直したときも、同じようにえらび直せば上書きされます。</p>
+    <input id="files" type="file" accept=".json" multiple>
+    <div><button id="up">入れる</button></div><pre id="o2"></pre></section>
+
+  <section class="box"><h2>3. 利用コードを作る（テスト・プレゼント・おわび用）</h2>
+    <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option></select></div>
+    <div><label for="ip">期間</label><select id="ip"><option value="d1">1日</option><option value="w1">1週間</option><option value="m1" selected>1ヵ月</option><option value="y1">1年</option></select></div></div>
+    <label for="in">メモ（だれに渡したか など）</label><input id="in">
+    <div><button id="issue">作る</button></div><pre id="o3"></pre></section>
+
+  <section class="box"><h2>4. 利用コードを調べる・変える</h2>
+    <label for="c">利用コード</label><input id="c" placeholder="MN-XXXX-XXXX-XXXX">
+    <div class="row" style="align-items:center"><button id="look">調べる</button><button class="sub" id="reset">端末の登録を消す（機種変更など）</button></div>
+    <div class="row"><div><label for="days">のばす日数</label><input id="days" type="number" value="7" min="1"></div><div><button class="sub" id="ext">期間をのばす</button></div></div>
+    <div><button class="warn" id="rev">このコードを使えなくする（返金したときなど）</button></div>
+    <pre id="o4"></pre>
+    <p class="note">状態：unused＝まだ使われていない、active＝利用中、expired＝期間終了、revoked＝使えなくした。日時は「〜時点」のミリ秒で、下に日本時間でも表示します。</p></section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v);}catch(e){return '';}};
+$('api').value=ls('adm-api'); $('key').value=ls('adm-key');
+const base=()=>$('api').value.trim().replace(/\/$/,'');
+async function call(path,opt={}){
+  const r=await fetch(base()+path,{...opt,headers:{'X-Admin-Key':$('key').value.trim(),'Content-Type':'application/json',...(opt.headers||{})}});
+  const d=await r.json().catch(()=>({})); if(!r.ok)throw Object.assign(new Error(d.error||r.status),{d});return d;
+}
+const show=(el,d)=>{ if(d&&d.exp){d.exp_jst=new Date(d.exp).toLocaleString('ja-JP');} if(d&&d.created)d.created_jst=new Date(d.created).toLocaleString('ja-JP'); $(el).textContent=typeof d==='string'?d:JSON.stringify(d,null,2); };
+$('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$('key').value.trim());
+  try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
+    show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
+  catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':'つながりません。アドレスを確かめてください。'); } };
+$('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); let out=[];
+  for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); } show('o2',out.join('\n')); } };
+$('issue').onclick=async()=>{ try{ show('o3',await call('/api/admin/issue',{method:'POST',body:JSON.stringify({subject:$('is').value,period:$('ip').value,note:$('in').value})})); }catch(e){ show('o3','失敗：'+e.message); } };
+const code=()=>$('c').value.trim();
+$('look').onclick=async()=>{ try{ show('o4',await call('/api/admin/code/'+encodeURIComponent(code()))); }catch(e){ show('o4','見つかりません：'+e.message); } };
+const act=(p,extra={})=>async()=>{ try{ show('o4',await call('/api/admin/'+p,{method:'POST',body:JSON.stringify({code:code(),...extra})})); }catch(e){ show('o4','失敗：'+e.message); } };
+$('reset').onclick=act('reset-devices');
+$('ext').onclick=()=>act('extend',{days:Number($('days').value)})();
+$('rev').onclick=()=>{ if(confirm('このコードを使えなくします。よろしいですか？'))act('revoke')(); };
+</script>
+</body>
+</html>

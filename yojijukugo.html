@@ -1,0 +1,289 @@
+<title>四字熟語クイズ</title>
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="四字熟語">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="意味を読んで、どの四字熟語かを答えるクイズ。4択と、漢字を原稿用紙に並べるモードの2つ。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。意味の札 → 原稿用紙のマス（答え）→ 選択肢または漢字の札。漢字は教科書体に近い手書き風の書体 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --ng:#c8352d; --pick:#eceee8; --gold:#b88a1e;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(30px,8vw,40px);line-height:1.2;margin:0;letter-spacing:.06em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.h2{font-family:var(--display);font-size:20px;margin:0}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.modes{grid-template-columns:1fr}}
+.mode{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.mode:hover{border-color:var(--grid)}
+.mode .nm{font-family:var(--display);font-size:20px}
+.mode .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.mode .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.levels{display:flex;gap:6px;flex-wrap:wrap}
+.lv{border:1px solid var(--rule);background:transparent;border-radius:99px;padding:4px 14px;cursor:pointer;font-size:14px}
+.lv[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.note{font-size:12px;color:var(--muted);margin:0}
+
+.bar{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid);transition:width .3s}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.combo{color:var(--grid);font-weight:700;font-size:14px}
+.meaning{border-left:4px solid var(--grid);padding:4px 0 4px 14px}
+.meaning .lab{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.meaning p{margin:2px 0 0;font-size:19px;font-weight:700;line-height:1.7}
+.sheet{display:flex;justify-content:center}
+.sq{width:clamp(56px,17vw,76px);aspect-ratio:1;border:2px solid var(--grid);margin-left:-2px;display:grid;place-items:center;
+  font-family:var(--kanji);font-weight:600;font-size:clamp(34px,10vw,46px);background:var(--surface);position:relative}
+.sq:first-child{margin-left:0}
+.sq.cur{background:var(--gridsoft)}
+.sq.ok{color:var(--ok)} .sq.ng{color:var(--ng)}
+.reading{text-align:center;color:var(--muted);font-size:15px;letter-spacing:.15em;min-height:1.7em;margin-top:-8px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ch{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 8px;cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(24px,7vw,30px);letter-spacing:.08em}
+.ch:hover:not(:disabled){border-color:var(--grid)}
+.ch:disabled{cursor:default}
+.ch.right{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.ch.wrong{border-color:var(--ng);color:var(--ng);background:color-mix(in srgb,var(--ng) 8%,var(--surface))}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:400px;margin:0 auto;width:100%}
+.tile{aspect-ratio:1;max-width:100%;border:1px solid var(--rule);border-radius:8px;background:var(--pick);cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(26px,8vw,34px)}
+.tile:hover:not(:disabled){border-color:var(--grid)}
+.tile:disabled{opacity:.25;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.verdict{text-align:center;font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.exp{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:15px}
+.exp b{font-family:var(--kanji);font-size:18px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg);text-align:center;line-height:1.1}
+.review{display:grid;gap:10px}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv .w{font-family:var(--kanji);font-weight:600;font-size:22px;letter-spacing:.08em}
+.rv .r{color:var(--muted);font-size:13px;margin-left:6px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.paid:hover{border-color:var(--fg)}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>四字熟語クイズ</h1>
+    <p class="lead">意味を読んで、どの四字熟語かを答えよう。1回10問です。</p>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+(function(){
+/* [熟語, 読み, 意味, レベル(1=基本 2=発展)] */
+const W=[
+['一石二鳥','いっせきにちょう','一つの行動で、二つの得をすること。',1],
+['一期一会','いちごいちえ','一生に一度しかない出会いだと思って、人との出会いを大切にすること。',1],
+['以心伝心','いしんでんしん','言葉にしなくても、気持ちや考えが相手に伝わること。',1],
+['異口同音','いくどうおん','多くの人が、口をそろえて同じことを言うこと。',1],
+['一進一退','いっしんいったい','進んだりもどったりすること。よくなったり悪くなったりすること。',1],
+['右往左往','うおうさおう','あわてて、あっちへ行ったりこっちへ行ったりすること。',1],
+['喜怒哀楽','きどあいらく','喜び・怒り・悲しみ・楽しみなど、人のいろいろな気持ち。',1],
+['危機一髪','ききいっぱつ','髪の毛一本ほどのわずかな差で、とても危ない状態になること。',1],
+['十人十色','じゅうにんといろ','考え方や好みは、人によってそれぞれちがうこと。',1],
+['自業自得','じごうじとく','自分のした悪い行いのむくいを、自分で受けること。',1],
+['自画自賛','じがじさん','自分で自分のことや、自分のしたことをほめること。',1],
+['四苦八苦','しくはっく','とても苦労すること。',1],
+['七転八起','しちてんはっき','何度失敗しても、くじけずに立ち上がること。',1],
+['心機一転','しんきいってん','あることをきっかけに、気持ちをすっかり入れかえること。',1],
+['絶体絶命','ぜったいぜつめい','どうにものがれられない、追いつめられた状態。',1],
+['千差万別','せんさばんべつ','たくさんのものが、それぞれみんなちがっていること。',1],
+['前代未聞','ぜんだいみもん','今までに一度も聞いたことがないような、めずらしいこと。',1],
+['単刀直入','たんとうちょくにゅう','前置きなしに、いきなり大事な話に入ること。',1],
+['電光石火','でんこうせっか','動きがとてもすばやいこと。',1],
+['半信半疑','はんしんはんぎ','半分は信じて、半分は疑っていること。',1],
+['八方美人','はっぽうびじん','だれからもよく思われようと、うまくふるまう人。',1],
+['百発百中','ひゃっぱつひゃくちゅう','ねらいや予想が、すべて当たること。',1],
+['不言実行','ふげんじっこう','あれこれ言わずに、だまってやるべきことを行うこと。',1],
+['無我夢中','むがむちゅう','あることに心をうばわれて、ほかのことを忘れてしまうこと。',1],
+['油断大敵','ゆだんたいてき','気をゆるめると失敗するので、油断はおそろしい敵だということ。',1],
+['臨機応変','りんきおうへん','その場のようすに合わせて、うまく対応すること。',1],
+['一心不乱','いっしんふらん','一つのことに集中して、ほかのことに心を動かされないこと。',1],
+['意気投合','いきとうごう','おたがいの気持ちや考えが、ぴったり合うこと。',1],
+['日進月歩','にっしんげっぽ','日に日に、休むことなく進歩すること。',1],
+['起承転結','きしょうてんけつ','文章や話の組み立て。始まり・続き・場面の変化・結びの順。',1],
+['適材適所','てきざいてきしょ','その人の力に合った役目や仕事につかせること。',1],
+['東奔西走','とうほんせいそう','用事のために、あちこちいそがしくかけ回ること。',1],
+['温故知新','おんこちしん','昔のことをよく学んで、そこから新しい考えや知識を得ること。',2],
+['起死回生','きしかいせい','ほとんどだめになった状態を、一気に立て直すこと。',2],
+['疑心暗鬼','ぎしんあんき','疑いはじめると、なんでもないことまで疑わしく、こわく思えること。',2],
+['空前絶後','くうぜんぜつご','今までになく、これからもないと思われるほどめずらしいこと。',2],
+['言語道断','ごんごどうだん','言葉で言いあらわせないほど、ひどいこと。',2],
+['五里霧中','ごりむちゅう','ようすがまったくわからず、どうしたらよいか見当がつかないこと。',2],
+['弱肉強食','じゃくにくきょうしょく','強いものが弱いものをおさえて栄えること。',2],
+['試行錯誤','しこうさくご','いろいろためして失敗をくり返しながら、よい方法に近づいていくこと。',2],
+['針小棒大','しんしょうぼうだい','小さなことを、大げさに言うこと。',2],
+['大器晩成','たいきばんせい','大人物は、ふつうの人より時間をかけて大きく成長するということ。',2],
+['馬耳東風','ばじとうふう','人の意見や注意を気にとめず、聞き流すこと。',2],
+['付和雷同','ふわらいどう','自分の考えをもたず、すぐにほかの人の意見に合わせること。',2],
+['用意周到','よういしゅうとう','準備がすみずみまで、よく行きとどいていること。',2],
+['一朝一夕','いっちょういっせき','とても短い期間。「〜にはできない」の形でよく使う。',2],
+['一刀両断','いっとうりょうだん','ものごとを思い切って、すばやく処理すること。',2],
+['竜頭蛇尾','りゅうとうだび','初めはいきおいがよいが、終わりはふるわないこと。',2],
+['優柔不断','ゆうじゅうふだん','ぐずぐずして、なかなか決められないこと。',2],
+['有名無実','ゆうめいむじつ','名前ばかりりっぱで、中身がともなっていないこと。',2],
+['二束三文','にそくさんもん','数が多くても、ねだんがとても安いこと。',2],
+['一網打尽','いちもうだじん','悪い人たちなどを、一度にのこらずつかまえること。',2],
+['因果応報','いんがおうほう','よい行いにはよいむくいが、悪い行いには悪いむくいがあること。',2],
+['千載一遇','せんざいいちぐう','千年に一度しか出会えないような、めったにないよい機会。',2],
+['大同小異','だいどうしょうい','細かいところはちがうが、だいたいは同じであること。',2],
+['朝令暮改','ちょうれいぼかい','命令や方針がころころ変わって、定まらないこと。',2],
+['本末転倒','ほんまつてんとう','大事なこととそうでないことを、取りちがえること。',2],
+['公明正大','こうめいせいだい','公平で、かくしごとがなく正しいこと。',2],
+['我田引水','がでんいんすい','自分につごうのよいように、言ったりしたりすること。',2],
+['晴耕雨読','せいこううどく','晴れた日は畑をたがやし、雨の日は本を読む。ゆったりした生活のこと。',2],
+];
+const ROUND=10;
+const PAID=`<a class="paid" href="yojijukugo300.html" id="paid-link"><span class="pt">もっと覚えたい人へ　<b>四字熟語クイズ300</b>（有料版）</span><span class="pd">中学入試に出る300語。覚えた熟語の記録と、苦手だけの復習つき。</span></a>`;
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let best={}; try{best=JSON.parse(localStorage.getItem('yoji-best')||'{}');}catch(e){}
+const saveBest=()=>{try{localStorage.setItem('yoji-best',JSON.stringify(best));}catch(e){}};
+let level='all', G=null;
+const MODES={choice:['えらぶ','4つの中から正しい四字熟語をえらぶ。はじめての人に。'],write:['ならべる','8まいの漢字の札から4まいを順に選んで、原稿用紙に書く。漢字も覚えられる。']};
+const LV={all:'ぜんぶ',1:'基本',2:'発展'};
+const key=m=>`${m}-${level}`;
+
+function home(){
+  G=null;
+  app.innerHTML=`<section class="box">
+    <div><div class="h2" style="margin-bottom:8px">レベル</div>
+    <div class="levels">${Object.entries(LV).map(([k,v])=>`<button class="lv" id="lv-${k}" data-l="${k}" aria-pressed="${String(level)===k}">${v}（${k==='all'?W.length:W.filter(w=>w[3]==k).length}語）</button>`).join('')}</div></div>
+    <div><div class="h2" style="margin-bottom:8px">あそびかた</div>
+    <div class="modes">${Object.entries(MODES).map(([k,[nm,ds]])=>`<button class="mode" id="mode-${k}" data-m="${k}"><span class="nm">${nm}</span><span class="ds">${ds}</span><span class="best">${best[key(k)]!=null?`ベスト ${best[key(k)]}/10`:''}</span></button>`).join('')}</div></div>
+    <p class="note">基本は小学校で習うことが多い熟語、発展は中学入試でよく出る少し難しい熟語です。</p>
+    ${PAID}</section>`;
+  app.querySelectorAll('.lv').forEach(b=>b.onclick=()=>{level=b.dataset.l==='all'?'all':+b.dataset.l;home();});
+  app.querySelectorAll('.mode').forEach(b=>b.onclick=()=>start(b.dataset.m));
+}
+function pool(){return level==='all'?W:W.filter(w=>w[3]===level);}
+function start(mode,list){
+  const qs=(list||shuffle(pool()).slice(0,ROUND)).map(w=>{
+    if(mode==='choice'){
+      const same=W.filter(x=>x!==w&&x[3]===w[3]);
+      return {w,ch:shuffle([w,...shuffle(same).slice(0,3)])};
+    }
+    const chars=[...w[0]], others=shuffle(W.filter(x=>x!==w).flatMap(x=>[...x[0]]).filter(c=>!chars.includes(c)));
+    const decoy=[...new Set(others)].slice(0,4);
+    return {w,tiles:shuffle([...chars,...decoy])};
+  });
+  G={mode,qs,i:0,score:0,combo:0,maxCombo:0,miss:[],done:false,picked:[],retry:!!list};
+  track('level_start',{level_name:`${mode}-${level}`});
+  show();
+}
+function sheet(chars,cls){
+  return `<div class="sheet" aria-label="こたえのマス">${[0,1,2,3].map(i=>`<div class="sq ${cls?cls:(i===chars.length?'cur':'')}">${chars[i]||''}</div>`).join('')}</div>`;
+}
+function head(){
+  return `<div class="bar"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.qs.length*100}%"></i></div>
+    <span class="nums">${G.i+1} / ${G.qs.length}</span>${G.combo>=2?`<span class="combo">${G.combo}連続</span>`:''}</div>
+    <div class="meaning"><div class="lab">意味</div><p>${G.qs[G.i].w[2]}</p></div>`;
+}
+function show(){
+  const it=G.qs[G.i];
+  if(G.mode==='choice'){
+    app.innerHTML=`<section class="box">${head()}
+      <div class="choices">${it.ch.map((c,j)=>`<button class="ch" id="ch${j}" data-j="${j}">${c[0]}</button>`).join('')}</div>
+      <div id="after"></div></section>`;
+    app.querySelectorAll('.ch').forEach(b=>b.onclick=()=>judge(it.ch[+b.dataset.j]===it.w,+b.dataset.j));
+  } else {
+    app.innerHTML=`<section class="box">${head()}
+      <div id="sheet">${sheet(G.picked)}</div><div class="reading" id="reading"></div>
+      <div class="tiles" id="tiles">${it.tiles.map((c,j)=>`<button class="tile" id="tile${j}" data-j="${j}">${c}</button>`).join('')}</div>
+      <div class="row" id="ctrl"><button class="btn" id="undo">1字もどす</button><button class="btn" id="hint">読みのヒント</button></div>
+      <div id="after"></div></section>`;
+    app.querySelectorAll('.tile').forEach(b=>b.onclick=()=>pickTile(+b.dataset.j));
+    document.getElementById('undo').onclick=()=>{if(G.done||!G.picked.length)return;G.picked.pop();G.used.pop();refreshWrite();};
+    document.getElementById('hint').onclick=()=>{G.hint=true;document.getElementById('reading').textContent=it.w[1].slice(0,2)+'…';document.getElementById('hint').disabled=true;};
+    G.used=[]; G.hint=false; refreshWrite();
+  }
+}
+function refreshWrite(){
+  document.getElementById('sheet').innerHTML=sheet(G.picked);
+  app.querySelectorAll('.tile').forEach((b,j)=>b.disabled=G.done||G.used.includes(j));
+  document.getElementById('undo').disabled=G.done||!G.picked.length;
+}
+function pickTile(j){
+  if(G.done||G.used.includes(j))return;
+  G.used.push(j); G.picked.push(G.qs[G.i].tiles[j]); refreshWrite();
+  if(G.picked.length===4) judge(G.picked.join('')===G.qs[G.i].w[0]);
+}
+function judge(ok,j){
+  if(G.done)return; G.done=true;
+  const it=G.qs[G.i], w=it.w;
+  if(G.mode==='choice'){
+    app.querySelectorAll('.ch').forEach((b,k)=>{b.disabled=true;if(it.ch[k]===w)b.classList.add('right');else if(k===j)b.classList.add('wrong');});
+  } else {
+    document.getElementById('sheet').innerHTML=ok?sheet([...w[0]],'ok'):`${sheet(G.picked,'ng')}<div style="height:8px"></div>${sheet([...w[0]],'ok')}`;
+    document.getElementById('reading').textContent=w[1];
+    document.getElementById('ctrl').hidden=true;
+    app.querySelectorAll('.tile').forEach(b=>b.disabled=true);
+  }
+  if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(w);}
+  track('answer_question',{category:G.mode,question:w[0],correct:ok});
+  const last=G.i===G.qs.length-1;
+  document.getElementById('after').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${ok?'正解！':'ざんねん'}</div>
+    <div class="exp"><b>${w[0]}</b>（${w[1]}）<br>${w[2]}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ G.done=false; G.picked=[]; if(++G.i<G.qs.length)show(); else result(); }
+function result(){
+  const n=G.qs.length,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  const k=key(G.mode); let isNew=false;
+  if(!G.retry&&(best[k]==null||s>best[k])){best[k]=s;saveBest();isNew=true;}
+  track('level_end',{level_name:`${G.mode}-${level}`,success:s===n,score:s,total:n});
+  app.innerHTML=`<section class="box">
+    <h2 class="h2">${MODES[G.mode][0]}・${LV[level]}の結果</h2>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！すばらしい。':r>=.6?'よくできました。まちがえた熟語を見直そう。':'意味と漢字をセットで覚えると、ぐっと解きやすくなります。'}${G.maxCombo>=3?`　最高${G.maxCombo}連続正解！`:''}${isNew&&s>0?'　自己ベスト更新！':''}</p>
+    <div class="row" style="justify-content:flex-start"><button class="btn go" id="again">もう一度</button>${G.miss.length?'<button class="btn" id="retry">まちがえた熟語だけ</button>':''}<button class="btn" id="home">はじめにもどる</button></div>
+    ${PAID}
+    ${G.miss.length?`<div class="h2" style="font-size:17px">おぼえておこう</div><div class="review">${G.miss.map(w=>`<div class="rv"><span class="w">${w[0]}</span><span class="r">${w[1]}</span><div>${w[2]}</div></div>`).join('')}</div>`:''}
+  </section>`;
+  document.getElementById('again').onclick=()=>start(G.mode);
+  document.getElementById('home').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>start(G.mode,shuffle(G.miss));
+}
+document.addEventListener('keydown',e=>{
+  if(!G||G.done||G.mode!=='choice')return;
+  const k={'1':0,'2':1,'3':2,'4':3}[e.key]; if(k!=null){const it=G.qs[G.i];judge(it.ch[k]===it.w,k);}
+});
+home();
+})();
+</script>

@@ -1,0 +1,354 @@
+<title>展開図パズル</title>
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="図形">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="正方形を並べて組み立て、立方体の展開図11種類を見つけるパズル。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
+<style>
+/* Layout: 工作用紙の上で展開図をつくる（左/上）→ 組み立て台で立体に折りたたむ（右/下）。上のタブで3つの遊び方を切りかえ */
+:root{
+  --bg:#f1f6ef; --grid:#cfe2c5; --surface:#ffffff; --fg:#22302a; --muted:#5f6f67; --rule:#d3e0cf;
+  --accent:#e0602f; --ok:#1f8a4c; --ng:#cf3b34; --fixed:#8fb8d8; --mine:#f2a65a;
+  --f1:#f6b8a8; --f2:#f7d77d; --f3:#a8d8a0; --f4:#9fc9ee; --f5:#c6b1ea; --f6:#f4b6d6; --edge:#2a3a33;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --ok:#4cc27e; --ng:#f0756d; --fixed:#4d7ea6; --mine:#c98436;
+  --f1:#b9705e; --f2:#b9993a; --f3:#5f9a57; --f4:#4f86b5; --f5:#7d66a8; --f6:#b06a91; --edge:#0c120f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --ok:#4cc27e; --ng:#f0756d; --fixed:#4d7ea6; --mine:#c98436;
+  --f1:#b9705e; --f2:#b9993a; --f3:#5f9a57; --f4:#4f86b5; --f5:#7d66a8; --f6:#b06a91; --edge:#0c120f; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,38px);line-height:1.2;margin:0}
+.lead{margin:0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:2px solid var(--rule);background:var(--surface);border-radius:99px;padding:6px 16px;cursor:pointer;font-weight:700}
+.tab[aria-selected="true"]{background:var(--fg);border-color:var(--fg);color:var(--surface)}
+
+.main{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:780px){.main{grid-template-columns:1fr 1fr}}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ttl{font-family:var(--display);font-size:20px;line-height:1.3}
+.msg{margin:0;font-size:15px;max-width:32em}
+.paper{align-self:center;padding:10px;border-radius:6px;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px}
+.board{display:grid;grid-template-columns:repeat(6,46px);grid-template-rows:repeat(6,46px);gap:0}
+@media (max-width:400px){.board{grid-template-columns:repeat(6,42px);grid-template-rows:repeat(6,42px)}}
+.cell{border:1px dashed var(--grid);background:transparent;cursor:pointer;padding:0;position:relative;display:grid;place-items:center;font-weight:800;font-size:22px}
+.cell:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.cell.on{background:var(--mine);border:2px solid var(--edge)}
+.cell.fix{background:var(--fixed);border:2px solid var(--edge);cursor:default}
+.cell.die{background:var(--surface);border:2px solid var(--edge)}
+.cell.die.q{background:color-mix(in srgb,var(--accent) 20%,var(--surface));cursor:pointer}
+.cell.die.q:empty::before{content:"？";color:var(--muted);font-size:20px}
+.cell.found::after{content:"○";position:absolute;inset:0;display:grid;place-items:center;color:var(--ok);font-size:30px;font-weight:800;opacity:.7}
+.cell:disabled{cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:800;cursor:pointer;background:var(--bg)}
+.btn.go{background:var(--accent);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+
+.scene{position:relative;height:300px;perspective:900px;overflow:hidden;border-radius:8px;touch-action:none;cursor:grab;
+  background:linear-gradient(to bottom,transparent 55%,color-mix(in srgb,var(--grid) 55%,transparent))}
+.net{position:absolute;top:50%;transform-style:preserve-3d}
+.face{position:absolute;box-sizing:border-box;border:2px solid var(--edge);transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.45,.05,.3,1);
+  display:grid;place-items:center;font-weight:800;font-size:22px;color:var(--edge);opacity:.92}
+.verdict{font-family:var(--display);font-size:22px;line-height:1.3;min-height:1.3em}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.why{margin:0;font-size:14px;color:var(--muted);max-width:32em}
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.slot{aspect-ratio:1;max-width:100%;border:2px dashed var(--rule);border-radius:8px;display:grid;place-items:center;color:var(--muted);font-weight:800}
+.slot.got{border-style:solid;border-color:var(--ok);background:var(--surface)}
+.slot svg{width:86%;height:86%}
+.slot rect{fill:var(--mine);stroke:var(--edge);stroke-width:.12}
+.count{font-variant-numeric:tabular-nums;font-weight:800}
+.tip{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:14px}
+@media (prefers-reduced-motion:reduce){.face{transition:none}}
+</style>
+
+<div class="wrap">
+  <div>
+    <h1>展開図パズル</h1>
+    <p class="lead">正方形を6まい並べて「組み立てる」。立方体になるかな？</p>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-collect" data-m="collect">11しゅるい集め</button>
+    <button class="tab" role="tab" id="tab-one" data-m="one">あと1まい</button>
+    <button class="tab" role="tab" id="tab-dice" data-m="dice">サイコロの目</button>
+  </div>
+
+  <div class="main">
+    <section class="box">
+      <div class="ttl" id="ttl"></div>
+      <p class="msg" id="msg"></p>
+      <div class="paper"><div class="board" id="board"></div></div>
+      <div class="row" id="btns"></div>
+    </section>
+    <section class="box">
+      <div class="ttl">組み立て台</div>
+      <div class="scene" id="scene" aria-label="組み立てた立体。左右にドラッグで回せます"></div>
+      <div class="verdict" id="verdict" role="status"></div>
+      <p class="why" id="why"></p>
+      <div id="extra"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+const R=6,C=6,K=(r,c)=>r+','+c, P=k=>k.split(',').map(Number);
+const DIRS={E:[0,1],W:[0,-1],N:[-1,0],S:[1,0]};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const $=id=>document.getElementById(id);
+
+/* ---- 立方体になるか（サイコロを転がして調べる） ---- */
+function roll(s,d){
+  const n={...s};
+  if(d==='E'){n.B=s.E;n.E=s.T;n.T=s.W;n.W=s.B;}
+  if(d==='W'){n.B=s.W;n.W=s.T;n.T=s.E;n.E=s.B;}
+  if(d==='N'){n.B=s.N;n.N=s.T;n.T=s.S;n.S=s.B;}
+  if(d==='S'){n.B=s.S;n.S=s.T;n.T=s.N;n.N=s.B;}
+  return n;
+}
+function analyze(keys,rootKey){
+  const set=new Set(keys); const root=rootKey||keys[0];
+  const lab={},tree={},order=[root]; lab[root]={B:'B',T:'T',N:'N',S:'S',E:'E',W:'W'}; tree[root]=null;
+  for(let i=0;i<order.length;i++){
+    const k=order[i],[r,c]=P(k);
+    for(const d in DIRS){const nk=K(r+DIRS[d][0],c+DIRS[d][1]); if(set.has(nk)&&!(nk in lab)){lab[nk]=roll(lab[k],d);tree[nk]={p:k,d};order.push(nk);}}
+  }
+  const conn=order.length===keys.length;
+  const bottoms=order.map(k=>lab[k].B);
+  const cube=conn&&keys.length===6&&new Set(bottoms).size===6;
+  const face={};order.forEach(k=>face[k]=lab[k].B);
+  return {conn,cube,tree,order,face};
+}
+function why(keys){
+  const set=new Set(keys);
+  for(const k of keys){const[r,c]=P(k);if(set.has(K(r+1,c))&&set.has(K(r,c+1))&&set.has(K(r+1,c+1)))return '「田」の形（2×2）があると、そこの面がぶつかって重なります。';}
+  for(const k of keys){const[r,c]=P(k);
+    if([1,2,3,4].every(i=>set.has(K(r,c+i)))||[1,2,3,4].every(i=>set.has(K(r+i,c))))return '5まい一列にならぶと、はしの2まいが同じ場所に重なります。';}
+  return 'たたむと同じ場所に面が2まい来てしまいます。どの面とどの面が重なったか、組み立て台で見てみよう。';
+}
+/* ---- 形の「同じ・ちがう」を調べる（回したり裏返したりして同じなら同じ形） ---- */
+function canon(keys){
+  const pts=keys.map(P); let best=null;
+  const T=[([r,c])=>[r,c],([r,c])=>[c,-r],([r,c])=>[-r,-c],([r,c])=>[-c,r],([r,c])=>[r,-c],([r,c])=>[-c,-r],([r,c])=>[-r,c],([r,c])=>[c,r]];
+  for(const t of T){const q=pts.map(t),mr=Math.min(...q.map(p=>p[0])),mc=Math.min(...q.map(p=>p[1]));
+    const s=q.map(([a,b])=>K(a-mr,b-mc)).sort().join(' '); if(best===null||s<best)best=s;}
+  return best;
+}
+/* 11種類を数え上げ */
+const NETS=(()=>{let lv=new Map([[canon(['0,0']),['0,0']]]);
+  for(let n=2;n<=6;n++){const nx=new Map();
+    for(const ks of lv.values()){const set=new Set(ks);
+      for(const k of ks){const[r,c]=P(k);for(const d in DIRS){const nk=K(r+DIRS[d][0],c+DIRS[d][1]);if(set.has(nk))continue;const a=[...ks,nk],cn=canon(a);if(!nx.has(cn))nx.set(cn,a);}}}
+    lv=nx;}
+  return [...lv.entries()].filter(([cn,ks])=>analyze(ks).cube).map(([cn])=>cn);})();
+function placeCentered(cn){ // ランダムに回して盤のまんなかへ
+  let pts=cn.split(' ').map(P);
+  const T=[([r,c])=>[r,c],([r,c])=>[c,-r],([r,c])=>[-r,-c],([r,c])=>[-c,r],([r,c])=>[r,-c],([r,c])=>[c,r]];
+  pts=pts.map(pick(T));
+  const mr=Math.min(...pts.map(p=>p[0])),mc=Math.min(...pts.map(p=>p[1]));
+  pts=pts.map(([a,b])=>[a-mr,b-mc]);
+  const h=Math.max(...pts.map(p=>p[0]))+1,w=Math.max(...pts.map(p=>p[1]))+1;
+  const or=Math.floor((R-h)/2),oc=Math.floor((C-w)/2);
+  return pts.map(([a,b])=>K(a+or,b+oc));
+}
+
+/* ---- 組み立て台 ---- */
+const COLORS=['--f1','--f2','--f3','--f4','--f5','--f6'];
+let rz=-25, spinning=false, faces=[], lastFold=null;
+function build(keys,nums){
+  const scene=$('scene'); scene.innerHTML=''; faces=[];
+  if(!keys.length)return null;
+  const s=scene.clientWidth<360?36:44;
+  // まんなかに近い面を土台にする
+  const pts=keys.map(P),cr=pts.reduce((a,p)=>a+p[0],0)/pts.length,cc=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+  let root=keys[0],bd=1e9; for(const k of keys){const[r,c]=P(k),d=(r-cr)**2+(c-cc)**2; if(d<bd){bd=d;root=k;}}
+  const A=analyze(keys,root);
+  const net=document.createElement('div'); net.className='net';
+  net.style.left=`calc(50% - ${s/2}px)`; net.style.marginTop=`${-s/2+20}px`;
+  net.style.transformOrigin=`${s/2}px ${s/2}px`;
+  const el={};
+  A.order.forEach((k,i)=>{
+    const f=document.createElement('div'); f.className='face';
+    f.style.width=f.style.height=s+'px'; f.style.background=`var(${COLORS[i%6]})`;
+    if(nums&&nums[k])f.appendChild(document.createTextNode(nums[k]));
+    const t=A.tree[k];
+    if(!t){f.style.left='0';f.style.top='0';net.appendChild(f);}
+    else{
+      const [dr,dc]=DIRS[t.d];
+      f.style.left=(dc*s)+'px'; f.style.top=(dr*s)+'px';
+      f.style.transformOrigin={E:'0 50%',W:'100% 50%',N:'50% 100%',S:'50% 0'}[t.d];
+      el[t.p].appendChild(f); faces.push({f,d:t.d});
+    }
+    el[k]=f;
+  });
+  scene.appendChild(net); setRot(net);
+  return {A,net};
+}
+const ROT={E:a=>`rotateY(${-a}deg)`,W:a=>`rotateY(${a}deg)`,N:a=>`rotateX(${-a}deg)`,S:a=>`rotateX(${a}deg)`};
+function setFold(a){faces.forEach(({f,d})=>f.style.transform=ROT[d](a));}
+function setRot(net){net=net||$('scene').querySelector('.net'); if(net)net.style.transform=`rotateX(58deg) rotateZ(${rz}deg)`;}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function spin(){ if(!spinning)return; rz+=0.4; setRot(); requestAnimationFrame(spin); }
+function assemble(keys,nums,onDone){
+  spinning=false;
+  const b=build(keys,nums); if(!b)return;
+  setFold(0);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>setFold(90)));
+  setTimeout(()=>{ if(b.A.cube&&!reduce){spinning=true;spin();} onDone&&onDone(b.A); }, reduce?50:1150);
+}
+let drag=null;
+$('scene').addEventListener('pointerdown',e=>{drag=e.clientX;spinning=false;$('scene').setPointerCapture(e.pointerId);});
+$('scene').addEventListener('pointermove',e=>{if(drag===null)return;rz+=(e.clientX-drag)*0.6;drag=e.clientX;setRot();});
+['pointerup','pointercancel'].forEach(t=>$('scene').addEventListener(t,()=>drag=null));
+function say(v,cls,w){$('verdict').textContent=v;$('verdict').className='verdict '+(cls||'');$('why').textContent=w||'';}
+
+/* ---- 盤 ---- */
+let mode='collect', on=new Set(), fixed=new Set(), found=new Set(), dice=null, sol=null;
+let got=new Set(); try{JSON.parse(localStorage.getItem('tenkai-got')||'[]').forEach(x=>NETS.includes(x)&&got.add(x));}catch(e){}
+function saveGot(){try{localStorage.setItem('tenkai-got',JSON.stringify([...got]));}catch(e){}}
+function boardRender(){
+  const b=$('board'); b.innerHTML='';
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){
+    const k=K(r,c),x=document.createElement('button'); x.className='cell'; x.id='cell'+r+c;
+    if(mode==='dice'){
+      if(dice.keys.includes(k)){x.classList.add('die'); if(dice.hide.has(k)){x.classList.add('q'); if(dice.guess[k])x.textContent=dice.guess[k];} else x.textContent=dice.num[k];}
+      else x.disabled=true;
+    } else if(fixed.has(k)){x.classList.add('fix');x.disabled=true;}
+    else if(on.has(k)){x.classList.add('on');}
+    if(mode==='one'&&found.has(k)&&!on.has(k))x.classList.add('found');
+    x.setAttribute('aria-label',`${r+1}行${c+1}列`);
+    x.onclick=()=>tap(k);
+    b.appendChild(x);
+  }
+}
+function tap(k){
+  if(mode==='collect'){ if(on.has(k))on.delete(k); else if(on.size<6)on.add(k); else {say('正方形は6まいまで','ng','どれかをタップして外してから置いてね。');return;} }
+  else if(mode==='one'){ on=new Set([k]); }
+  else if(mode==='dice'){ if(!dice.hide.has(k))return; dice.guess[k]=((dice.guess[k]||0)%6)+1; }
+  boardRender(); updateBtns();
+}
+function updateBtns(){
+  const b=$('btns'); b.innerHTML='';
+  const add=(t,cls,fn,dis)=>{const x=document.createElement('button');x.className='btn '+(cls||'');x.textContent=t;x.onclick=fn;x.disabled=!!dis;b.appendChild(x);};
+  if(mode==='collect'){
+    add(`組み立てる（${on.size}/6まい）`,'go',goCollect,on.size!==6);
+    add('ぜんぶ消す','',()=>{on.clear();boardRender();updateBtns();build([]);say('');});
+  } else if(mode==='one'){
+    add('組み立てる','go',goOne,on.size!==1);
+    add('次の問題','',newOne);
+  } else {
+    add('こたえあわせ','go',goDice,[...dice.hide].some(k=>!dice.guess[k]));
+    add('組み立てて見る','',()=>assemble(dice.keys,{...dice.num,...dice.guess}));
+    add('次の問題','',newDice);
+  }
+}
+
+/* 11しゅるい集め */
+function collectExtra(){
+  const ex=$('extra'); const mine=[...got];
+  let h=`<div class="row" style="align-items:baseline;justify-content:space-between"><b>見つけた展開図</b><span class="count">${got.size} / 11</span></div><div class="coll">`;
+  for(let i=0;i<11;i++){const cn=mine[i];
+    if(cn){const pts=cn.split(' ').map(P),h2=Math.max(...pts.map(p=>p[0]))+1,w=Math.max(...pts.map(p=>p[1]))+1,m=Math.max(h2,w);
+      h+=`<div class="slot got"><svg viewBox="${-(m-w)/2-.2} ${-(m-h2)/2-.2} ${m+.4} ${m+.4}">${pts.map(([r,c])=>`<rect x="${c}" y="${r}" width="1" height="1"/>`).join('')}</svg></div>`;}
+    else h+=`<div class="slot">？</div>`;}
+  h+='</div>'; if(got.size===11)h+='<p class="tip">11しゅるい全部見つけた！立方体の展開図は、回したり裏返したりして同じものをのぞくと、ちょうど11しゅるいです。</p>';
+  else h+='<p class="tip">回したり裏返したりして同じになる形は「同じしゅるい」として数えます。</p>';
+  ex.innerHTML=h;
+}
+function goCollect(){
+  const keys=[...on];
+  assemble(keys,null,A=>{
+    if(!A.conn){say('つながっていない正方形があります','ng','6まいが辺でつながるように並べてね。');return;}
+    if(!A.cube){say('立方体になりませんでした','ng',why(keys));return;}
+    const cn=canon(keys);
+    if(got.has(cn))say('立方体になった！','ok','でも、この形はもう見つけています。回したり裏返したりすると同じ形になるよ。');
+    else{got.add(cn);saveGot();window.mnTrack&&mnTrack('net_found',{count:got.size});if(got.size===11)window.mnTrack&&mnTrack('level_end',{level_name:'collect',success:true});say(`新しい展開図を発見！（${got.size}しゅるい目）`,'ok',got.size===11?'これで11しゅるいコンプリート！':'ほかの形もさがしてみよう。');}
+    collectExtra();
+  });
+}
+
+/* あと1まい */
+function newOne(){
+  for(let t=0;t<50;t++){
+    const keys=placeCentered(pick(NETS)); const rm=pick(keys); const rest=keys.filter(k=>k!==rm);
+    if(!analyze(rest).conn)continue;
+    const set=new Set(rest),cand=new Set();
+    rest.forEach(k=>{const[r,c]=P(k);for(const d in DIRS){const nr=r+DIRS[d][0],nc=c+DIRS[d][1];if(nr<0||nc<0||nr>=R||nc>=C)continue;const nk=K(nr,nc);if(!set.has(nk))cand.add(nk);}});
+    const ok=[...cand].filter(k=>analyze([...rest,k]).cube);
+    if(ok.length<2)continue;
+    fixed=set; sol=new Set(ok); found=new Set(); on=new Set();
+    break;
+  }
+  say('');$('extra').innerHTML=oneExtra(); boardRender(); updateBtns(); build([...fixed]);
+}
+const oneExtra=()=>`<p class="tip">青い5まいに、オレンジの1まいをたすと立方体の展開図になる場所は <b class="count">${sol.size}か所</b>。見つけたのは <b class="count">${found.size}か所</b>。</p>`;
+function goOne(){
+  const k=[...on][0], keys=[...fixed,k];
+  assemble(keys,null,A=>{
+    window.mnTrack&&mnTrack('answer_question',{category:'one',correct:A.cube});
+    if(A.cube){found.add(k);
+      say(found.size===sol.size?'全部見つけた！':'正解！立方体になった','ok',found.size===sol.size?'「次の問題」に進もう。':`あと${sol.size-found.size}か所あります。`);}
+    else say('立方体になりませんでした','ng',why(keys));
+    $('extra').innerHTML=oneExtra(); boardRender();
+  });
+}
+
+/* サイコロの目 */
+function newDice(){
+  const keys=placeCentered(pick(NETS)); const A=analyze(keys);
+  const pairs=[['B','T'],['N','S'],['E','W']], vals=[[1,6],[2,5],[3,4]].sort(()=>Math.random()-.5);
+  const map={}; pairs.forEach((p,i)=>{const v=Math.random()<.5?vals[i]:[vals[i][1],vals[i][0]];map[p[0]]=v[0];map[p[1]]=v[1];});
+  const num={}; keys.forEach(k=>num[k]=map[A.face[k]]);
+  const hide=new Set(); pairs.forEach(p=>{const ks=keys.filter(k=>p.includes(A.face[k]));hide.add(pick(ks));});
+  dice={keys,num,hide,guess:{}};
+  const shown={}; keys.forEach(k=>{if(!hide.has(k))shown[k]=num[k];});
+  dice.num=shown; dice.ans={}; hide.forEach(k=>dice.ans[k]=num[k]);
+  say('');$('extra').innerHTML='<p class="tip">サイコロは、向かい合う面の目をたすと<b>7</b>になります。展開図で、どの面とどの面が向かい合うかを考えよう。一列にならんだ面は「1つとばし」が向かい合わせです。</p>';
+  boardRender(); updateBtns(); build(keys,shown);
+}
+function goDice(){
+  const all={...dice.num,...dice.guess};
+  assemble(dice.keys,all,()=>{
+    const bad=[...dice.hide].filter(k=>dice.guess[k]!==dice.ans[k]);
+    window.mnTrack&&mnTrack('answer_question',{category:'dice',correct:!bad.length});
+    if(!bad.length)say('正解！どの向かい合わせも7になった','ok','組み立て台をドラッグして、向かい合う面をたしかめてみよう。');
+    else say(`${bad.length}か所ちがいます`,'ng','組み立てたサイコロを回して、向かい合う面の和が7になっているか見てみよう。');
+  });
+}
+
+/* タブ */
+const TEXT={
+  collect:['11しゅるい集め','マスをタップして正方形を6まい置こう。立方体の展開図は全部で何しゅるいあるかな？'],
+  one:['あと1まい','青い5まいはそのまま。あと1まいをどこに置けば立方体になる？正解の場所を全部さがそう。'],
+  dice:['サイコロの目','オレンジの面をタップすると数字が変わります。？に入る目を考えよう。']
+};
+function setMode(m){
+  mode=m; spinning=false;
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.m===m));
+  $('ttl').textContent=TEXT[m][0]; $('msg').textContent=TEXT[m][1];
+  fixed=new Set(); found=new Set(); on=new Set(); say('');
+  window.mnTrack&&mnTrack('level_start',{level_name:m});
+  if(m==='collect'){ on=new Set(['1,1','2,1','2,2','2,3','2,4','3,2']); $('extra').innerHTML=''; collectExtra(); boardRender(); updateBtns(); build([...on]); say('例：「組み立てる」を押してみよう','',''); }
+  if(m==='one') newOne();
+  if(m==='dice') newDice();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setMode(t.dataset.m));
+new ResizeObserver(()=>{}).observe($('scene'));
+setMode('collect');
+})();
+</script>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{SITE_NAME}}</title>
+<meta name="description" content="{{SITE_DESCRIPTION}}">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 時間割のように教科の札（大分類）→ 単元のチップ（中分類）→ ゲームのカード */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e;
+  --s1:#2667d6; --s2:#d4432a; --s3:#1d8150; --s4:#8a5bc7; --s5:#c98a12; --s6:#127f8a;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0;
+  --s1:#6c9ff0; --s2:#f07a62; --s3:#4cc184; --s4:#b493ea; --s5:#e8b54a; --s6:#4fc3cc; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(30px,7vw,44px);line-height:1.2;margin:0;color:var(--ink);text-wrap:balance}
+.lead{margin:6px 0 0;color:var(--muted);max-width:36em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--s5);outline-offset:2px}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.subjects{display:flex;gap:8px;flex-wrap:wrap}
+.subj{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:8px}
+.subj .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.subj .sw{width:10px;height:10px;border-radius:2px;background:var(--c,var(--ink))}
+.subj[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:var(--surface)}
+.subj[aria-pressed="true"] .n{color:var(--surface);opacity:.85}
+.subj[aria-pressed="true"] .sw{background:var(--surface)}
+.units{display:flex;gap:6px;flex-wrap:wrap}
+.unit{border:1px solid var(--rule);background:transparent;border-radius:99px;padding:3px 12px;cursor:pointer;font-size:14px}
+.unit[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.group{display:flex;flex-direction:column;gap:10px}
+.gh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--c);padding-bottom:4px}
+.gh h2{margin:0;font-family:var(--display);font-weight:500;font-size:20px;color:var(--c)}
+.gh span{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-width:0}
+.card:hover{border-color:var(--c)}
+.card .tag{font-size:12px;font-weight:700;color:var(--c);border:1px solid var(--c);border-radius:4px;padding:0 6px}
+.card .tags{display:flex;gap:6px}
+.card .tag.paid{color:var(--surface);background:var(--c);}
+.card h3{margin:0;font-family:var(--display);font-weight:500;font-size:19px;line-height:1.35}
+.card p{margin:0;font-size:14px;color:var(--muted);flex:1}
+.card .meta{display:flex;gap:12px;font-size:12px;color:var(--muted)}
+.card .play{font-weight:700;color:var(--c);font-size:14px}
+.empty{color:var(--muted)}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.topnav a{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:99px;padding:4px 14px;text-decoration:none}
+.topnav a:hover{border-color:var(--ink)}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>{{SITE_NAME}}</h1>
+    <p class="lead">{{SITE_DESCRIPTION}}</p>
+    <nav class="topnav"><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a></nav>
+  </header>
+  <section>
+    <div class="label">教科</div>
+    <div class="subjects" id="subjects"></div>
+  </section>
+  <section id="unitbox" hidden>
+    <div class="label">単元</div>
+    <div class="units" id="units"></div>
+  </section>
+  <main id="list"><p class="empty">ゲームを読みこんでいます…</p></main>
+  <footer id="foot"></footer>
+</div>
+<script>
+(async function(){
+  const COLORS=['--s1','--s2','--s3','--s4','--s5','--s6'];
+  let data;
+  try{ data=await (await fetch('games.json',{cache:'no-cache'})).json(); }
+  catch(e){ document.getElementById('list').innerHTML='<p class="empty">ゲームの一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
+  const games=data.games, subjects=[...new Set(games.map(g=>g.subject))];
+  const color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
+  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let subj=decodeURIComponent(location.hash.slice(1))||'すべて', unit='すべて';
+  if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+
+  function render(){
+    const S=document.getElementById('subjects');
+    S.innerHTML=['すべて',...subjects].map(s=>{const n=s==='すべて'?games.length:games.filter(g=>g.subject===s).length;
+      return `<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${s==='すべて'?'':'<span class="sw"></span>'}${esc(s)}<span class="n">${n}</span></button>`;}).join('');
+    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;unit='すべて';history.replaceState(null,'',subj==='すべて'?location.pathname:'#'+encodeURIComponent(subj));render();});
+
+    const ub=document.getElementById('unitbox'), U=document.getElementById('units');
+    if(subj==='すべて'){ub.hidden=true;}
+    else{
+      const units=[...new Set(games.filter(g=>g.subject===subj).map(g=>g.unit))];
+      ub.hidden=units.length<2;
+      U.innerHTML=['すべて',...units].map(u=>`<button class="unit" aria-pressed="${u===unit}" data-u="${esc(u)}">${esc(u)}</button>`).join('');
+      U.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{unit=b.dataset.u;render();});
+    }
+
+    const shown=games.filter(g=>(subj==='すべて'||g.subject===subj)&&(unit==='すべて'||g.unit===unit));
+    const groups=[...new Set(shown.map(g=>g.subject))];
+    document.getElementById('list').innerHTML= shown.length? groups.map(s=>{
+      const gs=shown.filter(g=>g.subject===s);
+      return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div>
+        <div class="grid">${gs.map(g=>`<a class="card" href="${g.url}">
+          <span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid?'<span class="tag paid">有料版</span>':''}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>
+          <div class="meta">${g.grade?`<span>${esc(g.grade)}</span>`:''}${g.players?`<span>${esc(g.players)}</span>`:''}<span class="play" style="margin-left:auto">あそぶ →</span></div></a>`).join('')}</div></section>`;
+    }).join('<div style="height:16px"></div>') : '<p class="empty">この単元のゲームはまだありません。</p>';
+  }
+  render();
+  const fb=(data.site&&data.site.feedback)||null;
+  document.getElementById('foot').innerHTML=`ゲーム ${games.length}本　・　${fb?`<a href="${esc(fb.base+'?usp=pp_url'+(fb.type?'&'+fb.type+'='+encodeURIComponent(fb.kansou):'')+(fb.game?'&'+fb.game+'='+encodeURIComponent('サイト全体'):''))}" target="_blank" rel="noopener" style="color:inherit">ご意見・ご感想</a>　・　`:''}<a href="parent.html" style="color:inherit">保護者ページ（学習の記録）</a>　・　<a href="privacy.html" style="color:inherit">プライバシーポリシー</a>　・　<a href="tokushoho.html" style="color:inherit">特定商取引法に基づく表記</a>`;
+})();
+</script>
+</body>
+</html>

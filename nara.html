@@ -1,0 +1,245 @@
+<title>奈良時代クイズ</title>
+
+<meta name="game:subject" content="社会">
+<meta name="game:unit" content="歴史・奈良時代">
+<meta name="game:grade" content="小6〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="平城京・聖武天皇と大仏・鑑真・墾田永年私財法・正倉院など、奈良時代を4択で学ぶ歴史クイズ。5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。分野の札 → 4択の問題 → 正解の朱印と解説 → 結果と復習。奈良の都の朱色（朱雀大路）を差し色に */
+:root{
+  --bg:#f5f3ee; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c8402a; --sealsoft:#f7e3dc; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#f0725a; --sealsoft:#3a231d; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#f0725a; --sealsoft:#3a231d; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.q{margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.5}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{display:flex;gap:14px;align-items:flex-start}
+.seal{flex:none;width:64px;height:64px;border-radius:8px;border:3px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:26px;transform:rotate(-6deg)}
+.seal.x{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.res .t{display:flex;flex-direction:column;gap:6px}
+.res .v{font-family:var(--display);font-size:20px}
+.res .v.ok{color:var(--ok)} .res .v.ng{color:var(--ng)}
+.ex{font-size:15px;border-left:4px solid var(--seal);padding:2px 0 2px 12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.cats{grid-template-columns:1fr}}
+.cat{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.cat:hover:not(:disabled){border-color:var(--ink)}
+.cat:disabled{opacity:.4;cursor:default}
+.cat .nm{font-weight:700;font-size:17px}
+.cat .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.cat .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right}
+.timeline dd{margin:0}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-family:var(--body)}
+.rank{width:92px;height:92px;border-radius:50%;border:5px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{color:var(--ok)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>歴史クイズ</small>奈良時代クイズ</h1>
+    <p class="lead">平城京から平安京まで。4つの中から正しいものをえらぼう。全5問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
+const PAID=false;
+let QS=[{"c": "miyako", "lv": 1, "q": "710年、元明天皇のときに、都がうつされました。その都の名前は何ですか。", "a": "平城京", "d": ["平安京", "藤原京", "長岡京"], "e": "710年に奈良につくられた都が平城京です。ここから奈良時代が始まります。平安京は794年、藤原京は694年、長岡京は784年の都です。"}, {"c": "seiji", "lv": 1, "q": "743年、新しく開いた田を、いつまでも自分のものにしてよいとした法律を何といいますか。", "a": "墾田永年私財法", "d": ["三世一身法", "班田収授法", "大宝律令"], "e": "墾田永年私財法によって、貴族や寺社が土地を広げ、のちの荘園のもとになりました。"}, {"c": "shomu", "lv": 1, "q": "仏教の力で国を守ろうとして、東大寺の大仏をつくることを命じた天皇はだれですか。", "a": "聖武天皇", "d": ["桓武天皇", "天武天皇", "推古天皇"], "e": "聖武天皇は、病気の流行や反乱、ききんで世の中が乱れていたため、仏教の力で国を守ろうとしました。"}, {"c": "shomu", "lv": 2, "q": "聖武天皇がなくなったあと、その遺品をおさめた東大寺の倉庫を何といいますか。", "a": "正倉院", "d": ["法隆寺", "金閣", "平等院"], "e": "光明皇后が、聖武天皇の遺品を東大寺におさめました。それをおさめた倉庫が正倉院です。"}, {"c": "gaiko", "lv": 1, "q": "何度も航海に失敗し、目が不自由になりながらも日本に来た唐の僧はだれですか。", "a": "鑑真", "d": ["行基", "道鏡", "玄奘"], "e": "鑑真は5回の失敗のあと、6回目の航海で753年に日本に着き、正しい仏教の教えを伝えました。"}];
+const CATS={miyako:['平城京とくらし','都のつくり・お金・農民のくらし'],seiji:['律令と税','班田収授・租庸調・墾田永年私財法'],shomu:['聖武天皇と仏教','国分寺・大仏・正倉院・藤原氏'],bunka:['天平文化','古事記・日本書紀・万葉集・仏像'],gaiko:['外国との交流','遣唐使・鑑真・シルクロード']};
+const LVN={1:'基本',2:'標準',3:'発展'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>esc(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'nara-p-best':'nara-best',{}), rec=store.get('nara-p-rec',{});
+const saveRec=()=>store.set('nara-p-rec',rec);
+const qkey=q=>q.q;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const PAIDLINK=`<a class="paid" href="nara-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>奈良時代クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const TIMELINE=`<dl class="timeline"><dt>701年</dt><dd>大宝律令ができる</dd><dt>710年</dt><dd>平城京に都をうつす</dd><dt>712年</dt><dd>古事記ができる</dd><dt>720年</dt><dd>日本書紀ができる</dd><dt>723年</dt><dd>三世一身法</dd><dt>741年</dt><dd>国分寺・国分尼寺を建てる命令</dd><dt>743年</dt><dd>墾田永年私財法・大仏をつくる命令</dd><dt>752年</dt><dd>東大寺の大仏が完成（開眼供養）</dd><dt>753年</dt><dd>鑑真が日本に着く</dd><dt>794年</dt><dd>平安京に都をうつす</dd></dl>`;
+
+async function decrypt(pass){
+  const p=JSON.parse(document.getElementById('data').textContent);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm(pass)),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(p.salt),iterations:p.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(p.iv)},k,b64(p.data))));
+}
+function lockScreen(msg){
+  app.innerHTML=`<div class="label">合言葉</div>
+    <p style="margin:0;font-weight:700">ご購入時にお知らせした合言葉を入れると、全100問で遊べます。一度入れれば、この端末では次から入力はいりません。</p>
+    <form id="f" class="lock" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <label for="pass" style="font-weight:700">合言葉</label>
+      <input id="pass" name="pass" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="例：nara-xxxx-xxxx">
+      <p class="err" id="err" role="alert">${msg||''}</p>
+      <div class="row"><button class="btn go" id="open" type="submit">ひらく</button></div>
+    </form>
+    <div class="shop">合言葉をお持ちでない方へ：${shopUrl?`<a href="${esc(shopUrl)}" target="_blank" rel="noopener">こちらから購入できます</a>`:'販売ページは準備中です。'}<br>無料版（5問）は <a href="nara.html">奈良時代クイズ</a> で遊べます。</div>`;
+  document.getElementById('f').onsubmit=async e=>{
+    e.preventDefault();
+    const v=document.getElementById('pass').value; if(!norm(v)){document.getElementById('err').textContent='合言葉を入れてください。';return;}
+    const bt=document.getElementById('open'); bt.disabled=true; bt.textContent='確かめています…';
+    try{ QS=await decrypt(v); store.set('nara-p-pass',v); track('unlock',{product:'nara'}); home(); }
+    catch(err){ bt.disabled=false; bt.textContent='ひらく'; document.getElementById('err').textContent='合言葉がちがいます。全角・半角や、つづりを確かめてもう一度入れてください。'; }
+  };
+}
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">奈良時代の年表を見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">分野をえらぶ（1回10問）</div>
+    <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
+        return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
+      <button class="cat" data-l="all"><span class="nm">奈良時代まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
+      <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">奈良時代の年表を見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    start(shuffle(pool).slice(0,10));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'nara-p-':'nara-')+course});
+  newQ();
+}
+function newQ(){ const q=G.list[G.i]; G.ch=shuffle([q.a,...q.d]); G.done=false; G.pick=null; render(); }
+function render(){
+  const q=G.list[G.i], d=G.done;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}・${LVN[q.lv]}</span></div>
+    <p class="q">${qhtml(q.q)}</p>
+    <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${esc(c)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(G.ch[+b.dataset.i]));
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'nara-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="res"><div class="seal ${G.ok?'':'x'}" aria-hidden="true">${G.ok?'正':'惜'}</div>
+      <div class="t"><span class="v ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</span>
+      <span>答え：<b>${esc(q.a)}</b></span></div></div>
+    <div class="ex">${esc(q.e)}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'nara-p-':'nara-')+course,success:s===n,score:s,total:n});
+  const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'nara-p-best':'nara-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！奈良時代はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'年表で、できごとの順番をもう一度確かめてみよう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  const saved=store.get('nara-p-pass','');
+  if(saved){ try{ QS=await decrypt(saved); home(); return; }catch(e){ store.set('nara-p-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
+  lockScreen();
+})();
+})();
+</script>

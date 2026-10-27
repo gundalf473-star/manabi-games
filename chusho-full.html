@@ -1,0 +1,322 @@
+<title>抽象化クイズ 75問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="抽象化（言葉のまとめ方）">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="抽象化クイズの有料版。まとめ言葉45問（基本・標準・発展）、仲間はずれ15問、文のまとめ15問。苦手復習つき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。言葉の札3まい → 「まとめる言葉」4択 → 広い↔せまいのはしご図で、ちょうどよい高さを見せる */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --pick:#eceee8; --gold:#b88a1e;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0;letter-spacing:.06em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--grid);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.label{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.q{margin:0;font-size:16px;font-weight:700}
+.words{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.w{font-family:var(--kanji);font-weight:600;font-size:clamp(15px,4.4vw,24px);text-align:center;border:2px solid var(--rule);border-radius:8px;padding:10px 4px;background:var(--bg);line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+.w.fit{border-color:var(--gold)}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.choices{grid-template-columns:1fr}}
+.ch{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 10px;font-weight:700;font-size:17px;cursor:pointer;line-height:1.4}
+.ch:hover:not(:disabled){border-color:var(--grid);background:var(--gridsoft)}
+.ch:disabled{cursor:default;opacity:.45}
+.ch.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.ch.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.verdict{font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+/* はしご図 */
+.ladder{display:flex;flex-direction:column;align-items:center;gap:0}
+.ladder .ax{align-self:flex-start;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 4px}
+.ladder .ax.b{margin:4px 0 0}
+.rung{width:100%;box-sizing:border-box;border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.rung b{font-size:17px}
+.rung span{font-size:12px;font-weight:700}
+.rung.hi{border:2px dashed var(--rule);color:var(--muted)}
+.rung.ok{border:2px solid var(--ok);background:var(--oksoft);color:var(--ok)}
+.rung.me{outline:3px solid var(--ng);outline-offset:2px}
+.link{width:2px;height:14px;background:var(--rule)}
+.leaves{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
+.leaves div{font-family:var(--kanji);font-weight:600;text-align:center;border:1px solid var(--rule);border-radius:6px;padding:4px 2px;font-size:15px}
+.why{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.why li{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border-radius:8px;padding:8px 12px;font-size:14px}
+.why .tag{flex:none;font-size:12px;font-weight:700;border-radius:4px;padding:1px 7px;color:var(--surface);margin-top:2px}
+.why .tag.ok{background:var(--ok)} .why .tag.hi{background:var(--muted)} .why .tag.nar{background:var(--gold)} .why .tag.dif{background:var(--ng)}
+.why li.me{outline:2px solid var(--ng)}
+.tip{border-left:4px solid var(--grid);padding:4px 0 4px 12px;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.howto{margin:0;padding-left:1.3em;font-size:15px;display:grid;gap:4px}
+.ex{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:14px}
+.ex b{font-family:var(--kanji);font-size:16px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv b{font-family:var(--kanji);font-size:17px}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.courses{grid-template-columns:1fr}}
+.course{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.course:hover:not(:disabled){border-color:var(--grid)}
+.course:disabled{opacity:.4;cursor:default}
+.course .nm{font-family:var(--display);font-size:20px}
+.course .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.course .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.passage{font-family:var(--kanji);font-weight:600;font-size:clamp(16px,4.4vw,19px);line-height:1.9;background:var(--bg);border-left:4px solid var(--rule);border-radius:4px;padding:10px 14px;margin:0}
+.choices.one{grid-template-columns:1fr}
+.choices.one .ch{text-align:left;font-size:16px;font-weight:700;padding:12px 14px}
+.choices.four{grid-template-columns:1fr 1fr}
+.choices.four .ch{font-family:var(--kanji);font-weight:600;font-size:clamp(17px,4.6vw,22px)}
+.group{border:2px solid var(--ok);background:var(--oksoft);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.group .gl{font-size:13px;font-weight:700;color:var(--ok)}
+.group .gw{display:flex;gap:6px;flex-wrap:wrap}
+.group .gw span,.oddbox span{font-family:var(--kanji);font-weight:600;border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:3px 10px}
+.oddbox{border:2px dashed var(--ng);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.oddbox b{color:var(--ng)}
+.why .tag.ov{background:#7b5ea7}
+.kindtag{font-size:12px;font-weight:700;color:var(--grid);border:1px solid var(--grid);border-radius:4px;padding:0 6px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>抽象化クイズ 75問</h1>
+    <p class="lead">まとめ言葉・仲間はずれ・文のまとめの3つの形で、全75問。コースをえらんで1回10問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ（m で形がかわる）
+   m:'sum' まとめ言葉 … w: 3つの言葉, a: ちょうどよい言葉, hi: [広すぎる言葉, ほかに入ってしまうもの], nar: [せますぎる言葉, 当てはまる番号], dif: [仲間ちがい, その仲間の例], lv: 1基本 2標準 3発展
+   m:'odd' 仲間はずれ … w: 4つの言葉, o: 仲間はずれの番号, g: 残り3つの仲間の名前, og: 仲間はずれの仲間の名前
+   m:'sen' 文のまとめ … p: 文章, a: ちょうどよいまとめ, hi: 広すぎる, nar: 一つの例だけ, ov: 言いすぎ
+   t: ひとこと */
+const PAID=true;
+let QS=[];
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'chusho-p-best':'chusho-best',{}), rec=store.get('chusho-p-rec',{});
+const saveRec=()=>store.set('chusho-p-rec',rec);
+const qkey=q=>q.m==='sen'?'文：'+q.p.slice(0,24):q.m==='odd'?'仲間はずれ：'+q.w.join('・'):q.w.join('・');
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const MODE={sum:'まとめ言葉',odd:'仲間はずれ',sen:'文のまとめ'};
+const COURSES=PAID?{
+  '1':['まとめ言葉・基本','身の回りの物や生き物を、ちょうどよい言葉でまとめる。',q=>q.m==='sum'&&q.lv===1],
+  '2':['まとめ言葉・標準','「天体」「公共施設」「化石燃料」など、教科で習う言葉でまとめる。',q=>q.m==='sum'&&q.lv===2],
+  '3':['まとめ言葉・発展','「美徳」「理念」「環境問題」など、目に見えないものをまとめる。',q=>q.m==='sum'&&q.lv===3],
+  'odd':['仲間はずれ','4つの中から、1つだけ仲間でないものを見つける。',q=>q.m==='odd'],
+  'sen':['文のまとめ','いくつかの例が書かれた短い文章を読んで、言いたいことを1文でまとめる。',q=>q.m==='sen']}
+ :{
+  'sum':['まとめ言葉','3つの言葉を、ちょうどよい広さの言葉でまとめる。',q=>q.m==='sum'],
+  'odd':['仲間はずれ（おためし）','4つの中から、1つだけ仲間でないものを見つける。',q=>q.m==='odd'],
+  'sen':['文のまとめ（おためし）','短い文章を読んで、言いたいことを1文でまとめる。',q=>q.m==='sen'],
+  'all':['ぜんぶ','3つの形をまとめて。',q=>true]};
+const PAIDLINK=`<a class="paid" href="chusho-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>抽象化クイズ 75問</b>（有料版）</span><span class="pd">無料版とはちがう新しい75問。まとめ言葉45問（基本・標準・発展）、仲間はずれ15問、文のまとめ15問。苦手だけの復習つき。</span></a>`;
+const KIND={ok:['ちょうどよい','ok'],hi:['広すぎる','hi'],nar:['せますぎる','nar'],dif:['仲間がちがう','dif'],ov:['言いすぎ','ov']};
+const kindOf=(q,c)=>c===q.a?'ok':c===(q.m==='sen'?q.hi:q.hi[0])?'hi':c===(q.m==='sen'?q.nar:q.nar[0])?'nar':q.m==='sen'?'ov':'dif';
+const reason=(q,k)=>{
+  if(q.m==='sen'){
+    if(k==='ok')return 'どの例にも当てはまり、例から言えることだけを、ちょうどよい広さでまとめています。';
+    if(k==='hi')return 'まちがいではありませんが、広すぎて、この文章でなくても言えることになっています。';
+    if(k==='nar')return '例の一つだけを取り上げています。ほかの例がふくまれません。';
+    return '文章に書かれていないことまで言っています（言いすぎ）。';
+  }
+  if(k==='ok')return `「${q.w.join('・')}」の3つ全部が入り、ほかのものはあまり入らない、ちょうどよいまとめ方です。`;
+  if(k==='hi')return `3つとも入りますが、${q.hi[1]}まで入ってしまいます。まとめる言葉としては広すぎます。`;
+  if(k==='nar'){const fit=q.nar[1].map(i=>`「${q.w[i]}」`).join('と');return `当てはまるのは${fit}だけです。3つ全部をまとめることができません。`;}
+  return `「${q.dif[0]}」は、${q.dif[1]}などの仲間です。3つの言葉とは仲間がちがいます。`;
+};
+async function decrypt(){ return mnAccess.load('chusho'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'chusho',err:err,free:'chusho.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+const HOWTO=`<div class="label">あそびかた</div>
+  <ol class="howto"><li><b>まとめ言葉：</b>3つの言葉を、<b>ちょうどよい広さ</b>の言葉でまとめる。</li><li><b>仲間はずれ：</b>4つの中から、仲間でないものを1つ見つける。</li><li><b>文のまとめ：</b>短い文章を読んで、言いたいことをいちばんよくまとめた文をえらぶ。</li></ol>
+  <div class="ex">れい：<b>みかん・りんご・ぶどう</b><br>〇 果物　／ × 食べ物（広すぎる。野菜や肉も入ってしまう）</div>`;
+function courseBtns(){
+  return Object.entries(COURSES).map(([id,[nm,ds,f]])=>{const n=QS.filter(f).length;const b=best[id];
+    return `<button class="course" data-l="${id}"><span class="nm">${nm}</span><span class="ds">${ds}（${n}問）</span><span class="best">${b!=null?`ベスト ${b}/${Math.min(n,PAID?10:n)}`:''}</span></button>`;}).join('');
+}
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`${HOWTO}<div class="label">コースをえらぶ</div><div class="courses">${courseBtns()}</div>${PAIDLINK}`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{course=b.dataset.l;const f=COURSES[course][2];start(QS.map((q,i)=>i).filter(i=>f(QS[i])));});
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">コースをえらぶ（1回10問）</div>
+    <div class="courses">${courseBtns()}
+      <button class="course" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題だけ（${weak.length}問）</span></button>
+      <button class="course" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題だけ（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">${HOWTO}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:QS.filter(COURSES[l][2]);
+    start(shuffle(pool).slice(0,10).map(q=>QS.indexOf(q)));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  if(!PAID)list=shuffle(list);
+  if(!PAID&&course==='all'){const o={sum:0,odd:1,sen:2};list=list.slice().sort((a,b)=>o[QS[a].m]-o[QS[b].m]);}
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'chusho-p-':'chusho-')+course});
+  newQ();
+}
+function newQ(){
+  const q=QS[G.list[G.i]];
+  G.ch=q.m==='sum'?shuffle([q.a,q.hi[0],q.nar[0],q.dif[0]]):q.m==='sen'?shuffle([q.a,q.hi,q.nar,q.ov]):shuffle(q.w.map((w,i)=>i));
+  G.done=false; G.pick=null; render();
+}
+function render(){
+  const q=QS[G.list[G.i]], d=G.done;
+  let body='';
+  if(q.m==='sum'){
+    const fit=d&&G.pick===q.nar[0]?new Set(q.nar[1]):new Set();
+    body=`<div class="words">${q.w.map((w,i)=>`<div class="w ${fit.has(i)?'fit':''}">${esc(w)}</div>`).join('')}</div>
+      <p class="q">この3つをまとめる言葉として、ちょうどよいものはどれですか。</p>
+      <div class="choices">${G.ch.map(c=>`<button class="ch ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-c="${esc(c)}" ${d?'disabled':''}>${esc(c)}</button>`).join('')}</div>`;
+  }else if(q.m==='odd'){
+    body=`<p class="q">1つだけ、仲間でないものがあります。それはどれですか。</p>
+      <div class="choices four">${G.ch.map(i=>`<button class="ch ${d?(i===q.o?'right':String(i)===G.pick?'wrong':''):''}" data-c="${i}" ${d?'disabled':''}>${esc(q.w[i])}</button>`).join('')}</div>`;
+  }else{
+    body=`<p class="passage">${esc(q.p)}</p>
+      <p class="q">この文章が言いたいことを、いちばんよくまとめているものはどれですか。</p>
+      <div class="choices one">${G.ch.map(c=>`<button class="ch ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-c="${esc(c)}" ${d?'disabled':''}>${esc(c)}</button>`).join('')}</div>`;
+  }
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="kindtag">${MODE[q.m]}</span></div>
+    ${body}<div id="after"></div>`;
+  app.querySelectorAll('.ch').forEach(b=>b.onclick=()=>pick(b.dataset.c));
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=QS[G.list[G.i]];
+  const ok=q.m==='odd'?+c===q.o:c===q.a;
+  G.done=true; G.pick=c; G.ok=ok; G.newM=record(q,ok);
+  if(ok)G.score++; else G.miss.push(G.list[G.i]);
+  const qs=q.m==='sum'?q.w.join('・')+' → '+q.a:q.m==='odd'?'仲間はずれ：'+q.w.join('・')+' → '+q.w[q.o]:'文のまとめ：'+q.p.slice(0,40)+'…';
+  track('answer_question',{category:'chusho-'+q.m+'-'+(q.m==='odd'?(ok?'ok':'ng'):kindOf(q,c)),question:qs,correct:ok,picked:q.m==='odd'?q.w[+c]:c});
+  render();
+}
+function verdict(q,ans){
+  return `<div class="verdict ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}${ans?`　答えは「${esc(ans)}」`:''}</div>`;
+}
+function explain(){
+  const q=QS[G.list[G.i]], last=G.i===G.n-1;
+  let html='';
+  if(q.m==='sum'){
+    const mk=kindOf(q,G.pick), label={ok:q.a,hi:q.hi[0],nar:q.nar[0],dif:q.dif[0]};
+    html=`${verdict(q,q.a)}
+      ${G.ok?'':`<p class="note" style="color:var(--ng);font-weight:700;font-size:14px">「${esc(G.pick)}」は${KIND[mk][0]}言葉です。</p>`}
+      <div class="label" style="color:var(--fg)">広い・せまいのはしご</div>
+      <div class="ladder" aria-label="言葉の広さの図"><span class="ax">↑ 広い（たくさんのものが入る）</span>
+        <div class="rung hi ${mk==='hi'?'me':''}"><b>${esc(q.hi[0])}</b><span>広すぎる</span></div><div class="link"></div>
+        <div class="rung ok"><b>${esc(q.a)}</b><span>ちょうどよい</span></div><div class="link"></div>
+        <div class="leaves">${q.w.map(w=>`<div>${esc(w)}</div>`).join('')}</div>
+        <span class="ax b">↓ せまい（具体的）</span>
+      </div>
+      <ul class="why">${['ok','hi','nar','dif'].map(k=>`<li class="${k===mk&&!G.ok?'me':''}"><span class="tag ${KIND[k][1]}">${KIND[k][0]}</span><span><b>${esc(label[k])}</b>　${esc(reason(q,k))}</span></li>`).join('')}</ul>`;
+  }else if(q.m==='odd'){
+    const rest=q.w.filter((w,i)=>i!==q.o);
+    html=`${verdict(q,q.w[q.o])}
+      <div class="group"><span class="gl">残りの3つの仲間：${esc(q.g)}</span><div class="gw">${rest.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>
+      <div class="oddbox"><span>${esc(q.w[q.o])}</span><b>→ ${esc(q.og)}</b></div>
+      ${G.ok?'':`<p class="note" style="font-size:14px">あなたがえらんだ「${esc(q.w[+G.pick])}」も、ほかの2つと同じ「${esc(q.g)}」の仲間です。</p>`}`;
+  }else{
+    const mk=kindOf(q,G.pick), label={ok:q.a,hi:q.hi,nar:q.nar,ov:q.ov};
+    html=`${verdict(q,'')}
+      <ul class="why">${['ok','hi','nar','ov'].map(k=>`<li class="${k===mk&&!G.ok?'me':''}"><span class="tag ${KIND[k][1]}">${KIND[k][0]}</span><span><b>${esc(label[k])}</b><br>${esc(reason(q,k))}</span></li>`).join('')}</ul>`;
+  }
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">${html}
+    ${q.t?`<div class="tip">${esc(q.t)}</div>`:''}
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function reviewLine(q){
+  if(q.m==='sum')return `<b>${esc(q.w.join('・'))}</b><br>→ ${esc(q.a)}（${esc(q.hi[0])}は広すぎ）`;
+  if(q.m==='odd')return `<b>${esc(q.w.join('・'))}</b><br>仲間はずれは「${esc(q.w[q.o])}」（ほかは${esc(q.g)}）`;
+  return `<b style="font-size:15px">${esc(q.p.slice(0,32))}…</b><br>→ ${esc(q.a)}`;
+}
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'chusho-p-':'chusho-')+course,success:s===n,score:s,total:n});
+  if(COURSES[course]&&(best[course]==null||s>best[course])){best[course]=s;store.set(PAID?'chusho-p-best':'chusho-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！ちょうどよい広さでまとめる力はばっちりです。':r>=.6?'よくできました。「広すぎないか」「全部に当てはまるか」の2つを確かめるくせをつけよう。':'答えをえらぶ前に、「全部に当てはまる？」「広すぎない？」「書いていないことまで言っていない？」と確かめてみよう。'}</p>
+    <div class="row"><button class="btn go" id="again">コースをえらぶ</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(k=>`<div class="rv">${reviewLine(QS[k])}</div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(G.miss.slice());};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

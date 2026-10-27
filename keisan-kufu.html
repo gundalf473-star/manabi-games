@@ -1,0 +1,299 @@
+<title>計算のくふうクイズ</title>
+
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="計算のくふう">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="9999×8 のような計算を、分配法則などのくふうでかんたんにするクイズ。くふうをえらぶ→式を変える→答える、の3ステップ。10問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
+<style>
+/* Layout: 1列。工作用紙の背景に、問題の式 → 3ステップ（くふう・式の変形・答え）を上から順に開いていく */
+:root{
+  --bg:#f1f6ef; --grid:#cfe2c5; --surface:#ffffff; --fg:#22302a; --muted:#5f6f67; --rule:#d3e0cf;
+  --accent:#e0602f; --accsoft:#fbe6dc; --ok:#1f8a4c; --oksoft:#e0f1e6; --ng:#cf3b34; --ngsoft:#f9e2e0; --star:#e8a400; --pick:#e6efe2;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --accsoft:#3a261d; --ok:#4cc27e; --oksoft:#1b3326; --ng:#f0756d; --ngsoft:#3a2220; --star:#f2c040; --pick:#24302a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --accsoft:#3a261d; --ok:#4cc27e; --oksoft:#1b3326; --ng:#f0756d; --ngsoft:#3a2220; --star:#f2c040; --pick:#24302a; color-scheme:dark}
+body{background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:16px 16px;
+  color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.08em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent)}
+.nums{font-variant-numeric:tabular-nums;font-weight:800;font-size:14px}
+.stars{color:var(--star);font-weight:800;font-variant-numeric:tabular-nums;font-size:14px}
+.expr{font-family:var(--display);font-size:clamp(30px,9vw,44px);text-align:center;margin:4px 0;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.step{border:2px solid var(--rule);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.step.now{border-color:var(--accent)}
+.step.lock{opacity:.45}
+.step h3{margin:0;font-size:15px;display:flex;align-items:center;gap:8px}
+.step h3 .no{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;font-size:13px}
+.step h3 .res{margin-left:auto;font-size:13px}
+.res.o{color:var(--ok)} .res.x{color:var(--ng)}
+.opts{display:grid;gap:8px}
+.opt{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:10px 12px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5}
+.opt.f{font-family:var(--display);font-weight:500;font-size:19px;font-variant-numeric:tabular-nums}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accsoft)}
+.opt:disabled{cursor:default;opacity:.5}
+.opt.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.opt.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.fb{font-size:14px;margin:0}
+.fb.x{color:var(--ng)} .fb.o{color:var(--ok)}
+.disp{display:flex;align-items:center;gap:10px}
+.disp .val{flex:1;min-height:48px;border:2px solid var(--rule);border-radius:8px;padding:4px 12px;font-family:var(--display);font-size:28px;text-align:right;font-variant-numeric:tabular-nums;background:var(--surface)}
+.disp .val.o{border-color:var(--ok);color:var(--ok)} .disp .val.x{border-color:var(--ng);color:var(--ng)}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pad button{border:1px solid var(--rule);background:var(--pick);border-radius:8px;padding:10px 0;font-weight:800;font-size:20px;cursor:pointer;font-variant-numeric:tabular-nums}
+.pad button:hover{border-color:var(--accent)}
+.pad .del{font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:800;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.explain{background:var(--oksoft);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.explain .t{font-weight:800;color:var(--ok)}
+.explain ol{margin:0;padding-left:1.4em;font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums;display:grid;gap:2px}
+.explain .tip{font-size:14px;border-left:4px solid var(--accent);padding-left:10px}
+.note{font-size:13px;color:var(--muted);margin:0}
+.howto{margin:0;padding-left:1.3em;font-size:15px;display:grid;gap:4px}
+.ideas{display:grid;gap:6px;margin:0;padding:0;list-style:none;font-size:14px}
+.ideas li{background:var(--pick);border-radius:8px;padding:6px 10px}
+.ideas b{font-family:var(--display);font-weight:500;margin-left:6px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{font-family:var(--display);font-weight:500;font-size:18px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .08em;font-size:.82em}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 .12em}
+.fr>span{padding:0 .12em}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--accent);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--accsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:500;color:var(--accent)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--accent);font-weight:800}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.courses{grid-template-columns:1fr}}
+.course{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.course:hover:not(:disabled){border-color:var(--accent)}
+.course:disabled{opacity:.4;cursor:default}
+.course .nm{font-family:var(--display);font-size:19px}
+.course .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--star)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>計算のくふうクイズ</h1>
+    <p class="lead">そのまま計算すると大変な式も、くふうするとあっという間。くふうをえらんで、式を変えて、答えよう。全10問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+
+<script>
+(function(){
+/* くふうの種類 */
+const IDEAS={
+  wake:'かけられる数をキリのよい数に分けて、分配法則を使う',
+  matome:'同じ数でまとめて、分配法則を使う',
+  hyaku:'25×4＝100、125×8＝1000 を作る',
+  kumi:'たして10や100になる組を作る',
+  chosei:'たし算・ひき算で、キリのよい数にしてから、あとで調整する',
+  pair:'はじめと終わりを組にしてたす',
+  junban:'かけ算とわり算の順番を入れかえる',
+  shosu:'小数を分数に直す（0.25＝1/4 など）',
+  warizan:'わる数とわられる数に同じ数をかけて、キリのよい数でわる',
+  bubun:'分数を「1/□−1/△」に分けて、消し合う'};
+/* 問題データ: e=式, i=くふう, f=[正しい式の変え方, まちがい, まちがい], a=答え（分数は "4/5" の形）, s=計算の流れ, t=ひとこと, lv=1基本 2標準 3発展 */
+const PAID=false;
+let QS=[{"e": "9999×8", "i": "wake", "f": ["(10000−1)×8", "10000×8−1", "10000×8−8×8"], "a": 79992, "s": ["9999＝10000−1 と考える", "(10000−1)×8＝10000×8−1×8", "＝80000−8＝79992"], "t": "「−1」にも 8 をかけるのをわすれずに。10000×8−1 にしてしまうのが、よくあるまちがいです。", "lv": 1}, {"e": "25×37×4", "i": "hyaku", "f": ["25×4×37", "(25＋4)×37", "25×37＋4"], "a": 3700, "s": ["かけ算は順番を入れかえてもよい", "25×37×4＝25×4×37", "＝100×37＝3700"], "t": "25 と 4 を見たら「100 が作れる」と思い出そう。", "lv": 1}, {"e": "37×6＋63×6", "i": "matome", "f": ["(37＋63)×6", "37＋63×6", "(37×63)×6"], "a": 600, "s": ["どちらにも「×6」がある", "37×6＋63×6＝(37＋63)×6", "＝100×6＝600"], "t": "同じ数がかけてある2つの式は、ひとまとめにできます（分配法則）。", "lv": 1}, {"e": "998＋497", "i": "chosei", "f": ["1000＋500−2−3", "1000＋500＋2＋3", "1000＋500−2＋3"], "a": 1495, "s": ["998＝1000−2、497＝500−3", "1000＋500−2−3", "＝1500−5＝1495"], "t": "多くたしすぎた 2 と 3 を、あとでひきます。", "lv": 1}, {"e": "125×56", "i": "hyaku", "f": ["125×8×7", "125×50＋6", "(125＋8)×7"], "a": 7000, "s": ["56＝8×7 と分ける", "125×56＝125×8×7", "＝1000×7＝7000"], "t": "125×8＝1000 は、覚えておくととても便利です。", "lv": 2}, {"e": "48＋75＋52＋25", "i": "kumi", "f": ["(48＋52)＋(75＋25)", "(48＋52)×(75＋25)", "48＋52＋75−25"], "a": 200, "s": ["たし算は順番を入れかえてもよい", "(48＋52)＋(75＋25)", "＝100＋100＝200"], "t": "一の位をたして 10 になる組（8と2、5と5）をさがそう。", "lv": 1}, {"e": "1＋2＋3＋…＋20", "i": "pair", "f": ["(1＋20)×20÷2", "(1＋20)×20", "1×20＋20"], "a": 210, "s": ["1＋20、2＋19、3＋18 … どの組も 21", "20 個の数で、21 の組が 10 組できる", "21×10＝210"], "t": "(はじめ＋終わり)×個数÷2 で計算できます。÷2 をわすれないように。", "lv": 2}, {"e": "102×35", "i": "wake", "f": ["100×35＋2×35", "100×35＋2", "102×30＋5"], "a": 3570, "s": ["102＝100＋2 と分ける", "100×35＋2×35", "＝3500＋70＝3570"], "t": "分けた「2」にも 35 をかけます。", "lv": 1}, {"e": "3.14×17＋3.14×33", "i": "matome", "f": ["3.14×(17＋33)", "3.14×17×33", "(3.14＋17)×33"], "a": 157, "s": ["どちらにも「3.14×」がある", "3.14×(17＋33)＝3.14×50", "＝157"], "t": "円の面積や円周の問題で、よく使うくふうです。", "lv": 2}, {"e": "72×5÷9", "i": "junban", "f": ["72÷9×5", "72÷(9×5)", "72×9÷5"], "a": 40, "s": ["先に 72÷9 をすると、わり切れる", "72×5÷9＝72÷9×5", "＝8×5＝40"], "t": "かけ算とわり算だけの式は、数を「×」「÷」ごと入れかえてもよい。", "lv": 2}];
+/* 同じ問題で両方えらべてしまう、まぎらわしい組み合わせ（いっしょに選択肢に出さない） */
+const NEAR={wake:['chosei','hyaku'],chosei:['wake'],hyaku:['junban','shosu','warizan','wake'],junban:['hyaku'],kumi:['pair'],pair:['kumi'],shosu:['hyaku','warizan'],warizan:['hyaku','shosu']};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const fmt=n=>typeof n==='string'?n:Number(n).toLocaleString('ja-JP',{maximumFractionDigits:4});
+const num=v=>{v=String(v);if(v.includes('/')){const [a,b]=v.split('/');return Number(a)/Number(b);}return Number(v);};
+// 「1/2」「1/(2×3)」を分数の形で表示する
+const fr=s=>esc(s).replace(/(\d+)\/(\(([^()]*)\)|\d+)/g,(m,n,d,inner)=>`<span class="fr"><span>${n}</span><span>${inner!=null?inner:d}</span></span>`);
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let shopUrl='', course=null, rec=store.get('kufu-p-rec',{});
+const saveRec=()=>store.set('kufu-p-rec',rec);
+const qkey=q=>q.e;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const LV={1:['基本','分配法則、25×4、たして100 など、まず覚えたいくふう。'],2:['標準','小数のくふう（0.25＝1/4）、わり算のきまり、奇数の和 など。'],3:['発展','分数の「1/□−1/△」、99×99、まとめる数を作りかえる問題 など入試レベル。']};
+const PAIDLINK=`<a class="paid" href="keisan-kufu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>計算のくふう 50問</b>（有料版）</span><span class="pd">無料版の10問もふくむ全50問。基本・標準・発展の3コース、小数・分数のくふうと、苦手だけの復習つき。</span></a>`;
+async function decrypt(pass){
+  const p=JSON.parse(document.getElementById('data').textContent);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm(pass)),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(p.salt),iterations:p.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(p.iv)},k,b64(p.data))));
+}
+function lockScreen(msg){
+  app.innerHTML=`<div class="label">合言葉</div>
+    <p style="margin:0;font-weight:700">ご購入時にお知らせした合言葉を入れると、全50問で遊べます。一度入れれば、この端末では次から入力はいりません。</p>
+    <form id="f" class="lock" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <label for="pass" style="font-weight:700">合言葉</label>
+      <input id="pass" name="pass" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="例：kufu-xxxx-xxxx">
+      <p class="err" id="err" role="alert">${msg||''}</p>
+      <div class="row"><button class="btn go" id="open" type="submit">ひらく</button></div>
+    </form>
+    <div class="shop">合言葉をお持ちでない方へ：${shopUrl?`<a href="${esc(shopUrl)}" target="_blank" rel="noopener">こちらから購入できます</a>`:'販売ページは準備中です。'}<br>無料版（10問）は <a href="keisan-kufu.html">計算のくふうクイズ</a> で遊べます。</div>`;
+  document.getElementById('f').onsubmit=async e=>{
+    e.preventDefault();
+    const v=document.getElementById('pass').value; if(!norm(v)){document.getElementById('err').textContent='合言葉を入れてください。';return;}
+    const bt=document.getElementById('open'); bt.disabled=true; bt.textContent='確かめています…';
+    try{ QS=await decrypt(v); store.set('kufu-p-pass',v); track('unlock',{product:'kufu'}); home(); }
+    catch(err){ bt.disabled=false; bt.textContent='ひらく'; document.getElementById('err').textContent='合言葉がちがいます。全角・半角や、つづりを確かめてもう一度入れてください。'; }
+  };
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const pools={1:QS.filter(q=>q.lv===1),2:QS.filter(q=>q.lv===2),3:QS.filter(q=>q.lv===3)};
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">マスターした問題（★3つを2回）</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">マスター ${cnt.master}</span><span style="--c:var(--star)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">コースをえらぶ（1回10問）</div>
+    <div class="courses">${[1,2,3].map(l=>`<button class="course" data-l="${l}"><span class="nm">${LV[l][0]}</span><span class="ds">${LV[l][1]}（${pools[l].length}問）</span><span class="stars">${best&&best['lv'+l]!=null?`ベスト ★${best['lv'+l]} / 30`:''}</span></button>`).join('')}
+      <button class="course" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">★が足りなかったことのある問題（${weak.length}問）</span></button>
+      <button class="course" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:800;font-size:14px">出てくるくふう（10種類）</summary><ul class="ideas" style="margin-top:8px">${Object.values(IDEAS).map(v=>`<li>${fr(v)}</li>`).join('')}</ul></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:pools[l];
+    start(shuffle(pool).slice(0,10).map(q=>QS.indexOf(q)));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+let best=store.get(PAID?'kufu-p-best':'kufu-best',PAID?{}:null), G=null;
+
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <ol class="howto"><li><b>くふうをえらぶ</b>：どうすれば計算がかんたんになるか。</li><li><b>式を変える</b>：正しい式の変え方をえらぶ。</li><li><b>答える</b>：数字のボタンで答えを入れる。</li></ol>
+    <p class="note">1問で最大★3つ。全部で★30をめざそう。</p>
+    <div class="label">出てくるくふう</div>
+    <ul class="ideas">${[...new Set(QS.map(q=>q.i))].map(k=>`<li>${fr(IDEAS[k])}</li>`).join('')}</ul>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best!=null?`<span class="stars">ベスト ★${best} / 30</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>start(shuffle(QS.map((q,i)=>i)));
+}
+function start(list){
+  G={list,i:0,stars:0,miss:[],n:list.length};
+  track('level_start',{level_name:PAID?'kufu-p-'+course:'kufu'});
+  newQ();
+}
+function newQ(){
+  const q=QS[G.list[G.i]];
+  const others=shuffle(Object.keys(IDEAS).filter(k=>k!==q.i&&!(NEAR[q.i]||[]).includes(k))).slice(0,3);
+  G.q={step:1,ideaCh:shuffle([q.i,...others]),formCh:shuffle([0,1,2]),idea:null,form:null,val:'',ans:null,r:[null,null,null]};
+  render();
+}
+function render(){
+  const q=QS[G.list[G.i]], s=G.q;
+  const st=(k,title,body)=>{const cls=s.step===k?'now':s.step<k?'lock':'';const r=s.r[k-1];
+    return `<div class="step ${cls}"><h3><span class="no">${k}</span>${title}${r!=null?`<span class="res ${r?'o':'x'}">${r?'〇 ★1':'×'}</span>`:''}</h3>${s.step>=k?body:''}</div>`;};
+  const step1=`<div class="opts">${s.ideaCh.map(k=>`<button class="opt ${s.idea!=null?(k===q.i?'right':k===s.idea?'wrong':''):''}" data-k="${k}" ${s.idea!=null?'disabled':''}>${fr(IDEAS[k])}</button>`).join('')}</div>
+    ${s.idea!=null&&!s.r[0]?`<p class="fb x">この式では「${fr(IDEAS[q.i])}」がぴったりです。</p>`:''}`;
+  const step2=`<div class="opts">${s.formCh.map(j=>`<button class="opt f ${s.form!=null?(j===0?'right':j===s.form?'wrong':''):''}" data-j="${j}" ${s.form!=null?'disabled':''}>${q.e.length>14?'＝ ':fr(q.e)+' ＝ '}${fr(q.f[j])}</button>`).join('')}</div>
+    ${s.form!=null&&!s.r[1]?`<p class="fb x">正しい式の変え方は「${fr(q.f[0])}」です。</p>`:''}`;
+  const done3=s.ans!=null;
+  const step3=`<div class="disp"><span class="note">${fr(q.f[0])} ＝</span><span class="val ${done3?(s.r[2]?'o':'x'):''}" aria-live="polite">${s.val&&s.val.includes('/')&&!s.val.endsWith('/')?fr(s.val):esc(s.val||'')}</span></div>
+    ${done3?'':`<div class="pad">${['1','2','3','4','5','6','7','8','9','0','.','/','00'].map(c=>`<button data-c="${c}" ${c==='/'?'aria-label="分数の線"':''}>${c==='/'?'／':c}</button>`).join('')}<button class="del" data-c="del">けす</button><button class="del" data-c="clr">ぜんぶ</button></div>
+      <p class="note">分数は「4／5」のように、分子 → ／ → 分母の順に入れます。</p>
+      <div class="row"><button class="btn go" id="ok" ${s.val?'':'disabled'}>こたえる</button></div>`}`;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="stars">★${G.stars}</span></div>
+    <p class="expr">${fr(q.e)}</p>
+    ${st(1,'どのくふうを使う？',step1)}
+    ${st(2,'式をどう変える？',step2)}
+    ${st(3,'答えは？',step3)}
+    <div id="after"></div>`;
+  app.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(s.idea!=null)return;s.idea=b.dataset.k;s.r[0]=s.idea===q.i;s.step=2;render();});
+  app.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{if(s.form!=null)return;s.form=+b.dataset.j;s.r[1]=s.form===0;s.step=3;render();});
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>{const c=b.dataset.c;
+    if(c==='del')s.val=s.val.slice(0,-1); else if(c==='clr')s.val=''; else if(c==='.'){if(!s.val.includes('.')&&!s.val.includes('/'))s.val=(s.val||'0')+'.';} else if(c==='/'){if(s.val&&!s.val.includes('/')&&!s.val.includes('.'))s.val+='/';} else if(s.val.length<10)s.val=(s.val==='0'&&c!=='.')?c.replace(/^0+/,'')||'0':s.val+c;
+    render();});
+  const ok=document.getElementById('ok'); if(ok)ok.onclick=answer;
+  if(done3)explain();
+}
+function answer(){
+  const q=QS[G.list[G.i]], s=G.q;
+  s.ans=num(s.val); s.r[2]=isFinite(s.ans)&&Math.abs(s.ans-num(q.a))<1e-9;
+  const got=s.r.filter(Boolean).length; G.stars+=got;
+  if(got<3)G.miss.push(G.list[G.i]);
+  G.newM=record(q,got===3);
+  track('answer_question',{category:'kufu-'+q.i,question:q.e,correct:s.r[2],idea_ok:s.r[0],form_ok:s.r[1],stars:got});
+  s.step=4; render();
+}
+function explain(){
+  const q=QS[G.list[G.i]], s=G.q, last=G.i===G.n-1, got=s.r.filter(Boolean).length;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:10px;border-color:${got===3?'var(--ok)':'var(--rule)'}">
+    <div class="row" style="justify-content:space-between"><span style="font-family:var(--display);font-size:22px">${got===3?'かんぺき！':s.r[2]?'答えは正解！':'答えは '+fr(fmt(q.a))}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:800">マスター！</span>':''}</span><span class="stars" style="font-size:20px">${'★'.repeat(got)}${'☆'.repeat(3-got)}</span></div>
+    <div class="explain"><span class="t">${fr(IDEAS[q.i])}</span><ol>${q.s.map(x=>`<li>${fr(x)}</li>`).join('')}</ol><div class="tip">${fr(q.t)}</div></div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n, s=G.stars, max=n*3, r=s/max;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:PAID?'kufu-p-'+course:'kufu',success:s===max,score:s,total:max});
+  if(PAID){ if(/^[123]$/.test(course)&&n===10&&(best['lv'+course]==null||s>best['lv'+course])){best['lv'+course]=s;store.set('kufu-p-best',best);} }
+  else if(n===QS.length&&(best==null||s>best)){best=s;store.set('kufu-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">★${s}<small> / ${max}</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全部のくふうを使いこなせました！':r>=.6?'よくできました。★が足りなかった問題の、くふうの考え方を見直そう。':'まずは「25×4＝100」「同じ数でまとめる」など、くふうの名前と形を覚えよう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'コースをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">★が足りなかった問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">★が足りなかった問題</div>${G.miss.map(k=>{const q=QS[k];return `<div class="rv"><b>${fr(q.e)} ＝ ${fr(q.f[0])} ＝ ${fr(fmt(q.a))}</b><br>${fr(IDEAS[q.i])}</div>`;}).join('')}`:''}`;
+  document.getElementById('again').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(G.miss.slice());};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  const saved=store.get('kufu-p-pass','');
+  if(saved){ try{ QS=await decrypt(saved); home(); return; }catch(e){ store.set('kufu-p-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
+  lockScreen();
+})();
+})();
+</script>

@@ -1,0 +1,347 @@
+<title>係り受けクイズ 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="文法・係り受け">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="係り受け・主語・述語・読点の問題100問を、基本・標準・発展の3コースで練習する有料版。覚えた問題の記録と苦手だけの復習つき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。文節の札がならんだ一文 → 札をタップして答える → 矢印でかかり先を示し、つなげ読みの〇×で理由を見せる */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --ng:#c8352d; --pick:#eceee8;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0;letter-spacing:.06em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--grid);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.label{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.q{margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.q .src{font-family:var(--kanji);color:var(--grid);border-bottom:3px solid var(--grid);padding:0 2px}
+.sentwrap{position:relative;padding-top:48px}
+.arc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.arc path{fill:none;stroke:var(--ok);stroke-width:2.5;stroke-linecap:round}
+.arc path.wrong{stroke:var(--ng);stroke-dasharray:5 4}
+.arc polygon{fill:var(--ok)} .arc polygon.wrong{fill:var(--ng)}
+.sent{display:flex;flex-wrap:wrap;gap:52px 4px;align-items:center}
+.bun{font-family:var(--kanji);font-weight:600;font-size:clamp(18px,5vw,26px);border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:3px 8px;cursor:pointer;line-height:1.4}
+.bun:hover:not(:disabled){border-color:var(--grid);background:var(--gridsoft)}
+.bun:disabled{cursor:default}
+.bun.src{border-color:var(--grid);background:var(--gridsoft);color:var(--grid)}
+.bun.right{border-color:var(--ok);color:var(--ok)}
+.bun.wrong{border-color:var(--ng);color:var(--ng)}
+.end{font-family:var(--kanji);font-size:24px}
+.note{font-size:13px;color:var(--muted);margin:0}
+.verdict{font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.check{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.check li{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:8px;padding:8px 12px}
+.check .mk{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--surface)}
+.check .mk.o{background:var(--ok)} .check .mk.x{background:var(--ng)}
+.check .ph{font-family:var(--kanji);font-weight:600;font-size:19px}
+.check .why{font-size:13px;color:var(--muted)}
+.tip{border-left:4px solid var(--grid);padding:4px 0 4px 12px;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+</style>
+
+<style>
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.kind{font-size:12px;font-weight:700;color:var(--grid);border:1px solid var(--grid);border-radius:4px;padding:0 6px}
+.bun.sel{border-color:var(--fg);background:var(--pick)}
+.bun.target{border-style:dashed;border-color:var(--muted)}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv b{font-family:var(--kanji);font-size:17px}
+.howto{margin:0;padding-left:1.3em;font-size:15px;display:grid;gap:4px}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.courses{grid-template-columns:1fr}}
+.course{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.course:hover{border-color:var(--grid)}
+.course .nm{font-family:var(--display);font-size:20px}
+.course .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.sent.cm{gap:52px 0}
+.tok{font-family:var(--kanji);font-weight:600;font-size:clamp(18px,5vw,26px);padding:3px 2px;line-height:1.4;border-bottom:2px solid transparent}
+.tok.mod{color:var(--ok);border-bottom-color:var(--ok)}
+.tok.to{color:var(--ok);border-bottom-color:var(--ok)}
+.chars .tok{padding:3px 0}
+.gap{width:20px;height:40px;border:2px dashed var(--rule);border-radius:6px;background:transparent;cursor:pointer;padding:0;font-family:var(--kanji);font-weight:600;font-size:24px;line-height:1;color:var(--grid);display:inline-grid;place-items:end center;margin:0 1px}
+.chars .gap{width:10px;border-width:1px;margin:0}
+.gap:hover:not(:disabled){border-color:var(--grid);background:var(--gridsoft)}
+.gap:disabled{cursor:default;border-color:transparent}
+.gap.right{color:var(--ok)} .gap.wrong{color:var(--ng)}
+.meaning{background:var(--gridsoft);border-radius:8px;padding:8px 12px;font-weight:700}
+.badge{display:inline-block;font-family:var(--body);font-size:12px;font-weight:700;color:var(--surface);background:var(--grid);border-radius:4px;padding:1px 8px;vertical-align:middle;margin-left:8px;letter-spacing:.05em}
+.course .best{font-size:12px;color:#b88a1e;font-weight:700;font-variant-numeric:tabular-nums}
+.course:disabled{opacity:.4;cursor:default}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w{background:#b88a1e}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>係り受けクイズ<span class="badge">100問</span></h1>
+    <p class="lead">基本・標準・発展の3コース、全100問。コースを選ぶと、毎回10問出ます。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ
+   type: to=かかり先 / subj=主語 / pred=述語 / multi=かかる言葉を2つ
+   bun: 文節、src: 問う文節（to）、target: かかられる文節（multi）、ans: 正解、link: 答えたあとに引く矢印 [から,へ]
+   check: 文節ごとの「つなげ読み」と理由、tip: まとめ */
+const PAID=true;
+let CQ=[];
+let QS=[];
+const KIND={to:'かかり先',subj:'主語',pred:'述語',multi:'かかる言葉を2つ',comma:'読点'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const strip=s=>s.replace(/[。、]/g,'');
+let G=null;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let shopUrl='', rec=store.get('kakariuke-p-rec',{}), best=store.get(PAID?'kakariuke-p-best':'kakariuke-best',{}), course=null;
+const saveRec=()=>store.set('kakariuke-p-rec',rec);
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const LV={1:['基本','ようすを表す言葉・いつを表す言葉のかかり先、かんたんな主語と述語。'],2:['標準','言葉をとばしてかかる問題、「たぶん〜だろう」などの組になる言葉、かかる言葉を2つえらぶ問題。'],3:['発展','長い文、言葉の順番が入れかわる文（倒置）、読点で意味が変わる問題。']};
+const PAIDLINK=`<a class="paid" href="kakariuke-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>係り受けクイズ 100問</b>（有料版）</span><span class="pd">基本・標準・発展の3コース、全100問。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+async function decrypt(){ return mnAccess.load('kakariuke'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'kakariuke',err:err,free:'kakariuke.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">コースをえらぶ</div>
+    <div class="courses">
+      <button class="course" id="go"><span class="nm">係り受け</span><span class="ds">文節の札をタップして、かかり先・主語・述語を答える。${QS.length}問。</span></button>
+      <button class="course" id="go2"><span class="nm">読点で意味が変わる</span><span class="ds">言葉のすき間をタップして読点「、」を打ち、言われた意味の文にする。${CQ.length}問。</span></button>
+    </div>
+    <p class="note">答えたあとは、矢印でかかり先を確かめよう。</p>${PAID?'':PAIDLINK}`;
+  document.getElementById('go').onclick=()=>start(QS.map((q,i)=>i));
+  document.getElementById('go2').onclick=()=>start(CQ.map((q,i)=>'c'+i));
+}
+const getQ=k=>typeof k==='string'?Object.assign({type:'comma'},CQ[+k.slice(1)]):QS[k];
+const qkey=q=>(q.bun||q.tok).join('')+'|'+(q.meaning||q.type);
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const pools={1:QS.filter(q=>q.lv===1),2:QS.filter(q=>q.lv===2),3:QS.filter(q=>q.lv===3)};
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:#b88a1e">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">コースをえらぶ（1回10問）</div>
+    <div class="courses">${[1,2,3].map(l=>`<button class="course" id="lv${l}" data-l="${l}"><span class="nm">${LV[l][0]}</span><span class="ds">${LV[l][1]}（${pools[l].length}問）</span><span class="best">${best['lv'+l]!=null?`ベスト ${best['lv'+l]}/10`:''}</span></button>`).join('')}
+      <button class="course" id="lvweak" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題だけ（${weak.length}問）</span></button>
+      <button class="course" id="lvfresh" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題だけ（${fresh.length}問）</span></button></div>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:pools[l];
+    start(shuffle(pool).slice(0,10).map(q=>QS.indexOf(q)));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],done:false,sel:new Set()};
+  track('level_start',{level_name:typeof list[0]==='string'?'kakariuke-comma':'kakariuke'});
+  render();
+}
+function qtext(q){
+  if(q.type==='to')return `<span class="src">${esc(q.bun[q.src])}</span> はどの言葉にかかりますか。`;
+  if(q.type==='subj')return `この文の<b>主語</b>はどれですか。`;
+  if(q.type==='pred')return `この文の<b>述語</b>はどれですか。`;
+  return `<span class="src">${esc(q.bun[q.target])}</span> にかかる言葉を<b>2つ</b>えらびましょう。`;
+}
+function render(){
+  if(getQ(G.list[G.i]).type==='comma')return renderComma();
+  const q=getQ(G.list[G.i]), d=G.done, ans=new Set(q.ans);
+  const cls=i=>{
+    let c='';
+    if(q.type==='to'&&i===q.src)c+=' src';
+    if(q.type==='multi'&&i===q.target)c+=' target';
+    if(!d&&G.sel.has(i))c+=' sel';
+    if(d&&ans.has(i))c+=' right';
+    if(d&&G.sel.has(i)&&!ans.has(i))c+=' wrong';
+    return c;
+  };
+  const fixed=i=>(q.type==='to'&&i===q.src)||(q.type==='multi'&&i===q.target);
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.list.length*100}%"></i></div><span class="nums">${G.i+1} / ${G.list.length}</span><span class="kind">${KIND[q.type]}</span></div>
+    <p class="q">${qtext(q)}</p>
+    <div class="sentwrap" id="sw"><svg class="arc" id="arc" aria-hidden="true"></svg>
+      <div class="sent">${q.bun.map((b,i)=>`<button class="bun${cls(i)}" id="b${i}" data-i="${i}" ${fixed(i)||d?'disabled':''} aria-pressed="${G.sel.has(i)}">${esc(b)}</button>`).join('')}</div></div>
+    ${q.type==='multi'&&!d?`<div class="row"><span class="note" id="cnt">${G.sel.size} / 2 えらんでいます</span><button class="btn go" id="ok" ${G.sel.size===2?'':'disabled'}>こたえる</button></div>`:''}
+    <div id="after"></div>`;
+  app.querySelectorAll('.bun').forEach(b=>b.onclick=()=>tap(+b.dataset.i));
+  const ok=document.getElementById('ok'); if(ok)ok.onclick=judge;
+  if(d){drawArcs();explain();}
+}
+function renderComma(){
+  const q=getQ(G.list[G.i]), d=G.done, n=q.tok.length, pick=G.pick;
+  const gap=i=>{
+    let c='', t='';
+    if(d&&i===q.ans){c='right';t='、';}
+    else if(d&&i===pick){c='wrong';t='、';}
+    return `<button class="gap ${c}" id="g${i}" data-i="${i}" ${d?'disabled':''} aria-label="ここに読点を打つ">${t}</button>`;
+  };
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.list.length*100}%"></i></div><span class="nums">${G.i+1} / ${G.list.length}</span><span class="kind">読点</span></div>
+    <p class="q">${esc(q.meaning)}、読点「、」を1つ打ちましょう。</p>
+    <p class="note">言葉と言葉のすき間（点線のわく）をタップすると、そこに読点が入ります。</p>
+    <div class="sentwrap" id="sw"><svg class="arc" id="arc" aria-hidden="true"></svg>
+      <div class="sent cm ${q.chars?'chars':''}">${q.tok.map((t,i)=>`<span class="tok ${d&&G.ok&&(i===q.mod||i===q.to)?'mod':''}" id="b${i}">${esc(t)}</span>${i<n-1?gap(i):''}`).join('')}</div></div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.gap').forEach(b=>b.onclick=()=>{if(G.done)return;G.pick=+b.dataset.i;const ok=G.pick===q.ans;G.done=true;G.ok=ok;G.newM=record(q,ok);if(ok)G.score++;else G.miss.push(G.list[G.i]);track('answer_question',{category:'kakariuke-comma',question:q.tok.join(''),correct:ok});renderComma();});
+  if(d){
+    const svg=document.getElementById('arc'); let s='';
+    const w=q.gaps[pick];
+    if(!G.ok&&w&&w[2]!=null)s+=arcPath(w[2],w[3],'wrong');
+    if(q.mod!=null)s+=arcPath(q.mod,q.to,'');
+    svg.innerHTML=s;
+    const right=q.tok.slice(0,q.ans+1).join('')+'、'+q.tok.slice(q.ans+1).join('');
+    const mine=G.ok?null:(w?w[0]:q.tok.slice(0,pick+1).join('')+'、'+q.tok.slice(pick+1).join(''));
+    const last=G.i===G.list.length-1;
+    document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+      <div class="verdict ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</div>
+      <ul class="check">
+        <li><span class="mk o">〇</span><span><span class="ph">${esc(right)}</span><br><span class="why">${esc(q.meaning.replace(/ように$/,''))}という意味になります。</span></span></li>
+        ${mine?`<li><span class="mk x">×</span><span><span class="ph">${esc(mine)}</span><br><span class="why">${esc(w?w[1]:'この位置に読点を打っても、言われた意味にははっきりなりません。')}</span></span></li>`:''}
+      </ul>
+      <div class="tip">${q.tip}</div>
+      <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+    const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+  }
+}
+function tap(i){
+  if(G.done)return;
+  const q=getQ(G.list[G.i]);
+  if(q.type==='multi'){ if(G.sel.has(i))G.sel.delete(i); else if(G.sel.size<2)G.sel.add(i); render(); return; }
+  G.sel=new Set([i]); judge();
+}
+function judge(){
+  const q=getQ(G.list[G.i]);
+  const ok=G.sel.size===q.ans.length&&q.ans.every(i=>G.sel.has(i));
+  G.done=true; G.ok=ok;
+  G.newM=record(q,ok);
+  if(ok)G.score++; else G.miss.push(G.list[G.i]);
+  track('answer_question',{category:'kakariuke-'+q.type,question:q.bun.join(''),correct:ok});
+  render();
+}
+function arcPath(from,to,cls,lift){
+  const sw=document.getElementById('sw').getBoundingClientRect();
+  const a=document.getElementById('b'+from).getBoundingClientRect(), b=document.getElementById('b'+to).getBoundingClientRect();
+  const ax=a.left+a.width/2-sw.left, bx=b.left+b.width/2-sw.left;
+  const aT=a.top-sw.top, aB=a.bottom-sw.top, bT=b.top-sw.top, bB=b.bottom-sw.top;
+  const head=(x,y,up)=>up?`<polygon class="${cls}" points="${x-5},${y+8} ${x+5},${y+8} ${x},${y}"/>`:`<polygon class="${cls}" points="${x-5},${y-8} ${x+5},${y-8} ${x},${y}"/>`;
+  if(Math.abs(aT-bT)<10){ // 同じ行：上にアーチ
+    const top=aT-Math.min(40,(lift||16)+Math.abs(bx-ax)/6);
+    return `<path class="${cls}" d="M${ax} ${aT} C ${ax} ${top}, ${bx} ${top}, ${bx} ${bT-6}"/>`+head(bx,bT-1,false);
+  }
+  if(aT<bT){ // 上の行から下の行へ：行のすきまを通る
+    const mid=(aB+bT)/2;
+    return `<path class="${cls}" d="M${ax} ${aB} C ${ax} ${mid+10}, ${bx} ${mid-10}, ${bx} ${bT-6}"/>`+head(bx,bT-1,false);
+  }
+  const mid=(bB+aT)/2; // 下の行から上の行へ
+  return `<path class="${cls}" d="M${ax} ${aT} C ${ax} ${mid-10}, ${bx} ${mid+10}, ${bx} ${bB+6}"/>`+head(bx,bB+1,true);
+}
+function drawArcs(){
+  const q=getQ(G.list[G.i]), svg=document.getElementById('arc'); let s='';
+  if(q.type==='to'){ G.sel.forEach(i=>{if(i!==q.ans[0])s+=arcPath(q.src,i,'wrong');}); s+=arcPath(q.src,q.ans[0],''); }
+  else if(q.type==='multi'){ G.sel.forEach(i=>{if(!q.ans.includes(i))s+=arcPath(i,q.target,'wrong',12);}); q.ans.forEach((i,k)=>s+=arcPath(i,q.target,'',12+k*14)); }
+  else if(q.link){ s+=arcPath(q.link[0],q.link[1],''); }
+  svg.innerHTML=s;
+}
+function explain(){
+  const q=getQ(G.list[G.i]);
+  const show=[...new Set([...G.sel,...q.ans,...(q.trap!=null?[q.trap]:[])])].filter(i=>i!==q.src&&i!==q.target);
+  const item=i=>{
+    const c=q.check[i], good=q.ans.includes(i);
+    let ph,why;
+    if(c){ph=c[0];why=c[1];}
+    else if(q.type==='to'){ph=strip(q.bun[q.src])+strip(q.bun[i]);why=i<q.src?'かかる先は、ふつうその言葉より後ろにあります。':'つなげても意味が通りません。';}
+    else if(q.type==='multi'){ph=strip(q.bun[i])+strip(q.bun[q.target]);why='つなげても意味が通りません。';}
+    else {ph=strip(q.bun[i]);why=q.type==='subj'?'「だれが・何が」にあたる言葉ではありません。':'文の終わりにある、「どうする・どんなだ・何だ」にあたる言葉ではありません。';}
+    return `<li><span class="mk ${good?'o':'x'}">${good?'〇':'×'}</span><span><span class="ph">${esc(ph)}</span><br><span class="why">${esc(why)}</span></span></li>`;
+  };
+  const last=G.i===G.list.length-1;
+  const ansText=q.ans.map(i=>`「${esc(strip(q.bun[i]))}」`).join('と');
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="verdict ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}　答えは${ansText}</div>
+    <div class="label" style="color:var(--fg)">${q.type==='subj'||q.type==='pred'?'ひとつずつ確かめよう':'つなげて読んでみよう'}</div>
+    <ul class="check">${show.map(item).join('')}</ul>
+    <div class="tip">${q.tip}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ G.done=false; G.sel=new Set(); G.pick=null; if(++G.i<G.list.length)render(); else result(); }
+function result(){
+  const n=G.list.length,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:PAID?'kakariuke-p-'+course:'kakariuke',success:s===n,score:s,total:n});
+  if(PAID&&/^[123]$/.test(course)&&(best['lv'+course]==null||s>best['lv'+course])){best['lv'+course]=s;store.set('kakariuke-p-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！係り受けはばっちりです。':r>=.6?'よくできました。まちがえた問題を、つなげ読みで確かめよう。':'2つの言葉をつなげて読む方法を使うと、ぐっと解きやすくなります。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'コースをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(k=>{const q=getQ(k);if(q.type==='comma')return `<div class="rv"><b>${esc(q.tok.slice(0,q.ans+1).join('')+'、'+q.tok.slice(q.ans+1).join(''))}</b><br>${esc(q.meaning.replace(/ように$/,''))}</div>`;return `<div class="rv"><b>${esc(q.bun.join(' '))}</b><br>${KIND[q.type]}：${q.ans.map(i=>'「'+esc(strip(q.bun[i]))+'」').join('と')}</div>`;}).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():start(typeof G.list[0]==='string'?CQ.map((q,i)=>'c'+i):QS.map((q,i)=>i));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>start(G.miss.slice());
+}
+const redraw=()=>{if(!G||!G.done)return; if(getQ(G.list[G.i]).type==='comma')renderComma(); else drawArcs();};
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',redraw);
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

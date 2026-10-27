@@ -1,0 +1,285 @@
+<title>四字熟語 漢字えらび</title>
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="四字熟語">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="まぎらわしい4つの漢字から、四字熟語の正しい字を選ぶクイズ。じっくりとスピードの2モード。40問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。慣用句の一文（空らんは原稿用紙のマス）→ 意味 → 札か選択肢。国語シリーズ共通の原稿用紙の赤茶 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --ng:#c8352d; --pick:#eceee8; --gold:#b88a1e;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(30px,8vw,40px);line-height:1.2;margin:0;letter-spacing:.06em}
+.badge{display:inline-block;font-family:var(--body);font-size:12px;font-weight:700;color:var(--surface);background:var(--grid);border-radius:4px;padding:1px 8px;vertical-align:middle;margin-left:8px;letter-spacing:.05em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.h2{font-family:var(--display);font-size:20px;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--rule);background:transparent;border-radius:99px;padding:4px 14px;cursor:pointer;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip:disabled{opacity:.4;cursor:default}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.modes{grid-template-columns:1fr}}
+.mode{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.mode:hover{border-color:var(--grid)}
+.mode .nm{font-family:var(--display);font-size:20px}
+.mode .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.mode .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:0}
+.bar{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid);transition:width .3s}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.combo{color:var(--grid);font-weight:700;font-size:14px}
+.cat{font-size:12px;font-weight:700;color:var(--grid);border:1px solid var(--grid);border-radius:4px;padding:0 6px}
+.phrase{font-family:var(--kanji);font-weight:600;font-size:clamp(26px,7.5vw,36px);line-height:1.6;text-align:center;text-wrap:balance}
+.blank{display:inline-grid;place-items:center;min-width:1.25em;height:1.25em;padding:0 .1em;border:2px solid var(--grid);background:var(--gridsoft);vertical-align:middle;margin:0 .08em;line-height:1}
+.blank.ok{color:var(--ok);background:var(--surface)} .blank.ng{color:var(--ng);background:var(--surface)}
+.meaning{border-left:4px solid var(--grid);padding:4px 0 4px 14px}
+.meaning .lab{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.meaning p{margin:2px 0 0;font-size:18px;font-weight:700;line-height:1.7}
+.choices{display:grid;gap:10px}
+.ch{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(19px,5.4vw,22px);text-align:left}
+.ch:hover:not(:disabled){border-color:var(--grid)}
+.ch:disabled{cursor:default}
+.ch.right{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.ch.wrong{border-color:var(--ng);color:var(--ng);background:color-mix(in srgb,var(--ng) 8%,var(--surface))}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px;margin:0 auto;width:100%}
+.tile{min-height:56px;border:1px solid var(--rule);border-radius:8px;background:var(--pick);cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(18px,5.6vw,24px);padding:4px;line-height:1.2}
+.tile:hover:not(:disabled){border-color:var(--grid)}
+.tile:disabled{cursor:default;opacity:.45}
+.tile.right{opacity:1;border:2px solid var(--ok);color:var(--ok);background:var(--surface)}
+.tile.wrong{opacity:1;border:2px solid var(--ng);color:var(--ng);background:var(--surface)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.verdict{text-align:center;font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.newmark{font-size:12px;font-weight:700;color:var(--ok);margin-left:6px;font-family:var(--body)}
+.exp{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:15px}
+.exp b{font-family:var(--kanji);font-size:19px}
+.exp .y{color:var(--muted);font-size:13px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg);text-align:center;line-height:1.1}
+.review{display:grid;gap:10px}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv .w{font-family:var(--kanji);font-weight:600;font-size:20px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;letter-spacing:.06em;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.lock input:focus{border-color:var(--grid);outline:none}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+<style>
+.sheet{display:flex;justify-content:center}
+.sq{width:clamp(56px,17vw,76px);aspect-ratio:1;border:2px solid var(--grid);margin-left:-2px;display:grid;place-items:center;
+  font-family:var(--kanji);font-weight:600;font-size:clamp(34px,10vw,46px);background:var(--surface)}
+.sq:first-child{margin-left:0}
+.sq.q{background:var(--gridsoft);color:var(--grid)}
+.sq.ok{color:var(--ok);background:var(--surface)} .sq.ng{color:var(--ng);background:var(--surface)}
+.yomi{text-align:center;color:var(--muted);font-size:15px;letter-spacing:.15em;margin-top:-8px}
+.kch{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:0 auto;width:100%}
+.kc{aspect-ratio:1;max-width:100%;border:2px solid var(--rule);border-radius:10px;background:var(--surface);cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(34px,10vw,46px)}
+.kc:hover:not(:disabled){border-color:var(--grid)}
+.kc:disabled{cursor:default}
+.kc.right{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.kc.wrong{border-color:var(--ng);color:var(--ng);background:color-mix(in srgb,var(--ng) 8%,var(--surface))}
+.kc.dim{opacity:.4}
+.point{border-left:4px solid var(--grid);padding:2px 0 2px 12px;margin-top:6px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>四字熟語 漢字えらび</h1>
+    <p class="lead">「危機一□」の□は「髪」？「発」？ まぎらわしい漢字から正しい字をえらぼう。1回10問です。</p>
+  </header>
+  <main id="app"></main>
+</div>
+<script type="application/json" id="data">[["危機一髪", 3, ["発", "鉢", "八"], "「髪」は髪の毛。髪の毛一本ほどの差で危ないという意味です。", 1, "ききいっぱつ", "髪の毛一本ほどのわずかな差で、とても危ない状態になること。"], ["絶体絶命", 1, ["対", "態", "帯"], "「体」も「命」も、追いつめられた体と命のこと。「絶対」とまちがえやすいので注意。", 1, "ぜったいぜつめい", "どうにものがれられない、追いつめられた状態。"], ["五里霧中", 2, ["夢", "無", "務"], "「霧」はきり。深いきりの中で、方向がわからないようすです。", 1, "ごりむちゅう", "ようすがまったくわからず、どうしたらよいか見当がつかないこと。"], ["無我夢中", 2, ["霧", "務", "無"], "「夢」はゆめ。ゆめの中にいるように、我を忘れることです。", 1, "むがむちゅう", "あることに心をうばわれて、ほかのことを忘れてしまうこと。"], ["単刀直入", 0, ["短", "端", "担"], "「単刀」は一本の刀。刀一本で敵に切りこむことから来ています。", 1, "たんとうちょくにゅう", "前置きなしに、いきなり大事な話に入ること。"], ["異口同音", 1, ["句", "工", "功"], "「口」は人の口。たくさんの口が、同じ音（ことば）を出すことです。", 1, "いくどうおん", "多くの人が、口をそろえて同じことを言うこと。"], ["心機一転", 1, ["気", "期", "器"], "「心機」は心のはたらき。「気」とまちがえやすいので注意。", 1, "しんきいってん", "あることをきっかけに、気持ちをすっかり入れかえること。"], ["自画自賛", 3, ["替", "算", "参"], "「賛」はほめること。自分のかいた絵を、自分でほめることです。", 1, "じがじさん", "自分で自分のことや、自分のしたことをほめること。"], ["興味津々", 2, ["深", "進", "信"], "「津々」は、次々とわき出るようす。「深々」ではありません。", 1, "きょうみしんしん", "興味がつきないようす。"], ["適材適所", 0, ["的", "敵", "摘"], "「適」はふさわしいこと。合う人を合う場所に置くことです。", 1, "てきざいてきしょ", "その人の力に合った役目や仕事につかせること。"], ["臨機応変", 2, ["央", "往", "欧"], "「応変」は変化に応じること。", 1, "りんきおうへん", "その場のようすに合わせて、うまく対応すること。"], ["意気投合", 3, ["号", "郷", "剛"], "「投合」は、ぴったり合うこと。", 1, "いきとうごう", "おたがいの気持ちや考えが、ぴったり合うこと。"], ["以心伝心", 0, ["意", "異", "位"], "「以」は「〜で、〜によって」。心で心を伝えることです。", 1, "いしんでんしん", "言葉にしなくても、気持ちや考えが相手に伝わること。"], ["正真正銘", 3, ["明", "名", "命"], "「銘」は品物にきざんだ名。まちがいなく本物、という意味です。", 1, "しょうしんしょうめい", "まちがいなく本物であること。"], ["単純明快", 3, ["解", "界", "会"], "「快」は、すっきりしていること。", 1, "たんじゅんめいかい", "わかりやすく、はっきりしていること。"], ["一挙両得", 1, ["拳", "誉", "巨"], "「挙」は、ふるまい・行動。「拳（こぶし）」とまちがえやすいので注意。", 1, "いっきょりょうとく", "一つのことをして、二つの得をすること。"], ["自給自足", 1, ["級", "急", "求"], "「給」は、必要なものをまかなうこと。", 1, "じきゅうじそく", "必要なものを、自分でつくってまかなうこと。"], ["電光石火", 1, ["行", "効", "航"], "「電光」は、いなずまの光。", 1, "でんこうせっか", "動きがとてもすばやいこと。"], ["東奔西走", 1, ["奮", "噴", "墳"], "「奔」は走ること。", 1, "とうほんせいそう", "用事のために、あちこちいそがしくかけ回ること。"], ["日進月歩", 1, ["新", "親", "信"], "「進」は進むこと。日に日に進む、という意味です。", 1, "にっしんげっぽ", "日に日に、休むことなく進歩すること。"], ["起承転結", 2, ["展", "点", "天"], "「転」は、場面が変わること。", 1, "きしょうてんけつ", "文章や話の組み立て。始まり・続き・場面の変化・結びの順。"], ["不眠不休", 1, ["眼", "民", "明"], "「眠」はねむること。「眼（め）」とまちがえやすいので注意。", 1, "ふみんふきゅう", "ねむらず休まず、がんばり続けること。"], ["前代未聞", 2, ["末", "味", "魅"], "「未」は「まだ〜ない」。「末（すえ）」とまちがえやすいので注意。", 1, "ぜんだいみもん", "今までに一度も聞いたことがないような、めずらしいこと。"], ["一期一会", 3, ["回", "絵", "界"], "「会」は出会い。一生に一度の出会い、という意味です。", 1, "いちごいちえ", "一生に一度しかない出会いだと思って、人との出会いを大切にすること。"], ["誠心誠意", 0, ["成", "盛", "清"], "「誠」はまごころ。", 1, "せいしんせいい", "まごころをこめて、ものごとをすること。"], ["自問自答", 1, ["門", "聞", "間"], "「問」は問いかけること。「門」とまちがえやすいので注意。", 1, "じもんじとう", "自分で問いかけて、自分で答えること。"], ["満場一致", 0, ["万", "漫", "慢"], "「満場」は、その場にいる人全部。", 1, "まんじょういっち", "その場にいる全員の意見が、同じになること。"], ["一部始終", 1, ["分", "歩", "不"], "「一部」は、もとは書物一冊全部のこと。", 1, "いちぶしじゅう", "始めから終わりまで、全部。"], ["千差万別", 1, ["佐", "左", "査"], "「差」はちがい。", 1, "せんさばんべつ", "たくさんのものが、それぞれみんなちがっていること。"], ["百発百中", 1, ["髪", "鉢", "八"], "「発」は、矢や弾をうつこと。", 1, "ひゃっぱつひゃくちゅう", "ねらいや予想が、すべて当たること。"], ["弱肉強食", 3, ["色", "職", "植"], "「食」は食べること。", 1, "じゃくにくきょうしょく", "強いものが弱いものをおさえて栄えること。"], ["多種多様", 3, ["洋", "陽", "要"], "「様」は、ありさま・ようす。", 1, "たしゅたよう", "種類がいろいろで、さまざまであること。"], ["一石二鳥", 3, ["島", "烏", "鳴"], "「鳥」はとり。「烏（からす）」とまちがえやすいので注意。", 1, "いっせきにちょう", "一つの行動で、二つの得をすること。"], ["一心不乱", 2, ["普", "付", "夫"], "「不乱」は、みだれないこと。", 1, "いっしんふらん", "一つのことに集中して、ほかのことに心を動かされないこと。"], ["老若男女", 1, ["弱", "苦", "著"], "「若」はわかいこと。「苦」と形がにているので注意。", 1, "ろうにゃくなんにょ", "年よりも若者も、男も女も。すべての人。"], ["二人三脚", 3, ["却", "格", "客"], "「脚」はあし。", 1, "ににんさんきゃく", "二人で協力して、ものごとを進めること。"], ["一致団結", 2, ["断", "段", "談"], "「団結」は、一つにまとまること。", 1, "いっちだんけつ", "多くの人が心を一つにして、力を合わせること。"], ["一喜一憂", 3, ["優", "夏", "愛"], "「憂」は心配すること。「優」とまちがえやすいので注意。", 1, "いっきいちゆう", "ようすが変わるたびに、喜んだり心配したりすること。"], ["一件落着", 3, ["差", "看", "羊"], "「落着」は、落ちつくこと。", 1, "いっけんらくちゃく", "問題やもめごとが解決すること。"], ["一生懸命", 2, ["県", "憲", "献"], "「懸命」は、命をかけること。", 1, "いっしょうけんめい", "命がけで、ものごとに取り組むこと。"]]</script>
+
+<script>
+(function(){
+const PAID=false;
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const PREFIX=PAID?'yojikanji-p':'yojikanji-f', ROUND=10, LIMIT=10;
+let W=null, shopUrl='';
+/* 問題データ: [熟語, 空らんの位置(0〜3), まぎらわしい字3つ, ポイント, レベル, 読み, 意味] */
+
+async function decrypt(pass){
+  const p=JSON.parse(document.getElementById('data').textContent);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm(pass)),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(p.salt),iterations:p.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(p.iv)},key,b64(p.data))));
+}
+function lockScreen(msg){
+  app.innerHTML=`<section class="box">
+    <h2 class="h2">合言葉を入れてください</h2>
+    <p class="note" style="font-size:14px">ご購入時にお知らせした合言葉を入れると、全${'173'}問で遊べます。一度入れれば、この端末では次から入力はいりません。</p>
+    <form id="f" class="lock" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <label for="pass" style="font-weight:700">合言葉</label>
+      <input id="pass" name="pass" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="例：kanji-xxxx-xxxx">
+      <p class="err" id="err" role="alert">${msg||''}</p>
+      <div class="row" style="justify-content:flex-start"><button class="btn go" id="open" type="submit">ひらく</button></div>
+    </form>
+    <div class="shop">合言葉をお持ちでない方へ：${shopUrl?`<a href="${esc(shopUrl)}" target="_blank" rel="noopener">こちらから購入できます</a>`:'販売ページは準備中です。'}<br>無料版（40問）は <a href="yojikanji.html">四字熟語 漢字えらび</a> で遊べます。</div>
+  </section>`;
+  document.getElementById('f').onsubmit=async e=>{
+    e.preventDefault();
+    const v=document.getElementById('pass').value; if(!norm(v)){document.getElementById('err').textContent='合言葉を入れてください。';return;}
+    const b=document.getElementById('open'); b.disabled=true; b.textContent='確かめています…';
+    try{ W=await decrypt(v); store.set(PREFIX+'-pass',v); track('unlock',{product:'yojikanji'}); home(); }
+    catch(err){ b.disabled=false; b.textContent='ひらく'; document.getElementById('err').textContent='合言葉がちがいます。全角・半角や、つづりを確かめてもう一度入れてください。'; }
+  };
+}
+
+let rec=store.get(PREFIX+'-rec',{});
+const saveRec=()=>store.set(PREFIX+'-rec',rec);
+const state=w=>{const r=rec[w[0]];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const THEMES={all:['ぜんぶ',w=>true],lv1:['基本',w=>w[4]===1],lv2:['標準',w=>w[4]===2],lv3:['発展',w=>w[4]===3],
+  ...(PAID?{weak:['にがて',w=>state(w)==='weak'],fresh:['まだやっていない',w=>state(w)==='new']}:{})};
+const MODES={normal:['じっくり','時間を気にせず、1問ずつ考えて答える。'],speed:['スピード','1問10秒。時間内に正しい字を見ぬこう。']};
+let theme='all', G=null, best=store.get(PREFIX+'-best',{}), timer=null;
+const PAIDLINK=`<a class="paid" href="yojikanji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>四字熟語 漢字えらび（有料版）</b></span><span class="pd">入試で出やすい「書きまちがい」を173問。苦手な問題だけの復習と、覚えた熟語の記録つき。</span></a>`;
+
+function home(){
+  G=null; clearInterval(timer);
+  const pool=W.filter(THEMES[theme][1]);
+  let recHTML='';
+  if(PAID){
+    const cnt={master:0,weak:0,new:0,try:0}; W.forEach(w=>cnt[state(w)]++);
+    recHTML=`<div class="master"><div class="top"><span class="h2">覚えた熟語</span><span class="cnt">${cnt.master}<small> / ${W.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/W.length*100}%"></i><i class="w" style="width:${cnt.weak/W.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>`;
+  }
+  app.innerHTML=`<section class="box">${recHTML}
+    <div><div class="h2" style="margin-bottom:8px">レベル</div>
+      <div class="chips">${Object.entries(THEMES).map(([k,[nm,f]])=>{const n=W.filter(f).length;return `<button class="chip" id="th-${k}" data-t="${k}" aria-pressed="${k===theme}" ${n?'':'disabled'}>${nm}（${n}）</button>`;}).join('')}</div></div>
+    <div><div class="h2" style="margin-bottom:8px">あそびかた</div>
+      <div class="modes">${Object.entries(MODES).map(([k,[nm,ds]])=>`<button class="mode" id="mode-${k}" data-m="${k}" ${pool.length?'':'disabled'}><span class="nm">${nm}</span><span class="ds">${ds}</span><span class="best">${best[k+'-'+theme]!=null?`ベスト ${best[k+'-'+theme]}/${Math.min(ROUND,pool.length)}`:''}</span></button>`).join('')}</div></div>
+    <p class="note">四字熟語の中の1字が空らんになっています。読みと意味をヒントに、まぎらわしい4つの漢字から正しい字をえらぼう。</p>
+    ${PAID?'<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>':PAIDLINK}
+  </section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{theme=b.dataset.t;home();});
+  app.querySelectorAll('.mode').forEach(b=>b.onclick=()=>start(b.dataset.m));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();home();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(mode,list){
+  const pool=W.filter(THEMES[theme][1]);
+  const qs=(list||shuffle(pool).slice(0,ROUND)).map(w=>({w,ch:shuffle([w[0][w[1]],...w[2]])}));
+  G={mode,qs,i:0,score:0,combo:0,maxCombo:0,miss:[],done:false,newly:[],retry:!!list};
+  track('level_start',{level_name:`${PREFIX}-${mode}-${theme}`});
+  show();
+}
+const sheet=(w,fill,cls)=>`<div class="sheet" aria-label="四字熟語">${[...w[0]].map((c,i)=>i===w[1]?`<div class="sq ${fill?cls:'q'}">${fill?esc(fill):'？'}</div>`:`<div class="sq">${esc(c)}</div>`).join('')}</div>`;
+function show(){
+  const it=G.qs[G.i], w=it.w;
+  app.innerHTML=`<section class="box">
+    <div class="bar"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.qs.length*100}%"></i></div>
+      <span class="nums">${G.i+1} / ${G.qs.length}</span>${G.combo>=2?`<span class="combo">${G.combo}連続</span>`:''}${G.mode==='speed'?`<span class="timer" id="tm">${LIMIT}秒</span>`:''}</div>
+    <div id="sheet">${sheet(w)}</div>
+    <div class="yomi">${esc(w[5])}</div>
+    <div class="meaning"><div class="lab">意味</div><p>${esc(w[6])}</p></div>
+    <div class="kch">${it.ch.map((c,j)=>`<button class="kc" id="kc${j}" data-j="${j}">${esc(c)}</button>`).join('')}</div>
+    <div id="after"></div></section>`;
+  app.querySelectorAll('.kc').forEach(b=>b.onclick=()=>judge(+b.dataset.j));
+  if(G.mode==='speed'){
+    let t=LIMIT; clearInterval(timer);
+    timer=setInterval(()=>{t--; const el=document.getElementById('tm'); if(el)el.textContent=t+'秒'; if(t<=0){clearInterval(timer);judge(-1);}},1000);
+  }
+}
+function judge(j){
+  if(G.done)return; G.done=true; clearInterval(timer);
+  const it=G.qs[G.i], w=it.w, right=w[0][w[1]], ok=j>=0&&it.ch[j]===right, before=PAID?state(w):null;
+  app.querySelectorAll('.kc').forEach((b,k)=>{b.disabled=true; if(it.ch[k]===right)b.classList.add('right'); else if(k===j)b.classList.add('wrong'); else b.classList.add('dim');});
+  document.getElementById('sheet').innerHTML=sheet(w,right,ok?'ok':'ng');
+  let nowMaster=false;
+  if(PAID){const r=rec[w[0]]||[0,0]; r[ok?0:1]++; rec[w[0]]=r; saveRec(); nowMaster=state(w)==='master'&&before!=='master'; if(nowMaster)G.newly.push(w);}
+  if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(w);}
+  track('answer_question',{category:`${PREFIX}-${G.mode}`,question:w[0],correct:ok,picked:j>=0?it.ch[j]:'timeout'});
+  const last=G.i===G.qs.length-1;
+  document.getElementById('after').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${ok?'正解！':j<0?'時間切れ':'ざんねん'}${nowMaster?'<span class="newmark">覚えた！</span>':''}</div>
+    <div class="exp"><b>${esc(w[0])}</b>（${esc(w[5])}）<div class="point">${esc(w[3])}${!ok&&j>=0?`<br>えらんだ「${esc(it.ch[j])}」は、この熟語では使いません。`:''}</div></div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ G.done=false; if(++G.i<G.qs.length)show(); else result(); }
+function result(){
+  const n=G.qs.length,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  const k=G.mode+'-'+theme; let isNew=false;
+  if(!G.retry&&(best[k]==null||s>best[k])){best[k]=s;store.set(PREFIX+'-best',best);isNew=true;}
+  track('level_end',{level_name:`${PREFIX}-${G.mode}-${theme}`,success:s===n,score:s,total:n});
+  const m=PAID?W.filter(w=>state(w)==='master').length:0;
+  app.innerHTML=`<section class="box">
+    <h2 class="h2">${MODES[G.mode][0]}・${THEMES[theme][0]}の結果</h2>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${PAID?`${G.newly.length?`新しく${G.newly.length}語を覚えました。`:''}覚えた熟語は ${m} / ${W.length}問です。`:(r===1?'全問正解！書きまちがいに強いですね。':r>=.6?'よくできました。まちがえた字は、意味といっしょに覚えよう。':'1字1字の意味を考えると、正しい字が選びやすくなります。')}${G.maxCombo>=3?`　最高${G.maxCombo}連続正解！`:''}${isNew&&s>0?'　自己ベスト更新！':''}</p>
+    <div class="row" style="justify-content:flex-start"><button class="btn go" id="again">もう一度</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}<button class="btn" id="home">はじめにもどる</button></div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="h2" style="font-size:17px">おぼえておこう</div><div class="review">${G.miss.map(w=>`<div class="rv"><span class="w">${esc(w[0])}</span>　<span class="note">${esc(w[5])}</span><div>${esc(w[3])}</div></div>`).join('')}</div>`:''}
+  </section>`;
+  document.getElementById('again').onclick=()=>start(G.mode);
+  document.getElementById('home').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>start(G.mode,shuffle(G.miss));
+}
+document.addEventListener('keydown',e=>{
+  if(!G||G.done)return;
+  const k={'1':0,'2':1,'3':2,'4':3}[e.key]; if(k!=null)judge(k);
+});
+(async()=>{
+  if(!PAID){ W=JSON.parse(document.getElementById('data').textContent); home(); return; }
+  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  const saved=store.get(PREFIX+'-pass','');
+  if(saved){ try{ W=await decrypt(saved); home(); return; }catch(e){ store.set(PREFIX+'-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
+  lockScreen();
+})();
+})();
+</script>

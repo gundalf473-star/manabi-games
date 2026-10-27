@@ -1,0 +1,240 @@
+<title>三字熟語クイズ 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="三字熟語">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="三字熟語クイズの有料版。基本・標準・発展の3コース、全100問。覚えた熟語の記録と苦手復習つき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。文の中の原稿用紙のマス3つ → 漢字の札8まい（4×2）→ 読みと意味 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --pick:#eceee8; --gold:#b88a1e;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0;letter-spacing:.06em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--grid);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.label{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.sent{font-family:var(--kanji);font-weight:600;font-size:clamp(19px,5.4vw,24px);line-height:2.3;margin:0}
+.cells{display:inline-flex;vertical-align:middle;margin:0 4px;border:2px solid var(--grid);background:var(--surface)}
+.cell{width:1.75em;height:1.75em;display:grid;place-items:center;border:0;border-left:1px dashed var(--grid);background:transparent;padding:0;font-family:var(--kanji);font-weight:600;font-size:1em;line-height:1;cursor:pointer;color:var(--fg)}
+.cell:first-child{border-left:0}
+.cell.next{background:var(--gridsoft)}
+.cell:disabled{cursor:default}
+.cell.right{color:var(--ok);background:var(--oksoft)}
+.cell.wrong{color:var(--ng);background:var(--ngsoft)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tile{aspect-ratio:1;border:2px solid var(--rule);background:var(--surface);border-radius:10px;font-family:var(--kanji);font-weight:600;font-size:clamp(28px,9vw,40px);line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.tile:hover:not(:disabled){border-color:var(--grid);background:var(--gridsoft)}
+.tile:disabled{cursor:default;opacity:.28}
+.tile.ans{opacity:1;border-color:var(--ok);color:var(--ok)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.hint{font-size:15px;color:var(--grid);font-weight:700;margin:0}
+.verdict{font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.word{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.word b{font-family:var(--kanji);font-size:32px;line-height:1.2}
+.word span{color:var(--muted);font-size:15px}
+.tip{border-left:4px solid var(--grid);padding:4px 0 4px 12px;font-size:15px}
+.tip small{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+.mine{background:var(--bg);border-radius:8px;padding:8px 12px;font-size:14px}
+.mine b{font-family:var(--kanji);color:var(--ng);font-size:17px}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.courses{grid-template-columns:1fr}}
+.course{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.course:hover{border-color:var(--grid)}
+.course .nm{font-family:var(--display);font-size:20px}
+.course .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.course .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.howto{margin:0;padding-left:1.3em;font-size:15px;display:grid;gap:4px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv b{font-family:var(--kanji);font-size:19px;margin-right:8px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.course:disabled{opacity:.4;cursor:default}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>三字熟語クイズ 100問</h1>
+    <p class="lead">文の□□□に入る三字熟語を、漢字の札から3まいえらぼう。全100問、コースをえらんで1回10問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+
+<script>
+(function(){
+/* 問題データ: [文（□□□が入るところ）, 三字熟語, 読み, 意味, まぎらわしい漢字5つ, ひとこと（由来など）, 難しさ 1基本 2標準 3発展] */
+const PAID=true;
+let QS=[];
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'sanji-p-best':'sanji-best',{}), rec=store.get('sanji-p-rec',{});
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const saveRec=()=>store.set('sanji-p-rec',rec);
+const qkey=q=>q[1];
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const LV={1:['基本','打ち消しの「不・無・非・未」や、ふだんよく使う三字熟語。'],2:['標準','「無作法（ぶさほう）」など読み方に注意する言葉や、たとえの三字熟語。'],3:['発展','入試によく出る、由来のある三字熟語（老婆心・下克上 など）。']};
+const PAIDLINK=`<a class="paid" href="sanji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>三字熟語クイズ 100問</b>（有料版）</span><span class="pd">基本・標準・発展の3コース、全100問。覚えた熟語の記録と、苦手だけの復習つき。</span></a>`;
+async function decrypt(){ return mnAccess.load('sanji'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'sanji',err:err,free:'sanji.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const pools={1:QS.filter(q=>q[6]===1),2:QS.filter(q=>q[6]===2),3:QS.filter(q=>q[6]===3)};
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた熟語</span><span class="cnt">${cnt.master}<small> / ${QS.length}語</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">コースをえらぶ（1回10問）</div>
+    <div class="courses">${[1,2,3].map(l=>`<button class="course" data-l="${l}"><span class="nm">${LV[l][0]}</span><span class="ds">${LV[l][1]}（${pools[l].length}問）</span><span class="best">${best['lv'+l]!=null?`ベスト ${best['lv'+l]}/10`:''}</span></button>`).join('')}
+      <button class="course" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある熟語だけ（${weak.length}問）</span></button>
+      <button class="course" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない熟語だけ（${fresh.length}問）</span></button></div>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='weak'?weak:l==='fresh'?fresh:pools[l];
+    start(shuffle(pool).slice(0,10).map(q=>QS.indexOf(q)));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <ol class="howto"><li>文の□□□に入る三字熟語を考えます。</li><li>漢字の札を、<b>1字目から順番に</b>3まいタップします。</li><li>まちがえて入れた字は、マスをタップするともどせます。</li></ol>
+    <div class="label">コースをえらぶ</div>
+    <div class="courses">
+      <button class="course" data-n="10"><span class="nm">10問</span><span class="ds">20問の中から10問。</span><span class="best">${best.r10!=null?`ベスト ${best.r10}/10`:''}</span></button>
+      <button class="course" data-n="20"><span class="nm">ぜんぶ</span><span class="ds">20問すべてに挑戦。</span><span class="best">${best.r20!=null?`ベスト ${best.r20}/20`:''}</span></button>
+    </div>${PAIDLINK}`;
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>start(shuffle(QS.map((q,i)=>i)).slice(0,+b.dataset.n)));
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:PAID?'sanji-p-'+course:'sanji-'+list.length});
+  newQ();
+}
+function newQ(){
+  const q=QS[G.list[G.i]];
+  G.tiles=shuffle([...q[1],...q[4]]);   // 札8まい（正解3字＋まぎらわしい字5字）
+  G.fill=[null,null,null]; G.done=false; G.hint=false;
+  render();
+}
+function render(){
+  const q=QS[G.list[G.i]], d=G.done, used=new Set(G.fill.filter(v=>v!=null));
+  const nextCell=G.fill.indexOf(null);
+  const cells=[0,1,2].map(k=>{
+    const t=G.fill[k], ch=t!=null?G.tiles[t]:'';
+    const cls=d?(ch===q[1][k]?'right':'wrong'):(k===nextCell?'next':'');
+    return `<button class="cell ${cls}" data-k="${k}" ${d||t==null?'disabled':''} aria-label="${k+1}字目${ch?'：'+ch+'（タップでもどす）':''}">${esc(d&&ch!==q[1][k]?ch||'':ch)}</button>`;
+  }).join('');
+  const [a,b]=q[0].split('□□□');
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span></div>
+    <p class="sent">${esc(a)}<span class="cells">${cells}</span>${esc(b)}</p>
+    <div class="tiles" role="group" aria-label="漢字の札">${G.tiles.map((c,i)=>`<button class="tile ${d&&q[1].includes(c)?'ans':''}" data-i="${i}" ${d||used.has(i)?'disabled':''}>${esc(c)}</button>`).join('')}</div>
+    ${d?'':`<div class="row"><button class="btn go" id="ok" ${nextCell===-1?'':'disabled'}>こたえる</button><button class="btn" id="hint" ${G.hint?'disabled':''}>ヒント（読み）</button>${G.hint?`<p class="hint">${esc(q[2])}</p>`:''}</div>`}
+    <div id="after"></div>`;
+  app.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{const k=G.fill.indexOf(null);if(k<0||G.done)return;G.fill[k]=+b.dataset.i;render();});
+  app.querySelectorAll('.cell').forEach(b=>b.onclick=()=>{if(G.done)return;G.fill[+b.dataset.k]=null;render();});
+  const ok=document.getElementById('ok'); if(ok)ok.onclick=judge;
+  const h=document.getElementById('hint'); if(h)h.onclick=()=>{G.hint=true;render();};
+  if(d)explain();
+}
+function judge(){
+  const q=QS[G.list[G.i]], mine=G.fill.map(t=>G.tiles[t]).join('');
+  G.done=true; G.ok=mine===q[1]; G.mine=mine; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(G.list[G.i]);
+  track('answer_question',{category:'sanji',question:q[0].replace('□□□','{'+q[1]+'}'),correct:G.ok,picked:mine,hint:G.hint});
+  render();
+}
+function explain(){
+  const q=QS[G.list[G.i]], last=G.i===G.n-1;
+  // 正解をマスに見せる
+  app.querySelectorAll('.cell').forEach((c,k)=>{c.textContent=q[1][k];});
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="verdict ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</div>
+    <div class="word"><b>${esc(q[1])}</b><span>${esc(q[2])}</span></div>
+    <div class="tip">${esc(q[3])}<small>${esc(q[5])}</small></div>
+    ${G.ok?'':`<div class="mine">あなたの答え <b>${esc(G.mine)}</b></div>`}
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:PAID?'sanji-p-'+course:'sanji-'+n,success:s===n,score:s,total:n});
+  if(PAID){ if(/^[123]$/.test(course)&&(best['lv'+course]==null||s>best['lv'+course])){best['lv'+course]=s;store.set('sanji-p-best',best);} }
+  else if(n===10||n===20){ if(best['r'+n]==null||s>best['r'+n]){best['r'+n]=s;store.set('sanji-best',best);} }
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！三字熟語はばっちりです。':r>=.6?'よくできました。まちがえた熟語を、意味と一緒に覚えよう。':'読みと意味をセットで覚えると、漢字が思いうかびやすくなります。'}</p>
+    <div class="row"><button class="btn go" id="again">コースをえらぶ</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた熟語</div>${G.miss.map(k=>{const q=QS[k];return `<div class="rv"><b>${esc(q[1])}</b>${esc(q[2])}<br>${esc(q[3])}</div>`;}).join('')}`:''}`;
+  document.getElementById('again').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>start(G.miss.slice());
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
