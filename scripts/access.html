@@ -3,7 +3,7 @@
    期限内のときだけ問題データを受け取ります。この端末には「利用コード・期限・通行証」だけを保存します。 */
 (function(){
 var API=__API__, KEY='mn-access', DEV='mn-device';
-var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika','思考力':'sansu'}, SNAME={kokugo:'国語',sansu:'算数',shakai:'社会',rika:'理科',all:'全教科'};
+var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika','思考力':'shikou'}, SNAME={kokugo:'国語',sansu:'算数',shakai:'社会',rika:'理科',shikou:'思考力',all:'全教科'};
 var PNAME={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
 function ls(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}

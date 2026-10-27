@@ -10,7 +10,7 @@
 //   変数           SITE_URL（例 https://xxxx.github.io/manabi）, MAIL_FROM（任意。例 まなびゲーム箱 <info@example.com>）
 
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
-const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", all: "全教科" };
+const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科" };
 const PERIODS = {
   d1: { name: "1日", ms: 1 * 864e5 },
   w1: { name: "1週間", ms: 7 * 864e5 },
@@ -22,13 +22,14 @@ const PRICES = {
   sansu: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   rika: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   shakai: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  shikou: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   all: { d1: 2000, w1: 4000, m1: 8000, y1: 40000 },
 };
 // ---- 有料版のゲームと教科 ----
 const GAMES = {
   chusho: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
-  "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", hayasa: "sansu", menseki: "sansu", kisoku: "sansu", tenkai: "sansu", ronri: "sansu",
+  "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", hayasa: "sansu", menseki: "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou",
   nara: "shakai", kamakura: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
