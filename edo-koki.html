@@ -1,3 +1,20 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>window.mnTrack=function(n,p){try{if(window.gtag)gtag('event',n,Object.assign({game_title:document.title},p||{}));}catch(e){}};</script><script>(function(){var KEY='mn-history',S=null,base=window.mnTrack;
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}
+function load(){try{var h=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(h)?h:[];}catch(e){return [];}}
+function save(){if(!S||(!S.a&&S.s==null))return;try{var h=load(),i=-1;for(var j=h.length-1;j>=0&&j>=h.length-60;j--){if(h[j].id===S.id){i=j;break;}}
+var e={id:S.id,t:S.t,e:Date.now(),f:file(),g:document.title,c:S.c,a:S.a,k:S.k,m:S.m};if(S.s!=null){e.s=S.s;if(S.n!=null)e.n=S.n;else e.star=1;}
+if(i>=0)h[i]=e;else h.push(e);if(h.length>3000)h=h.slice(-3000);localStorage.setItem(KEY,JSON.stringify(h));}catch(x){}}
+function begin(c){save();S={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),c:c||'',a:0,k:0,m:[],s:null,n:null};}
+window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}try{
+if(n==='level_start')begin(p.level_name);
+else if(n==='answer_question'){if(!S)begin('');S.a++;if(p.correct)S.k++;else if(p.question!=null&&S.m.length<30)S.m.push(String(p.question).slice(0,80));}
+else if(n==='level_end'){if(!S)begin(p.level_name);if(p.level_name)S.c=String(p.level_name);if(typeof p.score==='number'){S.s=p.score;S.n=typeof p.total==='number'?p.total:null;}save();S=null;}
+}catch(e){}};
+addEventListener('pagehide',save);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save();});})();</script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
 <title>江戸時代（後期）クイズ</title>
 
 <meta name="game:subject" content="社会">
@@ -236,10 +253,106 @@ function result(){
 }
 (async()=>{
   if(!PAID){ home(); return; }
-  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  try{const d=await (await fetch('games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
   const saved=store.get('edo3-p-pass','');
   if(saved){ try{ QS=await decrypt(saved); home(); return; }catch(e){ store.set('edo3-p-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
   lockScreen();
 })();
 })();
 </script>
+
+<a href="index.html" style="position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;text-decoration:none;opacity:.88">← ゲーム一覧</a>
+<!-- ご意見ボタン・問題のお知らせ・ワンタップ評価。build.mjs が全ゲームの最後に自動で入れます。 -->
+<style>
+.mnfb-btn{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer}
+.mnfb-sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:100;box-sizing:border-box;width:min(420px,calc(100vw - 24px));background:#fff;color:#1d2b3d;border:1px solid #d6dde7;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.2);padding:14px 16px;font:15px/1.6 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;display:flex;flex-direction:column;gap:10px;text-align:left}
+.mnfb-sheet[hidden]{display:none}
+.mnfb-sheet .mnfb-h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.mnfb-sheet .mnfb-x{border:0;background:none;color:#5d6a7c;font:700 20px/1 system-ui,sans-serif;cursor:pointer;padding:2px 6px}
+.mnfb-sheet .mnfb-note{font-size:12px;color:#5d6a7c;margin:0}
+.mnfb-sheet .mnfb-opt{display:block;width:100%;box-sizing:border-box;text-align:left;border:1px solid #d6dde7;background:#f2f5f9;color:#1d2b3d;border-radius:8px;padding:10px 12px;font:700 15px/1.5 inherit;font-family:inherit;cursor:pointer;text-decoration:none}
+.mnfb-sheet .mnfb-opt small{display:block;font-weight:400;font-size:12px;color:#5d6a7c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mnfb-sheet .mnfb-opt:hover{border-color:#1f3a6e}
+.mnfb-rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mnfb-rate button{border:1px solid #d6dde7;background:#f2f5f9;color:#1d2b3d;border-radius:10px;padding:8px 4px;font:700 13px/1.3 inherit;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.mnfb-rate button span{font-size:26px;line-height:1.1}
+.mnfb-rate button:hover{border-color:#1f3a6e}
+.mnfb-btn:focus-visible,.mnfb-sheet button:focus-visible,.mnfb-sheet a:focus-visible{outline:3px solid #c98a12;outline-offset:2px}
+@media (prefers-color-scheme:dark){
+  .mnfb-sheet{background:#18212d;color:#e4e9f1;border-color:#2a3546}
+  .mnfb-sheet .mnfb-note,.mnfb-sheet .mnfb-x,.mnfb-sheet .mnfb-opt small{color:#9aa6b8}
+  .mnfb-sheet .mnfb-opt,.mnfb-rate button{background:#10151d;color:#e4e9f1;border-color:#2a3546}
+}
+@media print{.mnfb-btn,.mnfb-sheet{display:none!important}}
+</style>
+<script>
+(function(){
+var CFG=null;            // site.json の feedbackForm から作った設定（なければ null）
+var base=window.mnTrack, lastQ=null, lastLv='';
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}
+function clean(s){return String(s).replace(/\{(.+?)\}/g,'【$1】');}
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function formUrl(kind,q){
+  var u=CFG.base+'?usp=pp_url';
+  if(CFG.type)u+='&'+CFG.type+'='+encodeURIComponent(kind==='q'?CFG.machigai:CFG.kansou);
+  if(CFG.game)u+='&'+CFG.game+'='+encodeURIComponent(document.title);
+  if(CFG.question&&q)u+='&'+CFG.question+'='+encodeURIComponent(q);
+  return u;
+}
+var sheet=el('<div class="mnfb-sheet" role="dialog" aria-label="ご意見" hidden></div>');
+document.body.appendChild(sheet);
+function close(){sheet.hidden=true;sheet.innerHTML='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!sheet.hidden)close();});
+// わくの外をさわったら閉じる（評価は「答えなかった」として、その日はもう出さない）
+document.addEventListener('click',function(e){
+  if(sheet.hidden||sheet.contains(e.target)||(e.target.closest&&e.target.closest('.mnfb-btn')))return;
+  if(sheet.dataset.k==='rate')markRated();
+  close();
+},true);
+
+// 1・2. ご意見ボタン（感想フォーム／いまの問題のまちがいを知らせる）
+if(CFG){
+  var btn=el('<button class="mnfb-btn" type="button" aria-haspopup="dialog">ご意見</button>');
+  document.body.appendChild(btn);
+  btn.onclick=function(){
+    if(!sheet.hidden&&sheet.dataset.k==='menu'){close();return;}
+    var q=lastQ||(lastLv?'コース：'+lastLv:'');
+    sheet.dataset.k='menu';
+    sheet.innerHTML='<div class="mnfb-h"><span>ご意見をお聞かせください</span><button class="mnfb-x" type="button" aria-label="閉じる">×</button></div>'
+      +(lastQ?'<a class="mnfb-opt" data-kind="question" target="_blank" rel="noopener" href="'+esc(formUrl('q',q))+'">いまの問題のまちがいを知らせる<small>'+esc(q)+'</small></a>':'')
+      +'<a class="mnfb-opt" data-kind="comment" target="_blank" rel="noopener" href="'+esc(formUrl('k',lastLv?'コース：'+lastLv:''))+'">感想・ご意見を送る<small>'+esc(document.title)+'</small></a>'
+      +'<p class="mnfb-note">保護者の方向けのフォームが新しいページで開きます。お子さんのお名前や学校名は書かないでください。</p>';
+    sheet.hidden=false;
+    sheet.querySelector('.mnfb-x').onclick=close;
+    sheet.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){try{base&&base('feedback_open',{kind:a.dataset.kind});}catch(e){}setTimeout(close,0);});});
+  };
+}
+
+// 3. ワンタップ評価（ゲームを1回終えたとき。同じゲームは1日1回まで）
+function rated(){try{var r=JSON.parse(localStorage.getItem('mn-rated')||'{}');return r[file()]===new Date().toDateString();}catch(e){return false;}}
+function markRated(){try{var r=JSON.parse(localStorage.getItem('mn-rated')||'{}');r[file()]=new Date().toDateString();localStorage.setItem('mn-rated',JSON.stringify(r));}catch(e){}}
+function askRating(lv){
+  if(rated()||!sheet.hidden)return;
+  sheet.dataset.k='rate';
+  sheet.innerHTML='<div class="mnfb-h"><span>このゲーム、どうだった？</span><button class="mnfb-x" type="button" aria-label="閉じる">×</button></div>'
+    +'<div class="mnfb-rate"><button type="button" data-r="fun"><span>😊</span>たのしかった</button><button type="button" data-r="ok"><span>🙂</span>ふつう</button><button type="button" data-r="hard"><span>😣</span>むずかしすぎた</button></div>';
+  sheet.hidden=false;
+  sheet.querySelector('.mnfb-x').onclick=function(){markRated();close();};
+  sheet.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){
+    try{base&&base('game_rating',{rating:b.dataset.r,level_name:lv||''});}catch(e){}
+    markRated();
+    sheet.innerHTML='<div class="mnfb-h"><span>ありがとう！</span></div>';
+    setTimeout(function(){if(sheet.dataset.k==='rate')close();},1200);
+  };});
+}
+window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}
+  try{
+    if(n==='level_start'){lastLv=String(p.level_name||'');if(sheet.dataset.k==='rate')close();}
+    else if(n==='answer_question'){if(sheet.dataset.k==='rate')close();if(p.question!=null)lastQ=clean(p.question).slice(0,120);}
+    else if(n==='level_end'){if(p.level_name)lastLv=String(p.level_name);setTimeout(function(){askRating(lastLv);},700);}
+  }catch(e){}};
+})();
+</script>
+
+</body></html>

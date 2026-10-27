@@ -1,3 +1,106 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>window.mnTrack=function(n,p){try{if(window.gtag)gtag('event',n,Object.assign({game_title:document.title},p||{}));}catch(e){}};</script><script>(function(){var KEY='mn-history',S=null,base=window.mnTrack;
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}
+function load(){try{var h=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(h)?h:[];}catch(e){return [];}}
+function save(){if(!S||(!S.a&&S.s==null))return;try{var h=load(),i=-1;for(var j=h.length-1;j>=0&&j>=h.length-60;j--){if(h[j].id===S.id){i=j;break;}}
+var e={id:S.id,t:S.t,e:Date.now(),f:file(),g:document.title,c:S.c,a:S.a,k:S.k,m:S.m};if(S.s!=null){e.s=S.s;if(S.n!=null)e.n=S.n;else e.star=1;}
+if(i>=0)h[i]=e;else h.push(e);if(h.length>3000)h=h.slice(-3000);localStorage.setItem(KEY,JSON.stringify(h));}catch(x){}}
+function begin(c){save();S={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),c:c||'',a:0,k:0,m:[],s:null,n:null};}
+window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}try{
+if(n==='level_start')begin(p.level_name);
+else if(n==='answer_question'){if(!S)begin('');S.a++;if(p.correct)S.k++;else if(p.question!=null&&S.m.length<30)S.m.push(String(p.question).slice(0,80));}
+else if(n==='level_end'){if(!S)begin(p.level_name);if(p.level_name)S.c=String(p.level_name);if(typeof p.score==='number'){S.s=p.score;S.n=typeof p.total==='number'?p.total:null;}save();S=null;}
+}catch(e){}};
+addEventListener('pagehide',save);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save();});})();</script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>
+/* 有料版の利用コード（まなびゲーム箱）。サーバー（site.json の apiBase）に利用コードを確かめてもらい、
+   期限内のときだけ問題データを受け取ります。この端末には「利用コード・期限・通行証」だけを保存します。 */
+(function(){
+var API="", KEY='mn-access', DEV='mn-device';
+var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika'}, SNAME={kokugo:'国語',sansu:'算数',shakai:'社会',rika:'理科',all:'全教科'};
+var PNAME={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
+function ls(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function device(){var d=ls(DEV,'');if(!d){var a=new Uint8Array(12);crypto.getRandomValues(a);d=Array.from(a,function(b){return b.toString(16).padStart(2,'0');}).join('');lsSet(DEV,d);}return d;}
+function list(){var l=ls(KEY,[]);return Array.isArray(l)?l:[];}
+function save(l){lsSet(KEY,l);}
+function upsert(e){var l=list().filter(function(x){return x.code!==e.code;});l.push(e);save(l);return e;}
+function remove(code){save(list().filter(function(x){return x.code!==code;}));}
+function fmt(t){var d=new Date(t);return (d.getFullYear()!==new Date().getFullYear()?d.getFullYear()+'年':'')+(d.getMonth()+1)+'月'+d.getDate()+'日 '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');}
+function left(t){var ms=t-Date.now();if(ms<=0)return '終了';var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);return d>0?'あと'+d+'日'+(d<3?h+'時間':''):h>0?'あと'+h+'時間'+m+'分':'あと'+m+'分';}
+var ERR={not_found:'この利用コードは見つかりません。文字をもう一度確かめてください。',expired:'この利用コードは、利用期間が終わっています。',revoked:'この利用コードは使えなくなっています。',
+  devices:'この利用コードは、すでに3台の端末で使われています。ほかの端末で使うときは、お問い合わせください。',bad_code:'利用コードは「MN-」から始まる12文字です。',subject:'このプランでは、この教科のゲームは使えません。',
+  no_data:'問題データの準備中です。しばらくしてからもう一度ためしてください。',net:'通信できませんでした。インターネットにつながっているか確かめてください。',noapi:'有料版の販売は準備中です。'};
+function call(path,opt){
+  if(!API)return Promise.reject({error:'noapi'});
+  return fetch(API.replace(/\/$/,'')+path,opt).then(function(r){return r.json().catch(function(){return {};}).then(function(d){if(!r.ok){d=d||{};d.status=r.status;throw d;}return d;});},function(){throw {error:'net'};});
+}
+function activate(code){
+  return call('/api/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,device:device()})})
+    .then(function(d){return upsert({code:d.code,s:d.subject,p:d.period,exp:d.exp,token:d.token});});
+}
+function covers(e,s){return e.s==='all'||e.s===s;}
+function pageSubject(){var m=document.querySelector('meta[name="game:subject"]');return m?SUBJ[m.content]||'':'';}
+/* ゲームのデータを受け取る。使えるプランがなければ {error} を投げる */
+function load(game,subject){
+  var s=subject||pageSubject(), now=Date.now();
+  var cand=list().filter(function(e){return covers(e,s);});
+  var live=cand.filter(function(e){return e.exp>now;}).sort(function(a,b){return b.exp-a.exp;});
+  if(!live.length)return Promise.reject(cand.length?{error:'expired',exp:Math.max.apply(null,cand.map(function(e){return e.exp;}))}:{error:'none'});
+  var i=0, lastErr=null;
+  function tryOne(){
+    if(i>=live.length)return Promise.reject(lastErr||{error:'none'});
+    var e=live[i++];
+    var get=function(tok){return call('/api/pack/'+game,{headers:{Authorization:'Bearer '+tok}});};
+    return get(e.token).catch(function(err){
+      if(err.error==='renew'||err.error==='bad_token') return activate(e.code).then(function(n){return get(n.token);});
+      throw err;
+    }).catch(function(err){
+      if(err.error==='net'||err.error==='no_data')throw err;
+      if(err.error==='expired'){e.exp=Math.min(e.exp,Date.now());upsert(e);}
+      if(err.error==='revoked'||err.error==='not_found')remove(e.code);
+      lastErr=err; return tryOne();
+    });
+  }
+  return tryOne();
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function base(){var p=location.pathname;return p.indexOf('/games/')>=0?'../':'';}
+/* 利用コードを入れる画面。opt: {game, err, onOpen, free(無料版のファイル名)} */
+function lock(el,opt){
+  var s=pageSubject(), err=opt.err||{}, b=base();
+  var msg=err.error==='expired'?'利用期間が終わりました'+(err.exp?'（'+fmt(err.exp)+'まで）':'')+'。続けて使うときは、新しいプランをお買い求めください。':
+          err.error&&err.error!=='none'?(ERR[err.error]||'うまく読みこめませんでした。'):'';
+  el.innerHTML='<div class="mn-lock" style="display:flex;flex-direction:column;gap:12px">'
+   +'<div style="font-size:12px;font-weight:700;letter-spacing:.1em;opacity:.8">有料版</div>'
+   +'<p style="margin:0;font-weight:700">この有料版は「'+esc(SNAME[s]||'')+'」または「全教科」のプランで使えます。購入したときの<b>利用コード</b>を入れてください。</p>'
+   +'<form id="mn-f" autocomplete="off" style="display:flex;flex-direction:column;gap:10px">'
+   +'<label for="mn-code" style="font-weight:700">利用コード</label>'
+   +'<input id="mn-code" inputmode="latin" autocapitalize="characters" spellcheck="false" placeholder="MN-XXXX-XXXX-XXXX" style="font:inherit;font-size:20px;letter-spacing:.05em;padding:10px 12px;border:2px solid currentColor;border-radius:8px;background:transparent;color:inherit;width:100%;box-sizing:border-box;opacity:.9">'
+   +'<p id="mn-err" role="alert" style="margin:0;min-height:1.5em;font-size:14px;color:#c8352d;font-weight:700">'+esc(msg)+'</p>'
+   +'<div><button id="mn-go" type="submit" style="font:inherit;font-weight:700;border:0;border-radius:8px;padding:10px 22px;cursor:pointer;background:var(--fg,#1f2a37);color:var(--surface,#fff)">使う</button></div></form>'
+   +'<div style="border-radius:8px;padding:12px 14px;font-size:14px;background:rgba(127,127,127,.12);line-height:1.8">'
+   +(API?'<a href="'+b+'buy.html?s='+(s||'all')+'" style="font-weight:700;color:inherit">料金プランを見る・購入する</a><br>':'有料版の販売は準備中です。<br>')
+   +'<a href="'+b+'plan.html" style="color:inherit">利用中のプランを確かめる</a>'
+   +(opt.free?'<br>無料版は <a href="'+esc(opt.free)+'" style="color:inherit">こちら</a> で遊べます。':'')+'</div></div>';
+  var f=el.querySelector('#mn-f');
+  f.onsubmit=function(ev){ev.preventDefault();
+    var v=el.querySelector('#mn-code').value, bt=el.querySelector('#mn-go'), er=el.querySelector('#mn-err');
+    if(!v.trim()){er.textContent='利用コードを入れてください。';return;}
+    bt.disabled=true;bt.textContent='確かめています…';
+    activate(v).then(function(e){
+      if(!covers(e,s)){bt.disabled=false;bt.textContent='使う';er.textContent='この利用コードは「'+SNAME[e.s]+'」のプランです。このゲームは「'+SNAME[s]+'」のプランで使えます。';return;}
+      try{window.mnTrack&&mnTrack('unlock',{product:opt.game,plan:e.s+'-'+e.p});}catch(x){}
+      return opt.onOpen();
+    }).catch(function(e){bt.disabled=false;bt.textContent='使う';er.textContent=ERR[e&&e.error]||'うまくいきませんでした。もう一度ためしてください。';});
+  };
+}
+window.mnAccess={api:API,list:list,remove:remove,activate:activate,load:load,lock:lock,fmt:fmt,left:left,SNAME:SNAME,PNAME:PNAME,ERR:ERR,device:device,call:call};
+})();
+</script>
+</head><body>
 <title>特殊算パズル 60ステージ</title>
 <meta name="game:subject" content="算数">
 <meta name="game:unit" content="特殊算">
@@ -410,3 +513,99 @@ function cleared(){
 })();
 })();
 </script>
+
+<a href="index.html" style="position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;text-decoration:none;opacity:.88">← ゲーム一覧</a>
+<!-- ご意見ボタン・問題のお知らせ・ワンタップ評価。build.mjs が全ゲームの最後に自動で入れます。 -->
+<style>
+.mnfb-btn{position:fixed;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer}
+.mnfb-sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:100;box-sizing:border-box;width:min(420px,calc(100vw - 24px));background:#fff;color:#1d2b3d;border:1px solid #d6dde7;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.2);padding:14px 16px;font:15px/1.6 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;display:flex;flex-direction:column;gap:10px;text-align:left}
+.mnfb-sheet[hidden]{display:none}
+.mnfb-sheet .mnfb-h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.mnfb-sheet .mnfb-x{border:0;background:none;color:#5d6a7c;font:700 20px/1 system-ui,sans-serif;cursor:pointer;padding:2px 6px}
+.mnfb-sheet .mnfb-note{font-size:12px;color:#5d6a7c;margin:0}
+.mnfb-sheet .mnfb-opt{display:block;width:100%;box-sizing:border-box;text-align:left;border:1px solid #d6dde7;background:#f2f5f9;color:#1d2b3d;border-radius:8px;padding:10px 12px;font:700 15px/1.5 inherit;font-family:inherit;cursor:pointer;text-decoration:none}
+.mnfb-sheet .mnfb-opt small{display:block;font-weight:400;font-size:12px;color:#5d6a7c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mnfb-sheet .mnfb-opt:hover{border-color:#1f3a6e}
+.mnfb-rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mnfb-rate button{border:1px solid #d6dde7;background:#f2f5f9;color:#1d2b3d;border-radius:10px;padding:8px 4px;font:700 13px/1.3 inherit;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.mnfb-rate button span{font-size:26px;line-height:1.1}
+.mnfb-rate button:hover{border-color:#1f3a6e}
+.mnfb-btn:focus-visible,.mnfb-sheet button:focus-visible,.mnfb-sheet a:focus-visible{outline:3px solid #c98a12;outline-offset:2px}
+@media (prefers-color-scheme:dark){
+  .mnfb-sheet{background:#18212d;color:#e4e9f1;border-color:#2a3546}
+  .mnfb-sheet .mnfb-note,.mnfb-sheet .mnfb-x,.mnfb-sheet .mnfb-opt small{color:#9aa6b8}
+  .mnfb-sheet .mnfb-opt,.mnfb-rate button{background:#10151d;color:#e4e9f1;border-color:#2a3546}
+}
+@media print{.mnfb-btn,.mnfb-sheet{display:none!important}}
+</style>
+<script>
+(function(){
+var CFG=null;            // site.json の feedbackForm から作った設定（なければ null）
+var base=window.mnTrack, lastQ=null, lastLv='';
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}
+function clean(s){return String(s).replace(/\{(.+?)\}/g,'【$1】');}
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function formUrl(kind,q){
+  var u=CFG.base+'?usp=pp_url';
+  if(CFG.type)u+='&'+CFG.type+'='+encodeURIComponent(kind==='q'?CFG.machigai:CFG.kansou);
+  if(CFG.game)u+='&'+CFG.game+'='+encodeURIComponent(document.title);
+  if(CFG.question&&q)u+='&'+CFG.question+'='+encodeURIComponent(q);
+  return u;
+}
+var sheet=el('<div class="mnfb-sheet" role="dialog" aria-label="ご意見" hidden></div>');
+document.body.appendChild(sheet);
+function close(){sheet.hidden=true;sheet.innerHTML='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!sheet.hidden)close();});
+// わくの外をさわったら閉じる（評価は「答えなかった」として、その日はもう出さない）
+document.addEventListener('click',function(e){
+  if(sheet.hidden||sheet.contains(e.target)||(e.target.closest&&e.target.closest('.mnfb-btn')))return;
+  if(sheet.dataset.k==='rate')markRated();
+  close();
+},true);
+
+// 1・2. ご意見ボタン（感想フォーム／いまの問題のまちがいを知らせる）
+if(CFG){
+  var btn=el('<button class="mnfb-btn" type="button" aria-haspopup="dialog">ご意見</button>');
+  document.body.appendChild(btn);
+  btn.onclick=function(){
+    if(!sheet.hidden&&sheet.dataset.k==='menu'){close();return;}
+    var q=lastQ||(lastLv?'コース：'+lastLv:'');
+    sheet.dataset.k='menu';
+    sheet.innerHTML='<div class="mnfb-h"><span>ご意見をお聞かせください</span><button class="mnfb-x" type="button" aria-label="閉じる">×</button></div>'
+      +(lastQ?'<a class="mnfb-opt" data-kind="question" target="_blank" rel="noopener" href="'+esc(formUrl('q',q))+'">いまの問題のまちがいを知らせる<small>'+esc(q)+'</small></a>':'')
+      +'<a class="mnfb-opt" data-kind="comment" target="_blank" rel="noopener" href="'+esc(formUrl('k',lastLv?'コース：'+lastLv:''))+'">感想・ご意見を送る<small>'+esc(document.title)+'</small></a>'
+      +'<p class="mnfb-note">保護者の方向けのフォームが新しいページで開きます。お子さんのお名前や学校名は書かないでください。</p>';
+    sheet.hidden=false;
+    sheet.querySelector('.mnfb-x').onclick=close;
+    sheet.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){try{base&&base('feedback_open',{kind:a.dataset.kind});}catch(e){}setTimeout(close,0);});});
+  };
+}
+
+// 3. ワンタップ評価（ゲームを1回終えたとき。同じゲームは1日1回まで）
+function rated(){try{var r=JSON.parse(localStorage.getItem('mn-rated')||'{}');return r[file()]===new Date().toDateString();}catch(e){return false;}}
+function markRated(){try{var r=JSON.parse(localStorage.getItem('mn-rated')||'{}');r[file()]=new Date().toDateString();localStorage.setItem('mn-rated',JSON.stringify(r));}catch(e){}}
+function askRating(lv){
+  if(rated()||!sheet.hidden)return;
+  sheet.dataset.k='rate';
+  sheet.innerHTML='<div class="mnfb-h"><span>このゲーム、どうだった？</span><button class="mnfb-x" type="button" aria-label="閉じる">×</button></div>'
+    +'<div class="mnfb-rate"><button type="button" data-r="fun"><span>😊</span>たのしかった</button><button type="button" data-r="ok"><span>🙂</span>ふつう</button><button type="button" data-r="hard"><span>😣</span>むずかしすぎた</button></div>';
+  sheet.hidden=false;
+  sheet.querySelector('.mnfb-x').onclick=function(){markRated();close();};
+  sheet.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){
+    try{base&&base('game_rating',{rating:b.dataset.r,level_name:lv||''});}catch(e){}
+    markRated();
+    sheet.innerHTML='<div class="mnfb-h"><span>ありがとう！</span></div>';
+    setTimeout(function(){if(sheet.dataset.k==='rate')close();},1200);
+  };});
+}
+window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}
+  try{
+    if(n==='level_start'){lastLv=String(p.level_name||'');if(sheet.dataset.k==='rate')close();}
+    else if(n==='answer_question'){if(sheet.dataset.k==='rate')close();if(p.question!=null)lastQ=clean(p.question).slice(0,120);}
+    else if(n==='level_end'){if(p.level_name)lastLv=String(p.level_name);setTimeout(function(){askRating(lastLv);},700);}
+  }catch(e){}};
+})();
+</script>
+
+</body></html>

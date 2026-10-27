@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>特定商取引法に基づく表記 | {{SITE_NAME}}</title>
-{{GA}}
+<title>特定商取引法に基づく表記 | まなびゲーム箱</title>
+<script>window.mnTrack=function(n,p){try{if(window.gtag)gtag('event',n,Object.assign({game_title:document.title},p||{}));}catch(e){}};</script>
 <style>
 :root{--bg:#f2f5f9;--surface:#fff;--fg:#1d2b3d;--muted:#5d6a7c;--rule:#d6dde7;--ink:#1f3a6e;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#10151d;--surface:#18212d;--fg:#e4e9f1;--muted:#9aa6b8;--rule:#2a3546;--ink:#8fb0f0;color-scheme:dark}}
@@ -25,11 +25,11 @@ a{color:var(--ink)}
 <main>
 <h1>特定商取引法に基づく表記</h1>
 <table>
-<tr><th>販売事業者</th><td>{{SELLER_NAME}}</td></tr>
-<tr><th>運営責任者</th><td>{{SELLER_MANAGER}}</td></tr>
-<tr><th>所在地</th><td>{{SELLER_ADDRESS}}</td></tr>
-<tr><th>電話番号</th><td>{{SELLER_PHONE}}</td></tr>
-<tr><th>メールアドレス</th><td>{{SELLER_EMAIL}}</td></tr>
+<tr><th>販売事業者</th><td>（site.json の seller.name に書いてください）</td></tr>
+<tr><th>運営責任者</th><td>（site.json の seller.manager）</td></tr>
+<tr><th>所在地</th><td>ご請求があれば、遅滞なく開示します。</td></tr>
+<tr><th>電話番号</th><td>ご請求があれば、遅滞なく開示します。</td></tr>
+<tr><th>メールアドレス</th><td>（site.json の seller.email に書いてください）</td></tr>
 <tr><th>販売価格</th><td><a href="buy.html">料金プラン</a>のページに、教科・利用期間ごとの価格（税込）を表示しています。</td></tr>
 <tr><th>商品代金以外の必要料金</th><td>インターネットの接続にかかる通信料は、お客さまのご負担となります。</td></tr>
 <tr><th>支払方法</th><td>クレジットカードなど、決済サービスStripeの画面に表示される方法</td></tr>
@@ -40,7 +40,7 @@ a{color:var(--ink)}
 <tr><th>返品・キャンセル</th><td>デジタルコンテンツの性質上、購入後のキャンセル・返金はお受けできません。ただし、当サイトの不具合により有料版を使えない場合は、利用期間の延長または返金で対応します。メールでご連絡ください。</td></tr>
 <tr><th>動作環境</th><td>最新版の Safari / Chrome / Edge / Firefox。インターネットに接続した状態でご利用ください。1つの利用コードで3台まで使えます。</td></tr>
 </table>
-<p class="small">{{SELLER_NOTE}}</p>
+<p class="small">所在地・電話番号は、ご請求があればメールでお知らせします。</p>
 <p><a href="buy.html">← 料金プランへ</a>　<a href="index.html">ゲーム一覧へ</a></p>
 </main>
 </body>
