@@ -159,7 +159,10 @@ const REC={
   'suiyoeki-p-rec':{f:'suiyoeki-full.html',total:100},
   'wariai-p-rec':{f:'wariai-full.html',total:100},
   'hayasa-p-rec':{f:'hayasa-full.html',total:100},
-  'menseki-p-rec':{f:'menseki-full.html',total:100}};
+  'menseki-p-rec':{f:'menseki-full.html',total:100},
+  'kisoku-p-rec':{f:'kisoku-full.html',total:100},
+  'tenkai-p-rec':{f:'tenkai-full.html',total:100},
+  'ronri-p-rec':{f:'ronri-full.html',total:100}};
 const STARS={'tokushu-p-stars':{f:'tokushu-puzzle-full.html',total:60},'tokushu-f-stars':{f:'tokushu-puzzle.html',total:null}};
 const state=r=>{if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 // 問題の記録の見せ方（品詞は { } の中が問われた言葉、係り受けは | から後ろを消す）

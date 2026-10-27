@@ -114,7 +114,7 @@ function render(){
     <section class="box"><div class="label">3. 内容を確かめる</div>
       <table class="conf">
         <tr><th>商品</th><td>${esc(document.title.split('|').pop().trim())} 有料版（${esc(P.subjects[sel.s])}）</td></tr>
-        <tr><th>使えるゲーム</th><td>${sel.s==='all'?'すべての教科の有料版':esc(P.subjects[sel.s])+'の有料版すべて'}（${gamesOf(sel.s).length}本）。期間中に追加された有料版も使えます。</td></tr>
+        <tr><th>使えるゲーム</th><td>${sel.s==='all'?'すべての教科の有料版':esc(P.subjects[sel.s])+'の有料版すべて'+(sel.s==='sansu'?'（思考力パズルもふくみます）':'')}（${gamesOf(sel.s).length}本）。期間中に追加された有料版も使えます。</td></tr>
         <tr><th>利用期間</th><td>${esc(P.periods[sel.p])}。はじめて利用コードを入れたときから数えます。</td></tr>
         <tr><th>値段</th><td><span class="total">${yen(price)}</span>（税込）</td></tr>
         <tr><th>自動更新</th><td>ありません。期間が終わったら自動的に使えなくなり、追加の支払いは発生しません。</td></tr>
