@@ -2,21 +2,28 @@
 
 中学受験向けの学習ゲームを集めたサイトです。`games` フォルダにゲームのファイルを入れると、トップページの一覧が自動で更新されます。
 
-## はじめて公開するとき（1回だけ）
+## フォルダのしくみ
 
-1. GitHubにログインし、右上の「＋」から **New repository** を選びます。
-2. Repository name に好きな名前（例：`manabi-games`）を入れ、**Public** を選んで **Create repository** を押します。
-3. 次の画面の「uploading an existing file」をクリックし、このフォルダの中身を**全部**ドラッグして **Commit changes** を押します。
-   - `.github` フォルダは隠しフォルダなので、見えないことがあります。見えない場合は、Macなら Finder で `Command + Shift + .`、Windows ならエクスプローラーの「表示」→「隠しファイル」で表示してから入れてください。
-4. リポジトリの **Settings** → 左のメニューの **Pages** を開き、「Source」を **GitHub Actions** にします。
-5. **Actions** タブを開き、「サイトを公開する」が緑のチェックになるまで1〜2分待ちます。
-6. Settings → Pages に表示されるアドレス（`https://ユーザー名.github.io/manabi-games/`）がサイトです。
+```
+manabi-games/
+├─ index.html・parent.html・buy.html・plan.html・privacy.html・tokushoho.html（サイトの土台）
+├─ site.json（サイトの名前・料金サーバーのアドレスなどの設定）
+├─ games/
+│   ├─ sansu/   算数
+│   ├─ kokugo/  国語
+│   ├─ rika/    理科
+│   ├─ shakai/  社会
+│   └─ shikou/  思考力
+├─ scripts/（サイトを組み立てるプログラム。さわらない）
+├─ server/（有料プランのサーバー。説明は server/SETUP.md）
+└─ .github/workflows/pages.yml（自動で公開するための設定。さわらない）
+```
+
+ファイルを入れたり直したりすると、GitHub Actions が自動でサイトを組み立てて公開します（1〜2分）。公開されたアドレスは `https://ユーザー名.github.io/manabi-games/` です。
 
 ## ゲームを追加するとき
 
-1. リポジトリの `games` フォルダを開き、**Add file** → **Upload files** を選びます。
-2. ゲームのHTMLファイルをドラッグして **Commit changes** を押します。
-3. 1〜2分で一覧に並びます。
+ゲームのHTMLファイルを、その教科のフォルダ（例：算数なら `games/sansu`）に入れます。一覧には自動で並びます。
 
 ゲームの教科と単元は、ファイルの先頭にある次の行で決まります（Claudeに作ってもらうときは「サイト用の情報も入れて」と頼めば入ります）。
 
@@ -28,11 +35,11 @@
 <meta name="description" content="一覧に出る説明文">
 ```
 
-この行がない場合は、フォルダの名前で分類されます（例：`games/算数/図形/ゲーム.html`）。
+この行がない場合は、フォルダの名前で分類されます。
 
 ## ゲームを消す・直すとき
 
-`games` フォルダでファイルを開き、右上の「…」から **Delete file** で消せます。直したファイルは同じ名前でアップロードし直せば置きかわります。
+`games` の中の教科のフォルダでファイルを開き、右上の「…」から **Delete file** で消せます。直したファイルは同じ名前でアップロードし直せば置きかわります。
 
 ## サイトの名前や教科の並び順を変えるとき
 

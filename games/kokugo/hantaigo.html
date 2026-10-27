@@ -1,0 +1,322 @@
+<title>反対語クイズ</title>
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="反対語">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="評論文や説明文によく出る反対語92組を、えらぶ問題と漢字1字をうめる問題で覚えるクイズ。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。慣用句の一文（空らんは原稿用紙のマス）→ 意味 → 札か選択肢。国語シリーズ共通の原稿用紙の赤茶 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --ng:#c8352d; --pick:#eceee8; --gold:#b88a1e;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --ng:#f07468; --pick:#262a28; --gold:#e1b44a; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(30px,8vw,40px);line-height:1.2;margin:0;letter-spacing:.06em}
+.badge{display:inline-block;font-family:var(--body);font-size:12px;font-weight:700;color:var(--surface);background:var(--grid);border-radius:4px;padding:1px 8px;vertical-align:middle;margin-left:8px;letter-spacing:.05em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.h2{font-family:var(--display);font-size:20px;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--rule);background:transparent;border-radius:99px;padding:4px 14px;cursor:pointer;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip:disabled{opacity:.4;cursor:default}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.modes{grid-template-columns:1fr}}
+.mode{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px}
+.mode:hover{border-color:var(--grid)}
+.mode .nm{font-family:var(--display);font-size:20px}
+.mode .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.mode .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:0}
+.bar{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid);transition:width .3s}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.combo{color:var(--grid);font-weight:700;font-size:14px}
+.cat{font-size:12px;font-weight:700;color:var(--grid);border:1px solid var(--grid);border-radius:4px;padding:0 6px}
+.phrase{font-family:var(--kanji);font-weight:600;font-size:clamp(26px,7.5vw,36px);line-height:1.6;text-align:center;text-wrap:balance}
+.blank{display:inline-grid;place-items:center;min-width:1.25em;height:1.25em;padding:0 .1em;border:2px solid var(--grid);background:var(--gridsoft);vertical-align:middle;margin:0 .08em;line-height:1}
+.blank.ok{color:var(--ok);background:var(--surface)} .blank.ng{color:var(--ng);background:var(--surface)}
+.meaning{border-left:4px solid var(--grid);padding:4px 0 4px 14px}
+.meaning .lab{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.meaning p{margin:2px 0 0;font-size:18px;font-weight:700;line-height:1.7}
+.choices{display:grid;gap:10px}
+.ch{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(19px,5.4vw,22px);text-align:left}
+.ch:hover:not(:disabled){border-color:var(--grid)}
+.ch:disabled{cursor:default}
+.ch.right{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.ch.wrong{border-color:var(--ng);color:var(--ng);background:color-mix(in srgb,var(--ng) 8%,var(--surface))}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px;margin:0 auto;width:100%}
+.tile{min-height:56px;border:1px solid var(--rule);border-radius:8px;background:var(--pick);cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(18px,5.6vw,24px);padding:4px;line-height:1.2}
+.tile:hover:not(:disabled){border-color:var(--grid)}
+.tile:disabled{cursor:default;opacity:.45}
+.tile.right{opacity:1;border:2px solid var(--ok);color:var(--ok);background:var(--surface)}
+.tile.wrong{opacity:1;border:2px solid var(--ng);color:var(--ng);background:var(--surface)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.verdict{text-align:center;font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.newmark{font-size:12px;font-weight:700;color:var(--ok);margin-left:6px;font-family:var(--body)}
+.exp{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:15px}
+.exp b{font-family:var(--kanji);font-size:19px}
+.exp .y{color:var(--muted);font-size:13px}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg);text-align:center;line-height:1.1}
+.review{display:grid;gap:10px}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv .w{font-family:var(--kanji);font-weight:600;font-size:20px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;letter-spacing:.06em;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.lock input:focus{border-color:var(--grid);outline:none}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+<style>
+.pair{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.word{font-family:var(--kanji);font-weight:600;font-size:clamp(28px,8vw,40px);line-height:1.3;text-align:center}
+.word small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);font-weight:400;letter-spacing:.08em}
+.arrow{font-size:28px;color:var(--grid);font-weight:700}
+.q{display:inline-grid;place-items:center;min-width:2.4em;min-height:1.3em;border:2px dashed var(--grid);border-radius:6px;color:var(--grid);padding:0 .2em}
+.sq2{display:inline-grid;place-items:center;width:1.2em;height:1.2em;border:2px solid var(--grid);background:var(--gridsoft);vertical-align:middle;line-height:1}
+.sq2.ok{color:var(--ok);background:var(--surface)} .sq2.ng{color:var(--ng);background:var(--surface)}
+.kch{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:0 auto;width:100%}
+.kc{aspect-ratio:1;max-width:100%;border:2px solid var(--rule);border-radius:10px;background:var(--surface);cursor:pointer;font-family:var(--kanji);font-weight:600;font-size:clamp(30px,9vw,42px)}
+.kc:hover:not(:disabled){border-color:var(--grid)}
+.kc:disabled{cursor:default}
+.kc.right{border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.kc.wrong{border-color:var(--ng);color:var(--ng);background:color-mix(in srgb,var(--ng) 8%,var(--surface))}
+.kc.dim{opacity:.4}
+.ch2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ch2 .ch{text-align:center}
+.ex2{display:grid;gap:4px}
+.ex2 b{font-family:var(--kanji);font-size:19px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>反対語クイズ</h1>
+    <p class="lead">「集中」の反対は？ 評論文や説明文によく出る反対語を、えらぶ問題と漢字1字をうめる問題で覚えよう。1回10問です。</p>
+  </header>
+  <main id="app"></main>
+</div>
+<script type="application/json" id="data">[["集中", "しゅうちゅう", "1か所に集まること", "分散", "ぶんさん", "ばらばらに分かれること", "熟語", ""], ["断続", "だんぞく", "とぎれたり続いたりすること", "連続", "れんぞく", "とぎれずに続くこと", "熟語", ""], ["切る", "きる", "つながりをなくす", "つなぐ", "つなぐ", "はなれたものを結びつける", "和語", ""], ["直接", "ちょくせつ", "間に何もはさまないこと", "間接", "かんせつ", "間に何かをはさむこと", "熟語", ""], ["理想", "りそう", "こうあってほしいと思う、いちばんよい状態", "現実", "げんじつ", "実際にある、ありのままの状態", "熟語", ""], ["理論", "りろん", "すじ道を立てて考えた考え方", "実践", "じっせん", "実際に行うこと", "熟語", ""], ["能動", "のうどう", "自分から進んではたらきかけること", "受動", "じゅどう", "ほかからのはたらきを受けること", "熟語", ""], ["積極", "せっきょく", "自分から進んでものごとを行うこと", "消極", "しょうきょく", "自分から進んでは行わないこと", "熟語", ""], ["生産", "せいさん", "物をつくり出すこと", "消費", "しょうひ", "物やお金を使ってなくすこと", "熟語", ""], ["必然", "ひつぜん", "必ずそうなること", "偶然", "ぐうぜん", "思いがけずそうなること", "熟語", ""], ["故意", "こい", "わざとすること", "過失", "かしつ", "不注意でしてしまうこと", "熟語", ""], ["作為", "さくい", "わざと手を加えること", "無作為", "むさくい", "わざと手を加えないこと", "熟語", ""], ["意識", "いしき", "自分で気づいていること", "無意識", "むいしき", "自分では気づいていないこと", "熟語", ""], ["自覚", "じかく", "自分のことを自分でよくわかっていること", "無自覚", "むじかく", "自分のことに気づいていないこと", "熟語", ""], ["正常", "せいじょう", "ふつうで、変わったところがないこと", "異常", "いじょう", "ふつうとちがうこと", "熟語", ""], ["主観", "しゅかん", "自分ひとりの見方や感じ方", "客観", "きゃっかん", "だれから見ても同じになる見方", "熟語", ""], ["信じる", "しんじる", "正しいと思いこむ", "疑う", "うたがう", "本当かどうか、あやしいと思う", "和語", ""], ["恥ずかしい", "はずかしい", "顔向けできない気持ち", "誇らしい", "ほこらしい", "自慢したい気持ち", "和語", ""], ["優越感", "ゆうえつかん", "自分が人よりすぐれていると思う気持ち", "劣等感", "れっとうかん", "自分が人よりおとっていると思う気持ち", "熟語", ""], ["容易", "ようい", "かんたんなこと", "困難", "こんなん", "むずかしく、苦しいこと", "熟語", ""], ["単純", "たんじゅん", "しくみが入り組んでいないこと", "複雑", "ふくざつ", "いろいろなものが入り組んでいること", "熟語", ""], ["楽観", "らっかん", "ものごとがうまくいくと考えること", "悲観", "ひかん", "ものごとがうまくいかないと考えること", "熟語", ""], ["自然", "しぜん", "人の手が加わっていないもの", "人工", "じんこう", "人の手でつくったもの", "熟語", "人為"], ["天災", "てんさい", "地震や台風など、自然が起こす災害", "人災", "じんさい", "人の不注意などが原因で起こる災害", "熟語", ""], ["発信", "はっしん", "情報などを送り出すこと", "受信", "じゅしん", "情報などを受け取ること", "熟語", ""], ["アウトプット", "あうとぷっと", "外に出すこと（出力）", "インプット", "いんぷっと", "中に取り入れること（入力）", "カタカナ", ""], ["デジタル", "でじたる", "数字で区切ってあらわすこと", "アナログ", "あなろぐ", "量を連続した変化であらわすこと", "カタカナ", ""], ["親しい", "したしい", "仲がよく、よく知っている", "疎い", "うとい", "親しくない。よく知らない", "和語", ""], ["自由", "じゆう", "思いのままにできること", "束縛", "そくばく", "自由をうばって、しばりつけること", "熟語", "不自由"], ["権利", "けんり", "自分の考えで、してよいとされること", "義務", "ぎむ", "しなければならないこと", "熟語", ""], ["利益", "りえき", "もうけ。ためになること", "損失", "そんしつ", "損をすること", "熟語", ""], ["好都合", "こうつごう", "都合がよいこと", "不都合", "ふつごう", "都合が悪いこと", "熟語", ""], ["許可", "きょか", "してよいと認めること", "禁止", "きんし", "してはいけないと止めること", "熟語", ""], ["私的", "してき", "個人にかかわること", "公的", "こうてき", "社会全体にかかわること", "熟語", ""], ["先天的", "せんてんてき", "生まれつきそなわっていること", "後天的", "こうてんてき", "生まれてから身についたこと", "熟語", ""], ["流行る", "はやる", "世の中で広く行われる", "廃れる", "すたれる", "使われなくなり、おとろえる", "和語", ""], ["感情", "かんじょう", "喜びやいかりなどの気持ち", "理性", "りせい", "すじ道を立てて考える力", "熟語", ""], ["肉体", "にくたい", "人の体", "精神", "せいしん", "人の心のはたらき", "熟語", ""], ["物質", "ぶっしつ", "形があり、目に見えたりさわれたりするもの", "精神", "せいしん", "人の心のはたらき", "熟語", ""], ["フィジカル", "ふぃじかる", "体の。肉体的な", "メンタル", "めんたる", "心の。精神的な", "カタカナ", ""], ["独創", "どくそう", "自分の考えで新しいものをつくり出すこと", "模倣", "もほう", "まねをすること", "熟語", ""], ["玄人", "くろうと", "その道に通じた専門家", "素人", "しろうと", "その道の経験が少ない人", "熟語", ""], ["プロフェッショナル", "ぷろふぇっしょなる", "それを仕事にしている専門家", "アマチュア", "あまちゅあ", "趣味として行う人", "カタカナ", ""], ["一様", "いちよう", "みな同じようであること", "多様", "たよう", "いろいろな種類があること", "熟語", ""], ["一方向", "いちほうこう", "一方から一方へだけ伝わること", "双方向", "そうほうこう", "おたがいに伝え合うこと", "熟語", ""], ["真", "しん", "本当であること", "偽", "ぎ", "うそであること", "熟語", ""], ["目的", "もくてき", "めざすところ", "手段", "しゅだん", "目的をはたすためのやり方", "熟語", ""], ["当事者", "とうじしゃ", "そのことに直接かかわっている人", "第三者", "だいさんしゃ", "そのことに直接かかわっていない人", "熟語", ""], ["過剰", "かじょう", "多すぎること", "不足", "ふそく", "たりないこと", "熟語", ""], ["尊敬", "そんけい", "人をすぐれていると認めて、うやまうこと", "軽蔑", "けいべつ", "人をばかにして、見下すこと", "熟語", ""], ["謙虚", "けんきょ", "ひかえめで、すなおなこと", "傲慢", "ごうまん", "えらそうにして、人を見下すこと", "熟語", ""], ["へりくだる", "へりくだる", "自分を低くして、相手をうやまう", "おごる", "おごる", "いい気になって、えらそうにする", "和語", ""], ["絶対", "ぜったい", "ほかと比べなくても成り立つこと", "相対", "そうたい", "ほかと比べて成り立つこと", "熟語", ""], ["中心", "ちゅうしん", "まん中。大事なところ", "周縁", "しゅうえん", "まわり。ふちのほう", "熟語", ""], ["形式", "けいしき", "外から見た形や決まり", "内容", "ないよう", "中身", "熟語", "実質"], ["外的", "がいてき", "外にかかわること", "内的", "ないてき", "心の中にかかわること", "熟語", ""], ["名目", "めいもく", "表向きの名前や理由", "実質", "じっしつ", "実際の中身", "熟語", ""], ["過去", "かこ", "過ぎ去った時", "未来", "みらい", "これから先の時", "熟語", ""], ["長所", "ちょうしょ", "すぐれているところ", "短所", "たんしょ", "おとっているところ", "熟語", ""], ["開始", "かいし", "始めること", "終了", "しゅうりょう", "終わること", "熟語", ""], ["明示", "めいじ", "はっきりと示すこと", "暗示", "あんじ", "それとなく示すこと", "熟語", ""], ["増加", "ぞうか", "数や量がふえること", "減少", "げんしょう", "数や量がへること", "熟語", ""], ["近づく", "ちかづく", "そばに寄っていく", "遠のく", "とおのく", "はなれて遠くなる", "和語", ""], ["収入", "しゅうにゅう", "入ってくるお金", "支出", "ししゅつ", "出ていくお金", "熟語", ""], ["外向的", "がいこうてき", "心が外に向かい、人と交わるのが好きなこと", "内向的", "ないこうてき", "心が内に向かい、ひかえめなこと", "熟語", ""], ["楽しい", "たのしい", "心がうきうきする", "苦しい", "くるしい", "がまんできないほどつらい", "和語", ""], ["強気", "つよき", "自信をもって、強い態度をとること", "弱気", "よわき", "自信がなく、弱い態度になること", "熟語", ""], ["既知", "きち", "すでに知られていること", "未知", "みち", "まだ知られていないこと", "熟語", ""], ["共通点", "きょうつうてん", "同じところ", "相違点", "そういてん", "ちがうところ", "熟語", ""], ["本音", "ほんね", "本当の気持ち", "建前", "たてまえ", "表向きの考え", "熟語", ""], ["対等関係", "たいとうかんけい", "立場に上下のない関係", "上下関係", "じょうげかんけい", "立場に上と下がある関係", "熟語", ""], ["質", "しつ", "中身のよしあし", "量", "りょう", "多い少ないの度合い", "熟語", ""], ["同じ", "おなじ", "ちがいがない", "異なる", "ことなる", "ちがっている", "和語", ""], ["肯定", "こうてい", "そのとおりだと認めること", "否定", "ひてい", "そうではないと打ち消すこと", "熟語", ""], ["安定", "あんてい", "落ちついて変わらないこと", "変動", "へんどう", "変わり動くこと", "熟語", ""], ["心強い", "こころづよい", "たよりになって安心だ", "心細い", "こころぼそい", "たよるものがなく不安だ", "和語", ""], ["安心", "あんしん", "心配がないこと", "不安", "ふあん", "心配で落ちつかないこと", "熟語", ""], ["満足", "まんぞく", "十分で、不満がないこと", "不満", "ふまん", "満足できないこと", "熟語", ""], ["安全", "あんぜん", "危なくないこと", "危険", "きけん", "危ないこと", "熟語", ""], ["全体", "ぜんたい", "ひとまとまりのすべて", "部分", "ぶぶん", "全体の中の一部", "熟語", ""], ["根幹", "こんかん", "ものごとのいちばん大事なところ", "枝葉", "しよう", "大事でない細かいところ", "熟語", ""], ["個人", "こじん", "ひとりの人", "集団", "しゅうだん", "多くの人の集まり", "熟語", ""], ["具体", "ぐたい", "形や内容がはっきりしていること", "抽象", "ちゅうしょう", "いくつかのものから共通点をぬき出して考えること", "熟語", ""], ["まとめる", "まとめる", "ばらばらのものを一つにする", "分ける", "わける", "一つのものをいくつかにする", "和語", ""], ["総合", "そうごう", "いくつかのものを一つにまとめること", "分析", "ぶんせき", "ものごとを細かく分けて調べること", "熟語", ""], ["広げる", "ひろげる", "はばや範囲を大きくする", "狭める", "せばめる", "はばや範囲を小さくする", "和語", ""], ["普通", "ふつう", "どこにでもあること", "特別", "とくべつ", "ふつうとちがうこと", "熟語", ""], ["一般", "いっぱん", "広く全体に当てはまること", "特殊", "とくしゅ", "ふつうとちがっていること", "熟語", ""], ["自己", "じこ", "自分自身", "他者", "たしゃ", "自分以外の人", "熟語", ""], ["得る", "える", "手に入れる", "失う", "うしなう", "なくす", "和語", ""], ["集まる", "あつまる", "一か所に寄ってくる", "散る", "ちる", "ばらばらになる", "和語", ""], ["問う", "とう", "たずねる", "答える", "こたえる", "たずねられたことに返事をする", "和語", ""]]</script>
+
+<script>
+(function(){
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* データ: [語A, 読みA, 意味A, 語B, 読みB, 意味B, 種類, 別の反対語] */
+const PAID=false;
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let P=[], shopUrl='';
+const ROUND=10, PREFIX=PAID?'hantaigo-p':'hantaigo';
+let opp={}, allWords=[], typeOf={}, fillable=[];
+const isKanji=w=>/^[\u4e00-\u9fff々]+$/.test(w);
+function init(data){
+  P=data; opp={};
+  const addOpp=(a,b)=>{(opp[a]=opp[a]||new Set()).add(b);};
+  P.forEach(p=>{addOpp(p[0],p[3]);addOpp(p[3],p[0]);if(p[7]){addOpp(p[0],p[7]);addOpp(p[7],p[0]);}});
+  allWords=[...new Set(P.flatMap(p=>[p[0],p[3]]))];
+  typeOf={};P.forEach(p=>{typeOf[p[0]]=p[6];typeOf[p[3]]=p[6];});
+  fillable=P.filter(p=>isKanji(p[0])&&isKanji(p[3])&&p[0].length>=2&&p[3].length>=2);
+}
+const MODES={choice:['えらぶ','言葉の反対語を、4つの中からえらぶ。'],fill:['1字うめる','反対語の、□に入る漢字1字をえらぶ。']};
+let rec=store.get(PREFIX+'-rec',{});
+const rk=p=>p[0]+'⇔'+p[3];
+const saveRec=()=>store.set(PREFIX+'-rec',rec);
+const state=p=>{const r=rec[rk(p)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const TYPES={all:['ぜんぶ',p=>true],熟語:['漢字の言葉',p=>p[6]==='熟語'],打消し:['不・無・非・未がつく言葉',p=>p[6]==='打消し'],和語:['動き・ようすの言葉',p=>p[6]==='和語'],カタカナ:['カタカナ語',p=>p[6]==='カタカナ'],
+  ...(PAID?{weak:['にがて',p=>state(p)==='weak'],fresh:['まだやっていない',p=>state(p)==='new']}:{})};
+const PAIDLINK=`<a class="paid" href="hantaigo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>反対語クイズ 入試対策編</b>（有料版）</span><span class="pd">入試でよく問われる形の反対語を196組。「不・無・非・未」がつく言葉も。覚えた組の記録と、苦手だけの復習つき。</span></a>`;
+async function decrypt(pass){
+  const p=JSON.parse(document.getElementById('data').textContent);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm(pass)),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(p.salt),iterations:p.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(p.iv)},k,b64(p.data))));
+}
+function lockScreen(msg){
+  app.innerHTML=`<section class="box">
+    <h2 class="h2">合言葉を入れてください</h2>
+    <p class="note" style="font-size:14px">ご購入時にお知らせした合言葉を入れると、全196組で遊べます。一度入れれば、この端末では次から入力はいりません。</p>
+    <form id="f" class="lock" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <label for="pass" style="font-weight:700">合言葉</label>
+      <input id="pass" name="pass" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="例：hantai-xxxx-xxxx">
+      <p class="err" id="err" role="alert">${msg||''}</p>
+      <div class="row" style="justify-content:flex-start"><button class="btn go" id="open" type="submit">ひらく</button></div>
+    </form>
+    <div class="shop">合言葉をお持ちでない方へ：${shopUrl?`<a href="${esc(shopUrl)}" target="_blank" rel="noopener">こちらから購入できます</a>`:'販売ページは準備中です。'}<br>無料版は <a href="hantaigo.html">反対語クイズ</a> で遊べます。</div>
+  </section>`;
+  document.getElementById('f').onsubmit=async e=>{
+    e.preventDefault();
+    const v=document.getElementById('pass').value; if(!norm(v)){document.getElementById('err').textContent='合言葉を入れてください。';return;}
+    const bt=document.getElementById('open'); bt.disabled=true; bt.textContent='確かめています…';
+    try{ init(await decrypt(v)); store.set(PREFIX+'-pass',v); track('unlock',{product:'hantaigo'}); home(); }
+    catch(err){ bt.disabled=false; bt.textContent='ひらく'; document.getElementById('err').textContent='合言葉がちがいます。全角・半角や、つづりを確かめてもう一度入れてください。'; }
+  };
+}
+let theme='all', G=null, best=store.get(PREFIX+'-best',{});
+
+function home(){
+  G=null;
+  let recHTML='';
+  if(PAID){
+    const cnt={master:0,weak:0,new:0,try:0}; P.forEach(p=>cnt[state(p)]++);
+    recHTML=`<div class="master"><div class="top"><span class="h2">覚えた反対語</span><span class="cnt">${cnt.master}<small> / ${P.length}組</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/P.length*100}%"></i><i class="w" style="width:${cnt.weak/P.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>`;
+  }
+  app.innerHTML=`<section class="box">${recHTML}
+    <div><div class="h2" style="margin-bottom:8px">出題する言葉</div>
+      <div class="chips">${Object.entries(TYPES).filter(([k,[nm,f]])=>k==='weak'||k==='fresh'||P.filter(f).length).map(([k,[nm,f]])=>{const n=P.filter(f).length;return `<button class="chip" id="th-${k}" data-t="${k}" aria-pressed="${k===theme}" ${n?'':'disabled'}>${nm}（${n}組）</button>`;}).join('')}</div></div>
+    <div><div class="h2" style="margin-bottom:8px">あそびかた</div>
+      <div class="modes">${Object.entries(MODES).map(([k,[nm,ds]])=>{const n=pool(k).length;return `<button class="mode" id="mode-${k}" data-m="${k}" ${n?'':'disabled'}><span class="nm">${nm}</span><span class="ds">${ds}${n?'':'（この言葉では遊べません）'}</span><span class="best">${best[k+'-'+theme]!=null?`ベスト ${best[k+'-'+theme]}/${Math.min(ROUND,n)}`:''}</span></button>`;}).join('')}</div></div>
+    <p class="note">「積極⇔消極」のように1字だけちがう組や、「主観⇔客観」のように形がにた組は、漢字ごと覚えると入試で役立ちます。</p>
+    ${PAID?'<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>':PAIDLINK}
+  </section>`;
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();home();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{theme=b.dataset.t;home();});
+  app.querySelectorAll('.mode').forEach(b=>b.onclick=()=>start(b.dataset.m));
+}
+function pool(mode){return (mode==='fill'?fillable:P).filter(TYPES[theme][1]);}
+function makeQ(p,mode){
+  let flip=Math.random()<.5;
+  if(mode==='fill'){const bb=flip?p[0]:p[3], aa=flip?p[3]:p[0]; if([...bb].every(ch=>aa.includes(ch)))flip=!flip;}
+  const [a,ya,ma,b,yb,mb]=flip?[p[3],p[4],p[5],p[0],p[1],p[2]]:[p[0],p[1],p[2],p[3],p[4],p[5]];
+  const q={p,a,ya,ma,b,yb,mb};
+  if(mode==='choice'){
+    const okW=opp[a];
+    const cand=shuffle(allWords.filter(w=>w!==a&&!okW.has(w)));
+    const same=cand.filter(w=>typeOf[w]===typeOf[a]), other=cand.filter(w=>typeOf[w]!==typeOf[a]);
+    q.ch=shuffle([b,...[...same,...other].slice(0,3)]);
+  } else {
+    // aと共通でない字の位置をうめる（積極→消極なら「消」）
+    let pos=[...b].findIndex((c,i)=>!a.includes(c)); if(pos<0)pos=0;
+    q.pos=pos; q.right=b[pos];
+    const pool=shuffle([...new Set(P.flatMap(x=>[...x[0],...x[3]]).filter(c=>isKanji(c)&&c!==q.right&&!b.includes(c)))]);
+    // ほかの字を入れると、別の反対語ができてしまう場合はのぞく
+    const ok=c=>{const w=b.slice(0,pos)+c+b.slice(pos+1);return !(opp[a]&&opp[a].has(w));};
+    q.ch=shuffle([q.right,...pool.filter(ok).slice(0,3)]);
+  }
+  return q;
+}
+function start(mode,list){
+  const src=list||shuffle(pool(mode)).slice(0,ROUND);
+  G={mode,qs:src.map(p=>makeQ(p,mode)),i:0,score:0,combo:0,maxCombo:0,miss:[],done:false,newly:[],retry:!!list};
+  track('level_start',{level_name:`${PREFIX}-${mode}-${theme}`});
+  show();
+}
+const bar=()=>`<div class="bar"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.qs.length*100}%"></i></div><span class="nums">${G.i+1} / ${G.qs.length}</span>${G.combo>=2?`<span class="combo">${G.combo}連続</span>`:''}</div>`;
+function fillWord(q,shown,cls){return [...q.b].map((c,i)=>i===q.pos?`<span class="sq2 ${cls||''}">${shown?esc(shown):''}</span>`:esc(c)).join('');}
+function show(){
+  const q=G.qs[G.i];
+  if(G.mode==='choice'){
+    app.innerHTML=`<section class="box">${bar()}
+      <div class="pair"><div class="word">${esc(q.a)}<small>${esc(q.ya)}</small></div><span class="arrow">⇔</span><div class="word"><span class="q" id="ans">？</span></div></div>
+      <p class="note" style="text-align:center">「${esc(q.a)}」の反対の意味の言葉は？</p>
+      <div class="choices ch2">${q.ch.map((c,j)=>`<button class="ch" id="ch${j}" data-j="${j}">${esc(c)}</button>`).join('')}</div>
+      <div id="after"></div></section>`;
+    app.querySelectorAll('.ch').forEach(b=>b.onclick=()=>judge(+b.dataset.j));
+  } else {
+    app.innerHTML=`<section class="box">${bar()}
+      <div class="pair"><div class="word">${esc(q.a)}<small>${esc(q.ya)}</small></div><span class="arrow">⇔</span><div class="word" id="fw">${fillWord(q)}<small>${esc(q.yb)}</small></div></div>
+      <p class="note" style="text-align:center">□に入る漢字は？</p>
+      <div class="kch">${q.ch.map((c,j)=>`<button class="kc" id="kc${j}" data-j="${j}">${esc(c)}</button>`).join('')}</div>
+      <div id="after"></div></section>`;
+    app.querySelectorAll('.kc').forEach(b=>b.onclick=()=>judge(+b.dataset.j));
+  }
+}
+function judge(j){
+  if(G.done)return; G.done=true;
+  const q=G.qs[G.i];
+  const right=G.mode==='choice'?q.b:q.right, ok=q.ch[j]===right;
+  const sel=G.mode==='choice'?'.ch':'.kc';
+  app.querySelectorAll(sel).forEach((b,k)=>{b.disabled=true;if(q.ch[k]===right)b.classList.add('right');else if(k===j)b.classList.add('wrong');else if(sel==='.kc')b.classList.add('dim');});
+  if(G.mode==='choice')document.getElementById('ans').outerHTML=`<span>${esc(q.b)}</span>`;
+  else document.getElementById('fw').innerHTML=`${fillWord(q,right,ok?'ok':'ng')}<small>${esc(q.yb)}</small>`;
+  let nowMaster=false;
+  if(PAID){const before=state(q.p);const r=rec[rk(q.p)]||[0,0]; r[ok?0:1]++; rec[rk(q.p)]=r; saveRec(); nowMaster=state(q.p)==='master'&&before!=='master'; if(nowMaster)G.newly.push(q.p);}
+  if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(q.p);}
+  track('answer_question',{category:`${PREFIX}-${G.mode}-${q.p[6]}`,question:`${q.a}-${q.b}`,correct:ok});
+  const alt=[...opp[q.a]].filter(w=>w!==q.b);
+  const last=G.i===G.qs.length-1;
+  document.getElementById('after').innerHTML=`<div class="verdict ${ok?'ok':'ng'}">${ok?'正解！':'ざんねん'}${nowMaster?'<span class="newmark">覚えた！</span>':''}</div>
+    <div class="exp ex2"><div><b>${esc(q.a)}</b>（${esc(q.ya)}）…${esc(q.ma)}</div><div><b>${esc(q.b)}</b>（${esc(q.yb)}）…${esc(q.mb)}</div>${alt.length?`<div class="note" style="font-size:13px">「${esc(q.a)}」の反対語には「${alt.map(esc).join('」「')}」もあります。</div>`:''}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ G.done=false; if(++G.i<G.qs.length)show(); else result(); }
+function result(){
+  const n=G.qs.length,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  const k=G.mode+'-'+theme; let isNew=false;
+  if(!G.retry&&(best[k]==null||s>best[k])){best[k]=s;store.set(PREFIX+'-best',best);isNew=true;}
+  track('level_end',{level_name:`${PREFIX}-${G.mode}-${theme}`,success:s===n,score:s,total:n});
+  app.innerHTML=`<section class="box">
+    <h2 class="h2">${MODES[G.mode][0]}・${TYPES[theme][0]}の結果</h2>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${PAID?`${G.newly.length?`新しく${G.newly.length}組を覚えました。`:''}覚えた反対語は ${P.filter(p=>state(p)==='master').length} / ${P.length}組です。`:(r===1?'全問正解！反対語はばっちりです。':r>=.6?'よくできました。まちがえた組を、意味といっしょに見直そう。':'2つの言葉の意味をセットで覚えると、ぐっと解きやすくなります。')}${G.maxCombo>=3?`　最高${G.maxCombo}連続正解！`:''}${isNew&&s>0?'　自己ベスト更新！':''}</p>
+    <div class="row" style="justify-content:flex-start"><button class="btn go" id="again">もう一度</button>${G.miss.length?'<button class="btn" id="retry">まちがえた組だけ</button>':''}<button class="btn" id="home">はじめにもどる</button></div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="h2" style="font-size:17px">おぼえておこう</div><div class="review">${G.miss.map(p=>`<div class="rv"><span class="w">${esc(p[0])} ⇔ ${esc(p[3])}</span><div>${esc(p[0])}：${esc(p[2])}／${esc(p[3])}：${esc(p[5])}</div></div>`).join('')}</div>`:''}
+  </section>`;
+  document.getElementById('again').onclick=()=>start(G.mode);
+  document.getElementById('home').onclick=home;
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>start(G.mode,shuffle(G.miss));
+}
+document.addEventListener('keydown',e=>{
+  if(!G||G.done)return;
+  const k={'1':0,'2':1,'3':2,'4':3}[e.key]; if(k!=null)judge(k);
+});
+(async()=>{
+  if(!PAID){ init(JSON.parse(document.getElementById('data').textContent)); home(); return; }
+  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  const saved=store.get(PREFIX+'-pass','');
+  if(saved){ try{ init(await decrypt(saved)); home(); return; }catch(e){ store.set(PREFIX+'-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
+  lockScreen();
+})();
+})();
+</script>

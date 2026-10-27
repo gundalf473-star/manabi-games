@@ -1,0 +1,278 @@
+<title>百人一首クイズ</title>
+
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="百人一首">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="百人一首の上の句を読んで、つづく下の句を4まいの取り札からえらぶクイズ。5首。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上の句（読み札）→ 縦書きの取り札4まい → 歌の全文・作者・意味 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --grid:#c4553a; --gridsoft:#f6e4de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --pick:#eceee8; --gold:#b88a1e;
+  --card:#fbf7ec; --cardedge:#c9b98f;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45;
+  --card:#26231b; --cardedge:#6b5f42; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --grid:#e47a5f; --gridsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45;
+  --card:#26231b; --cardedge:#6b5f42; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0;letter-spacing:.06em}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--grid);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.label{font-size:12px;font-weight:700;color:var(--grid);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--grid)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.yomi{background:var(--card);border:2px solid var(--cardedge);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.yomi .au{font-size:13px;color:var(--muted);font-weight:700}
+.yomi .tx{font-family:var(--kanji);font-weight:600;font-size:clamp(20px,5.6vw,26px);line-height:1.6}
+.yomi .tx span{display:inline-block;margin-right:.6em}
+.yomi .tx .blank{color:var(--muted);letter-spacing:.2em}
+.q{margin:0;font-size:15px;font-weight:700}
+.fuda{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.fuda.sk .fd{font-size:clamp(13px,3.7vw,17px)}
+.fuda.sk .fd .v{gap:.2em}
+.fd{background:var(--card);border:2px solid var(--cardedge);border-radius:8px;cursor:pointer;padding:10px 4px;display:flex;justify-content:center;min-height:190px;overflow:hidden;font-family:var(--kanji);font-weight:600;font-size:clamp(15px,4.4vw,19px);line-height:1.5;color:var(--fg)}
+.fd .v{writing-mode:vertical-rl;text-orientation:upright;display:flex;flex-direction:column;gap:.3em;letter-spacing:.04em;line-height:1.25}
+.fd:hover:not(:disabled){border-color:var(--grid)}
+.fd:disabled{cursor:default;opacity:.4}
+.fd.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok);box-shadow:0 0 0 2px var(--ok)}
+.fd.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.verdict{font-family:var(--display);font-size:24px;line-height:1.3}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.uta{font-family:var(--kanji);font-weight:600;font-size:clamp(17px,4.8vw,21px);line-height:1.7;margin:0}
+.uta .lo{color:var(--ok)}
+.meta{font-size:13px;color:var(--muted);font-weight:700}
+.tip{border-left:4px solid var(--grid);padding:4px 0 4px 12px;font-size:15px}
+.mine{background:var(--bg);border-radius:8px;padding:8px 12px;font-size:14px}
+.mine b{font-family:var(--kanji)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.howto{margin:0;padding-left:1.3em;font-size:15px;display:grid;gap:4px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:99px;padding:3px;background:var(--surface)}
+.seg button{border:0;background:none;border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--surface)}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.courses{grid-template-columns:1fr}}
+.course{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.course:hover:not(:disabled){border-color:var(--grid)}
+.course:disabled{opacity:.4;cursor:default}
+.course .nm{font-family:var(--display);font-size:19px}
+.course .ds{font-size:13px;color:var(--muted);line-height:1.5}
+.course .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px}
+.seal{width:92px;height:92px;border-radius:50%;border:5px solid var(--grid);color:var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px}
+.rv b{font-family:var(--kanji);font-size:16px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--grid);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--gridsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--grid)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--grid);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>百人一首クイズ</h1>
+    <p class="lead">上の句を読んで、つづく下の句の札をえらぼう。全5首。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 歌のデータ: n=歌番号, au=作者, k=上の句（5・7・5、空白で区切る）, s=下の句（7・7）, m=意味, x=1 は無料版で「まぎらわしい札」にだけ使う歌 */
+const PAID=false;
+let QS=[{"n": 1, "au": "天智天皇", "k": "秋の田の かりほの庵の 苫をあらみ", "s": "わが衣手は 露にぬれつつ", "m": "秋の田の仮小屋の屋根は、あらく編んだ苫なので、番をするわたしの袖は夜つゆにぬれ続けている。", "x": 0}, {"n": 2, "au": "持統天皇", "k": "春過ぎて 夏来にけらし 白妙の", "s": "衣ほすてふ 天の香具山", "m": "春が過ぎて夏が来たらしい。夏になると白い衣をほすという天の香具山に、白い衣がほしてあるよ。", "x": 0}, {"n": 4, "au": "山部赤人", "k": "田子の浦に うち出でてみれば 白妙の", "s": "富士の高嶺に 雪は降りつつ", "m": "田子の浦に出てながめると、真っ白な富士山の高いみねに、雪が降り続いている。", "x": 0}, {"n": 17, "au": "在原業平朝臣", "k": "ちはやぶる 神代も聞かず 竜田川", "s": "からくれなゐに 水くくるとは", "m": "ふしぎなことが多かった神様の時代でさえ聞いたことがない。竜田川が、もみじで水をあざやかな紅色にしぼりぞめにするとは。", "x": 0}, {"n": 33, "au": "紀友則", "k": "ひさかたの 光のどけき 春の日に", "s": "しづ心なく 花の散るらむ", "m": "日の光がのどかにふりそそぐ春の日に、どうして桜の花は、落ち着いた心もなく散っていくのだろう。", "x": 0}, {"n": 3, "au": "柿本人麻呂", "k": "あしびきの 山鳥の尾の しだり尾の", "s": "ながながし夜を ひとりかも寝む", "m": "山鳥の長くたれた尾のように、長い長い秋の夜を、わたしはひとりさびしく寝るのだろうか。", "x": 1}, {"n": 7, "au": "安倍仲麿", "k": "天の原 ふりさけ見れば 春日なる", "s": "三笠の山に 出でし月かも", "m": "大空をはるかに見上げると月が出ている。あれは、ふるさと奈良の春日にある三笠山に出ていた月と同じなのだなあ。", "x": 1}, {"n": 9, "au": "小野小町", "k": "花の色は 移りにけりな いたづらに", "s": "わが身世にふる ながめせしまに", "m": "桜の花の色はむなしくあせてしまった。長雨がふる間に。わたしの美しさも、もの思いをしている間におとろえてしまった。", "x": 1}, {"n": 10, "au": "蝉丸", "k": "これやこの 行くも帰るも 別れては", "s": "知るも知らぬも 逢坂の関", "m": "これがあの、旅立つ人も帰る人も、知り合いもそうでない人も、別れてはまた出会うという逢坂の関なのだなあ。", "x": 1}, {"n": 15, "au": "光孝天皇", "k": "君がため 春の野に出でて 若菜摘む", "s": "わが衣手に 雪は降りつつ", "m": "あなたのために、春の野に出て若菜をつんでいるわたしの袖に、雪がしきりに降りかかっている。", "x": 1}, {"n": 24, "au": "菅家", "k": "このたびは 幣も取りあへず 手向山", "s": "紅葉の錦 神のまにまに", "m": "今回の旅は急なことで、神にささげる幣も用意できなかった。この手向山の、錦のように美しいもみじを、神様の御心のままにお受け取りください。", "x": 1}, {"n": 31, "au": "坂上是則", "k": "朝ぼらけ 有明の月と 見るまでに", "s": "吉野の里に 降れる白雪", "m": "夜がほのぼのと明けるころ、明け方の月の光かと思うほど、吉野の里に白い雪が降っている。", "x": 1}, {"n": 35, "au": "紀貫之", "k": "人はいさ 心も知らず ふるさとは", "s": "花ぞ昔の 香ににほひける", "m": "人の心は、さあ、変わったかどうかわからない。でも、なじみのこの里では、梅の花が昔と変わらないかおりでさいているよ。", "x": 1}, {"n": 61, "au": "伊勢大輔", "k": "いにしへの 奈良の都の 八重桜", "s": "けふ九重に にほひぬるかな", "m": "昔の都、奈良の八重桜が、今日はこの宮中（九重）で、美しくさきほこっていることよ。", "x": 1}, {"n": 69, "au": "能因法師", "k": "嵐吹く 三室の山の もみぢ葉は", "s": "竜田の川の 錦なりけり", "m": "あらしのふく三室山のもみじ葉は、竜田川の水面に散って、まるで錦のおり物のようだ。", "x": 1}, {"n": 73, "au": "前権中納言匡房", "k": "高砂の 尾の上の桜 咲きにけり", "s": "外山の霞 立たずもあらなむ", "m": "遠くの高い山のみねの桜がさいたなあ。近くの山のかすみよ、どうか立たないでほしい（桜が見えなくなるから）。", "x": 1}, {"n": 96, "au": "入道前太政大臣", "k": "花さそふ 嵐の庭の 雪ならで", "s": "ふりゆくものは わが身なりけり", "m": "桜の花をさそって散らすあらしの庭は、雪がふったようだが、ほんとうに古りゆく（年をとっていく）のは、わたし自身なのだなあ。", "x": 1}];
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null, dir=store.get('hyakunin-dir','ks');   // ks=上の句→下の句, sk=下の句→上の句
+let best=store.get(PAID?'hyakunin-p-best':'hyakunin-best',{}), rec=store.get('hyakunin-p-rec',{});
+const saveRec=()=>store.set('hyakunin-p-rec',rec);
+const qkey=q=>`${q.n}番 ${q.k} ${q.s}`;   // 保護者ページの「まちがえた問題」と同じ書き方にそろえる
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const POEMS=()=>QS.filter(q=>!q.x);
+const RANGES=[[1,20],[21,40],[41,60],[61,80],[81,100]];
+const PAIDLINK=`<a class="paid" href="hyakunin-full.html" id="paid-link"><span class="pt">100首ぜんぶ練習したい人へ　<b>百人一首 100首</b>（有料版）</span><span class="pd">無料版の5首もふくむ全100首。20首ずつのコース、苦手だけの復習、下の句→上の句の練習つき。</span></a>`;
+
+// まぎらわしい札をえらぶ：同じ言葉や字が多い歌ほど、えらばれやすくする
+const PLAIN='のにはをてもがとやかなりけるしつぬれば　 ';
+function sim(a,b){
+  let s=0; const A=new Set([...a].filter(c=>!PLAIN.includes(c)));
+  [...new Set(b)].forEach(c=>{if(A.has(c))s+=/[一-鿿]/.test(c)?2:1;});
+  if(a[0]===b[0])s+=3;
+  if(a.slice(-3)===b.slice(-3))s+=3;
+  return s+Math.random()*2;
+}
+function choicesFor(q){
+  const key=dir==='ks'?'s':'k';
+  const others=QS.filter(p=>p.n!==q.n).map(p=>[p,sim(q[key],p[key])]).sort((a,b)=>b[1]-a[1]).slice(0,7).map(x=>x[0]);
+  return shuffle([q,...shuffle(others).slice(0,3)]);
+}
+
+async function decrypt(pass){
+  const p=JSON.parse(document.getElementById('data').textContent);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm(pass)),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(p.salt),iterations:p.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(p.iv)},k,b64(p.data))));
+}
+function lockScreen(msg){
+  app.innerHTML=`<div class="label">合言葉</div>
+    <p class="q">ご購入時にお知らせした合言葉を入れると、100首すべてで遊べます。一度入れれば、この端末では次から入力はいりません。</p>
+    <form id="f" class="lock" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <label for="pass" style="font-weight:700">合言葉</label>
+      <input id="pass" name="pass" inputmode="latin" autocapitalize="off" spellcheck="false" placeholder="例：hyaku-xxxx-xxxx">
+      <p class="err" id="err" role="alert">${msg||''}</p>
+      <div class="row"><button class="btn go" id="open" type="submit">ひらく</button></div>
+    </form>
+    <div class="shop">合言葉をお持ちでない方へ：${shopUrl?`<a href="${esc(shopUrl)}" target="_blank" rel="noopener">こちらから購入できます</a>`:'販売ページは準備中です。'}<br>無料版（5首）は <a href="hyakunin.html">百人一首クイズ</a> で遊べます。</div>`;
+  document.getElementById('f').onsubmit=async e=>{
+    e.preventDefault();
+    const v=document.getElementById('pass').value; if(!norm(v)){document.getElementById('err').textContent='合言葉を入れてください。';return;}
+    const bt=document.getElementById('open'); bt.disabled=true; bt.textContent='確かめています…';
+    try{ QS=await decrypt(v); store.set('hyakunin-p-pass',v); track('unlock',{product:'hyakunin'}); home(); }
+    catch(err){ bt.disabled=false; bt.textContent='ひらく'; document.getElementById('err').textContent='合言葉がちがいます。全角・半角や、つづりを確かめてもう一度入れてください。'; }
+  };
+}
+const DIRSEG=()=>`<div class="row"><span class="note" style="font-weight:700;color:var(--fg)">問題の形</span><div class="seg" role="group" aria-label="問題の形">
+  <button data-d="ks" aria-pressed="${dir==='ks'}">上の句 → 下の句</button><button data-d="sk" aria-pressed="${dir==='sk'}">下の句 → 上の句</button></div></div>`;
+function bindSeg(){app.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{dir=b.dataset.d;store.set('hyakunin-dir',dir);home();});}
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  const P=POEMS();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <ol class="howto"><li>上の句（5・7・5）を読みます。</li><li>つづく下の句（7・7）を、4まいの取り札からえらびます。</li><li>答えたあとに、歌の意味を確かめよう。</li></ol>
+    ${DIRSEG()}
+    <div class="row"><button class="btn go" id="go">はじめる（${P.length}首）</button></div>
+    <p class="note">出てくる歌：${P.map(p=>`${p.n}番 ${esc(p.au)}`).join('、')}</p>${PAIDLINK}`;
+  bindSeg();
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(P));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた歌</span><span class="cnt">${cnt.master}<small> / 100首</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master}%"></i><i class="w2" style="width:${cnt.weak}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    ${DIRSEG()}
+    <div class="label">コースをえらぶ（1回10首）</div>
+    <div class="courses">${RANGES.map(([a,b],i)=>{const m=QS.filter(q=>q.n>=a&&q.n<=b&&state(q)==='master').length;return `<button class="course" data-l="r${i}"><span class="nm">${a}〜${b}番</span><span class="ds">覚えた ${m} / 20首</span><span class="best">${best['r'+i]!=null?`ベスト ${best['r'+i]}/10`:''}</span></button>`;}).join('')}
+      <button class="course" data-l="all"><span class="nm">100首からランダム</span><span class="ds">どこから出るかわからない10首。</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="course" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある歌だけ（${weak.length}首）</span></button>
+      <button class="course" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない歌だけ（${fresh.length}首）</span></button></div>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  bindSeg();
+  app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    let pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:(()=>{const [a,z]=RANGES[+l.slice(1)];return QS.filter(q=>q.n>=a&&q.n<=z);})();
+    start(shuffle(pool).slice(0,10));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'hyakunin-p-':'hyakunin-')+course+'-'+dir});
+  newQ();
+}
+function newQ(){ const q=G.list[G.i]; G.ch=choicesFor(q); G.done=false; G.pick=null; render(); }
+const cols=t=>t.split(' ').map(x=>`<span>${esc(x)}</span>`).join('');
+function render(){
+  const q=G.list[G.i], d=G.done, ks=dir==='ks';
+  const shown=ks?q.k:q.s;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span></div>
+    <div class="yomi"><span class="au">${q.n}番　${esc(q.au)}</span>
+      <div class="tx">${ks?cols(shown)+'<span class="blank">……</span>':'<span class="blank">……</span>'+cols(shown)}</div></div>
+    <p class="q">${ks?'つづく下の句はどれですか。':'この下の句の、上の句はどれですか。'}</p>
+    <div class="fuda ${ks?'':'sk'}" role="group" aria-label="取り札">${G.ch.map(p=>`<button class="fd ${d?(p.n===q.n?'right':p.n===G.pick?'wrong':''):''}" data-n="${p.n}" ${d?'disabled':''} aria-label="${esc(ks?p.s:p.k)}"><span class="v">${cols(ks?p.s:p.k)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.fd').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  if(d)explain();
+}
+function pick(n){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=n; G.ok=n===q.n; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'hyakunin-'+dir,question:`${q.n}番 ${q.k} ${q.s}`,correct:G.ok,picked:n});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1, me=QS.find(p=>p.n===G.pick), ks=dir==='ks';
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:10px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="verdict ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</div>
+    <p class="uta">${ks?esc(q.k)+'<br><span class="lo">'+esc(q.s)+'</span>':'<span class="lo">'+esc(q.k)+'</span><br>'+esc(q.s)}</p>
+    <span class="meta">${q.n}番　${esc(q.au)}</span>
+    <div class="tip">${esc(q.m)}</div>
+    ${G.ok||!me?'':`<div class="mine">あなたがえらんだ札は、${me.n}番（${esc(me.au)}）の${ks?'下の句':'上の句'}です。<br><b>${esc(me.k)}　${esc(me.s)}</b></div>`}
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の歌へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'hyakunin-p-':'hyakunin-')+course+'-'+dir,success:s===n,score:s,total:n});
+  const bk=PAID?(/^r\d$/.test(course)||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'hyakunin-p-best':'hyakunin-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}首</small></div><div class="seal">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！上の句と下の句がしっかりつながっています。':r>=.6?'よくできました。まちがえた歌は、声に出して読むと覚えやすくなります。':'歌の意味といっしょに覚えると、上の句と下の句がつながりやすくなります。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'コースをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた歌だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた歌</div>${G.miss.map(q=>`<div class="rv"><span class="meta">${q.n}番　${esc(q.au)}</span><br><b>${esc(q.k)}<br>${esc(q.s)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(POEMS())));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{const d=await (await fetch('../games.json',{cache:'no-cache'})).json(); shopUrl=(d.site&&d.site.shopUrl)||'';}catch(e){}
+  const saved=store.get('hyakunin-p-pass','');
+  if(saved){ try{ QS=await decrypt(saved); home(); return; }catch(e){ store.set('hyakunin-p-pass',''); lockScreen('合言葉が変わりました。新しい合言葉を入れてください。'); return; } }
+  lockScreen();
+})();
+})();
+</script>

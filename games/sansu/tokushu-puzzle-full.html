@@ -1,0 +1,412 @@
+<title>特殊算パズル 60ステージ</title>
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="特殊算">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="game:paid" content="利用コード">
+<meta name="description" content="つるかめ算・和差算・植木算・過不足算・分配算を、★2〜★3の60ステージで攻略する有料版。手数で★がもらえ、クリア後に式の解説。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
+<style>
+/* Layout: 算数シリーズ共通の工作用紙。上に問題文と目標、まんなかにさわって動かすパズル盤、下に手数と★。クリアすると式の解説 */
+:root{
+  --bg:#f1f6ef; --grid:#cfe2c5; --surface:#ffffff; --fg:#22302a; --muted:#5f6f67; --rule:#d3e0cf;
+  --accent:#e0602f; --ok:#1f8a4c; --ng:#cf3b34; --lo:#9fc9ee; --hi:#f2a65a; --star:#e8a400; --edge:#2a3a33; --pick:#e6efe2;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --ok:#4cc27e; --ng:#f0756d; --lo:#4f86b5; --hi:#c98436; --star:#f2c040; --edge:#0c120f; --pick:#24302a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b17; --grid:#24352b; --surface:#1c2520; --fg:#e5eee8; --muted:#9db0a5; --rule:#2c3b33;
+  --accent:#f08a5d; --ok:#4cc27e; --ng:#f0756d; --lo:#4f86b5; --hi:#c98436; --star:#f2c040; --edge:#0c120f; --pick:#24302a; color-scheme:dark}
+
+body{background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:16px 16px;
+  color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7.5vw,38px);line-height:1.2;margin:0}
+.badge{display:inline-block;font-family:var(--body);font-size:12px;font-weight:800;color:var(--surface);background:var(--accent);border-radius:4px;padding:1px 8px;vertical-align:middle;margin-left:8px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.h2{font-family:var(--display);font-size:20px;margin:0;font-weight:500}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.unitbtn{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.unitbtn:hover{border-color:var(--accent)}
+.unitbtn .nm{font-family:var(--display);font-size:19px}
+.unitbtn .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.unitbtn .st{font-size:12px;color:var(--star);font-weight:800;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:2px solid var(--rule);background:var(--surface);border-radius:99px;padding:5px 16px;cursor:pointer;font-weight:700}
+.tab[aria-selected="true"]{background:var(--fg);border-color:var(--fg);color:var(--surface)}
+.qtop{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font-size:13px;font-weight:800;padding:2px 10px;border-radius:99px;background:var(--pick)}
+.pill.st{color:var(--star)}
+.story{margin:0;font-size:17px;line-height:1.8}
+.ask{font-weight:800}
+.goal{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--pick);border-radius:8px;padding:8px 12px;font-weight:700}
+.goal .now{font-size:22px;font-variant-numeric:tabular-nums}
+.goal .ok{color:var(--ok)} .goal .ng{color:var(--accent)}
+.board{display:flex;flex-direction:column;gap:12px;align-items:center}
+.tokens{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:520px}
+.tok{width:62px;height:62px;border-radius:12px;border:2px solid var(--edge);background:var(--lo);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:0}
+.tok b{font-size:14px} .tok span{font-size:12px}
+.tok.hi{background:var(--hi)}
+.tok:disabled{cursor:default}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.bin{border:2px solid var(--edge);border-radius:10px;padding:10px;min-height:120px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.bin .lb{font-weight:800;display:flex;justify-content:space-between}
+.bin .lb span{font-variant-numeric:tabular-nums;font-size:20px}
+.blocks{display:flex;flex-wrap:wrap;gap:3px;align-items:flex-end}
+.ten{width:9px;height:60px;background:var(--hi);border:1px solid var(--edge);border-radius:2px;background-image:repeating-linear-gradient(to bottom,transparent 0 5px,var(--edge) 5px 6px)}
+.one{width:9px;height:9px;background:var(--lo);border:1px solid var(--edge);border-radius:2px}
+.ctrls{display:grid;grid-template-columns:repeat(4,auto);gap:6px;justify-content:center}
+@media (max-width:440px){.ctrls{grid-template-columns:repeat(2,auto)}}
+.cb{border:1px solid var(--edge);background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:800;font-variant-numeric:tabular-nums}
+.cb:hover:not(:disabled){background:var(--pick)}
+.cb:disabled{opacity:.35;cursor:default}
+.svgwrap{width:100%;overflow-x:auto}
+.svgwrap svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
+svg text{fill:var(--fg);font-family:var(--body);font-size:12px}
+svg .mut{fill:var(--muted)}
+.road{stroke:var(--muted);stroke-width:6;stroke-linecap:round;fill:none}
+.pond{fill:var(--lo);opacity:.45;stroke:var(--edge);stroke-width:1.5}
+.spot{fill:var(--surface);stroke:var(--edge);stroke-width:1.5;cursor:pointer}
+.spot.on{fill:var(--ok)}
+.bars{width:100%;display:flex;flex-direction:column;gap:10px}
+.brow .bl{font-size:14px;font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.brow .bl span{font-variant-numeric:tabular-nums}
+.btrack{height:28px;display:flex;border-radius:4px;overflow:hidden;background:var(--pick)}
+.seg{height:100%;display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--edge);white-space:nowrap;overflow:hidden;min-width:0}
+.seg.base{background:var(--lo)} .seg.plus{background:var(--hi)} .seg.minus{background:repeating-linear-gradient(45deg,var(--surface) 0 5px,var(--ng) 5px 7px);opacity:.7}
+.scale{width:100%}
+.xval{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.moves{font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted);font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:800;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--accent);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.hint{background:var(--pick);border-radius:8px;padding:10px 14px;font-size:15px}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.stars{color:var(--star);font-size:26px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.ans{font-size:18px;font-weight:800}
+.steps{margin:0;padding-left:1.4em;display:grid;gap:4px}
+.map{display:flex;flex-direction:column;gap:12px}
+.mrow .mt{font-weight:800;margin-bottom:6px;display:flex;justify-content:space-between}
+.mrow .mt span{color:var(--star);font-variant-numeric:tabular-nums}
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.stg{aspect-ratio:1;max-width:100%;border:2px solid var(--rule);border-radius:8px;background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:0;font-weight:800}
+.stg small{font-size:10px;color:var(--star);letter-spacing:-1px}
+.stg.done{border-color:var(--ok)}
+.stg:disabled{opacity:.35;cursor:default}
+.stg.lv3{background:var(--pick)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--accent);border-radius:10px;padding:12px 14px;text-decoration:none;color:var(--fg);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.paid b{font-family:var(--display);color:var(--accent);font-weight:500}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--accent);font-weight:800}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>特殊算パズル<span class="badge">60ステージ</span></h1>
+    <p class="lead">★2・★3の60ステージ。少ない手数でクリアして、★を集めよう。</p>
+  </header>
+  <main id="app"></main>
+</div>
+<script type="application/json" id="data">{}</script>
+<script>
+// 特殊算パズルの問題をつくる部品（ゲームのページと、有料ステージづくりの両方で使います）
+var TokushuGen=(function(){
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+// 10ずつ・1ずつの操作で、差 d をうめる最少の手数
+const steps=d=>{d=Math.abs(d);const t=Math.floor(d/10),o=d%10;return o?Math.min(t+o,t+1+(10-o)):t;};
+
+function tsuru(lv){
+  let lo,hi,n,k;
+  if(lv===1){n=ri(6,12);k=ri(1,n-1);lo={nm:'つる',v:2};hi={nm:'かめ',v:4};
+    return {t:'tsuru',lv,n,k,lo,hi,unit:'本',cnt:'ひき',
+      story:`つるとかめが合わせて${n}ひきいます。足の数は全部で${2*(n-k)+4*k}本です。`,ask:'かめは何びき？',goal:2*(n-k)+4*k,opt:k};}
+  if(lv===2){n=ri(8,14);k=ri(2,n-2);lo={nm:'10円',v:10};hi={nm:'50円',v:50};
+    const M=10*(n-k)+50*k;
+    return {t:'tsuru',lv,n,k,lo,hi,unit:'円',cnt:'まい',story:`10円玉と50円玉が合わせて${n}まいあり、全部で${M}円です。`,ask:'50円玉は何まい？',goal:M,opt:k};}
+  const p=pick([60,80,90]),q=p+pick([20,30,40,50]);n=ri(10,16);k=ri(2,n-2);
+  lo={nm:'みかん',v:p};hi={nm:'りんご',v:q};const M=p*(n-k)+q*k;
+  return {t:'tsuru',lv,n,k,lo,hi,unit:'円',cnt:'こ',story:`1こ${p}円のみかんと1こ${q}円のりんごを合わせて${n}こ買い、代金は${M}円でした。`,ask:'りんごは何こ？',goal:M,opt:k};
+}
+function wasa(lv){
+  const B=lv===1?ri(4,12):lv===2?ri(15,35):ri(30,70), D=lv===1?ri(2,8):lv===2?ri(4,20):ri(10,40), S=2*B+D;
+  const [A,Bn,obj,u]=pick([['兄','弟','おはじき','こ'],['姉','妹','ビーズ','こ'],['赤ぐみ','白ぐみ','玉','こ']]);
+  return {t:'wasa',lv,S,D,B,A,Bn,obj,u,story:`${A}と${Bn}の${obj}は、合わせて${S}${u}です。${A}は${Bn}より${D}${u}多くもっています。`,ask:`${Bn}は何${u}？`,opt:steps(B)};
+}
+function ueki(lv){
+  let mode,d,m;
+  if(lv===1){mode=pick(['both','none']);d=pick([2,3,4,5]);m=ri(4,8);}
+  else if(lv===2){mode=pick(['both','circle','none']);d=pick([3,4,5,6]);m=ri(7,12);}
+  else {mode=pick(['two','circle','none']);d=pick([4,5,6,8]);m=mode==='two'?ri(5,8):ri(9,12);}
+  const L=d*m;
+  const req=mode==='both'?m+1:mode==='none'?m-1:mode==='circle'?m:2*(m+1);
+  const story=mode==='both'?`長さ${L}mのまっすぐな道に、${d}mおきに木を植えます。道の両はしにも植えます。`
+    :mode==='none'?`長さ${L}mのまっすぐな道に、${d}mおきに旗を立てます。道の両はしには立てません。`
+    :mode==='circle'?`まわりの長さが${L}mの池のまわりに、${d}mおきに木を植えます。`
+    :`長さ${L}mのまっすぐな道の両がわに、${d}mおきに木を植えます。道の両はしにも植えます。`;
+  return {t:'ueki',lv,mode,d,m,L,req,story,ask:mode==='none'?'旗は何本？':'木は何本？',opt:req};
+}
+function kabu(lv){
+  let a,b,p,r1,r2;
+  if(lv===1){p=ri(3,6);a=ri(2,4);b=a+1;const r=ri(1,p-1);r1=r;r2=-(p-r);}
+  else if(lv===2){p=ri(5,10);a=ri(2,5);const g=pick([1,2]);b=a+g;const r=ri(1,g*p-1);r1=r;r2=-(g*p-r);}
+  else {p=ri(6,12);a=ri(3,5);const g=pick([1,2]);b=a+g;
+    if(Math.random()<.5){r2=ri(1,4);r1=r2+g*p;} else {const s1=ri(1,4);r1=-s1;r2=-(s1+g*p);}}
+  const N=a*p+r1;
+  const tx=(x,r)=>r>0?`${r}こあまります`:`${-r}こたりません`;
+  return {t:'kabu',lv,a,b,p,r1,r2,N,story:`あめを子どもに配ります。1人${a}こずつ配ると${tx(a,r1)}。1人${b}こずつ配ると${tx(b,r2)}。`,ask:'子どもは何人？',opt:steps(p-1)};
+}
+function bun(lv){
+  let k,c,e;
+  if(lv===1){k=pick([2,3]);c=ri(4,15);e=0;}
+  else if(lv===2){k=pick([2,3,4]);c=ri(8,25);e=ri(2,12);}
+  else {k=pick([2,3,4]);c=ri(12,40);e=Math.random()<.5?-ri(2,Math.min(15,c-1)):ri(10,30);}
+  const T=c*(k+1)+e;
+  const rel=e===0?`兄のまい数は弟の${k}倍です。`:e>0?`兄は弟の${k}倍より${e}まい多くもっています。`:`兄は弟の${k}倍より${-e}まい少ないです。`;
+  return {t:'bun',lv,k,c,e,T,story:`兄と弟のカードは合わせて${T}まいです。${rel}`,ask:'弟は何まい？',opt:steps(c-1)};
+}
+const GEN={tsuru,wasa,ueki,kabu,bun};
+return {gen:(t,lv)=>GEN[t](lv),steps};
+})();
+if(typeof module!=='undefined')module.exports=TokushuGen;
+
+</script>
+<script>
+(function(){
+const PAID=true;
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const PREFIX=PAID?'tokushu-p':'tokushu-f';
+const UNITS={tsuru:['つるかめ算','入れかえパズル','つるとかめを入れかえて、足の数をぴったりに。'],
+  wasa:['和差算','おはじき分けパズル','おはじきを動かして、ちょうどの差に分けよう。'],
+  ueki:['植木算','木を植えるパズル','決まりどおりに木を植えよう。'],
+  kabu:['過不足算','あめ配りパズル','人数を変えて、2つの配り方のあめの数をそろえよう。'],
+  bun:['分配算','てんびんパズル','①の重さを変えて、てんびんをつり合わせよう。']};
+let STAGES=null, shopUrl='', P=null, S=null, view='play', unitSel='tsuru';
+let stars=store.get(PREFIX+'-stars',{});
+
+/* ---------- 合言葉（有料版） ---------- */
+async function decrypt(){ return mnAccess.load('tokushu-puzzle'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'tokushu-puzzle',err:err,free:'tokushu-puzzle.html',onOpen:async()=>{ STAGES=await decrypt(); view='stage'; home(); }}); }
+
+/* ---------- はじめの画面 ---------- */
+const PAIDLINK=`<a class="paid" href="tokushu-puzzle-full.html" id="paid-link"><span><b>特殊算パズル 60ステージ</b>（有料版）</span><span class="pd">★2・★3の問題を60ステージ。10円玉と50円玉、池のまわり、あまりが2回出る過不足算など、入試レベルまで。</span></a>`;
+function home(){
+  P=null;
+  let h='';
+  if(PAID) h+=`<div class="tabs" role="tablist"><button class="tab" role="tab" id="tab-stage" aria-selected="${view==='stage'}">ステージ</button><button class="tab" role="tab" id="tab-play" aria-selected="${view==='play'}">★1れんしゅう</button></div>`;
+  if(PAID&&view==='stage'){
+    const total=Object.values(stars).reduce((a,b)=>a+b,0);
+    h+=`<div class="foot"><span class="h2">ステージ</span><span class="moves">あつめた★ ${total} / ${STAGES.length*3}</span></div><div class="map">`;
+    for(const u in UNITS){
+      const list=STAGES.map((s,i)=>({s,i})).filter(o=>o.s.t===u);
+      const got=list.reduce((a,o)=>a+(stars[o.i]||0),0);
+      h+=`<div class="mrow"><div class="mt">${UNITS[u][0]}　${UNITS[u][1]}<span>★${got}/${list.length*3}</span></div><div class="stages">${list.map((o,j)=>{
+        const open=j===0||stars[list[j-1].i]; const st=stars[o.i]||0;
+        return `<button class="stg ${st?'done':''} ${o.s.lv===3?'lv3':''}" id="stg${o.i}" data-i="${o.i}" ${open?'':'disabled'} aria-label="${UNITS[u][0]} ステージ${j+1}${st?` ★${st}`:''}">${j+1}<small>${'★'.repeat(st)}</small></button>`;}).join('')}</div></div>`;
+    }
+    h+=`</div><p class="note">1つクリアすると次のステージに進めます。色のついたステージは★3レベルです。少ない手数でクリアすると★が多くもらえます。</p>`;
+  } else {
+    h+=`<div class="h2">パズルをえらぶ</div><div class="units">${Object.entries(UNITS).map(([k,[nm,sub,ds]])=>`<button class="unitbtn" id="u-${k}" data-u="${k}"><span class="nm">${nm}</span><span class="ds"><b>${sub}</b><br>${ds}</span></button>`).join('')}</div>
+      <p class="note">★1の問題が、毎回ちがう数字で出ます。少ない手数でクリアすると★が多くもらえます。</p>${PAID?'':PAIDLINK}`;
+  }
+  app.innerHTML=`<section class="box">${h}</section>`;
+  app.querySelectorAll('.unitbtn').forEach(b=>b.onclick=()=>{unitSel=b.dataset.u;play(TokushuGen.gen(unitSel,1),null);});
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>play(STAGES[+b.dataset.i],+b.dataset.i));
+  const ts=document.getElementById('tab-stage'),tp=document.getElementById('tab-play');
+  if(ts){ts.onclick=()=>{view='stage';home();};tp.onclick=()=>{view='play';home();};}
+}
+
+/* ---------- パズル ---------- */
+function play(p,idx){
+  P=p; S={moves:0,clear:false,hint:false,idx};
+  if(p.t==='tsuru')S.hi=Array(p.n).fill(false);
+  if(p.t==='wasa'){S.a=p.S;S.b=0;}
+  if(p.t==='ueki')S.on=new Set();
+  if(p.t==='kabu'||p.t==='bun')S.x=1;
+  track('level_start',{level_name:`${PREFIX}-${p.t}-${idx!=null?'stage'+idx:'lv1'}`});
+  render();
+}
+const stageLabel=()=>{if(S.idx==null)return '';const list=STAGES.map((s,i)=>i).filter(i=>STAGES[i].t===P.t);return `ステージ${list.indexOf(S.idx)+1}`;};
+function render(){
+  const p=P;
+  app.innerHTML=`<section class="box">
+    <div class="qtop"><span class="pill">${UNITS[p.t][0]}</span><span class="pill st">${'★'.repeat(p.lv)}</span>${S.idx!=null?`<span class="pill">${stageLabel()}</span>`:''}</div>
+    <p class="story">${esc(p.story)}<br><span class="ask">${esc(p.ask)}</span></p>
+    <div id="goal"></div>
+    <div class="board" id="board"></div>
+    <div class="foot"><span class="moves" id="mv"></span><div class="row"><button class="btn" id="hintb">ヒント</button><button class="btn" id="redo">やり直す</button><button class="btn" id="back">もどる</button></div></div>
+    <div id="hintbox"></div><div id="after"></div></section>`;
+  document.getElementById('redo').onclick=()=>play(P,S.idx);
+  document.getElementById('back').onclick=home;
+  document.getElementById('hintb').onclick=()=>{S.hint=true;document.getElementById('hintbox').innerHTML=`<div class="hint">${HINT[p.t](p)}</div>`;};
+  draw();
+}
+function moved(){S.moves++;draw();}
+function draw(){
+  const p=P, B=document.getElementById('board'), G=document.getElementById('goal');
+  document.getElementById('mv').textContent=`手数 ${S.moves}　（★3は${p.opt}手以内）`;
+  let done=false;
+  if(p.t==='tsuru'){
+    const k=S.hi.filter(Boolean).length, tot=p.lo.v*(p.n-k)+p.hi.v*k, diff=p.goal-tot; done=diff===0;
+    G.innerHTML=`<div class="goal">いまの合計 <span class="now ${done?'ok':'ng'}">${tot}${p.unit}</span>／目標 ${p.goal}${p.unit}　${done?'ぴったり！':diff>0?`あと${diff}${p.unit}たりない`:`${-diff}${p.unit}多すぎる`}</div>`;
+    B.innerHTML=`<div class="tokens">${S.hi.map((h,i)=>`<button class="tok ${h?'hi':''}" data-i="${i}" ${S.clear?'disabled':''} aria-label="${h?p.hi.nm:p.lo.nm}"><b>${h?p.hi.nm:p.lo.nm}</b><span>${h?p.hi.v:p.lo.v}${p.unit}</span></button>`).join('')}</div>
+      <p class="note">タップすると「${p.lo.nm}」と「${p.hi.nm}」が入れかわります。いま ${p.lo.nm}${p.n-k}${p.cnt}・${p.hi.nm}${k}${p.cnt}</p>`;
+    B.querySelectorAll('.tok').forEach(b=>b.onclick=()=>{S.hi[+b.dataset.i]=!S.hi[+b.dataset.i];moved();});
+  }
+  if(p.t==='wasa'){
+    const diff=S.a-S.b; done=diff===p.D;
+    G.innerHTML=`<div class="goal">${esc(p.A)}と${esc(p.Bn)}の差 <span class="now ${done?'ok':'ng'}">${diff}${p.u}</span>／目標 ${p.D}${p.u}　${done?'ぴったり！':''}</div>`;
+    const bl=n=>`<div class="blocks">${'<i class="ten"></i>'.repeat(Math.floor(n/10))}${'<i class="one"></i>'.repeat(n%10)}</div>`;
+    const dis=S.clear?'disabled':'';
+    B.innerHTML=`<div class="boxes"><div class="bin"><div class="lb">${esc(p.A)}<span>${S.a}${p.u}</span></div>${bl(S.a)}</div><div class="bin"><div class="lb">${esc(p.Bn)}<span>${S.b}${p.u}</span></div>${bl(S.b)}</div></div>
+      <div class="ctrls"><button class="cb" data-d="1" ${dis||S.a<1?'disabled':''}>→ 1こ</button><button class="cb" data-d="10" ${dis||S.a<10?'disabled':''}>→ 10こ</button><button class="cb" data-d="-1" ${dis||S.b<1?'disabled':''}>← 1こ</button><button class="cb" data-d="-10" ${dis||S.b<10?'disabled':''}>← 10こ</button></div>
+      <p class="note">はじめは全部${esc(p.A)}がもっています。→で${esc(p.Bn)}に、←で${esc(p.A)}にもどします。長い棒は10こ分です。</p>`;
+    B.querySelectorAll('.cb').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;S.a-=d;S.b+=d;moved();});
+  }
+  if(p.t==='ueki'){
+    const spots=uekiSpots(p), req=new Set(uekiReq(p));
+    const correct=[...S.on].every(k=>req.has(k))&&S.on.size===req.size; done=correct;
+    G.innerHTML=`<div class="goal">植えた数 <span class="now ${done?'ok':'ng'}">${S.on.size}本</span>　${done?'決まりどおり！':'決まりどおりに植えよう'}</div>`;
+    B.innerHTML=`<div class="svgwrap">${uekiSVG(p,spots)}</div><p class="note">○をタップすると${p.mode==='none'?'旗':'木'}を立てられます。もう一度タップすると外せます。</p>`;
+    B.querySelectorAll('.spot').forEach(c=>{const f=()=>{if(S.clear)return;const k=c.dataset.k;S.on.has(k)?S.on.delete(k):S.on.add(k);moved();};c.onclick=f;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}};});
+  }
+  if(p.t==='kabu'){
+    const x=S.x, n1=p.a*x+p.r1, n2=p.b*x+p.r2; done=n1===n2&&x===p.p;
+    G.innerHTML=`<div class="goal">子どもが <span class="xval">${x}</span>人 のとき　${done?'2つのあめの数がそろった！':`あめの数が ${Math.abs(n1-n2)}こ ずれている`}</div>`;
+    const mx=Math.max(p.a*x+Math.max(p.r1,0),p.b*x+Math.max(p.r2,0),1);
+    const row=(lab,per,r)=>{const base=per*x;return `<div class="brow"><div class="bl">${lab}<span>${per}こ×${x}人${r>0?`＋あまり${r}`:`－たりない${-r}`}＝${base+r}こ</span></div>
+      <div class="btrack">${r>=0?`<i class="seg base" style="width:${base/mx*100}%">${per}×${x}</i><i class="seg plus" style="width:${r/mx*100}%">${r}</i>`:`<i class="seg base" style="width:${Math.max(0,base+r)/mx*100}%">${base+r>0?`${per}×${x}－${-r}`:''}</i><i class="seg minus" style="width:${Math.min(-r,base)/mx*100}%"></i>`}</div></div>`;};
+    B.innerHTML=`<div class="bars">${row(`1人${p.a}こずつ`,p.a,p.r1)}${row(`1人${p.b}こずつ`,p.b,p.r2)}</div>${ctrlX()}`;
+    bindX();
+  }
+  if(p.t==='bun'){
+    const x=S.x, right=(p.k+1)*x+p.e, diff=right-p.T; done=diff===0;
+    G.innerHTML=`<div class="goal">弟（①）が <span class="xval">${x}</span>まい のとき　${done?'つり合った！':diff<0?`右が${-diff}まい軽い`:`右が${diff}まい重い`}</div>`;
+    B.innerHTML=`<div class="svgwrap">${scaleSVG(p,x,diff)}</div>${ctrlX()}<p class="note">右のさらには、弟（①）と兄（①×${p.k}${p.e?`${p.e>0?'＋':'－'}${Math.abs(p.e)}`:''}）がのっています。</p>`;
+    bindX();
+  }
+  if(done&&!S.clear){S.clear=true;cleared();}
+}
+const ctrlX=()=>`<div class="ctrls"><button class="cb" data-d="-10" ${S.clear||S.x<=10?'disabled':''}>－10</button><button class="cb" data-d="-1" ${S.clear||S.x<=1?'disabled':''}>－1</button><button class="cb" data-d="1" ${S.clear?'disabled':''}>＋1</button><button class="cb" data-d="10" ${S.clear?'disabled':''}>＋10</button></div>`;
+function bindX(){app.querySelectorAll('#board .cb').forEach(b=>b.onclick=()=>{S.x=Math.max(1,S.x+(+b.dataset.d));moved();});}
+
+/* 植木算の絵 */
+function uekiSpots(p){
+  if(p.mode==='circle')return [...Array(p.m)].map((_,i)=>({k:'c'+i,i}));
+  const rows=p.mode==='two'?2:1, out=[];
+  for(let r=0;r<rows;r++)for(let i=0;i<=p.m;i++)out.push({k:r+'-'+i,i,r});
+  return out;
+}
+function uekiReq(p){
+  if(p.mode==='circle')return [...Array(p.m)].map((_,i)=>'c'+i);
+  if(p.mode==='none')return [...Array(p.m-1)].map((_,i)=>'0-'+(i+1));
+  const rows=p.mode==='two'?2:1,out=[];for(let r=0;r<rows;r++)for(let i=0;i<=p.m;i++)out.push(r+'-'+i);return out;
+}
+function uekiSVG(p,spots){
+  const sp=k=>`class="spot ${S.on.has(k)?'on':''}" data-k="${k}" tabindex="0" role="button" aria-pressed="${S.on.has(k)}"`;
+  if(p.mode==='circle'){
+    const cx=180,cy=110,rx=130,ry=80;
+    let s=`<svg viewBox="0 0 360 230" role="img" aria-label="池のまわり"><ellipse class="pond" cx="${cx}" cy="${cy}" rx="${rx-14}" ry="${ry-14}"/><ellipse class="road" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" style="stroke-width:4"/>`;
+    spots.forEach(o=>{const a=o.i/p.m*Math.PI*2-Math.PI/2;s+=`<circle ${sp(o.k)} cx="${cx+rx*Math.cos(a)}" cy="${cy+ry*Math.sin(a)}" r="10"/>`;});
+    return s+`<text x="${cx}" y="${cy+5}" text-anchor="middle" class="mut">池（1周${p.L}m）</text><text x="${cx}" y="222" text-anchor="middle" class="mut">○と○の間は${p.d}m</text></svg>`;
+  }
+  const W=Math.max(360,p.m*44+60), x0=30, dx=(W-60)/p.m, rows=p.mode==='two'?2:1, H=rows===2?170:120;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="道">`;
+  const ys=rows===2?[40,120]:[55];
+  if(rows===2)s+=`<rect x="${x0}" y="58" width="${W-60}" height="44" rx="4" style="fill:var(--pick)"/><text x="${W/2}" y="85" text-anchor="middle" class="mut">道（${p.L}m）</text>`;
+  else s+=`<path class="road" d="M${x0} ${ys[0]} H${W-30}"/><text x="${W/2}" y="100" text-anchor="middle" class="mut">道（${p.L}m）</text>`;
+  for(let i=0;i<p.m;i++)s+=`<text x="${x0+dx*(i+.5)}" y="${rows===2?20:35}" text-anchor="middle" class="mut">${p.d}m</text>`;
+  s+=`<text x="${x0}" y="${H-6}" text-anchor="middle" class="mut">はし</text><text x="${W-30}" y="${H-6}" text-anchor="middle" class="mut">はし</text>`;
+  spots.forEach(o=>{s+=`<circle ${sp(o.k)} cx="${x0+dx*o.i}" cy="${ys[o.r]}" r="10"/>`;});
+  return s+'</svg>';
+}
+function scaleSVG(p,x,diff){
+  const tilt=Math.max(-12,Math.min(12,diff/Math.max(p.T,1)*60));
+  const chips=[];for(let i=0;i<p.k+1;i++)chips.push('①');
+  return `<svg viewBox="0 0 360 190" role="img" aria-label="てんびん">
+    <path d="M180 60 L165 175 H195 Z" style="fill:var(--muted)"/>
+    <g transform="rotate(${tilt} 180 60)">
+      <path d="M50 60 H310" style="stroke:var(--edge);stroke-width:5"/>
+      <path d="M50 60 L30 110 H110 L90 60" style="fill:none;stroke:var(--edge);stroke-width:1.5"/>
+      <path d="M310 60 L250 110 H350 L330 60" style="fill:none;stroke:var(--edge);stroke-width:1.5"/>
+      <rect x="30" y="110" width="80" height="10" rx="3" style="fill:var(--edge)"/>
+      <rect x="250" y="110" width="100" height="10" rx="3" style="fill:var(--edge)"/>
+      <rect x="40" y="80" width="60" height="28" rx="4" style="fill:var(--hi);stroke:var(--edge)"/>
+      <text x="70" y="99" text-anchor="middle" style="font-weight:800">合計${p.T}</text>
+      <text x="300" y="104" text-anchor="middle" style="font-weight:800">${chips.join('')}${p.e?`${p.e>0?'＋':'－'}${Math.abs(p.e)}`:''}</text>
+    </g>
+    <text x="300" y="150" text-anchor="middle" class="mut">＝${(p.k+1)*x+p.e}まい</text>
+  </svg>`;
+}
+
+/* ---------- ヒントと解説 ---------- */
+const HINT={
+  tsuru:p=>`全部「${p.lo.nm}」から始まっています。1つを「${p.hi.nm}」に入れかえると、合計は ${p.hi.v}－${p.lo.v}＝<b>${p.hi.v-p.lo.v}${p.unit}</b> ふえます。あと何${p.unit}たりないかを見て、何回入れかえればよいか計算してからタップしてみよう。`,
+  wasa:p=>`1こ動かすと、${esc(p.A)}は1こへって${esc(p.Bn)}は1こふえるので、差は<b>2こ</b>ちぢまります。いまの差と目標の差のちがいを2でわると、動かす数がわかります。`,
+  ueki:p=>p.mode==='circle'?`池のようにひとまわりするときは、はしがありません。<b>木の数＝間の数</b>です。`:p.mode==='none'?`両はしに立てないときは、<b>旗の数＝間の数－1</b>です。`:`両はしにも植えるときは、<b>木の数＝間の数＋1</b>です。${p.mode==='two'?'道の両がわなので、それが2列分です。':''}`,
+  kabu:p=>`人数を1人ふやすと、2つの配り方のあめの数のずれは <b>${p.b-p.a}こ</b> ずつ変わります。いまのずれを${p.b-p.a}でわると、あと何人ふやせばよいかわかります。`,
+  bun:p=>`右のさらの①は全部で<b>${p.k+1}こ</b>。①を1まいふやすと、右は${p.k+1}まい重くなります。${p.e?`まず合計から${p.e>0?p.e+'をひいて':(-p.e)+'をたして'}考えると、①${p.k+1}こ分の重さがわかります。`:''}`
+};
+function explain(p){
+  if(p.t==='tsuru'){const all=p.lo.v*p.n,d=p.goal-all,u=p.hi.v-p.lo.v;
+    return {ans:`${p.hi.nm} ${p.k}${p.cnt}`,steps:[`全部${p.lo.nm}だとすると ${p.lo.v}×${p.n}＝${all}${p.unit}`,`本当との差は ${p.goal}－${all}＝${d}${p.unit}`,`1つ入れかえると ${u}${p.unit}ふえるので、${d}÷${u}＝${p.k}${p.cnt}`]};}
+  if(p.t==='wasa')return {ans:`${p.Bn} ${p.B}${p.u}（${p.A}は${p.B+p.D}${p.u}）`,steps:[`合計から差をひくと、${p.Bn}の2人分：${p.S}－${p.D}＝${p.S-p.D}${p.u}`,`${p.S-p.D}÷2＝${p.B}${p.u}　これが${p.Bn}`,`パズルで${p.Bn}に動かした数が、そのまま答えになっています。`]};
+  if(p.t==='ueki'){const i=`間の数は ${p.L}÷${p.d}＝${p.m}こ`;
+    return {ans:`${p.req}本`,steps:p.mode==='both'?[i,`両はしにも植えるので ${p.m}＋1＝${p.req}本`]:p.mode==='none'?[i,`両はしには立てないので ${p.m}－1＝${p.req}本`]:p.mode==='circle'?[i,`池のまわりは、木の数＝間の数なので ${p.req}本`]:[i,`片がわは ${p.m}＋1＝${p.m+1}本`,`両がわなので ${p.m+1}×2＝${p.req}本`]};}
+  if(p.t==='kabu'){const g=p.b-p.a,tot=p.r1-p.r2;const w=(r)=>r>0?`あまり${r}`:`たりない${-r}`;
+    return {ans:`${p.p}人（あめは${p.N}こ）`,steps:[`1人あたりのちがいは ${p.b}－${p.a}＝${g}こ`,`全体のちがいは「${w(p.r1)}」と「${w(p.r2)}」の差で ${tot}こ`,`${tot}÷${g}＝${p.p}人`]};}
+  const base=p.T-p.e;
+  return {ans:`弟 ${p.c}まい（兄は${p.c*p.k+p.e}まい）`,steps:[p.e?`${p.e>0?`合計から${p.e}をひく`:`合計に${-p.e}をたす`}と ①${p.k+1}こ分：${p.T}${p.e>0?'－':'＋'}${Math.abs(p.e)}＝${base}`:`弟を①とすると、合計は①${p.k+1}こ分で${p.T}まい`,`①は ${base}÷${p.k+1}＝${p.c}まい`]};
+}
+function cleared(){
+  const p=P, st=S.moves<=p.opt?3:S.moves<=Math.ceil(p.opt*1.5)+2?2:1, ex=explain(p);
+  if(S.idx!=null&&(stars[S.idx]||0)<st){stars[S.idx]=st;store.set(PREFIX+'-stars',stars);}
+  track('level_end',{level_name:`${PREFIX}-${p.t}-${S.idx!=null?'stage'+S.idx:'lv1'}`,success:true,score:st,moves:S.moves,hint:S.hint});
+  let nextBtn='';
+  if(S.idx!=null){const list=STAGES.map((s,i)=>i).filter(i=>STAGES[i].t===p.t),j=list.indexOf(S.idx);nextBtn=j<list.length-1?`<button class="btn go" id="nx">次のステージ</button>`:`<button class="btn go" id="nx">ステージ一覧へ</button>`;}
+  else nextBtn=`<button class="btn go" id="nx">次の問題</button>`;
+  document.getElementById('after').innerHTML=`<div class="clear">
+    <div class="v">クリア！<span class="stars" aria-label="★${st}">${'★'.repeat(st)}<span class="off">${'★'.repeat(3-st)}</span></span></div>
+    <div class="ans">こたえ：${esc(ex.ans)}</div>
+    <div><b>式にすると</b><ol class="steps">${ex.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>
+    <p class="note">${S.moves}手でクリア。${st<3?`${p.opt}手以内なら★3。ヒントの考え方を使うと、ためさずに一度で決められます。`:'ためさずに考えて決められました。'}</p>
+    <div class="row">${nextBtn}<button class="btn" id="hm">${S.idx!=null?'ステージ一覧':'パズルをえらぶ'}</button></div>
+    ${!PAID&&S.idx==null?PAIDLINK:''}</div>`;
+  document.getElementById('hm').onclick=()=>{home();};
+  document.getElementById('nx').onclick=()=>{
+    if(S.idx==null){play(TokushuGen.gen(p.t,1),null);return;}
+    const list=STAGES.map((s,i)=>i).filter(i=>STAGES[i].t===p.t),j=list.indexOf(S.idx);
+    if(j<list.length-1)play(STAGES[list[j+1]],list[j+1]); else home();
+  };
+  document.getElementById('nx').focus({preventScroll:true});
+}
+
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ STAGES=await decrypt(); view='stage'; home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
