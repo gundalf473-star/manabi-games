@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>今日の1問 | {{SITE_NAME}}</title>
+<meta name="description" content="毎日1問、算数・国語・理科・社会・思考力から日がわりで出る問題。続けた日がカレンダーにスタンプでたまります。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。今日の日付と続けた日数 → 問題（図・4択）→ 正解と解き方 → 今月のスタンプカレンダー */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e; --accent:#d4432a;
+  --ok:#1d8150; --oksoft:#e0f1e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#c98a12; --pick:#e9eef5;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0; --accent:#f07a62;
+  --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e8b54a; --pick:#222c3a; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,38px);line-height:1.2;margin:0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.streak{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.streak .n{font-family:var(--display);font-size:40px;line-height:1;color:var(--accent)}
+.streak .n small{font-size:16px;color:var(--fg);margin-left:2px}
+.streak .s{color:var(--muted);font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--surface);background:var(--ink);border-radius:4px;padding:0 8px;margin-right:6px}
+.q{font-size:18px;font-weight:700;margin:0}
+.ops{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
+.op:hover:not([disabled]){border-color:var(--ink)}
+.op .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pick);display:flex;align-items:center;justify-content:center;font-size:13px}
+.op.ok{border-color:var(--ok);background:var(--oksoft)}
+.op.ng{border-color:var(--ng);background:var(--ngsoft)}
+.op[disabled]{cursor:default}
+.res{border-left:4px solid var(--ok);padding:4px 0 4px 12px}
+.res.bad{border-color:var(--ng)}
+.res b{font-size:18px}
+.btn{display:inline-block;border:0;border-radius:99px;padding:9px 18px;font-weight:700;cursor:pointer;background:var(--ink);color:var(--surface);text-decoration:none}
+.btn.sub{background:var(--pick);color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px}
+.cal .h{color:var(--muted);font-weight:700}
+.cal .d{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--muted);line-height:1.1}
+.cal .d .st{font-size:18px;line-height:1}
+.cal .d.on{background:var(--oksoft);color:var(--fg)}
+.cal .d.miss{background:var(--pick);color:var(--fg)}
+.cal .d.today{outline:2px solid var(--ink)}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.fig .gh{fill:#d9c8fb;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gw{fill:#fbfaf6;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gn{fill:none;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gd{stroke-dasharray:4 3;stroke-width:1.2}
+.fig .gthin{stroke-width:1.1}
+.fig .gdot{fill:#232a36}
+.fig .gdim{stroke:#6b5a8e;stroke-width:1}
+.fig .garc{fill:none;stroke:#7c3aed;stroke-width:1.6}
+.fig .gang{font-size:14px;font-weight:700;fill:#5b21b6;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .gdt,.fig .glab{font-size:12px;font-weight:700;fill:#3a2f55;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .glab{fill:#232a36}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>今日の1問</h1>
+    <p class="lead" id="date"></p>
+  </header>
+  <section class="box"><div class="streak" id="streak"></div></section>
+  <section class="box" id="qbox"><p class="note">問題を読みこんでいます…</p></section>
+  <section class="box"><b id="mon"></b><div class="cal" id="cal"></div>
+    <p class="note">◎は正解した日、○は答えた日です。毎日1問ずつ、算数・国語・理科・社会・思考力から日がわりで出ます。記録はこの端末の中だけにあります。</p></section>
+  <footer><a href="index.html">← ゲーム一覧へ</a>　・　<a href="parent.html">保護者ページ</a></footer>
+</div>
+<script>
+(async function(){
+window.mnTitle='今日の1問';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const KEY='mn-daily';
+const jst=t=>new Date(t+9*36e5).toISOString().slice(0,10);
+const today=jst(Date.now());
+const dayNo=k=>Math.round(Date.parse(k)/864e5);
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&v.days?v:{days:{}};}catch(e){return {days:{}};}}
+function save(v){try{localStorage.setItem(KEY,JSON.stringify(v));}catch(e){}}
+let D=load();
+function streak(){let n=0,k=dayNo(today);if(D.days[today]==null)k--;while(D.days[new Date(k*864e5).toISOString().slice(0,10)]!=null){n++;k--;}return n;}
+const [y,m,d]=today.split('-').map(Number), WD='日月火水木金土';
+document.getElementById('date').textContent=`${y}年${m}月${d}日（${WD[new Date(Date.UTC(y,m-1,d)).getUTCDay()]}）の問題`;
+function geoSVG(G){
+  /* 図形の図。座標はcm、yは上向き。色つき＝gh、くりぬき＝gw */
+  const P=[]; const add=(x,y)=>P.push([x,y]);
+  const rad=a=>a*Math.PI/180;
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') e[1].forEach(p=>add(p[0],p[1]));
+    if(t==='circ'){add(e[1]-e[3],e[2]-e[3]);add(e[1]+e[3],e[2]+e[3]);}
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e; if(t==='sect')add(cx,cy); for(let a=a1;a<=a2+1e-9;a+=Math.min(15,a2-a1||15)) add(cx+r*Math.cos(rad(a)),cy+r*Math.sin(rad(a))); add(cx+r*Math.cos(rad(a2)),cy+r*Math.sin(rad(a2)));}
+    if(t==='path') e[1].forEach(c=>add(c[c.length-2],c[c.length-1]));
+    if(t==='seg'||t==='dim'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='lab'||t==='dot'||t==='ra'||t==='ang') add(e[1],e[2]);
+    if(t==='par'||t==='eq'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='ell'){add(e[1]-e[3],e[2]-e[4]);add(e[1]+e[3],e[2]+e[4]);}
+  });
+  const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+  const mnx=Math.min(...xs), mxx=Math.max(...xs), mny=Math.min(...ys), mxy=Math.max(...ys);
+  const W=Math.max(mxx-mnx,1), H=Math.max(mxy-mny,1), s=Math.min(236/W,160/H), pad=40, VW=320, ox=(VW-W*s)/2;
+  const X=x=>+(ox+(x-mnx)*s).toFixed(1), Y=y=>+(pad+(mxy-y)*s).toFixed(1);
+  const cls=f=>f==='h'?'gh':f==='w'?'gw':'gn';
+  const pt=(cx,cy,r,a)=>[X(cx+r*Math.cos(rad(a))),Y(cy+r*Math.sin(rad(a)))];
+  let o='';
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') o+=`<path class="${cls(e[2])}" d="M${e[1].map(p=>X(p[0])+','+Y(p[1])).join(' L')} Z"/>`;
+    if(t==='circ') o+=`<circle class="${cls(e[4])}" cx="${X(e[1])}" cy="${Y(e[2])}" r="${(e[3]*s).toFixed(1)}"/>`;
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e, f=e[6], R=(r*s).toFixed(1), p1=pt(cx,cy,r,a1), p2=pt(cx,cy,r,a2), lg=(a2-a1)>180?1:0;
+      o+= t==='sect'?`<path class="${cls(f)}" d="M${X(cx)},${Y(cy)} L${p1} A${R},${R} 0 ${lg} 0 ${p2} Z"/>`:`<path class="gn" d="M${p1} A${R},${R} 0 ${lg} 0 ${p2}"/>`;}
+    if(t==='path'){ let d=''; e[1].forEach(c=>{ if(c[0]==='M')d+=`M${X(c[1])},${Y(c[2])} `; if(c[0]==='L')d+=`L${X(c[1])},${Y(c[2])} `; if(c[0]==='A'){const R=(c[1]*s).toFixed(1); d+=`A${R},${R} 0 ${c[2]} ${c[3]?0:1} ${X(c[4])},${Y(c[5])} `;} }); o+=`<path class="${cls(e[2])}" d="${d}Z"/>`; }
+    if(t==='ell'){ /* だ円（円すい・円柱の底面）。mode=1 で、向こう側の半分を点線に */
+      const [,cx,cy,rx,ry,f,mode]=e, RX=(rx*s).toFixed(1), RY=(ry*s).toFixed(1), l=[X(cx-rx),Y(cy)], r=[X(cx+rx),Y(cy)];
+      if(f) o+=`<ellipse class="${cls(f)}" style="stroke:none" cx="${X(cx)}" cy="${Y(cy)}" rx="${RX}" ry="${RY}"/>`;
+      if(mode){ o+=`<path class="gn" style="fill:none" d="M${l} A${RX},${RY} 0 0 0 ${r}"/><path class="gn gd" style="fill:none" d="M${r} A${RX},${RY} 0 0 0 ${l}"/>`; }
+      else o+=`<ellipse class="gn" style="fill:none" cx="${X(cx)}" cy="${Y(cy)}" rx="${RX}" ry="${RY}"/>`; }
+    if(t==='seg') o+=`<line class="gn${e[5]?' gd':''}" x1="${X(e[1])}" y1="${Y(e[2])}" x2="${X(e[3])}" y2="${Y(e[4])}"/>`;
+    if(t==='dot') o+=`<circle class="gdot" cx="${X(e[1])}" cy="${Y(e[2])}" r="2.6"/>`;
+    if(t==='lab') o+=`<text class="glab" x="${X(e[1])}" y="${Y(e[2])+4}" text-anchor="middle">${esc(e[3])}</text>`;
+    if(t==='ra'){const [,x,y,ux,uy,vx,vy]=e, lu=Math.hypot(ux,uy), lv=Math.hypot(vx,vy), k=7;
+      const a=[X(x)+ux/lu*k, Y(y)-uy/lu*k], b=[X(x)+ux/lu*k+vx/lv*k, Y(y)-uy/lu*k-vy/lv*k], c=[X(x)+vx/lv*k, Y(y)-vy/lv*k];
+      o+=`<path class="gn gthin" d="M${a} L${b} L${c}"/>`;}
+    if(t==='ang'){ /* 角の印：頂点のまわりの小さな弧と、その中の文字。n本の弧で「同じ角」を表す */
+      const [,vx,vy,a1,a2,txt,n]=e, span=a2-a1, base=span<35?22:span<70?17:14, cx=X(vx), cy=Y(vy);
+      for(let k=0;k<(n||1);k++){ const R=base+k*4, p1=[cx+R*Math.cos(rad(a1)),cy-R*Math.sin(rad(a1))], p2=[cx+R*Math.cos(rad(a2)),cy-R*Math.sin(rad(a2))];
+        o+=`<path class="garc" d="M${p1[0].toFixed(1)},${p1[1].toFixed(1)} A${R},${R} 0 ${span>180?1:0} 0 ${p2[0].toFixed(1)},${p2[1].toFixed(1)}"/>`; }
+      if(txt){ const am=(a1+a2)/2, D=base+(n||1)*4+(span<35?16:span<60?12:9)+(txt.length>3?6:0); o+=`<text class="gang" x="${(cx+D*Math.cos(rad(am))).toFixed(1)}" y="${(cy-D*Math.sin(rad(am))+5).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`; } }
+    if(t==='par'||t==='eq'){ const [,x1,y1,x2,y2,n]=e, sx=(X(x1)+X(x2))/2, sy=(Y(y1)+Y(y2))/2, dx=X(x2)-X(x1), dy=Y(y2)-Y(y1), L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L;
+      for(let k=0;k<(n||1);k++){ const off=(k-((n||1)-1)/2)*6, px=sx+ux*off, py=sy+uy*off;
+        if(t==='par') o+=`<path class="gn gthin" d="M${(px-ux*5-uy*5).toFixed(1)},${(py-uy*5+ux*5).toFixed(1)} L${px.toFixed(1)},${py.toFixed(1)} L${(px-ux*5+uy*5).toFixed(1)},${(py-uy*5-ux*5).toFixed(1)}"/>`;
+        else o+=`<line class="gn gthin" x1="${(px-uy*6).toFixed(1)}" y1="${(py+ux*6).toFixed(1)}" x2="${(px+uy*6).toFixed(1)}" y2="${(py-ux*6).toFixed(1)}"/>`; } }
+    if(t==='dim'){const [,x1,y1,x2,y2,txt,off]=e; const sx1=X(x1),sy1=Y(y1),sx2=X(x2),sy2=Y(y2); const dx=sx2-sx1, dy=sy2-sy1, L=Math.hypot(dx,dy)||1;
+      const nx=dy/L, ny=-dx/L, k=off*13; const a=[sx1+nx*k,sy1+ny*k], b=[sx2+nx*k,sy2+ny*k];
+      const tk=(p)=>`<line class="gdim" x1="${p[0]-nx*4}" y1="${p[1]-ny*4}" x2="${p[0]+nx*4}" y2="${p[1]+ny*4}"/>`;
+      const m=[(a[0]+b[0])/2+nx*(off>0?9:-9)*Math.sign(off||1)*0+nx*Math.sign(off||1)*9,(a[1]+b[1])/2+ny*Math.sign(off||1)*9];
+      o+=`<line class="gdim" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>${tk(a)}${tk(b)}<text class="gdt" x="${m[0].toFixed(1)}" y="${(m[1]+4).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`;}
+  });
+  return `<div class="fig"><svg viewBox="0 0 ${VW} ${(H*s+2*pad).toFixed(0)}" role="img" aria-label="問題の図">${o}</svg></div>`;
+}
+
+let pool=[];
+try{pool=await (await fetch('daily.json',{cache:'no-cache'})).json();}catch(e){}
+const qb=document.getElementById('qbox');
+function drawStreak(){
+  const s=streak(), total=Object.keys(D.days).length, done=D.days[today]!=null;
+  document.getElementById('streak').innerHTML=`<span class="n">${s}<small>日連続</small></span><span class="s">${done?'今日の1問はおわりました。またあした！':s?'今日も答えて、連続をのばそう。':'今日から始めよう。'}<br>これまでに ${total}日</span>
+    ${s>=2?'<button class="btn sub" id="sh" style="margin-left:auto">連続の記録を送る</button>':''}`;
+  const sh=document.getElementById('sh'); if(sh)sh.onclick=()=>{const text=`今日の1問、${s}日連続でつづいています！`, url=location.href.split('?')[0]+'?from=share';
+    track('share_open',{from:'daily'});
+    if(navigator.share)navigator.share({text,url}).then(()=>track('share_done',{from:'daily',how:'native'})).catch(()=>{});
+    else {window.open('https://line.me/R/share?text='+encodeURIComponent(text+'\n'+url),'_blank','noopener');track('share_done',{from:'daily',how:'line'});}};
+}
+function drawCal(){
+  document.getElementById('mon').textContent=`${m}月のスタンプ`;
+  const first=new Date(Date.UTC(y,m-1,1)).getUTCDay(), days=new Date(Date.UTC(y,m,0)).getUTCDate();
+  let h=[...WD].map(w=>`<div class="h">${w}</div>`).join('')+'<div></div>'.repeat(first);
+  for(let i=1;i<=days;i++){const k=`${y}-${String(m).padStart(2,'0')}-${String(i).padStart(2,'0')}`, v=D.days[k];
+    h+=`<div class="d ${v===1?'on':v===0?'miss':''} ${k===today?'today':''}"><span>${i}</span><span class="st">${v===1?'◎':v===0?'○':''}</span></div>`;}
+  document.getElementById('cal').innerHTML=h;
+}
+if(!pool.length){qb.innerHTML='<p class="note">今日の問題を読みこめませんでした。ページを読みこみ直してください。</p>';drawStreak();drawCal();return;}
+const Q=pool[((dayNo(today)%pool.length)+pool.length)%pool.length];
+/* 選択肢の順番も、その日はいつも同じ */
+let sd=dayNo(today); const rnd=()=>(sd=(sd*9301+49297)%233280)/233280;
+const ops=[Q.a,...Q.d].map(t=>[t,rnd()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);
+function draw(pick){
+  const done=pick!=null, ok=pick===Q.a;
+  qb.innerHTML=`<div><span class="tag">${esc(Q.s)}</span><span class="note" style="display:inline">${esc(Q.g)}より</span></div>
+    <p class="q">${esc(Q.q)}</p>${Q.fig&&Q.fig.geo?geoSVG(Q.fig.geo):''}
+    <div class="ops">${ops.map((t,i)=>`<button class="op ${done&&t===Q.a?'ok':done&&t===pick?'ng':''}" data-i="${i}" ${done?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${esc(t)}</button>`).join('')}</div>
+    ${done?`<div class="res ${ok?'':'bad'}"><b>${ok?'正解！':'ざんねん'}</b>　答え：${esc(Q.a)}<br>${esc(Q.e)}</div>
+      <div class="row"><a class="btn" href="${esc(Q.u)}">「${esc(Q.g)}」で続きを遊ぶ</a><a class="btn sub" href="index.html">ほかのゲームを見る</a></div>`:''}`;
+  qb.querySelectorAll('.op:not([disabled])').forEach(b=>b.onclick=()=>{
+    const t=ops[+b.dataset.i];
+    if(D.days[today]==null){D.days[today]=t===Q.a?1:0;D.pick=D.pick||{};D.pick[today]=t;
+      const keys=Object.keys(D.days).sort(); if(keys.length>800){keys.slice(0,keys.length-800).forEach(k=>{delete D.days[k];if(D.pick)delete D.pick[k];});}
+      save(D);
+      track('level_start',{level_name:'daily'});track('answer_question',{category:'daily',question:Q.q.slice(0,90),correct:t===Q.a});
+      track('level_end',{level_name:'daily',success:t===Q.a,score:t===Q.a?1:0,total:1});track('daily_answer',{correct:t===Q.a,streak:streak()});}
+    draw(t);drawStreak();drawCal();});
+}
+draw(D.days[today]!=null?((D.pick&&D.pick[today])||(D.days[today]===1?Q.a:'')):null);
+drawStreak();drawCal();
+})();
+</script>
+</body>
+</html>

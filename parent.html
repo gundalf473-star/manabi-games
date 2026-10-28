@@ -262,6 +262,29 @@ function render(){
   Object.entries(STARS).forEach(([key,o])=>{const r=read(key,null);if(!r||typeof r!=='object')return;const v=Object.values(r).filter(x=>x>0);if(!v.length)return;starInfo[o.f]={clear:v.length,stars:v.reduce((a,b)=>a+b,0),total:o.total};});
   const glist=Object.values(byG).sort((a,b)=>b.last-a.last);
 
+  // 今週のようす（月曜から今日まで。先週の同じ曜日・時刻までとくらべる）
+  const wk=(()=>{
+    const t0=new Date(now);t0.setHours(0,0,0,0);const ws=t0.getTime()-((t0.getDay()+6)%7)*DAY, el=now-ws;
+    const T=data.filter(e=>e.t>=ws), P=data.filter(e=>e.t>=ws-7*DAY&&e.t<ws-7*DAY+el);
+    const sum=(A,k)=>A.reduce((t,e)=>t+(e[k]||0),0);
+    const cnt={}; T.forEach(e=>{if(e.f==='daily.html')return;cnt[e.f]=(cnt[e.f]||0)+1;});
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+    const topName=top?((byG[top[0]]&&byG[top[0]].g)||top[0]):'';
+    const wTop=Object.entries(recInfo).sort((a,b)=>b[1].weak-a[1].weak)[0];
+    const dd=sample?{days:{}}:(read('mn-daily',{days:{}})||{days:{}}), dys=dd.days||{};
+    let st=0,k=Math.round(Date.parse(new Date(now+9*36e5).toISOString().slice(0,10))/DAY); if(dys[new Date(k*DAY).toISOString().slice(0,10)]==null)k--;
+    while(dys[new Date(k*DAY).toISOString().slice(0,10)]!=null){st++;k--;}
+    const a=sum(T,'a'), ok=sum(T,'k'), pa=sum(P,'a'), diff=a-pa;
+    const lines=[];
+    lines.push(`今週（${md(ws)}〜）は <b>${new Set(T.map(e=>ymd(e.t))).size}日</b> 学習して、<b>${a}問</b> 解きました${a?`（正答率 ${pct(ok,a)}%）`:''}。`+(P.length||pa?`先週の同じころより <b>${diff>=0?'+':''}${diff}問</b>。`:''));
+    if(top)lines.push(`いちばん遊んだのは「${esc(topName)}」（${top[1]}回）。`);
+    if(st)lines.push(`今日の1問は <b>${st}日連続</b>で続いています。`);
+    if(wTop&&wTop[1].weak)lines.push(`にがてがいちばん多いのは「${esc((byG[wTop[0]]&&byG[wTop[0]].g)||wTop[0])}」（にがて ${wTop[1].weak}問）。${urlOf[wTop[0]]?`<a href="${esc(urlOf[wTop[0]])}">いっしょに復習する →</a>`:''}`);
+    if(!T.length)lines.push('今週はまだ記録がありません。「今日の1問」なら1分で始められます。 <a href="daily.html">今日の1問へ →</a>');
+    return `<section class="card week"><h2>今週のようす</h2><ul style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>
+      <p class="note">ほめるときは、点数よりも「続けたこと」「にがてを減らしたこと」を言葉にすると、次もやる気になりやすくなります。</p></section>`;
+  })();
+
   const W=Math.max(300,Math.round((app.clientWidth||640)-38)),Hh=W<480?170:190,pl=30,pr=6,pt=10,pb=26, maxA=Math.max(10,...byDay.map(d=>d.a));
   const step=Math.ceil(maxA/4/5)*5||5, top=step*4, bw=(W-pl-pr)/byDay.length;
   const y=v=>pt+(Hh-pt-pb)*(1-v/top);
@@ -293,6 +316,7 @@ function render(){
     ${sample?`<div class="sample">見本のデータを表示しています（架空の記録です）。 <button class="linkbtn" id="unsmp">見本を閉じる</button></div>`:''}
     <div class="bar-row"><div class="seg" role="group" aria-label="期間">${[[7,'7日'],[30,'30日'],['all','ぜんぶ']].map(([v,t])=>`<button data-r="${v}" aria-pressed="${String(range)===String(v)}">${t}</button>`).join('')}</div>
       <div class="tools"><button class="btn" id="print">印刷する</button></div></div>
+    ${wk}
     <div class="kpis">
       <div class="kpi"><div class="k">学習した日</div><div class="v">${days}<small>日</small></div><div class="d">${label}</div></div>
       <div class="kpi"><div class="k">解いた問題</div><div class="v">${ans}<small>問</small></div><div class="d">${L.length}回あそんだ</div></div>

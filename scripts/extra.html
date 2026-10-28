@@ -1,0 +1,78 @@
+<script>
+/* ゲームが終わったときの「おうちの人に見せる」（結果カード）と、無料版から有料版への案内。
+   ゲームが呼ぶ mnTrack の level_end を受けて、画面の下に小さな帯を出します。名前などの個人情報は使いません。
+   あわせて、ホーム画面に追加して使えるように（サービスワーカー）登録します。 */
+(function(){
+var INFO=__INFO__, base=window.mnTrack, bar=null, last=null;
+var SITE=INFO.site, ROOT=INFO.root;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function track(n,p){try{base&&base(n,p||{});}catch(e){}}
+function shareUrl(){var u=INFO.shareUrl||location.href.split('#')[0].split('?')[0];return u+(u.indexOf('?')<0?'?':'&')+'from=share';}
+function level(n){var m=String(n||'').match(/(?:^|-)L(\d)(?:-|$)/);if(m)return 'レベル'+m[1];m=String(n||'').match(/-(lv\d)$/);return m?{lv1:'基本',lv2:'標準',lv3:'発展'}[m[1]]||'':'';}
+function result(p){
+  if(typeof p.score==='number'&&typeof p.total==='number'&&p.total>0) return {big:p.score+' / '+p.total+'問',ok:p.score/p.total,txt:p.score+'/'+p.total+'問 正解'};
+  if(p.success&&typeof p.score==='number'&&p.score>=1&&p.score<=3&&p.total==null) return {big:'クリア '+'★'.repeat(p.score)+'☆'.repeat(3-p.score),ok:p.score/3,txt:'クリア（★'+p.score+'）'};
+  return null;
+}
+function praise(r){return r>=1?'全問正解！':r>=.8?'よくできました！':r>=.6?'がんばりました！':'くり返して、ばっちりにしよう！';}
+function card(r,lv){ /* 共有用の画像（1200×630）。答えは書かない */
+  var c=document.createElement('canvas');c.width=1200;c.height=630;var g=c.getContext('2d');
+  var F='"BIZ UDPGothic","Hiragino Sans","Yu Gothic","Noto Sans CJK JP",sans-serif';
+  g.fillStyle='#f2f5f9';g.fillRect(0,0,1200,630);
+  var cols=['#2f6fd8','#d4452d','#22875a','#8e5fc9','#cc8e1c','#1d8590'];
+  cols.forEach(function(k,i){g.fillStyle=k;var x=1000+(i%3)*58,y=56+Math.floor(i/3)*58;g.beginPath();if(i===1||i===5)g.arc(x+22,y+22,22,0,7);else if(i===3){g.moveTo(x,y);g.lineTo(x,y+44);g.lineTo(x+44,y+44);}else g.rect(x,y,44,44);g.fill();});
+  g.fillStyle='#5d6a7c';g.font='700 34px '+F;g.fillText(SITE,90,110);
+  g.fillStyle='#1f3a6e';g.font='700 '+(INFO.title.length>14?52:64)+'px '+F;g.fillText(INFO.title,90,210,1020);
+  if(lv){g.fillStyle='#5d6a7c';g.font='700 36px '+F;g.fillText(lv,90,268);}
+  g.fillStyle='#d4452d';g.font='700 130px '+F;g.fillText(r.big,90,430,1020);
+  g.fillStyle='#1d2b3d';g.font='700 44px '+F;g.fillText(praise(r.ok),90,512);
+  var d=new Date();g.fillStyle='#5d6a7c';g.font='400 30px '+F;g.fillText((d.getMonth()+1)+'月'+d.getDate()+'日',90,575);
+  g.textAlign='right';g.fillText('中学受験の勉強を、ゲームで楽しく',1110,575);
+  return c;
+}
+/* 「このゲーム、どうだった？」（ご意見）が出ているあいだは待つ */
+function whenFree(fn,n){n=n||0;var s=document.querySelector('.mnfb-sheet');if(s&&!s.hidden&&s.getAttribute('data-k')==='rate'&&n<240){setTimeout(function(){whenFree(fn,n+1);},500);return;}fn();}
+function close(){if(bar){bar.remove();bar=null;}}
+function show(p){
+  var r=result(p); if(!r&&!INFO.full)return; close();
+  var lv=level(p.level_name); last={r:r,lv:lv};
+  bar=document.createElement('div');bar.className='mn-endbar';bar.setAttribute('role','region');bar.setAttribute('aria-label','結果のメニュー');
+  bar.innerHTML='<style>.mn-endbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:98;width:min(560px,calc(100vw - 20px));box-sizing:border-box;background:#1d2b45;color:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px/1.6 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;display:flex;flex-direction:column;gap:8px}.mn-endbar{position:fixed}'
+   +'.mn-endbar .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mn-endbar button,.mn-endbar a.b{font:inherit;font-weight:700;border:0;border-radius:99px;padding:7px 14px;cursor:pointer;text-decoration:none;display:inline-block}'
+   +'.mn-endbar .p{background:#ffd34d;color:#1d2b45}.mn-endbar .s{background:rgba(255,255,255,.16);color:#fff}.mn-endbar .x{position:absolute;top:4px;right:4px;background:none;color:#fff;opacity:.8;padding:6px 9px;font-size:18px;line-height:1}.mn-endbar .r:first-of-type{padding-right:28px}'
+   +'.mn-endbar .up{border-top:1px solid rgba(255,255,255,.2);padding-top:8px}.mn-endbar small{opacity:.85}</style>'
+   +(r?'<div class="r"><button class="p" data-a="share">おうちの人に見せる</button><span><small>結果を画像やLINEで送れます</small></span><button class="x" data-a="x" aria-label="閉じる">×</button></div>':'')
+   +(INFO.full?'<div class="r'+(r?' up':'')+'"><span style="flex:1;min-width:12em"><b>有料版なら全'+(INFO.total||'')+'問</b><br><small>もっとたくさんの問題に挑戦できます。1日プランから使えます</small></span><a class="b p" data-a="up" href="'+esc(INFO.full)+'">有料版を見る</a>'+(r?'':'<button class="x" data-a="x" aria-label="閉じる">×</button>')+'</div>':'');
+  document.body.appendChild(bar);
+  bar.addEventListener('click',function(ev){var a=ev.target.closest('[data-a]');if(!a)return;var k=a.getAttribute('data-a');
+    if(k==='x')close(); if(k==='share'){ev.preventDefault();openShare();} if(k==='up')track('upsell_click',{from:INFO.file});});
+  if(INFO.full)track('upsell_view',{from:INFO.file});
+}
+function openShare(){
+  if(!last||!last.r)return; track('share_open',{from:INFO.file});
+  var c=card(last.r,last.lv), text=INFO.title+(last.lv?'（'+last.lv+'）':'')+'で '+last.r.txt+'！ '+SITE+'で勉強しています。';
+  var url=shareUrl();
+  c.toBlob(function(blob){
+    var file=null;try{file=new File([blob],'manabi-result.png',{type:'image/png'});}catch(e){}
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],text:text+' '+url}).then(function(){track('share_done',{from:INFO.file,how:'native'});}).catch(function(){});return;}
+    var img=URL.createObjectURL(blob), m=document.createElement('div');
+    m.innerHTML='<div style="position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px" data-close="1">'
+     +'<div style="background:#fff;color:#1d2b3d;border-radius:14px;max-width:520px;width:100%;padding:16px;display:flex;flex-direction:column;gap:10px;font:14px/1.6 \'BIZ UDPGothic\',system-ui,sans-serif">'
+     +'<b style="font-size:16px">おうちの人に見せる</b><img src="'+img+'" alt="結果のカード" style="width:100%;border-radius:8px;border:1px solid #d6dde7">'
+     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><a href="https://line.me/R/share?text='+encodeURIComponent(text+'\n'+url)+'" target="_blank" rel="noopener" data-h="line" style="background:#06c755;color:#fff;font-weight:700;border-radius:99px;padding:8px 16px;text-decoration:none">LINEで送る</a>'
+     +'<a href="'+img+'" download="manabi-result.png" data-h="save" style="background:#1d2b45;color:#fff;font-weight:700;border-radius:99px;padding:8px 16px;text-decoration:none">画像を保存</a>'
+     +'<button data-h="copy" style="font:inherit;font-weight:700;border:1px solid #1d2b45;background:#fff;color:#1d2b45;border-radius:99px;padding:8px 16px;cursor:pointer">文とリンクをコピー</button></div>'
+     +'<small style="color:#5d6a7c">カードには、ゲームの名前と点数だけがのっています。</small><button data-close="1" style="font:inherit;border:0;background:none;color:#5d6a7c;text-decoration:underline;cursor:pointer;align-self:flex-start">閉じる</button></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(ev){var t=ev.target;if(t.getAttribute('data-close')){m.remove();URL.revokeObjectURL(img);return;}
+      var h=t.getAttribute('data-h');if(!h)return;track('share_done',{from:INFO.file,how:h});
+      if(h==='copy'){try{navigator.clipboard.writeText(text+'\n'+url);t.textContent='コピーしました';}catch(e){}}});
+  },'image/png');
+}
+window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}
+  try{ if(n==='level_start')close(); if(n==='level_end')setTimeout(function(){whenFree(function(){show(p);});},950); }catch(e){} };
+try{ if(/[?&]from=share/.test(location.search))track('from_share',{to:INFO.file}); }catch(e){}
+if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register(ROOT+'sw.js').catch(function(){});});}
+})();
+</script>

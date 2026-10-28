@@ -81,6 +81,27 @@ function lock(el,opt){
     }).catch(function(e){bt.disabled=false;bt.textContent='使う';er.textContent=ERR[e&&e.error]||'うまくいきませんでした。もう一度ためしてください。';});
   };
 }
+/* 利用期間が残りわずかのとき、有料版のゲームの上に案内を出す（1日プランは残り7時間、1週間は2日、1ヵ月・1年は3日を切ったら） */
+function expiryNote(){
+  if(!document.querySelector('meta[name="game:paid"]'))return;
+  var s=pageSubject(), now=Date.now();
+  var live=list().filter(function(e){return covers(e,s)&&e.exp>now;}).sort(function(a,b){return b.exp-a.exp;});
+  if(!live.length)return;
+  var e=live[0], lim={d1:7*36e5,w1:2*864e5}[e.p]||3*864e5;
+  if(e.exp-now>lim)return;
+  var day=new Date(now+9*36e5).toISOString().slice(0,10);
+  if(ls('mn-exp-closed','')===e.code+day)return;
+  var d=document.createElement('div'), b=base();
+  d.setAttribute('role','status');
+  d.style.cssText='box-sizing:border-box;max-width:640px;margin:0 auto 12px;border:1px solid #e3c766;background:#fff8dc;color:#3a2e00;border-radius:10px;padding:10px 34px 10px 14px;font:14px/1.7 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;position:relative';
+  d.innerHTML='<b>利用期間は'+esc(left(e.exp))+'です</b>（'+esc(fmt(e.exp))+'まで）。<br>続けて使うときは、新しいプランを買っておき、今のプランが終わってから利用コードを入れると、期間がむだになりません（購入から180日以内に入れてください）。 '
+    +'<a href="'+b+'buy.html?s='+encodeURIComponent(e.s)+'" style="color:inherit;font-weight:700">料金プランを見る →</a>'
+    +'<button aria-label="今日は表示しない" style="position:absolute;top:4px;right:6px;border:0;background:none;font-size:18px;cursor:pointer;color:inherit">×</button>';
+  d.querySelector('button').onclick=function(){lsSet('mn-exp-closed',e.code+day);d.remove();};
+  d.querySelector('a').onclick=function(){try{window.mnTrack&&mnTrack('renew_click',{plan:e.s+'-'+e.p});}catch(x){}};
+  document.body.insertBefore(d,document.body.firstChild);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',expiryNote);else expiryNote();
 window.mnAccess={api:API,list:list,remove:remove,activate:activate,load:load,lock:lock,fmt:fmt,left:left,SNAME:SNAME,PNAME:PNAME,ERR:ERR,device:device,call:call};
 })();
 </script>

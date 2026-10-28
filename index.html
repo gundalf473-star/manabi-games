@@ -60,6 +60,16 @@ button{font:inherit;color:inherit}
 .topnav a:hover{border-color:var(--ink)}
 .topnav a .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--s2);margin-left:6px;vertical-align:2px}
 .card .tag.new{color:#fff;background:var(--s2);border-color:var(--s2)}
+/* トップの「今日の1問・つづきから・にがて復習」 */
+.mine{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.mine a.m{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--c,var(--ink));border-radius:10px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px;min-width:0}
+.mine a.m:hover{border-color:var(--c,var(--ink))}
+.mine .k{font-size:12px;font-weight:700;color:var(--c,var(--ink));letter-spacing:.05em}
+.mine .t{font-family:var(--display);font-size:18px;line-height:1.35;overflow-wrap:anywhere}
+.mine .s{font-size:13px;color:var(--muted)}
+.mine .big{font-family:var(--display);font-size:26px;color:var(--s2);line-height:1.1}
+.topnav button.inst{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px dashed var(--ink);border-radius:99px;padding:4px 14px;cursor:pointer}
+.howto{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font-size:14px}
 footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
 </style>
 </head>
@@ -68,8 +78,10 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   <header>
     <h1>{{SITE_NAME}}</h1>
     <p class="lead">{{SITE_DESCRIPTION}}</p>
-    <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a></nav>
+    <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a><button class="inst" id="inst" hidden>ホーム画面に追加</button></nav>
+    <div class="howto" id="howto" hidden></div>
   </header>
+  <section id="minebox"><div class="mine" id="mine"></div></section>
   <section>
     <div class="label">教科</div>
     <div class="subjects" id="subjects"></div>
@@ -125,6 +137,39 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     }).join('<div style="height:16px"></div>') : '<p class="empty">この単元のゲームはまだありません。</p>';
   }
   render();
+  /* 今日の1問・前回のつづき・にがて復習（この端末の記録から。どこにも送りません） */
+  (function(){
+    const rd=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
+    const byFile={}; games.forEach(g=>{byFile[g.file]=g;});
+    const out=[];
+    const D=rd('mn-daily',{days:{}})||{days:{}}, days=D.days||{};
+    let n=0,k=Math.round(Date.parse(today)/864e5); if(days[today]==null)k--; while(days[new Date(k*864e5).toISOString().slice(0,10)]!=null){n++;k--;}
+    out.push(`<a class="m" href="daily.html" style="--c:var(--s2)"><span class="k">今日の1問</span><span class="t">${days[today]!=null?'今日はおわり。またあした！':'今日の問題にちょうせん'}</span><span class="s">${n?`<span class="big">${n}</span> 日連続`:'毎日1問、日がわりで出ます'}</span></a>`);
+    const H=rd('mn-history',[]); const last=Array.isArray(H)?[...H].reverse().find(e=>e&&byFile[e.f]&&e.f!=='daily.html'):null;
+    if(last){const g=byFile[last.f], d=new Date(last.t), sc=last.n!=null?`${last.s} / ${last.n}問`:last.a?`${last.k} / ${last.a}問`:'';
+      out.push(`<a class="m" href="${g.url}" style="--c:${color(g.subject)}"><span class="k">前回のつづき</span><span class="t">${esc(g.title)}</span><span class="s">${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span></a>`);}
+    const st=s=>{if(!s)return 'new';if(s[0]>=2&&s[0]>s[1])return 'master';if(s[1]>0)return 'weak';return 'try';};
+    const weak=[]; Object.entries(data.rec||{}).forEach(([key,o])=>{const r=rd(key,null);if(!r||typeof r!=='object'||!byFile[o.f])return;
+      const w=Object.values(r).filter(v=>st(v)==='weak').length; if(w)weak.push([byFile[o.f],w]);});
+    weak.sort((a,b)=>b[1]-a[1]);
+    if(weak.length){const [g,w]=weak[0], all=weak.reduce((s,x)=>s+x[1],0);
+      out.push(`<a class="m" href="${g.url}" style="--c:${color(g.subject)}"><span class="k">にがて復習</span><span class="t">${esc(g.title)}</span><span class="s">にがて ${w}問${weak.length>1?`（ぜんぶで ${all}問・<span style="text-decoration:underline">保護者ページ</span>で一覧）`:''}</span></a>`);}
+    document.getElementById('mine').innerHTML=out.join('');
+  })();
+  /* ホーム画面に追加 */
+  (function(){
+    const b=document.getElementById('inst'), how=document.getElementById('howto');
+    const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+    if(standalone)return;
+    let ev=null; addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;b.hidden=false;});
+    const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    const mobile=ios||/android/i.test(navigator.userAgent); if(mobile)b.hidden=false;
+    b.onclick=async()=>{ try{window.mnTrack&&mnTrack('install_click',{});}catch(e){}
+      if(ev){ev.prompt();try{await ev.userChoice;}catch(e){}ev=null;return;}
+      how.hidden=!how.hidden;
+      how.innerHTML=ios?'<b>iPhone・iPad</b>：Safariで、画面の下（または上）の <b>共有ボタン</b>（□に↑）をおして、<b>「ホーム画面に追加」</b>をえらびます。'
+        :'<b>Android</b>：Chromeで、右上の <b>︙（メニュー）</b>をおして、<b>「ホーム画面に追加」</b>または<b>「アプリをインストール」</b>をえらびます。';};
+  })();
   const fb=(data.site&&data.site.feedback)||null;
   document.getElementById('foot').innerHTML=`ゲーム ${games.length}本　・　${fb?`<a href="${esc(fb.base+'?usp=pp_url'+(fb.type?'&'+fb.type+'='+encodeURIComponent(fb.kansou):'')+(fb.game?'&'+fb.game+'='+encodeURIComponent('サイト全体'):''))}" target="_blank" rel="noopener" style="color:inherit">ご意見・ご感想</a>　・　`:''}<a href="parent.html" style="color:inherit">保護者ページ（学習の記録）</a>　・　<a href="contact.html" style="color:inherit">お問い合わせ</a>　・　<a href="privacy.html" style="color:inherit">プライバシーポリシー</a>　・　<a href="tokushoho.html" style="color:inherit">特定商取引法に基づく表記</a>`;
 })();

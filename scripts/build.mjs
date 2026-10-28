@@ -48,6 +48,19 @@ else if(n==='level_end'){if(!S)begin(p.level_name);if(p.level_name)S.c=String(p.
 addEventListener('pagehide',save);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save();});})();</script>`;
 const GAME_GA = GA + HISTORY;
 
+// 有料版の記録の場所（保護者ページの REC・STARS をそのまま使う）。トップの「にがて復習」と、有料版の問題数に使う
+const parentSrc = fs.readFileSync(path.join(ROOT, "parent.html"), "utf8");
+const REC_MAP = {}, STAR_MAP = {};
+for (const [, k, f, t] of parentSrc.matchAll(/'([\w-]+-p-rec)':\{f:'([^']+)',total:(\d+)\}/g)) REC_MAP[k] = { f, total: +t };
+for (const [, k, f, t] of parentSrc.matchAll(/'([\w-]+-stars)':\{f:'([^']+)',total:(\d+|null)\}/g)) STAR_MAP[k] = { f, total: t === "null" ? null : +t };
+const paidTotal = (f) => (Object.values(REC_MAP).find((o) => o.f === f) || Object.values(STAR_MAP).find((o) => o.f === f) || {}).total || null;
+// ゲームが終わったときの帯（結果カード・有料版の案内）と、ホーム画面に追加するしくみ
+const EXTRA_TPL = fs.readFileSync(path.join(ROOT, "scripts", "extra.html"), "utf8");
+const BUILD_ID = Date.now().toString(36);
+// ホーム画面に追加（アプリのように開く）ためのタグ。depth はサイトのいちばん上からの深さ
+const pwaTags = (depth) => { const r = "../".repeat(depth); return `<link rel="manifest" href="${r}manifest.webmanifest"><meta name="theme-color" content="#1f3a6e"><link rel="apple-touch-icon" href="${r}apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="まなび">`; };
+const SW_REG = (depth) => `<script>if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('${"../".repeat(depth)}sw.js').catch(function(){});});</script>`;
+
 // ご意見フォーム（site.json の feedbackForm に、Googleフォームの「事前入力したURL」を入れたときだけ使います）
 // 事前入力では、ゲーム名の欄に GAME、問題の欄に QUESTION と入れ、種類の欄は「感想・ご意見」をえらんでおきます。
 const KANSOU = "感想・ご意見", MACHIGAI = "問題のまちがい";
@@ -145,6 +158,17 @@ for (const file of walk(GAMES)) {
     html = addHead(html, `<script>window.mnTitle=${JSON.stringify(title).replace(/</g, "\\u003c")};</script>` + seoTags({ url, title: seoTitle, desc, noindex: paid, jsonld: paid ? null : ld, type: "article" }));
     if (!paid) SITEMAP.push(url);
   }
+  // 結果の帯（共有・有料版の案内）と、ホーム画面に追加するしくみ
+  {
+    const base = rel.at(-1), dir = path.dirname(file);
+    const isPaid = pickMeta(html, "game:paid") !== "";
+    const fullName = base.replace(/\.html$/i, "-full.html"), freeName = base.replace(/-full\.html$/i, ".html");
+    const full = !isPaid && fs.existsSync(path.join(dir, fullName)) ? fullName : null;
+    const freeRel = isPaid && fs.existsSync(path.join(dir, freeName)) ? [...rel.slice(0, -1), freeName] : rel;
+    const info = { site: site.name, title, file: base, root: "../".repeat(rel.length), full, total: full ? paidTotal(fullName) : null,
+      shareUrl: SITE_URL ? pageUrl("games/" + freeRel.join("/")) : null };
+    html = html.replace(/<\/head>/i, (m) => pwaTags(rel.length) + EXTRA_TPL.replace("__INFO__", () => JSON.stringify(info).replace(/</g, "\\u003c")) + m);
+  }
   // 有料版には、利用コードを確かめるしくみを入れる（ゲーム本体のスクリプトより前に読みこむ）
   if (pickMeta(html, "game:paid")) html = html.replace(/<\/head>/i, `${ACCESS}</head>`);
   // 一覧データ（games.json）の場所は、ゲームのフォルダの深さに合わせる
@@ -162,6 +186,7 @@ for (const file of walk(GAMES)) {
     url: "games/" + rel.map(encodeURIComponent).join("/"),
     updated: stat.mtime.toISOString().slice(0, 10),
     added: NEW_GAMES[gameId(file)] || "",
+    file: rel.at(-1),
   });
 }
 
@@ -169,14 +194,14 @@ const order = site.subjectOrder || [];
 const rank = (s) => (order.indexOf(s) === -1 ? 999 : order.indexOf(s));
 list.sort((a, b) => rank(a.subject) - rank(b.subject) || a.subject.localeCompare(b.subject, "ja") || a.unit.localeCompare(b.unit, "ja") || a.title.localeCompare(b.title, "ja"));
 
-fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify({ site: Object.assign({}, site, { feedback: FB, newsLatest: NEWS.map((n) => n.date).sort().at(-1) || "" }), games: list }, null, 2));
+fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify({ site: Object.assign({}, site, { feedback: FB, newsLatest: NEWS.map((n) => n.date).sort().at(-1) || "" }), games: list, rec: REC_MAP, stars: STAR_MAP }, null, 2));
 const withNotice = (html) => html.replace(/<\/body>/i, (m) => NOTICE(0) + m);
 // ゲーム以外のページ。name はファイル名、opt.noindex で検索に出さない
 function sitePage(html, name, opt = {}) {
   const title = (html.match(/<title>([^<]*)<\/title>/i) || [, site.name])[1].trim();
   const url = name === "index.html" ? SITE_URL + "/" : SITE_URL + "/" + name;
   const desc = pickMeta(html, "description") || site.description;
-  html = addHead(html, seoTags({ url, title, desc, noindex: opt.noindex, jsonld: opt.jsonld }) + (opt.extraHead || ""));
+  html = addHead(html, seoTags({ url, title, desc, noindex: opt.noindex, jsonld: opt.jsonld }) + pwaTags(0) + SW_REG(0) + (opt.extraHead || ""));
   if (!opt.noindex) SITEMAP.push(url);
   return withNotice(html);
 }
@@ -227,4 +252,33 @@ if (SITE_URL) {
   fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
 } else console.warn("※ site.json の siteUrl が空です。サイトマップは作りません。");
 if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "og.png"), path.join(OUT, "og.png"));
+// ---- 今日の1問：無料版の4択問題（図がないもの・図形の図のもの）から、日がわりで1問 ----
+{
+  const GEO_OK = new Set(["poly", "circ", "sect", "arc", "path", "seg", "dot", "lab", "ra", "ang", "par", "eq", "dim", "ell"]);
+  const pool = [];
+  for (const g of list) {
+    if (g.paid) continue;
+    const src = fs.readFileSync(path.join(GAMES, ...decodeURIComponent(g.url).split("/").slice(1)), "utf8");
+    const m = src.match(/let QS=(\[.*?\]);\n/s); if (!m) continue;
+    let qs; try { qs = JSON.parse(m[1]); } catch (e) { continue; }
+    for (const q of qs) {
+      if (!q || typeof q.q !== "string" || typeof q.a !== "string" || !Array.isArray(q.d) || q.d.length !== 3 || !q.e) continue;
+      if (q.fig && !(q.fig.geo && Object.keys(q.fig).length === 1 && q.fig.geo.every((e) => GEO_OK.has(e[0])))) continue;
+      pool.push({ q: q.q, a: q.a, d: q.d, e: q.e, fig: q.fig || null, g: g.title, s: g.subject, u: g.url });
+    }
+  }
+  // 毎日同じ順番にならないよう、決まった順にまぜる（だれが開いても、その日は同じ問題）
+  let seed = 20261028; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  fs.writeFileSync(path.join(OUT, "daily.json"), JSON.stringify(pool));
+  const daily = fs.readFileSync(path.join(ROOT, "daily.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
+  fs.writeFileSync(path.join(OUT, "daily.html"), sitePage(daily, "daily.html"));
+  console.log(`今日の1問：${pool.length}問`);
+}
+// ---- ホーム画面に追加（アプリのように開く） ----
+fs.writeFileSync(path.join(OUT, "manifest.webmanifest"), JSON.stringify({ name: site.name, short_name: "まなび", description: site.description, lang: "ja",
+  start_url: "./index.html?from=app", scope: "./", display: "standalone", background_color: "#f2f5f9", theme_color: "#1f3a6e",
+  icons: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }] }, null, 1));
+for (const f of ["icon-192.png", "icon-512.png", "apple-touch-icon.png"]) if (fs.existsSync(path.join(ROOT, f))) fs.copyFileSync(path.join(ROOT, f), path.join(OUT, f));
+fs.writeFileSync(path.join(OUT, "sw.js"), fs.readFileSync(path.join(ROOT, "scripts", "sw.js"), "utf8").replace("__BUILD__", BUILD_ID));
 console.log(`ゲーム ${list.length} 本で一覧を作りました`);
