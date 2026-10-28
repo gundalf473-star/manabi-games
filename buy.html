@@ -151,7 +151,15 @@ async function thanks(id){
   if(!o){ app.innerHTML='<div class="box"><p class="err">支払いの確認ができませんでした。</p><p style="margin:0">カードの手続きが終わっていない可能性があります。しばらくしてからこのページを読みこみ直してください。それでも利用コードが出ないときは、お問い合わせください（<a href="tokushoho.html">連絡先</a>）。</p></div>'; return; }
   const P={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科'}, PN={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
   let act=null; try{ act=await A.activate(o.code); }catch(e){}
-  try{window.mnTrack&&mnTrack('purchase',{plan:o.subject+'-'+o.period});}catch(e){}
+  /* 購入の記録（Googleアナリティクス）。テスト決済（受付番号が cs_test_ で始まる）は送らない。
+     お礼の画面を読みこみ直しても2回送らないよう、送った受付番号をこの端末に覚えておく */
+  try{
+    const SENT='mn-purchase-sent'; let sent=[]; try{ sent=JSON.parse(localStorage.getItem(SENT)||'[]'); if(!Array.isArray(sent))sent=[]; }catch(e){}
+    if(!/^cs_test_/.test(id) && !sent.includes(id)){
+      window.mnTrack&&mnTrack('purchase',{plan:o.subject+'-'+o.period,transaction_id:id});
+      sent.push(id); try{ localStorage.setItem(SENT,JSON.stringify(sent.slice(-50))); }catch(e){}
+    }
+  }catch(e){}
   app.innerHTML=`<section class="box done"><h2>ご購入ありがとうございます</h2>
     <p style="margin:0">プラン：<b>${esc(P[o.subject])}・${esc(PN[o.period])}</b></p>
     <div class="label">あなたの利用コード</div>
