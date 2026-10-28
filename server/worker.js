@@ -33,7 +33,7 @@ const GAMES = {
   genshi: "shakai", asuka: "shakai", nara: "shakai", kamakura: "shakai", taisho: "shakai", muromachi: "shakai", sengoku: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
-  tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika", shokubutsu: "rika",
+  tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika", shokubutsu: "rika", dobutsu: "rika",
 };
 const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い・返金について", "問題のまちがいについて", "ゲームの不具合について", "個人情報の取り扱いについて", "その他"];
 const MAX_DEVICES = 3;            // 1つの利用コードで使える端末の数
