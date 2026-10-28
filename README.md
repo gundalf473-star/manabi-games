@@ -19,7 +19,7 @@ manabi-games/
 └─ .github/workflows/pages.yml（自動で公開するための設定。さわらない）
 ```
 
-ファイルを入れたり直したりすると、GitHub Actions が自動でサイトを組み立てて公開します（1〜2分）。公開されたアドレスは `https://ユーザー名.github.io/manabi-games/` です。
+ファイルを入れたり直したりすると、GitHub Actions が自動でサイトを組み立てて公開します（1〜2分）。公開されたアドレスは `https://manabigamebako.com/` です（独自ドメイン。もとの `https://ユーザー名.github.io/manabi-games/` は自動でこちらに転送されます）。
 
 ## ゲームを追加するとき
 
