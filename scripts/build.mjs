@@ -29,7 +29,7 @@ const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">"
 const gaId = (site.gaMeasurementId || "").trim();
 const GA = (gaId ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(gaId)}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${esc(gaId)}');</script>` : "")
-  + `<script>window.mnTrack=function(n,p){try{if(window.gtag)gtag('event',n,Object.assign({game_title:document.title},p||{}));}catch(e){}};</script>`;
+  + `<script>window.mnTrack=function(n,p){try{if(window.gtag)gtag('event',n,Object.assign({game_title:window.mnTitle||document.title},p||{}));}catch(e){}};</script>`;
 
 // 学習の履歴（保護者ページ用）。この端末のブラウザの中（localStorage の mn-history）にだけ保存し、どこにも送りません。
 // ゲームが呼ぶ mnTrack（level_start / answer_question / level_end）を受けて、1回ぶんの記録を作ります。
@@ -37,7 +37,7 @@ const HISTORY = `<script>(function(){var KEY='mn-history',S=null,base=window.mnT
 function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}
 function load(){try{var h=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(h)?h:[];}catch(e){return [];}}
 function save(){if(!S||(!S.a&&S.s==null))return;try{var h=load(),i=-1;for(var j=h.length-1;j>=0&&j>=h.length-60;j--){if(h[j].id===S.id){i=j;break;}}
-var e={id:S.id,t:S.t,e:Date.now(),f:file(),g:document.title,c:S.c,a:S.a,k:S.k,m:S.m};if(S.s!=null){e.s=S.s;if(S.n!=null)e.n=S.n;else e.star=1;}
+var e={id:S.id,t:S.t,e:Date.now(),f:file(),g:window.mnTitle||document.title,c:S.c,a:S.a,k:S.k,m:S.m};if(S.s!=null){e.s=S.s;if(S.n!=null)e.n=S.n;else e.star=1;}
 if(i>=0)h[i]=e;else h.push(e);if(h.length>3000)h=h.slice(-3000);localStorage.setItem(KEY,JSON.stringify(h));}catch(x){}}
 function begin(c){save();S={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),c:c||'',a:0,k:0,m:[],s:null,n:null};}
 window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}try{
@@ -91,6 +91,25 @@ function gameNotes(id, depth) {
 }
 const afterBody = (html, add) => add ? html.replace(/<body[^>]*>/i, (m) => m + add) : html;
 
+// ---- 検索と共有（Google などに見つけてもらう・LINE などで共有したときの見え方） ----
+const SITE_URL = (site.siteUrl || "").replace(/\/$/, "");
+const OG_IMAGE = SITE_URL ? SITE_URL + "/og.png" : "";
+const SITEMAP = [];   // 検索に出したいページ
+function seoTags({ url, title, desc, noindex, jsonld, type }) {
+  let t = "";
+  if (noindex) t += `<meta name="robots" content="noindex">`;
+  if (SITE_URL && url && !noindex) t += `<link rel="canonical" href="${esc(url)}">`;
+  t += `<meta property="og:site_name" content="${esc(site.name)}"><meta property="og:type" content="${type || "website"}"><meta property="og:title" content="${esc(title)}">`;
+  if (desc) t += `<meta property="og:description" content="${esc(desc)}">`;
+  if (SITE_URL && url) t += `<meta property="og:url" content="${esc(url)}">`;
+  if (OG_IMAGE) t += `<meta property="og:image" content="${OG_IMAGE}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
+  t += `<meta name="twitter:card" content="summary_large_image">`;
+  if (jsonld) t += `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>`;
+  return t;
+}
+const pageUrl = (rel) => SITE_URL + "/" + rel.split("/").map(encodeURIComponent).join("/");
+const addHead = (html, tags) => html.replace(/<\/head>/i, (m) => tags + m);
+
 const list = [];
 for (const file of walk(GAMES)) {
   const rel = path.relative(GAMES, file).split(path.sep);
@@ -104,13 +123,28 @@ for (const file of walk(GAMES)) {
   // ページの骨組み（文字コードなど）がなければ足して、一覧へ戻るリンクをつける
   const back = `<a href="../${"../".repeat(rel.length - 1)}index.html" style="position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;text-decoration:none;opacity:.88">← ゲーム一覧</a>`;
   if (!/<!doctype/i.test(html)) {
-    html = `<!doctype html>\n<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${GAME_GA}\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head><body>\n${html}\n${back}\n${FEEDBACK}\n</body></html>`;
+    const hm = html.match(/^(?:\s*(?:<title>[^<]*<\/title>|<meta[^>]*>|<link[^>]*>))+/i);
+    const headBits = hm ? hm[0] : ""; html = html.slice(headBits.length);
+    html = `<!doctype html>\n<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">${headBits}\n${GAME_GA}\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head><body>\n${html}\n${back}\n${FEEDBACK}\n</body></html>`;
   } else {
     html = html.replace(/<\/body>/i, `${back}${FEEDBACK}</body>`).replace(/<\/head>/i, `${GAME_GA}</head>`);
   }
   // 緊急のお知らせの帯と、このゲームへの注意
   html = html.replace(/<\/body>/i, (m) => NOTICE(rel.length) + m);
   html = afterBody(html, gameNotes(gameId(file), rel.length));
+  // 検索用のタイトル（「ゲーム名｜中学受験 教科｜サイト名」）と、検索・共有のタグ。有料版は検索に出さない
+  {
+    const paid = pickMeta(html, "game:paid") !== "";
+    const seoTitle = `${title}｜中学受験 ${subject}｜${site.name}`;
+    const url = pageUrl("games/" + rel.join("/"));
+    const desc = pickMeta(html, "description");
+    html = html.replace(/<title>[^<]*<\/title>/i, `<title>${esc(seoTitle)}</title>`);
+    const ld = { "@context": "https://schema.org", "@type": "LearningResource", name: title, description: desc, url, inLanguage: "ja",
+      learningResourceType: /パズル|ゲーム/.test(title) ? "パズル" : "クイズ", educationalLevel: "小学生（中学受験）", about: subject,
+      isAccessibleForFree: !paid, isPartOf: { "@type": "WebSite", name: site.name, url: SITE_URL + "/" } };
+    html = addHead(html, `<script>window.mnTitle=${JSON.stringify(title).replace(/</g, "\\u003c")};</script>` + seoTags({ url, title: seoTitle, desc, noindex: paid, jsonld: paid ? null : ld, type: "article" }));
+    if (!paid) SITEMAP.push(url);
+  }
   // 有料版には、利用コードを確かめるしくみを入れる（ゲーム本体のスクリプトより前に読みこむ）
   if (pickMeta(html, "game:paid")) html = html.replace(/<\/head>/i, `${ACCESS}</head>`);
   // 一覧データ（games.json）の場所は、ゲームのフォルダの深さに合わせる
@@ -137,21 +171,43 @@ list.sort((a, b) => rank(a.subject) - rank(b.subject) || a.subject.localeCompare
 
 fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify({ site: Object.assign({}, site, { feedback: FB, newsLatest: NEWS.map((n) => n.date).sort().at(-1) || "" }), games: list }, null, 2));
 const withNotice = (html) => html.replace(/<\/body>/i, (m) => NOTICE(0) + m);
+// ゲーム以外のページ。name はファイル名、opt.noindex で検索に出さない
+function sitePage(html, name, opt = {}) {
+  const title = (html.match(/<title>([^<]*)<\/title>/i) || [, site.name])[1].trim();
+  const url = name === "index.html" ? SITE_URL + "/" : SITE_URL + "/" + name;
+  const desc = pickMeta(html, "description") || site.description;
+  html = addHead(html, seoTags({ url, title, desc, noindex: opt.noindex, jsonld: opt.jsonld }) + (opt.extraHead || ""));
+  if (!opt.noindex) SITEMAP.push(url);
+  return withNotice(html);
+}
 // お知らせのページ
 const newsHtml = NEWS.map((n) => `<article class="item" data-date="${esc(n.date)}"><time datetime="${esc(n.date)}">${esc(n.date.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日"))}</time><span class="new">NEW</span>`
   + `<h2>${esc(n.title)}</h2><p>${esc(n.body || "")}</p>${n.link ? `<a class="more" href="${esc(n.link)}">くわしく見る →</a>` : ""}</article>`).join("\n") || '<p class="small">いまはお知らせはありません。</p>';
-fs.writeFileSync(path.join(OUT, "news.html"), withNotice(fs.readFileSync(path.join(ROOT, "news.html"), "utf8")
-  .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA).replace("{{NEWS}}", () => newsHtml)));
+fs.writeFileSync(path.join(OUT, "news.html"), sitePage(fs.readFileSync(path.join(ROOT, "news.html"), "utf8")
+  .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA).replace("{{NEWS}}", () => newsHtml), "news.html"));
 let index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name))
   .replaceAll("{{SITE_DESCRIPTION}}", esc(site.description));
-fs.writeFileSync(path.join(OUT, "index.html"), withNotice(index.replace("{{GA}}", GA)));
+// トップページのゲーム一覧を、はじめから文字で入れておく（検索エンジンがゲームへのリンクをたどれるように。表示は読みこみ後に同じものを作りなおす）
+{
+  const COLORS = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6"];
+  const subjects = [...new Set(list.map((g) => g.subject))];
+  const color = (s) => `var(${COLORS[subjects.indexOf(s) % COLORS.length]})`;
+  const staticList = subjects.map((s) => {
+    const gs = list.filter((g) => g.subject === s);
+    return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div><div class="grid">` + gs.map((g) => `<a class="card" href="${g.url}"><span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid ? '<span class="tag paid">有料版</span>' : ""}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p><div class="meta">${g.grade ? `<span>${esc(g.grade)}</span>` : ""}${g.players ? `<span>${esc(g.players)}</span>` : ""}<span class="play" style="margin-left:auto">あそぶ →</span></div></a>`).join("") + `</div></section>`;
+  }).join('<div style="height:16px"></div>');
+  index = index.replace('<main id="list"><p class="empty">ゲームを読みこんでいます…</p></main>', () => `<main id="list">${staticList}</main>`);
+}
+const verify = (site.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">` : "") + (site.bingSiteVerification ? `<meta name="msvalidate.01" content="${esc(site.bingSiteVerification)}">` : "");
+fs.writeFileSync(path.join(OUT, "index.html"), sitePage(index.replace("{{GA}}", GA), "index.html", { extraHead: verify,
+  jsonld: { "@context": "https://schema.org", "@type": "WebSite", name: site.name, url: SITE_URL + "/", description: site.description, inLanguage: "ja" } }));
 const privacy = fs.readFileSync(path.join(ROOT, "privacy.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name)).replaceAll("{{CONTACT}}", esc(site.contact || "（連絡先を site.json に書いてください）")).replace("{{GA}}", GA);
-fs.writeFileSync(path.join(OUT, "privacy.html"), withNotice(privacy));
+fs.writeFileSync(path.join(OUT, "privacy.html"), sitePage(privacy, "privacy.html"));
 const parent = fs.readFileSync(path.join(ROOT, "parent.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA);
-fs.writeFileSync(path.join(OUT, "parent.html"), withNotice(parent));
+fs.writeFileSync(path.join(OUT, "parent.html"), sitePage(parent, "parent.html"));
 const seller = site.seller || {};
 const ask = "ご請求があれば、遅滞なく開示します。";
 for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) {
@@ -163,8 +219,12 @@ for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) 
     .replace("{{SELLER_PHONE}}", esc(seller.phone || ask))
     .replace("{{SELLER_EMAIL}}", esc(seller.email || site.contact || "（site.json の seller.email に書いてください）"))
     .replace("{{SELLER_NOTE}}", (!seller.address || !seller.phone) ? "所在地・電話番号は、ご請求があればメールでお知らせします。" : "");
-  fs.writeFileSync(path.join(OUT, name), withNotice(page));
+  fs.writeFileSync(path.join(OUT, name), sitePage(page, name, { noindex: name === "plan.html" }));
 }
 if (!API) console.warn("※ site.json の apiBase が空です。有料版は「販売準備中」と表示されます。");
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");
+if (SITE_URL) {
+  fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
+} else console.warn("※ site.json の siteUrl が空です。サイトマップは作りません。");
+if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "og.png"), path.join(OUT, "og.png"));
 console.log(`ゲーム ${list.length} 本で一覧を作りました`);

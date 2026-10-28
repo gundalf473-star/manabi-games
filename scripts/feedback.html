@@ -32,7 +32,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp
 function formUrl(kind,q){
   var u=CFG.base+'?usp=pp_url';
   if(CFG.type)u+='&'+CFG.type+'='+encodeURIComponent(kind==='q'?CFG.machigai:CFG.kansou);
-  if(CFG.game)u+='&'+CFG.game+'='+encodeURIComponent(document.title);
+  if(CFG.game)u+='&'+CFG.game+'='+encodeURIComponent(window.mnTitle||document.title);
   if(CFG.question&&q)u+='&'+CFG.question+'='+encodeURIComponent(q);
   return u;
 }

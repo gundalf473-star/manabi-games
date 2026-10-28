@@ -1,6 +1,7 @@
 {
   "name": "まなびゲーム箱",
   "description": "中学受験の算数・国語・理科・社会と思考力を、ゲームで楽しく。教科と単元を選んで、すぐに遊べます。",
+  "siteUrl": "https://gundalf473-star.github.io/manabi-games",
   "gaMeasurementId": "G-5Q1CCLYYRC",
   "contact": "",
   "subjectOrder": [
@@ -18,5 +19,7 @@
     "address": "",
     "phone": "",
     "email": "teidenatsu@yk2.so-net.ne.jp"
-  }
+  },
+  "googleSiteVerification": "",
+  "bingSiteVerification": ""
 }
