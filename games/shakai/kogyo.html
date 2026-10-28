@@ -123,7 +123,8 @@ let best=store.get(PAID?'kogyo-p-best':'kogyo-best',{}), rec=store.get('kogyo-p-
 const saveRec=()=>store.set('kogyo-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="kogyo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>日本の工業クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="timeline"><dt>重化学工業</dt><dd>金属・機械・化学工業</dd><dt>軽工業</dt><dd>食料品・せんい工業など</dd><dt>太平洋ベルト</dt><dd>関東〜北九州の海沿いの工業がさかんな地域</dd><dt>中京工業地帯</dt><dd>愛知・三重。出荷額が最大。自動車</dd><dt>阪神工業地帯</dt><dd>大阪・兵庫。金属・中小工場</dd><dt>京浜工業地帯</dt><dd>東京・神奈川。印刷</dd><dt>北九州工業地帯</dt><dd>福岡。八幡製鉄所（1901年）</dd><dt>瀬戸内工業地域</dt><dd>岡山・広島・山口など。化学・鉄鋼</dd><dt>関東内陸工業地域</dt><dd>群馬・栃木・埼玉。機械</dd><dt>京葉工業地域</dt><dd>千葉。化学・鉄鋼</dd><dt>東海工業地域</dt><dd>静岡。楽器・オートバイ・製紙</dd><dt>自動車</dt><dd>愛知県豊田市。関連工場・ジャストインタイム</dd><dt>中小工場</dt><dd>工場数の約99％</dd><dt>伝統工芸品</dt><dd>南部鉄器・輪島塗・西陣織など</dd></dl>`;
 
@@ -170,13 +171,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">日本の工業まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">日本の工業のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

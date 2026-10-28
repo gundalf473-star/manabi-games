@@ -123,7 +123,8 @@ let best=store.get(PAID?'suisan-p-best':'suisan-best',{}), rec=store.get('suisan
 const saveRec=()=>store.set('suisan-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="suisan-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>水産業と林業クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="timeline"><dt>沿岸漁業</dt><dd>小さな船で日帰りの漁</dd><dt>沖合漁業</dt><dd>数日がかり。生産量がいちばん多い</dd><dt>遠洋漁業</dt><dd>遠くの海で長期間。200海里で減少</dd><dt>潮目</dt><dd>暖流と寒流がぶつかる（三陸沖）</dd><dt>大陸だな</dt><dd>深さ約200mまでの浅い海（東シナ海）</dd><dt>かき</dt><dd>広島県・宮城県</dd><dt>ほたて</dt><dd>北海道・青森県</dd><dt>のり</dt><dd>佐賀県・兵庫県（有明海など）</dd><dt>真珠</dt><dd>愛媛県・長崎県・三重県</dd><dt>養殖</dt><dd>いけすなどで出荷まで育てる</dd><dt>栽培漁業</dt><dd>稚魚を育てて海に放流</dd><dt>200海里</dt><dd>排他的経済水域（約370km）</dd><dt>森林</dt><dd>国土の約3分の2。その約4割が人工林</dd><dt>天然三大美林</dt><dd>青森ひば・秋田すぎ・木曽ひのき</dd><dt>人工三大美林</dt><dd>天竜すぎ・尾鷲ひのき・吉野すぎ</dd></dl>`;
 
@@ -148,13 +149,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">水産業と林業まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">水産業と林業のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

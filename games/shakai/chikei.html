@@ -123,7 +123,8 @@ let best=store.get(PAID?'chikei-p-best':'chikei-best',{}), rec=store.get('chikei
 const saveRec=()=>store.set('chikei-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="chikei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>日本の地形クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="timeline"><dt>国土</dt><dd>約4分の3が山地。平野は約4分の1</dd><dt>最高峰</dt><dd>富士山（3776m）</dd><dt>日本アルプス</dt><dd>北から飛騨・木曽・赤石山脈</dd><dt>最長の川</dt><dd>信濃川（367km）</dd><dt>流域最大</dt><dd>利根川（坂東太郎）</dd><dt>最大の湖</dt><dd>琵琶湖（滋賀県）</dd><dt>三大急流</dt><dd>最上川・富士川・球磨川</dd><dt>最大の平野</dt><dd>関東平野</dd><dt>リアス海岸</dt><dd>三陸海岸・志摩半島・若狭湾など</dd><dt>最北端</dt><dd>択捉島（北海道）</dd><dt>最南端</dt><dd>沖ノ鳥島（東京都）</dd><dt>最東端</dt><dd>南鳥島（東京都）</dd><dt>最西端</dt><dd>与那国島（沖縄県）</dd><dt>扇状地</dt><dd>山から出たところ。果樹園（甲府盆地）</dd><dt>三角州</dt><dd>河口。広島市など</dd><dt>輪中</dt><dd>濃尾平野の堤防で囲んだ集落</dd></dl>`;
 
@@ -170,13 +171,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">日本の地形まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">日本の地形のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

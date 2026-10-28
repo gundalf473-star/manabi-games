@@ -136,6 +136,7 @@ async function decrypt(){ return mnAccess.load('yojijukugo300'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'yojijukugo300',err:err,free:'yojijukugo.html',onOpen:async()=>{ W=await decrypt(); home(); }}); }
 
 /* ---------- 記録 ---------- */
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 let rec=store.get('yoji300-rec',{}); // 熟語 → [正解数, まちがい数]
 const saveRec=()=>store.set('yoji300-rec',rec);
 const state=w=>{const r=rec[w[0]];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
@@ -144,7 +145,7 @@ const THEMES={
   all:['ぜんぶ',w=>true],
   lv1:['基本',w=>w[3]===1],lv2:['標準',w=>w[3]===2],lv3:['発展',w=>w[3]===3],
   num:['数字が入る',w=>NUM.test(w[0])],ani:['動物が入る',w=>ANI.test(w[0])],nat:['自然が入る',w=>NAT.test(w[0])],
-  weak:['にがて',w=>state(w)==='weak'],fresh:['まだやっていない',w=>state(w)==='new'],
+  weak:['にがて',w=>state(w)==='weak'],review:['今日の解き直し',w=>!!window.mnReview&&mnReview.isDue(RVID,w[0])],fresh:['まだやっていない',w=>state(w)==='new'],
 };
 let theme='all', G=null;
 const MODES={choice:['えらぶ','4つの中から正しい四字熟語をえらぶ。'],write:['ならべる','8まいの漢字の札から4まいを順に選んで書く。']};
@@ -229,7 +230,7 @@ function judge(ok,j){
     document.getElementById('ctrl').hidden=true;
     app.querySelectorAll('.tile').forEach(b=>b.disabled=true);
   }
-  const r=rec[w[0]]||[0,0]; r[ok?0:1]++; rec[w[0]]=r; saveRec();
+  window.mnReview&&mnReview.mark(RVID,w[0],ok);const r=rec[w[0]]||[0,0]; r[ok?0:1]++; rec[w[0]]=r; saveRec();
   const nowMaster=state(w)==='master'&&before!=='master'; if(nowMaster)G.newly.push(w);
   if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(w);}
   track('answer_question',{category:`300-${G.mode}`,question:w[0],correct:ok});

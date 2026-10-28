@@ -32,7 +32,7 @@ const PRICES = {
 const GAMES = {
   chusho: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
-  "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", hayasa: "sansu", menseki: "sansu", kakudo: "sansu", soji: "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou", michi: "shikou", heimen: "shikou",
+  "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", gyakusan: "sansu", seishitsu: "sansu", hayasa: "sansu", menseki: "sansu", kakudo: "sansu", soji: "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou", michi: "shikou", heimen: "shikou",
   genshi: "shakai", asuka: "shakai", nara: "shakai", kamakura: "shakai", taisho: "shakai", muromachi: "shakai", sengoku: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai", heian: "shakai", sengo: "shakai", chikei: "shakai", kiko: "shakai", nogyo: "shakai", suisan: "shakai", kogyo: "shakai", boeki: "shakai", koumin: "shakai", todofuken: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",

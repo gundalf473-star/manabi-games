@@ -2,7 +2,7 @@
    いつもはインターネットから最新のページを読みこみ、つながらないときだけ、前に開いたページを出します。
    有料版の問題データ（サーバーとのやりとり）は、ここではあつかいません。 */
 const V = "mn-__BUILD__";
-const FIRST = ["./", "index.html", "daily.html", "games.json", "daily.json", "icon-192.png"];
+const FIRST = ["./", "index.html", "daily.html", "drill.html", "games.json", "daily.json", "icon-192.png"];
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(V).then((c) => c.addAll(FIRST)).catch(() => {}));

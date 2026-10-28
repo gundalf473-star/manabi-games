@@ -85,6 +85,7 @@ const FEEDBACK = fs.readFileSync(path.join(ROOT, "scripts", "feedback.html"), "u
 // 有料版の利用コード（site.json の apiBase に、サーバー（Cloudflare Workers）のアドレスを入れます）
 const API = (process.env.API_BASE ?? site.apiBase ?? "").trim().replace(/\/$/, "");
 const ACCESS = fs.readFileSync(path.join(ROOT, "scripts", "access.html"), "utf8").replace("__API__", () => JSON.stringify(API));
+const REVIEW = fs.readFileSync(path.join(ROOT, "scripts", "review.html"), "utf8");
 
 // 運営からのお知らせ。緊急のもの（帯）は管理画面からサーバーに入れ、全ページで読みこむ。ふつうのものは notices.json に書く
 const NOTICE_TPL = fs.readFileSync(path.join(ROOT, "scripts", "notice.html"), "utf8").replace("__API__", () => JSON.stringify(API));
@@ -170,7 +171,7 @@ for (const file of walk(GAMES)) {
     html = html.replace(/<\/head>/i, (m) => pwaTags(rel.length) + EXTRA_TPL.replace("__INFO__", () => JSON.stringify(info).replace(/</g, "\\u003c")) + m);
   }
   // 有料版には、利用コードを確かめるしくみを入れる（ゲーム本体のスクリプトより前に読みこむ）
-  if (pickMeta(html, "game:paid")) html = html.replace(/<\/head>/i, `${ACCESS}</head>`);
+  if (pickMeta(html, "game:paid")) html = html.replace(/<\/head>/i, () => `${ACCESS}${REVIEW}</head>`);
   // 一覧データ（games.json）の場所は、ゲームのフォルダの深さに合わせる
   html = html.replaceAll("'../games.json'", `'${"../".repeat(rel.length)}games.json'`);
   const outFile = path.join(OUT, "games", ...rel);
@@ -248,9 +249,6 @@ for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) 
 }
 if (!API) console.warn("※ site.json の apiBase が空です。有料版は「販売準備中」と表示されます。");
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");
-if (SITE_URL) {
-  fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
-} else console.warn("※ site.json の siteUrl が空です。サイトマップは作りません。");
 if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "og.png"), path.join(OUT, "og.png"));
 // ---- 今日の1問：無料版の4択問題（図がないもの・図形の図のもの）から、日がわりで1問 ----
 {
@@ -273,8 +271,13 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
   fs.writeFileSync(path.join(OUT, "daily.json"), JSON.stringify(pool));
   const daily = fs.readFileSync(path.join(ROOT, "daily.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
   fs.writeFileSync(path.join(OUT, "daily.html"), sitePage(daily, "daily.html"));
+  const drill = fs.readFileSync(path.join(ROOT, "drill.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
+  fs.writeFileSync(path.join(OUT, "drill.html"), sitePage(drill, "drill.html"));
   console.log(`今日の1問：${pool.length}問`);
 }
+if (SITE_URL) {
+  fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
+} else console.warn("※ site.json の siteUrl が空です。サイトマップは作りません。");
 // ---- ホーム画面に追加（アプリのように開く） ----
 fs.writeFileSync(path.join(OUT, "manifest.webmanifest"), JSON.stringify({ name: site.name, short_name: "まなび", description: site.description, lang: "ja",
   start_url: "./index.html?from=app", scope: "./", display: "standalone", background_color: "#f2f5f9", theme_color: "#1f3a6e",

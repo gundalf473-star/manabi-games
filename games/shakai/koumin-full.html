@@ -123,7 +123,8 @@ let best=store.get(PAID?'koumin-p-best':'koumin-best',{}), rec=store.get('koumin
 const saveRec=()=>store.set('koumin-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="koumin-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>公民クイズ道場 140問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全140問。7つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="timeline"><dt>三大原則</dt><dd>国民主権・基本的人権の尊重・平和主義</dd><dt>公布・施行</dt><dd>1946年11月3日・1947年5月3日</dd><dt>改正</dt><dd>各議院の総議員の3分の2以上→国民投票で過半数</dd><dt>衆議院</dt><dd>465人・任期4年・解散あり・25歳以上</dd><dt>参議院</dt><dd>248人・任期6年・3年ごとに半数改選・30歳以上</dd><dt>選挙権</dt><dd>18歳以上</dd><dt>内閣</dt><dd>総理大臣は国会が指名・天皇が任命</dd><dt>三審制</dt><dd>控訴→上告</dd><dt>裁判員</dt><dd>重大な刑事事件の第一審（地方裁判所）</dd><dt>直接請求</dt><dd>条例は50分の1・解職と解散は3分の1</dd><dt>首長</dt><dd>知事30歳以上・市町村長25歳以上・任期4年</dd><dt>税</dt><dd>直接税（所得税）・間接税（消費税）</dd><dt>社会保障</dt><dd>社会保険・公的扶助・社会福祉・公衆衛生</dd><dt>国際連合</dt><dd>1945年・本部ニューヨーク・日本の加盟は1956年</dd><dt>常任理事国</dt><dd>アメリカ・イギリス・フランス・ロシア・中国</dd></dl>`;
 
@@ -148,13 +149,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">公民まるごと</span><span class="ds">7つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">公民のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

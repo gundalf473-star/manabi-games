@@ -129,7 +129,8 @@ let best=store.get(PAID?'hyakunin-p-best':'hyakunin-best',{}), rec=store.get('hy
 const saveRec=()=>store.set('hyakunin-p-rec',rec);
 const qkey=q=>`${q.n}番 ${q.k} ${q.s}`;   // 保護者ページの「まちがえた問題」と同じ書き方にそろえる
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const POEMS=()=>QS.filter(q=>!q.x);
 const RANGES=[[1,20],[21,40],[41,60],[61,80],[81,100]];
 const PAIDLINK=`<a class="paid" href="hyakunin-full.html" id="paid-link"><span class="pt">100首ぜんぶ練習したい人へ　<b>百人一首 100首</b>（有料版）</span><span class="pd">無料版の5首もふくむ全100首。20首ずつのコース、苦手だけの復習、下の句→上の句の練習つき。</span></a>`;
@@ -176,13 +177,14 @@ function homePaid(){
     <div class="label">コースをえらぶ（1回10首）</div>
     <div class="courses">${RANGES.map(([a,b],i)=>{const m=QS.filter(q=>q.n>=a&&q.n<=b&&state(q)==='master').length;return `<button class="course" data-l="r${i}"><span class="nm">${a}〜${b}番</span><span class="ds">覚えた ${m} / 20首</span><span class="best">${best['r'+i]!=null?`ベスト ${best['r'+i]}/10`:''}</span></button>`;}).join('')}
       <button class="course" data-l="all"><span class="nm">100首からランダム</span><span class="ds">どこから出るかわからない10首。</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="course" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="course" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある歌だけ（${weak.length}首）</span></button>
       <button class="course" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない歌だけ（${fresh.length}首）</span></button></div>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   bindSeg();
   app.querySelectorAll('.course').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    let pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:(()=>{const [a,z]=RANGES[+l.slice(1)];return QS.filter(q=>q.n>=a&&q.n<=z);})();
+    let pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:(()=>{const [a,z]=RANGES[+l.slice(1)];return QS.filter(q=>q.n>=a&&q.n<=z);})();
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

@@ -137,7 +137,8 @@ let best=store.get(PAID?'biseibutsu-p-best':'biseibutsu-best',{}), rec=store.get
 const saveRec=()=>store.set('biseibutsu-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="biseibutsu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>水の中の小さな生き物とけんび鏡クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。けんび鏡の使い方・倍率と見え方・生き物の名前・特ちょう・観察の5つの分野別コース。倍率の計算つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>置く場所</dt><dd>直射日光の当たらない、明るく平らな所</dd><dt>レンズのつけ方</dt><dd>先に接眼レンズ、次に対物レンズ（つつの中にほこりが入らないように）。はじめはいちばん低い倍率</dd><dt>ピントの合わせ方</dt><dd>横から見ながら対物レンズとプレパラートを近づけ、のぞきながら少しずつはなしていく</dd><dt>倍率</dt><dd>接眼レンズの倍率 × 対物レンズの倍率　高い倍率ほど、見えるはんいはせまく、暗くなる</dd><dt>見え方</dt><dd>上下左右が逆に見える。右上に見える物を真ん中にするには、プレパラートを右上へ動かす</dd><dt>動くもの</dt><dd>ミジンコ（触角で泳ぐ）・ゾウリムシ（せん毛）・ミドリムシ（べん毛）・アメーバ（形を変える）</dd><dt>緑色のもの</dt><dd>ミドリムシ・ミカヅキモ・アオミドロ・ボルボックス・クンショウモ（光合成をする）</dd><dt>大きさ</dt><dd>ミジンコ（約1〜2mm）＞ ゾウリムシ（約0.2mm）＞ ミドリムシ（約0.05〜0.1mm）</dd><dt>水の中のつながり</dt><dd>ミドリムシなど → ミジンコ → メダカ → 大きな魚・鳥</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">小さな生き物とけんび鏡まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">小さな生き物とけんび鏡のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

@@ -148,7 +148,8 @@ let best=store.get(PAID?'soji-p-best':'soji-best',{}), rec=store.get('soji-p-rec
 const saveRec=()=>store.set('soji-p-rec',rec);
 const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号）で別々に記録 */
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="soji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>図形の相似 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。すべて図つき・解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>相似</dt><dd>形が同じで大きさがちがう図形。対応する角は等しく、対応する辺の比（相似比）はどこも同じ</dd><dt>見つけ方</dt><dd>2つの角が等しい三角形は相似。平行線があると等しい角（同位角・錯角）ができる</dd><dt>ピラミッド形</dt><dd>DE∥BC なら 三角形ADEと三角形ABCは相似。AD：AB＝AE：AC＝DE：BC</dd><dt>ちょうちょ形</dt><dd>AB∥CD で、2本の線が交わると、上と下の三角形が相似（台形の対角線もこの形）</dd><dt>まわりの長さ</dt><dd>相似比と同じ比</dd><dt>面積比</dt><dd>相似比×相似比（2：3 なら 4：9）</dd><dt>体積比</dt><dd>相似比×相似比×相似比（2：3 なら 8：27）</dd><dt>縮図・地図</dt><dd>実際の長さ＝図の長さ×縮尺の分母。単位の直しに注意</dd><dt>かげ</dt><dd>太陽の光は平行。同じ時刻なら「高さ：かげ」はどれも同じ。街灯は光が1点から出る</dd><dt>直角三角形</dt><dd>直角の頂点から垂線をひくと、大小3つの相似な直角三角形ができる</dd><dt>角の二等分線</dt><dd>向かいの辺を、となりの2辺の比に分ける</dd></dl>`;
 
@@ -176,13 +177,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">図形の相似まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">相似のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

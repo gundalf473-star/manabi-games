@@ -161,12 +161,13 @@ function init(data){
   fillable=P.filter(p=>isKanji(p[0])&&isKanji(p[3])&&p[0].length>=2&&p[3].length>=2);
 }
 const MODES={choice:['えらぶ','言葉の反対語を、4つの中からえらぶ。'],fill:['1字うめる','反対語の、□に入る漢字1字をえらぶ。']};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 let rec=store.get(PREFIX+'-rec',{});
 const rk=p=>p[0]+'⇔'+p[3];
 const saveRec=()=>store.set(PREFIX+'-rec',rec);
 const state=p=>{const r=rec[rk(p)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const TYPES={all:['ぜんぶ',p=>true],熟語:['漢字の言葉',p=>p[6]==='熟語'],打消し:['不・無・非・未がつく言葉',p=>p[6]==='打消し'],和語:['動き・ようすの言葉',p=>p[6]==='和語'],カタカナ:['カタカナ語',p=>p[6]==='カタカナ'],
-  ...(PAID?{weak:['にがて',p=>state(p)==='weak'],fresh:['まだやっていない',p=>state(p)==='new']}:{})};
+  ...(PAID?{weak:['にがて',p=>state(p)==='weak'],review:['今日の解き直し',p=>!!window.mnReview&&mnReview.isDue(RVID,rk(p))],fresh:['まだやっていない',p=>state(p)==='new']}:{})};
 const PAIDLINK=`<a class="paid" href="hantaigo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>反対語クイズ 入試対策編</b>（有料版）</span><span class="pd">入試でよく問われる形の反対語を196組。「不・無・非・未」がつく言葉も。覚えた組の記録と、苦手だけの復習つき。</span></a>`;
 async function decrypt(){ return mnAccess.load('hantaigo'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'hantaigo',err:err,free:'hantaigo.html',onOpen:async()=>{ init(await decrypt()); home(); }}); }
@@ -183,7 +184,7 @@ function home(){
   }
   app.innerHTML=`<section class="box">${recHTML}
     <div><div class="h2" style="margin-bottom:8px">出題する言葉</div>
-      <div class="chips">${Object.entries(TYPES).filter(([k,[nm,f]])=>k==='weak'||k==='fresh'||P.filter(f).length).map(([k,[nm,f]])=>{const n=P.filter(f).length;return `<button class="chip" id="th-${k}" data-t="${k}" aria-pressed="${k===theme}" ${n?'':'disabled'}>${nm}（${n}組）</button>`;}).join('')}</div></div>
+      <div class="chips">${Object.entries(TYPES).filter(([k,[nm,f]])=>k==='weak'||k==='review'||k==='fresh'||P.filter(f).length).map(([k,[nm,f]])=>{const n=P.filter(f).length;return `<button class="chip" id="th-${k}" data-t="${k}" aria-pressed="${k===theme}" ${n?'':'disabled'}>${nm}（${n}組）</button>`;}).join('')}</div></div>
     <div><div class="h2" style="margin-bottom:8px">あそびかた</div>
       <div class="modes">${Object.entries(MODES).map(([k,[nm,ds]])=>{const n=pool(k).length;return `<button class="mode" id="mode-${k}" data-m="${k}" ${n?'':'disabled'}><span class="nm">${nm}</span><span class="ds">${ds}${n?'':'（この言葉では遊べません）'}</span><span class="best">${best[k+'-'+theme]!=null?`ベスト ${best[k+'-'+theme]}/${Math.min(ROUND,n)}`:''}</span></button>`;}).join('')}</div></div>
     <p class="note">「積極⇔消極」のように1字だけちがう組や、「主観⇔客観」のように形がにた組は、漢字ごと覚えると入試で役立ちます。</p>
@@ -255,7 +256,7 @@ function judge(j){
   if(G.mode==='choice')document.getElementById('ans').outerHTML=`<span>${esc(q.b)}</span>`;
   else document.getElementById('fw').innerHTML=`${fillWord(q,right,ok?'ok':'ng')}<small>${esc(q.yb)}</small>`;
   let nowMaster=false;
-  if(PAID){const before=state(q.p);const r=rec[rk(q.p)]||[0,0]; r[ok?0:1]++; rec[rk(q.p)]=r; saveRec(); nowMaster=state(q.p)==='master'&&before!=='master'; if(nowMaster)G.newly.push(q.p);}
+  if(PAID){const before=state(q.p);window.mnReview&&mnReview.mark(RVID,rk(q.p),ok);const r=rec[rk(q.p)]||[0,0]; r[ok?0:1]++; rec[rk(q.p)]=r; saveRec(); nowMaster=state(q.p)==='master'&&before!=='master'; if(nowMaster)G.newly.push(q.p);}
   if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(q.p);}
   track('answer_question',{category:`${PREFIX}-${G.mode}-${q.p[6]}`,question:`${q.a}-${q.b}`,correct:ok});
   const alt=[...opp[q.a]].filter(w=>w!==q.b);

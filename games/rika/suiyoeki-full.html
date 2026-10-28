@@ -137,7 +137,8 @@ let best=store.get(PAID?'suiyoeki-p-best':'suiyoeki-best',{}), rec=store.get('su
 const saveRec=()=>store.set('suiyoeki-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="suiyoeki-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>水溶液クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。水溶液の性質・酸性とアルカリ性・金属・中和・もののとけ方の5つの分野別コース。表を読む計算問題つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>気体がとけた水溶液</dt><dd>塩酸（塩化水素）・アンモニア水・炭酸水（二酸化炭素）→ 蒸発させると何も残らない</dd><dt>においがある</dt><dd>塩酸・アンモニア水</dd><dt>酸性</dt><dd>塩酸・炭酸水・酢・レモン　青リトマス→赤、BTB黄</dd><dt>中性</dt><dd>食塩水・砂糖水　リトマス変化なし、BTB緑</dd><dt>アルカリ性</dt><dd>石灰水・アンモニア水・水酸化ナトリウム水溶液・せっけん水　赤リトマス→青、BTB青</dd><dt>金属</dt><dd>塩酸：アルミ・鉄がとける　水酸化ナトリウム水溶液：アルミだけとける　どちらも水素が出る</dd><dt>中和</dt><dd>塩酸＋水酸化ナトリウム水溶液 → 食塩＋水。熱が出る</dd><dt>こさ</dt><dd>とけている物÷水溶液全体×100（％）</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">水溶液まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">水溶液のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

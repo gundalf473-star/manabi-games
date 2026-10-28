@@ -137,7 +137,8 @@ let best=store.get(PAID?'hikari-p-best':'hikari-best',{}), rec=store.get('hikari
 const saveRec=()=>store.set('hikari-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="hikari-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>光と音クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。光の反射・鏡・凸レンズ・音の伝わり方・音の高さと大きさの5つの分野別コース。像の位置や音の速さの計算つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>光の直進</dt><dd>光はまっすぐ進む。光をさえぎるとかげができる</dd><dt>反射のきまり</dt><dd>入射角＝反射角（鏡に垂直な線と光のなす角）</dd><dt>鏡の像</dt><dd>鏡の向こう側の、鏡から同じきょりの所にあるように見える。左右が逆に見える</dd><dt>全身がうつる鏡</dt><dd>たての長さは身長の半分あればよい（鏡からはなれても同じ）</dd><dt>2枚の鏡</dt><dd>鏡の角度が90°で像は3つ、60°で5つ（360÷角度－1）</dd><dt>屈折</dt><dd>水からななめに空気へ出る光は、水面から遠ざかるように曲がる。水の中の物はうき上がって見える</dd><dt>凸レンズ</dt><dd>光を1点（焦点）に集める。焦点の外：上下左右逆の像（実像）　焦点距離の2倍の所：同じ大きさ　焦点の内側：大きく同じ向き（虚像）</dd><dt>音</dt><dd>物がふるえて音が出る。空気・水・固体の中を伝わるが、真空中は伝わらない</dd><dt>音の速さ</dt><dd>空気中で秒速約340m（光は秒速約30万km）　きょり＝340×時間</dd><dt>音の高さ</dt><dd>げんが短い・細い・強くはるほど高い音（1秒間のふるえる回数が多い）</dd><dt>音の大きさ</dt><dd>ふれはばが大きいほど大きい音</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">光と音まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">光と音のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

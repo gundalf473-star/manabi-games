@@ -137,7 +137,8 @@ let best=store.get(PAID?'kisho-p-best':'kisho-best',{}), rec=store.get('kisho-p-
 const saveRec=()=>store.set('kisho-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="kisho-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>天気と気象クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。天気と雲・気温と観測・湿度と水蒸気・季節の天気・台風と前線の5つの分野別コース。湿度の計算や表を読む問題つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>晴れとくもり</dt><dd>空全体を10としたときの雲の量　0〜1：快晴　2〜8：晴れ　9〜10：くもり</dd><dt>天気の変わり方</dt><dd>日本の上空には西から東へ偏西風がふくので、天気は西から東へ変わる。夕焼けの次の日は晴れやすい</dd><dt>雲</dt><dd>積乱雲（入道雲）：短い時間に強い雨・かみなり　乱層雲（雨雲）：長い時間おだやかな雨　巻雲：すじ雲</dd><dt>百葉箱</dt><dd>白くぬり、よろい戸で風通しをよく、とびらは北向き。地面から1.2〜1.5mの高さで気温をはかる</dd><dt>1日の気温</dt><dd>晴れの日：日の出前ごろに最低、午後2時ごろに最高　太陽の高さ（正午）→ 地面（午後1時）→ 気温（午後2時）の順にずれる</dd><dt>湿度</dt><dd>湿度（％）＝ 空気1m³中の水蒸気の量 ÷ その温度の飽和水蒸気量 × 100</dd><dt>露点</dt><dd>空気を冷やしていき、水蒸気が水てきになり始める温度。雲・きり・露のでき方</dd><dt>高気圧と低気圧</dt><dd>高気圧：下降気流・晴れ・時計回りにふき出す　低気圧：上昇気流・くもりや雨・反時計回りにふきこむ</dd><dt>季節の天気</dt><dd>冬：西高東低・北西の季節風・日本海側は雪　つゆ：停滞前線（梅雨前線）　夏：太平洋高気圧・南東の季節風</dd><dt>台風</dt><dd>熱帯の海で発生する低気圧。中心に目。反時計回りの風。進む向きの右側は風が強い</dd><dt>前線</dt><dd>寒冷前線：積乱雲・短く強い雨・通過後は気温が下がる　温暖前線：乱層雲・長くおだやかな雨・通過後は気温が上がる</dd><dt>海風と陸風</dt><dd>昼：陸があたたまりやすく、海から陸へ（海風）　夜：陸が冷えやすく、陸から海へ（陸風）</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">天気と気象まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">天気と気象のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

@@ -137,7 +137,8 @@ let best=store.get(PAID?'furiko-p-best':'furiko-best',{}), rec=store.get('furiko
 const saveRec=()=>store.set('furiko-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="furiko-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>ふりこ・浮力・滑車クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。ふりこのきまり・物の運動・浮力・滑車・輪じくの5つの分野別コース。表を読む計算問題つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>ふりこのきまり</dt><dd>1往復の時間は、ふりこの長さだけで決まる。おもりの重さやふれはばでは変わらない</dd><dt>ふりこの長さ</dt><dd>支点から、おもりの重さの中心（重心）までの長さ　長さが4倍で1往復の時間は2倍、9倍で3倍</dd><dt>はかり方</dt><dd>10往復の時間をはかって10でわると、はかりまちがいが小さくなる</dd><dt>ふりこの速さ</dt><dd>いちばん低い所でいちばん速い。はじめと同じ高さまで上がる</dd><dt>くぎにかけたふりこ</dt><dd>1往復の時間＝（長いふりこの1往復＋短いふりこの1往復）÷2</dd><dt>しょうとつ</dt><dd>木片が動くきょりは、球の重さと、転がりはじめる高さに比例する</dd><dt>浮力</dt><dd>水中の物は、おしのけた水の重さだけ軽くなる（水1cm³＝1g）　浮いている物は、浮力＝物の重さ</dd><dt>定滑車</dt><dd>力の大きさは変わらず、力の向きを変える</dd><dt>動滑車</dt><dd>力は半分、引くきょりは2倍（滑車の重さがあるときは、おもりと滑車の重さを合わせて半分）</dd><dt>輪じく</dt><dd>輪の半径×輪にかける力 ＝ じくの半径×じくにかける力</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">ふりこと力まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">ふりこと力のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

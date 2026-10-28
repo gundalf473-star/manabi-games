@@ -123,7 +123,8 @@ let best=store.get(PAID?'meiji2-p-best':'meiji2-best',{}), rec=store.get('meiji2
 const saveRec=()=>store.set('meiji2-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="meiji-koki-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>明治時代（後期）クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="timeline"><dt>1885年</dt><dd>内閣制度ができる（初代総理大臣：伊藤博文）</dd><dt>1886年</dt><dd>ノルマントン号事件</dd><dt>1889年</dt><dd>大日本帝国憲法が発布される</dd><dt>1890年</dt><dd>第1回衆議院議員総選挙・第1回帝国議会・教育勅語</dd><dt>1891年</dt><dd>大津事件</dd><dt>1894年</dt><dd>領事裁判権の撤廃（陸奥宗光）・日清戦争が始まる</dd><dt>1895年</dt><dd>下関条約・三国干渉</dd><dt>1901年</dt><dd>八幡製鉄所が操業を始める</dd><dt>1902年</dt><dd>日英同盟</dd><dt>1904年</dt><dd>日露戦争が始まる</dd><dt>1905年</dt><dd>ポーツマス条約</dd><dt>1910年</dt><dd>韓国併合</dd><dt>1911年</dt><dd>関税自主権の回復（小村寿太郎）</dd><dt>1912年</dt><dd>明治天皇がなくなり、大正時代になる</dd></dl>`;
 
@@ -148,13 +149,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">明治時代（後期）まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">明治時代（後期）の年表を見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

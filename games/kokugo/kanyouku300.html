@@ -140,13 +140,14 @@ async function decrypt(){ return mnAccess.load('kanyouku300'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'kanyouku300',err:err,free:'kanyouku.html',onOpen:async()=>{ W=await decrypt(); home(); }}); }
 
 /* ---------- 記録（有料版） ---------- */
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 let rec=store.get(PREFIX+'-rec',{});
 const saveRec=()=>store.set(PREFIX+'-rec',rec);
 const state=w=>{const r=rec[plain(w)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const THEMES={
   all:['ぜんぶ',w=>true],
   体:['体',w=>w[4]==='体'],動物:['動物・虫',w=>w[4]==='動物'],自然:['自然・植物',w=>w[4]==='自然'],その他:['その他',w=>w[4]==='その他'],
-  ...(PAID?{lv1:['基本',w=>w[3]===1],lv2:['標準',w=>w[3]===2],lv3:['発展',w=>w[3]===3],weak:['にがて',w=>state(w)==='weak'],fresh:['まだやっていない',w=>state(w)==='new']}:{})
+  ...(PAID?{lv1:['基本',w=>w[3]===1],lv2:['標準',w=>w[3]===2],lv3:['発展',w=>w[3]===3],weak:['にがて',w=>state(w)==='weak'],review:['今日の解き直し',w=>!!window.mnReview&&mnReview.isDue(RVID,plain(w))],fresh:['まだやっていない',w=>state(w)==='new']}:{})
 };
 const MODES={fill:['うめる','空らんに入ることばを、8まいの札からえらぶ。'],choice:['えらぶ','意味に合う慣用句を、4つの中からえらぶ。']};
 let theme='all', G=null, best=store.get(PREFIX+'-best',{});
@@ -228,7 +229,7 @@ function judge(ok,j){
     document.getElementById('phrase').innerHTML=phraseHTML(w,word(w),ok?'ok':'ng');
   }
   let nowMaster=false;
-  if(PAID){const r=rec[plain(w)]||[0,0]; r[ok?0:1]++; rec[plain(w)]=r; saveRec(); nowMaster=state(w)==='master'&&before!=='master'; if(nowMaster)G.newly.push(w);}
+  if(PAID){window.mnReview&&mnReview.mark(RVID,plain(w),ok);const r=rec[plain(w)]||[0,0]; r[ok?0:1]++; rec[plain(w)]=r; saveRec(); nowMaster=state(w)==='master'&&before!=='master'; if(nowMaster)G.newly.push(w);}
   if(ok){G.score++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);}else{G.combo=0;G.miss.push(w);}
   track('answer_question',{category:`${PREFIX}-${G.mode}-${w[4]}`,question:plain(w),correct:ok});
   const last=G.i===G.qs.length-1;

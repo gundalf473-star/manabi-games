@@ -128,7 +128,8 @@ let best=store.get(PAID?'tentai-p-best':'tentai-best',{}), rec=store.get('tentai
 const saveRec=()=>store.set('tentai-p-rec',rec);
 const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号）で別々に記録 */
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="tentai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>天体と星の動きクイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。太陽・月・星の動き・星座・太陽系の5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>太陽</dt><dd>東からのぼり、南で南中、西にしずむ（1時間に15度）。かげは反対側（西→北→東）に動く</dd><dt>南中高度</dt><dd>春分・秋分＝90－緯度、夏至＝そこに＋23.4、冬至＝そこから－23.4</dd><dt>月</dt><dd>満ち欠けは約29.5日。三日月は夕方の西、上弦は夕方に南中、満月は真夜中に南中、下弦は明け方に南中</dd><dt>星の日周運動</dt><dd>1時間に15度。北の空は北極星を中心に反時計回り</dd><dt>星の年周運動</dt><dd>同じ時刻で1か月に30度西へ。同じ位置に来る時刻は1か月で2時間早くなる</dd><dt>大三角</dt><dd>夏：ベガ・アルタイル・デネブ　冬：ベテルギウス・シリウス・プロキオン</dd><dt>惑星</dt><dd>水・金・地・火・木・土・天・海（太陽に近い順）</dd></dl>`;
 
@@ -156,13 +157,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">天体まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">天体のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

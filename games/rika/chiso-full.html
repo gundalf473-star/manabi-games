@@ -137,7 +137,8 @@ let best=store.get(PAID?'chiso-p-best':'chiso-best',{}), rec=store.get('chiso-p-
 const saveRec=()=>store.set('chiso-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="chiso-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>流れる水と地層・火山・地震クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。流れる水・地層・岩石と化石・火山・地震の5つの分野別コース。地震の計算や表を読む問題つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>流れる水のはたらき</dt><dd>しん食：けずる　運ぱん：運ぶ　たい積：積もらせる　流れが速いほど、しん食・運ぱんが大きい</dd><dt>曲がった所</dt><dd>外側：流れが速い・深い・がけ（しん食）　内側：流れがおそい・浅い・川原（たい積）</dd><dt>上流と下流</dt><dd>上流：大きく角ばった石・V字谷　山から平地に出る所：扇状地　河口：三角州　下流ほど石は小さく丸い</dd><dt>つぶの大きさ</dt><dd>れき（2mm以上）＞ 砂 ＞ どろ（1/16mm以下）　大きいつぶほど速くしずむ。河口から遠い沖ほど細かい</dd><dt>地層</dt><dd>ふつう下の層ほど古い。水のはたらきの石は丸い、火山灰のつぶは角ばっている</dd><dt>しゅう曲と断層</dt><dd>しゅう曲：おされて曲がる　断層：力が加わって地層がずれる</dd><dt>たい積岩</dt><dd>れき岩・砂岩・でい岩（つぶの大きさ）　石灰岩：塩酸で二酸化炭素　チャート：とてもかたい　ぎょう灰岩：火山灰</dd><dt>化石</dt><dd>示相化石（当時の環境）：サンゴ＝あたたかく浅い海、シジミ＝河口や湖　示準化石（時代）：サンヨウチュウ＝古生代、アンモナイト・恐竜＝中生代、ナウマンゾウ＝新生代</dd><dt>火山</dt><dd>マグマのねばりが強い：おわんをふせた形・はげしい噴火・白っぽい　弱い：なだらか・おだやか・黒っぽい</dd><dt>火成岩</dt><dd>火山岩（急に冷える・はん状組織）：流紋岩・安山岩・玄武岩　深成岩（ゆっくり冷える・等粒状組織）：花こう岩・せん緑岩・はんれい岩</dd><dt>地震</dt><dd>震源の真上が震央。震度は10段階（0〜7）、マグニチュードは地震の規模　P波（速い）で初期微動、S波（おそい）で主要動</dd><dt>初期微動継続時間</dt><dd>震源からのきょりに比例する　きょり＝時間÷（1÷S波の速さ－1÷P波の速さ）</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">地層・火山・地震まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">地層・火山・地震のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

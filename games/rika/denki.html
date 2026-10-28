@@ -130,7 +130,8 @@ let best=store.get(PAID?'denki-p-best':'denki-best',{}), rec=store.get('denki-p-
 const saveRec=()=>store.set('denki-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="denki-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>電気クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。回路・かん電池・電磁石・発熱・発電の5つの分野別コース。回路図つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>豆電球の直列</dt><dd>2個で1個ずつ暗くなる。1個はずすと全部消える。電池は長もち</dd><dt>豆電球の並列</dt><dd>1個ずつ同じ明るさ。1個はずしても残りはつく。電池は早くへる</dd><dt>電池の直列</dt><dd>豆電球は明るくなるが、電池は早くへる。1個逆向きにすると電流は流れない</dd><dt>電池の並列</dt><dd>明るさは1個と同じで、約2倍長もち</dd><dt>電流計</dt><dd>はかるところに直列。まず5Aの－端子から</dd><dt>電磁石</dt><dd>まき数を多く・電流を大きく・鉄しん → 強い。電流の向きで極が入れかわる</dd><dt>発熱</dt><dd>太く短い電熱線ほど電流が流れやすく発熱大（直列では細い方が発熱大）</dd><dt>エネルギー</dt><dd>モーター：電気→運動、光電池：光→電気、スピーカー：電気→音、電熱線：電気→熱</dd></dl>`;
 
@@ -155,13 +156,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">電気まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">電気のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

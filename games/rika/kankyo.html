@@ -137,7 +137,8 @@ let best=store.get(PAID?'kankyo-p-best':'kankyo-best',{}), rec=store.get('kankyo
 const saveRec=()=>store.set('kankyo-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="kankyo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>生き物と環境・季節の生き物クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。季節と生き物・冬ごし・食物連鎖・分解者と物のめぐり・環境の問題の5つの分野別コース。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>季節と生き物</dt><dd>あたたかくなると植物が育ち、動物の活動がさかんになる。寒くなると成長が止まり、活動がにぶくなる</dd><dt>わたり鳥</dt><dd>夏鳥：春に南から来て秋に帰る（ツバメ）　冬鳥：秋に北から来て春に帰る（ハクチョウ・ガン・カモ）</dd><dt>植物の冬ごし</dt><dd>冬芽：サクラ・アジサイ　ロゼット：タンポポ・ナズナ・ハルジオン　種子：ヘチマ・アサガオ　球根：チューリップ</dd><dt>動物の冬ごし</dt><dd>冬眠：カエル・ヘビ・カメ・クマ　こん虫：カマキリ（たまご）・アゲハ（さなぎ）・カブトムシ（幼虫）・テントウムシ（成虫）</dd><dt>食物連鎖</dt><dd>生産者（植物）→ 草食動物 → 肉食動物　食べられるほうが数が多い（ピラミッドの形）</dd><dt>分解者</dt><dd>死がいやふんを分解して、植物が使える養分にもどす　キノコ・カビ・細菌　ミミズ・ダンゴムシは落ち葉を細かくする</dd><dt>物のめぐり</dt><dd>植物は光合成で二酸化炭素を取り入れ酸素を出す。生き物は呼吸で酸素を使い二酸化炭素を出す</dd><dt>地球温暖化</dt><dd>二酸化炭素などの温室効果ガスがふえ、地球の気温が上がる</dd><dt>外来生物</dt><dd>もともといなかった所に、人が持ちこんだ生き物（アメリカザリガニ・オオクチバス・アライグマなど）</dd><dt>再生可能エネルギー</dt><dd>太陽光・風力・水力・地熱・バイオマス　使ってもなくならず、二酸化炭素を出しにくい</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">生き物と環境まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">生き物と環境のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{

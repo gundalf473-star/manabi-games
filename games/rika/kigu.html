@@ -137,7 +137,8 @@ let best=store.get(PAID?'kigu-p-best':'kigu-best',{}), rec=store.get('kigu-p-rec
 const saveRec=()=>store.set('kigu-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
-const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="kigu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>実験器具の使い方クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。熱する器具・はかる器具・液体と薬品・ろ過と器具の名前・安全の5つの分野別コース。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>ガスバーナーの火のつけ方</dt><dd>2つのねじがしまっているのを確かめる → 元せん・コックを開く → マッチに火をつける → ガス調節ねじを開いて点火 → 空気調節ねじを開いて青い炎にする</dd><dt>ガスバーナーの火の消し方</dt><dd>空気調節ねじ → ガス調節ねじ → コック → 元せん の順にしめる　上のねじが空気、下のねじがガス</dd><dt>アルコールランプ</dt><dd>アルコールは8分目くらい。火は横から近づけ、消すときはふたを横からかぶせる</dd><dt>試験管の熱し方</dt><dd>液は4分の1くらいまで。口を人に向けず、ゆり動かしながら熱する。ふっとう石を入れる</dd><dt>メスシリンダー</dt><dd>水平な所に置き、目の高さを液面に合わせて、へこんだいちばん低い所を読む</dd><dt>上皿てんびん</dt><dd>水平な所に置き、はりが左右に同じだけふれればつり合い。分銅はピンセットで、重いものから</dd><dt>薬品のにおい</dt><dd>直接かがずに、手であおいでかぐ</dd><dt>ろ過</dt><dd>ろ紙をぬらしてろうとにつけ、ろうとの足の長いほうをビーカーのかべにつける。ガラス棒に伝わらせて注ぐ</dd><dt>安全</dt><dd>保護めがねをかける。薬品が手や目についたら、すぐに大量の水で洗う。熱した器具はすぐにさわらない</dd></dl>`;
 
@@ -162,13 +163,14 @@ function homePaid(){
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
       <button class="cat" data-l="all"><span class="nm">実験器具まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">実験器具のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
-    const pool=l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
     start(shuffle(pool).slice(0,10));
   });
   document.getElementById('reset').onclick=()=>{
