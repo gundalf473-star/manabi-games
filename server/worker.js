@@ -146,6 +146,12 @@ export default {
       if (p === "/api/plans" && req.method === "GET")
         return json(env, req, { subjects: SUBJECTS, periods: Object.fromEntries(Object.entries(PERIODS).map(([k, v]) => [k, v.name])), prices: PRICES, maxDevices: MAX_DEVICES, games: GAMES, test: String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test") });
 
+      // 運営からの緊急のお知らせ（全ページの上に帯で出す）。なければ null
+      if (p === "/api/notice" && req.method === "GET") {
+        const n = await env.MN.get("notice");
+        return json(env, req, { notice: n ? JSON.parse(n) : null });
+      }
+
       // 支払いページへ
       if (p === "/api/checkout" && req.method === "POST") {
         const b = await req.json().catch(() => ({}));
@@ -268,6 +274,21 @@ export default {
           const t = await req.text(); JSON.parse(t);
           await env.MN.put("pack:" + gm[1], t);
           return json(env, req, { ok: true, game: gm[1], bytes: t.length });
+        }
+        if (ap === "notice" && req.method === "GET") {    // いま出ている緊急のお知らせ（管理画面から見る用）
+          const n = await env.MN.get("notice");
+          return json(env, req, { notice: n ? JSON.parse(n) : null });
+        }
+        if (ap === "notice" && req.method === "POST") {   // 緊急のお知らせを出す／消す
+          const b = await req.json().catch(() => ({}));
+          if (b.clear) { await env.MN.delete("notice"); return json(env, req, { ok: true, notice: null }); }
+          const text = String(b.text || "").trim().slice(0, 300);
+          if (!text) return fail(env, req, 400, "no_text");
+          const link = String(b.link || "").trim().slice(0, 300);
+          if (link && !/^(https?:\/\/|[a-z0-9_\-\/.]+\.html)/i.test(link)) return fail(env, req, 400, "bad_link");
+          const notice = { id: now.toString(36), level: b.level === "red" ? "red" : "yellow", text, link, at: now };
+          await env.MN.put("notice", JSON.stringify(notice));
+          return json(env, req, { ok: true, notice });
         }
         if (ap === "issue" && req.method === "POST") {   // 手で利用コードを作る（テスト・プレゼント用）
           const b = await req.json().catch(() => ({}));

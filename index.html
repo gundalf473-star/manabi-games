@@ -58,6 +58,8 @@ button{font:inherit;color:inherit}
 .topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .topnav a{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:99px;padding:4px 14px;text-decoration:none}
 .topnav a:hover{border-color:var(--ink)}
+.topnav a .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--s2);margin-left:6px;vertical-align:2px}
+.card .tag.new{color:#fff;background:var(--s2);border-color:var(--s2)}
 footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
 </style>
 </head>
@@ -66,7 +68,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   <header>
     <h1>{{SITE_NAME}}</h1>
     <p class="lead">{{SITE_DESCRIPTION}}</p>
-    <nav class="topnav"><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a></nav>
+    <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a></nav>
   </header>
   <section>
     <div class="label">教科</div>
@@ -88,6 +90,12 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   const games=data.games, subjects=[...new Set(games.map(g=>g.subject))];
   const color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
   const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  /* 公開して14日以内のゲームに NEW（日本時間の今日で数える） */
+  const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10);
+  const isNew=g=>g.added&&(Date.parse(today)-Date.parse(g.added))/864e5<14;
+  /* まだ読んでいないお知らせがあれば、「お知らせ」に点を付ける */
+  try{ const latest=(data.site&&data.site.newsLatest)||'', seen=localStorage.getItem('mn-news-seen')||'';
+    if(latest&&latest>seen){ const a=document.getElementById('newslink'); a.insertAdjacentHTML('beforeend','<span class="dot" aria-label="新しいお知らせがあります"></span>'); } }catch(e){}
   let subj=decodeURIComponent(location.hash.slice(1))||'すべて', unit='すべて';
   if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
 
@@ -112,7 +120,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
       const gs=shown.filter(g=>g.subject===s);
       return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div>
         <div class="grid">${gs.map(g=>`<a class="card" href="${g.url}">
-          <span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid?'<span class="tag paid">有料版</span>':''}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>
+          <span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid?'<span class="tag paid">有料版</span>':''}${isNew(g)?'<span class="tag new">NEW</span>':''}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>
           <div class="meta">${g.grade?`<span>${esc(g.grade)}</span>`:''}${g.players?`<span>${esc(g.players)}</span>`:''}<span class="play" style="margin-left:auto">あそぶ →</span></div></a>`).join('')}</div></section>`;
     }).join('<div style="height:16px"></div>') : '<p class="empty">この単元のゲームはまだありません。</p>';
   }

@@ -1,0 +1,13 @@
+<script>/* 運営からの緊急のお知らせ。管理画面で出したものを、ページのいちばん上に帯で出す。「×」で閉じたら、同じお知らせはこの端末では出さない */
+(function(){var API=__API__,ROOT=__ROOT__,K='mn-notice-closed';if(!API||!window.fetch)return;
+function show(n){if(!n||!n.text)return;try{if(localStorage.getItem(K)===n.id)return;}catch(e){}
+var red=n.level==='red',d=document.createElement('div');d.setAttribute('role',red?'alert':'status');d.id='mn-notice';
+d.style.cssText='box-sizing:border-box;max-width:960px;margin:0 auto 14px;position:relative;border-radius:10px;padding:10px 44px 10px 14px;font:700 15px/1.6 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;'+(red?'background:#c8352d;color:#fff':'background:#fff3c4;color:#3a2e00;border:1px solid #e3c766');
+var t=document.createElement('span');t.textContent=(red?'【緊急】':'【お知らせ】')+n.text;d.appendChild(t);
+if(n.link){var a=document.createElement('a');a.href=/^https?:/.test(n.link)?n.link:ROOT+n.link;a.textContent='くわしく →';a.style.cssText='margin-left:10px;color:inherit;text-decoration:underline;white-space:nowrap';d.appendChild(a);}
+var x=document.createElement('button');x.type='button';x.setAttribute('aria-label','このお知らせを閉じる');x.textContent='×';
+x.style.cssText='position:absolute;right:6px;top:6px;width:32px;height:32px;border:0;border-radius:6px;background:transparent;color:inherit;font:700 20px/1 system-ui,sans-serif;cursor:pointer';
+x.onclick=function(){try{localStorage.setItem(K,n.id);}catch(e){}d.remove();};d.appendChild(x);
+document.body.insertBefore(d,document.body.firstChild);}
+fetch(API+'/api/notice',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)show(j.notice);}).catch(function(){});
+})();</script>

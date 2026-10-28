@@ -73,6 +73,24 @@ const FEEDBACK = fs.readFileSync(path.join(ROOT, "scripts", "feedback.html"), "u
 const API = (process.env.API_BASE ?? site.apiBase ?? "").trim().replace(/\/$/, "");
 const ACCESS = fs.readFileSync(path.join(ROOT, "scripts", "access.html"), "utf8").replace("__API__", () => JSON.stringify(API));
 
+// 運営からのお知らせ。緊急のもの（帯）は管理画面からサーバーに入れ、全ページで読みこむ。ふつうのものは notices.json に書く
+const NOTICE_TPL = fs.readFileSync(path.join(ROOT, "scripts", "notice.html"), "utf8").replace("__API__", () => JSON.stringify(API));
+const NOTICE = (depth) => NOTICE_TPL.replace("__ROOT__", () => JSON.stringify("../".repeat(depth)));
+const notices = fs.existsSync(path.join(ROOT, "notices.json")) ? JSON.parse(fs.readFileSync(path.join(ROOT, "notices.json"), "utf8")) : {};
+const NEWS = (notices.news || []).filter((n) => n && n.date && n.title).map((n, i) => [n, i]).sort((a, b) => b[0].date.localeCompare(a[0].date) || a[1] - b[1]).map((x) => x[0]);   // 新しい日付が上
+const NEW_GAMES = notices.newGames || {};
+const gameId = (f) => path.basename(f).replace(/\.html?$/i, "").replace(/-full$/, "");
+const nl2br = (s) => esc(String(s || "")).replace(/\n/g, "<br>");
+// ゲームのページの上に出す注意（notices.json の games にそのゲームが書いてあるもの。until の日を過ぎたら出さない）
+function gameNotes(id, depth) {
+  const list = NEWS.filter((n) => Array.isArray(n.games) && n.games.includes(id));
+  if (!list.length) return "";
+  return list.map((n) => `<div class="mn-gnote" data-until="${esc(n.until || "")}" style="box-sizing:border-box;max-width:640px;margin:0 auto 12px;border:1px solid #e3c766;background:#fff8dc;color:#3a2e00;border-radius:10px;padding:10px 14px;font:14px/1.7 'BIZ UDPGothic','Hiragino Sans','Yu Gothic',system-ui,sans-serif">`
+    + `<b>お知らせ（${esc(n.date)}）　${esc(n.title)}</b><br>${nl2br(n.body)} <a href="${"../".repeat(depth)}news.html" style="color:inherit;font-weight:700">お知らせ一覧 →</a></div>`).join("")
+    + `<script>(function(){var t=new Date(Date.now()+9*36e5).toISOString().slice(0,10);document.querySelectorAll('.mn-gnote').forEach(function(e){var u=e.getAttribute('data-until');if(u&&t>u)e.remove();});})();</script>`;
+}
+const afterBody = (html, add) => add ? html.replace(/<body[^>]*>/i, (m) => m + add) : html;
+
 const list = [];
 for (const file of walk(GAMES)) {
   const rel = path.relative(GAMES, file).split(path.sep);
@@ -90,6 +108,9 @@ for (const file of walk(GAMES)) {
   } else {
     html = html.replace(/<\/body>/i, `${back}${FEEDBACK}</body>`).replace(/<\/head>/i, `${GAME_GA}</head>`);
   }
+  // 緊急のお知らせの帯と、このゲームへの注意
+  html = html.replace(/<\/body>/i, (m) => NOTICE(rel.length) + m);
+  html = afterBody(html, gameNotes(gameId(file), rel.length));
   // 有料版には、利用コードを確かめるしくみを入れる（ゲーム本体のスクリプトより前に読みこむ）
   if (pickMeta(html, "game:paid")) html = html.replace(/<\/head>/i, `${ACCESS}</head>`);
   // 一覧データ（games.json）の場所は、ゲームのフォルダの深さに合わせる
@@ -106,6 +127,7 @@ for (const file of walk(GAMES)) {
     description: pickMeta(html, "description"),
     url: "games/" + rel.map(encodeURIComponent).join("/"),
     updated: stat.mtime.toISOString().slice(0, 10),
+    added: NEW_GAMES[gameId(file)] || "",
   });
 }
 
@@ -113,17 +135,23 @@ const order = site.subjectOrder || [];
 const rank = (s) => (order.indexOf(s) === -1 ? 999 : order.indexOf(s));
 list.sort((a, b) => rank(a.subject) - rank(b.subject) || a.subject.localeCompare(b.subject, "ja") || a.unit.localeCompare(b.unit, "ja") || a.title.localeCompare(b.title, "ja"));
 
-fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify({ site: Object.assign({}, site, { feedback: FB }), games: list }, null, 2));
+fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify({ site: Object.assign({}, site, { feedback: FB, newsLatest: NEWS.map((n) => n.date).sort().at(-1) || "" }), games: list }, null, 2));
+const withNotice = (html) => html.replace(/<\/body>/i, (m) => NOTICE(0) + m);
+// お知らせのページ
+const newsHtml = NEWS.map((n) => `<article class="item" data-date="${esc(n.date)}"><time datetime="${esc(n.date)}">${esc(n.date.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日"))}</time><span class="new">NEW</span>`
+  + `<h2>${esc(n.title)}</h2><p>${esc(n.body || "")}</p>${n.link ? `<a class="more" href="${esc(n.link)}">くわしく見る →</a>` : ""}</article>`).join("\n") || '<p class="small">いまはお知らせはありません。</p>';
+fs.writeFileSync(path.join(OUT, "news.html"), withNotice(fs.readFileSync(path.join(ROOT, "news.html"), "utf8")
+  .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA).replace("{{NEWS}}", () => newsHtml)));
 let index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name))
   .replaceAll("{{SITE_DESCRIPTION}}", esc(site.description));
-fs.writeFileSync(path.join(OUT, "index.html"), index.replace("{{GA}}", GA));
+fs.writeFileSync(path.join(OUT, "index.html"), withNotice(index.replace("{{GA}}", GA)));
 const privacy = fs.readFileSync(path.join(ROOT, "privacy.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name)).replaceAll("{{CONTACT}}", esc(site.contact || "（連絡先を site.json に書いてください）")).replace("{{GA}}", GA);
-fs.writeFileSync(path.join(OUT, "privacy.html"), privacy);
+fs.writeFileSync(path.join(OUT, "privacy.html"), withNotice(privacy));
 const parent = fs.readFileSync(path.join(ROOT, "parent.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA);
-fs.writeFileSync(path.join(OUT, "parent.html"), parent);
+fs.writeFileSync(path.join(OUT, "parent.html"), withNotice(parent));
 const seller = site.seller || {};
 const ask = "ご請求があれば、遅滞なく開示します。";
 for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) {
@@ -135,7 +163,7 @@ for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) 
     .replace("{{SELLER_PHONE}}", esc(seller.phone || ask))
     .replace("{{SELLER_EMAIL}}", esc(seller.email || site.contact || "（site.json の seller.email に書いてください）"))
     .replace("{{SELLER_NOTE}}", (!seller.address || !seller.phone) ? "所在地・電話番号は、ご請求があればメールでお知らせします。" : "");
-  fs.writeFileSync(path.join(OUT, name), page);
+  fs.writeFileSync(path.join(OUT, name), withNotice(page));
 }
 if (!API) console.warn("※ site.json の apiBase が空です。有料版は「販売準備中」と表示されます。");
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");

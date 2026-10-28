@@ -14,7 +14,7 @@ h1{margin:0;font-size:26px;color:var(--ink)}
 .box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
 h2{margin:0;font-size:17px;color:var(--ink)}
 label{font-weight:700;font-size:14px}
-input,select{font:inherit;padding:8px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--fg);box-sizing:border-box;width:100%}
+input,select,textarea{font:inherit;padding:8px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--fg);box-sizing:border-box;width:100%}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
 .row>*{flex:1;min-width:140px}
 button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;background:var(--fg);color:var(--surface)}
@@ -57,6 +57,13 @@ pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:
     <div class="row" style="align-items:center"><button id="msgs">読みこむ</button><label style="display:flex;gap:6px;align-items:center;flex:none;min-width:0;font-weight:400"><input type="checkbox" id="showdone" style="width:auto"> 対応ずみも表示する</label></div>
     <p class="note" id="msgcount"></p>
     <div id="msglist" style="display:flex;flex-direction:column;gap:10px"></div></section>
+  <section class="box"><h2>6. 緊急のお知らせ（全ページの上に帯で出す）</h2>
+    <p class="note">「出す」を押すと、すぐにサイトの全ページ（ゲームの中もふくむ）の上に帯が出ます。見た人は「×」で閉じられます。新しいお知らせを出すと、閉じた人にもまた出ます。ふつうのお知らせ（新しいゲームなど）は、ここではなく「お知らせ」ページに書きます。</p>
+    <div class="row"><label style="flex:none;min-width:0">重さ <select id="nlv"><option value="red">緊急（赤）</option><option value="yellow">注意（黄）</option></select></label></div>
+    <label>お知らせの文（300字まで）<textarea id="ntext" rows="3" placeholder="例：ただいま決済ができない状態です。復旧までしばらくお待ちください。"></textarea></label>
+    <label>くわしい説明のページ（なくてもよい）<input id="nlink" placeholder="例：news.html"></label>
+    <div class="row"><button id="nput">出す</button><button id="nclear">消す</button><button id="nnow">いま出ているものを見る</button></div>
+    <pre id="o6"></pre></section>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -96,6 +103,12 @@ function drawMsgs(){
   $('msglist').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(!confirm('このお問い合わせを消します。元にはもどせません。よろしいですか？'))return; try{ await call('/api/admin/message',{method:'POST',body:JSON.stringify({id:b.dataset.del,delete:true})}); MSG=MSG.filter(x=>x.id!==b.dataset.del); drawMsgs(); }catch(e){ alert('失敗：'+e.message); } });
   $('msglist').querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>{ $('c').value=b.dataset.look; $('look').click(); $('c').scrollIntoView({block:'center'}); });
 }
+$('nput').onclick=async()=>{ const text=$('ntext').value.trim(); if(!text){show('o6','お知らせの文を書いてください。');return;}
+  if(!confirm('このお知らせを、サイトの全ページに出します。よろしいですか？'))return;
+  try{ show('o6',(await call('/api/admin/notice',{method:'POST',body:JSON.stringify({level:$('nlv').value,text,link:$('nlink').value.trim()})})).notice); }catch(e){ show('o6','失敗：'+e.message); } };
+$('nclear').onclick=async()=>{ if(!confirm('いま出ている緊急のお知らせを消します。よろしいですか？'))return;
+  try{ await call('/api/admin/notice',{method:'POST',body:JSON.stringify({clear:true})}); show('o6','消しました。帯は出ていません。'); }catch(e){ show('o6','失敗：'+e.message); } };
+$('nnow').onclick=async()=>{ try{ const d=await call('/api/admin/notice'); show('o6',d.notice||'いまは何も出ていません。'); }catch(e){ show('o6','失敗：'+e.message); } };
 $('msgs').onclick=async()=>{ try{ MSG=(await call('/api/admin/messages')).messages; drawMsgs(); }catch(e){ $('msgcount').textContent='読みこめませんでした：'+e.message; } };
 $('showdone').onchange=drawMsgs;
 </script>
