@@ -129,7 +129,7 @@ const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 let G=null, shopUrl='', course=null;
 let best=store.get(PAID?'tekobane-p-best':'tekobane-best',{}), rec=store.get('tekobane-p-rec',{});
 const saveRec=()=>store.set('tekobane-p-rec',rec);
-const qkey=q=>q.q;
+const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号）で別々に記録 */
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const record=(q,ok)=>{if(!PAID)return false;const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="tekobane-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>てこ・ばねクイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。てこのしくみ・つりあい計算・応用、ばねののび・つなぎ方の5つの分野別コース。図つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
@@ -137,7 +137,10 @@ const TIMELINE=`<dl class="matome"><dt>てこのつりあい</dt><dd>左右で�
 
 async function decrypt(){ return mnAccess.load('tekobane'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'tekobane',err:err,free:'tekobane.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
-function home(){
+function cleanRec(){ /* id をつける前に、同じ問題文でまとめて記録していた分を消す */
+  let ch=false; (QS||[]).forEach(q=>{ if(q.id&&rec[q.q]){ delete rec[q.q]; ch=true; } }); if(ch) saveRec();
+}
+function home(){ cleanRec();
   G=null;
   if(PAID)return homePaid();
   app.innerHTML=`<div class="label">あそびかた</div>

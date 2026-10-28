@@ -254,7 +254,7 @@ function render(){
     if(e.t>=from){g.n++;g.a+=e.a||0;g.k+=e.k||0;(e.m||[]).forEach(q=>g.miss[q]=(g.miss[q]||0)+1);}});
   const recInfo={};
   Object.entries(REC).forEach(([key,o])=>{const r=read(key,null);if(!r||typeof r!=='object')return;
-    const c={master:0,weak:0,try:0,list:[]};Object.entries(r).forEach(([q,v])=>{const s=state(v);if(s!=='new')c[s]++;if(s==='weak')c.list.push([q,v[1]]);});
+    const c={master:0,weak:0,try:0,list:[]};Object.entries(r).forEach(([q,v])=>{const s=state(v);if(s!=='new')c[s]++;if(s==='weak')c.list.push([q.replace(/#\d+$/,''),v[1]]);});
     if(c.master+c.weak+c.try===0)return;
     recInfo[o.f]=Object.assign(c,{total:o.total});
     if(!byG[o.f])byG[o.f]={f:o.f,g:(games.find(g=>g.url.endsWith(encodeURIComponent(o.f)))||{}).title||o.f,n:0,a:0,k:0,last:0,miss:{}};});
