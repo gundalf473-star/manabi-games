@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>お問い合わせ | {{SITE_NAME}}</title>
+<meta name="description" content="{{SITE_NAME}}へのお問い合わせフォームです。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。3つの段階（入力→確認→完了）の札 → 入力の表 → 確認 → 完了 */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e; --accent:#d4432a; --accentsoft:#fbe7e2;
+  --ok:#1d8150; --oksoft:#e0f1e6; --ng:#c8352d; --gold:#a97c12; --pick:#e9eef5;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0; --accent:#f07a62; --accentsoft:#3a241f;
+  --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --gold:#e1b44a; --pick:#222c3a; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,40px);line-height:1.2;margin:0;color:var(--ink)}
+h2{font-family:var(--display);font-weight:500;font-size:20px;margin:0;color:var(--ink)}
+.lead{margin:6px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--accent)}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.opts.five{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:560px){.opts,.opts.five{grid-template-columns:1fr 1fr}}
+.opt{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:12px 10px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.opt:hover{border-color:var(--ink)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accentsoft)}
+.opt .nm{font-weight:700;font-size:17px}
+.opt .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.opt .pr{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;color:var(--fg)}
+.opt .pr small{font-size:12px;font-family:var(--body);color:var(--muted)}
+.games{font-size:13px;color:var(--muted);margin:0}
+table.conf{border-collapse:collapse;width:100%;font-size:15px}
+table.conf th{text-align:left;color:var(--muted);font-weight:700;padding:6px 12px 6px 0;vertical-align:top;white-space:nowrap;width:1%}
+table.conf td{padding:6px 0;border-bottom:1px solid var(--rule)}
+table.conf th{border-bottom:1px solid var(--rule)}
+.total{font-family:var(--display);font-size:28px;color:var(--accent)}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.agree input{width:20px;height:20px;margin-top:3px;flex:none}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-weight:700;cursor:pointer;background:var(--fg);color:var(--surface);font-size:17px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.sub{background:var(--pick);color:var(--fg);font-size:15px;padding:10px 16px}
+.note{font-size:13px;color:var(--muted);margin:0}
+.err{color:var(--ng);font-weight:700;margin:0}
+.test{background:#fff4d6;color:#6b4e00;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700}
+@media (prefers-color-scheme:dark){.test{background:#3a3016;color:#f0d68a}}
+.code{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font-size:clamp(22px,6vw,32px);font-weight:700;letter-spacing:.06em;background:var(--pick);border-radius:8px;padding:12px 16px;text-align:center;user-select:all;overflow-wrap:anywhere}
+.done{border:2px solid var(--ok)}
+.compare{font-size:14px;width:100%;border-collapse:collapse}
+.compare th,.compare td{padding:6px 8px;white-space:nowrap;border-bottom:1px solid var(--rule);text-align:right;font-variant-numeric:tabular-nums}
+.compare th:first-child,.compare td:first-child{text-align:left}
+.compare thead th{color:var(--muted);font-size:12px}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;list-style:none;margin:0;padding:0}
+.steps li{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;color:var(--ink);font-weight:700;font-size:14px;line-height:1.35}
+.steps li small{display:block;font-size:11px;letter-spacing:.08em;font-weight:700;opacity:.8}
+.steps li[aria-current="step"]{background:var(--ink);color:var(--surface)}
+.req{display:inline-block;border:1.5px solid var(--ng);color:var(--ng);border-radius:4px;font-size:11px;font-weight:700;padding:0 5px;margin-left:6px;vertical-align:2px}
+.opt-tag{display:inline-block;border:1.5px solid var(--muted);color:var(--muted);border-radius:4px;font-size:11px;font-weight:700;padding:0 5px;margin-left:6px;vertical-align:2px}
+.form{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface)}
+.row{display:grid;grid-template-columns:12em minmax(0,1fr);border-bottom:1px solid var(--rule)}
+.row:last-child{border-bottom:0}
+.row>.k{background:var(--pick);padding:14px;font-weight:700;font-size:15px}
+.row>.v{padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+@media (max-width:560px){.row{grid-template-columns:1fr}.row>.k{padding:10px 14px}}
+.radios{display:flex;flex-direction:column;gap:6px}
+.radios label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.radios input{width:18px;height:18px;flex:none}
+input.t,textarea{font:inherit;font-size:16px;border:1.5px solid var(--rule);border-radius:6px;padding:8px 10px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+textarea{min-height:11em;resize:vertical}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.ferr{color:var(--ng);font-size:13px;font-weight:700;margin:0;min-height:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.conf-v{white-space:pre-wrap;word-break:break-word}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>お問い合わせ</h1>
+    <p class="lead">有料版・お支払い・問題のまちがい・個人情報の取り扱いなどについて、こちらからお送りください。</p>
+  </header>
+  <ol class="steps" aria-label="お問い合わせの手順">
+    <li id="s1" aria-current="step"><small>STEP1</small>入力</li>
+    <li id="s2"><small>STEP2</small>確認</li>
+    <li id="s3"><small>STEP3</small>完了</li>
+  </ol>
+  <main id="app"></main>
+  <footer><a href="index.html">ゲーム一覧</a>　・　<a href="buy.html">料金プラン</a>　・　<a href="tokushoho.html">特定商取引法に基づく表記</a>　・　<a href="privacy.html">プライバシーポリシー</a></footer>
+</div>
+{{ACCESS}}
+<script>
+(function(){
+const A=window.mnAccess, app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KINDS=['有料版・利用コードについて','お支払い・返金について','問題のまちがいについて','ゲームの不具合について','個人情報の取り扱いについて','その他'];
+const opened=Date.now();
+const qs=new URLSearchParams(location.search);
+let F={kind:KINDS.includes(qs.get('kind'))?qs.get('kind'):'',title:qs.get('title')||'',body:'',name:'',email:'',code:'',hp:''};
+const step=n=>['s1','s2','s3'].forEach((id,i)=>{const el=document.getElementById(id); if(i===n-1)el.setAttribute('aria-current','step'); else el.removeAttribute('aria-current');});
+function input(err){
+  step(1);
+  app.innerHTML=`<p class="hint" style="text-align:right"><span class="req">必須</span> は必ず入力してください。</p>
+  <form id="f" class="form" novalidate>
+    <div class="row"><div class="k">お問い合わせ項目<span class="req">必須</span></div><div class="v"><div class="radios">${KINDS.map(k=>`<label><input type="radio" name="kind" value="${esc(k)}" ${F.kind===k?'checked':''}> ${esc(k)}</label>`).join('')}</div><p class="ferr" id="e-kind"></p></div></div>
+    <div class="row"><div class="k"><label for="title">タイトル</label><span class="req">必須</span></div><div class="v"><input class="t" id="title" maxlength="100" value="${esc(F.title)}"><p class="ferr" id="e-title"></p></div></div>
+    <div class="row"><div class="k"><label for="body">お問い合わせ内容</label><span class="req">必須</span></div><div class="v"><textarea id="body" maxlength="3000">${esc(F.body)}</textarea><p class="hint">問題のまちがいのときは、ゲームの名前と問題の文を書いてください。（3000字まで）</p><p class="ferr" id="e-body"></p></div></div>
+    <div class="row"><div class="k"><label for="name">お名前</label><span class="opt-tag">任意</span></div><div class="v"><input class="t" id="name" maxlength="60" value="${esc(F.name)}" autocomplete="name"></div></div>
+    <div class="row"><div class="k"><label for="email">返信先のメールアドレス</label><span class="opt-tag">任意</span></div><div class="v"><input class="t" id="email" type="email" maxlength="200" value="${esc(F.email)}" autocomplete="email" inputmode="email"><p class="hint">返信が必要なときだけ入力してください。入力がないと、お返事できません。</p><p class="ferr" id="e-email"></p></div></div>
+    <div class="row"><div class="k"><label for="code">利用コード</label><span class="opt-tag">任意</span></div><div class="v"><input class="t" id="code" maxlength="30" value="${esc(F.code)}" placeholder="MN-XXXX-XXXX-XXXX" autocapitalize="characters" spellcheck="false"><p class="hint">有料版についてのお問い合わせのときは、入力していただくと早く調べられます。</p></div></div>
+    <div class="hp" aria-hidden="true"><label>この欄は空のままにしてください <input id="hp" tabindex="-1" autocomplete="off"></label></div>
+  </form>
+  <p class="hint" style="margin-top:12px">送っていただいた内容は、お問い合わせへの対応のためだけに使います。くわしくは <a href="privacy.html">プライバシーポリシー</a> をご覧ください。</p>
+  ${err?`<p class="err" style="margin-top:8px">${esc(err)}</p>`:''}
+  <div class="btns" style="margin-top:12px"><button class="btn" id="next" type="button">確認画面へ</button></div>`;
+  document.getElementById('next').onclick=()=>{
+    F.kind=(document.querySelector('input[name="kind"]:checked')||{}).value||'';
+    ['title','body','name','email','code','hp'].forEach(k=>F[k]=document.getElementById(k).value);
+    F.title=F.title.trim(); F.body=F.body.trim(); F.name=F.name.trim(); F.email=F.email.trim(); F.code=F.code.trim();
+    const E={kind:F.kind?'':'お問い合わせ項目をえらんでください。',title:F.title?'':'タイトルを入力してください。',body:F.body?'':'お問い合わせ内容を入力してください。',
+      email:!F.email||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(F.email)?'':'メールアドレスの形が正しくありません。'};
+    let bad=null; Object.entries(E).forEach(([k,v])=>{const el=document.getElementById('e-'+k); if(el)el.textContent=v; if(v&&!bad)bad=k;});
+    if(bad){ const el=document.getElementById(bad==='kind'?'e-kind':bad); el&&el.scrollIntoView&&el.scrollIntoView({block:'center'}); return; }
+    confirm_();
+  };
+}
+function confirm_(err){
+  step(2); window.scrollTo(0,0);
+  const row=(k,v)=>`<div class="row"><div class="k">${k}</div><div class="v conf-v">${v?esc(v):'<span class="hint">（なし）</span>'}</div></div>`;
+  app.innerHTML=`<p style="margin:0 0 10px">次の内容で送ります。よろしければ「送信する」を押してください。</p>
+  <div class="form">${row('お問い合わせ項目',F.kind)}${row('タイトル',F.title)}${row('お問い合わせ内容',F.body)}${row('お名前',F.name)}${row('返信先のメールアドレス',F.email)}${row('利用コード',F.code)}</div>
+  ${err?`<p class="err" style="margin-top:10px">${esc(err)}</p>`:''}
+  <div class="btns" style="margin-top:12px"><button class="btn sub" id="back" type="button">入力画面にもどる</button><button class="btn" id="send" type="button">送信する</button></div>`;
+  document.getElementById('back').onclick=()=>input();
+  document.getElementById('send').onclick=async()=>{
+    const bt=document.getElementById('send'); bt.disabled=true; bt.textContent='送信しています…';
+    try{
+      await A.call('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...F,t:opened,page:document.referrer.slice(0,200)})});
+      try{window.mnTrack&&mnTrack('contact_send',{kind:F.kind});}catch(e){}
+      done();
+    }catch(e){
+      const msg=e&&e.error==='too_many'?'短い時間にたくさん送られています。しばらくたってから、もう一度お送りください。':e&&e.error==='noapi'?'ただいまお問い合わせを受け付けられません。時間をおいてお試しください。':'送信できませんでした。通信のよい場所で、もう一度お試しください。';
+      confirm_(msg);
+    }
+  };
+}
+function done(){
+  step(3); window.scrollTo(0,0);
+  app.innerHTML=`<div class="box"><h2>送信しました</h2><p style="margin:0">お問い合わせありがとうございます。内容を確認して、${F.email?'返信先のメールアドレスにお返事します。お返事まで数日かかることがあります。':'対応いたします。返信先のメールアドレスがないため、お返事はできません。'}</p><p style="margin:0"><a href="index.html">ゲーム一覧へもどる</a></p></div>`;
+}
+input();
+})();
+</script>
+</body>
+</html>

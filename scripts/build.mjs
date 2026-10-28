@@ -126,7 +126,7 @@ const parent = fs.readFileSync(path.join(ROOT, "parent.html"), "utf8")
 fs.writeFileSync(path.join(OUT, "parent.html"), parent);
 const seller = site.seller || {};
 const ask = "ご請求があれば、遅滞なく開示します。";
-for (const name of ["buy.html", "plan.html", "tokushoho.html"]) {
+for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) {
   const page = fs.readFileSync(path.join(ROOT, name), "utf8")
     .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA).replace("{{ACCESS}}", () => ACCESS)
     .replace("{{SELLER_NAME}}", esc(seller.name || "（site.json の seller.name に書いてください）"))

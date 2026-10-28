@@ -6,8 +6,8 @@
 //   KV の割り当て  MN
 //   シークレット   STRIPE_SECRET_KEY（sk_test_… / sk_live_…）, STRIPE_WEBHOOK_SECRET（whsec_…）,
 //                  TOKEN_SECRET（長いランダムな文字列）, ADMIN_KEY（管理用の長いランダムな文字列）
-//                  RESEND_API_KEY（任意。利用コードをメールで送るとき）
-//   変数           SITE_URL（例 https://xxxx.github.io/manabi）, MAIL_FROM（任意。例 まなびゲーム箱 <info@example.com>）
+//                  RESEND_API_KEY（任意。利用コードをメールで送るとき／お問い合わせをメールで知らせるとき）
+//   変数           SITE_URL（例 https://xxxx.github.io/manabi）, MAIL_FROM（任意。例 まなびゲーム箱 <info@example.com>）, CONTACT_TO（任意。お問い合わせを知らせる先のメール）
 
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
 const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科" };
@@ -35,6 +35,7 @@ const GAMES = {
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
   tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika",
 };
+const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い・返金について", "問題のまちがいについて", "ゲームの不具合について", "個人情報の取り扱いについて", "その他"];
 const MAX_DEVICES = 3;            // 1つの利用コードで使える端末の数
 const START_LIMIT = 180 * 864e5;  // 購入から使い始めるまでの期限（180日）
 const TOKEN_TTL = 7 * 864e5;      // 端末に渡す「通行証」の長さ（期限より短ければ、期限の方が優先）
@@ -226,6 +227,31 @@ export default {
         return new Response(data, { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "private, no-store", ...cors(env, req) } });
       }
 
+      // お問い合わせ（フォームから）。KV に「msg:時刻-乱数」で保存し、管理画面で読む
+      if (p === "/api/contact" && req.method === "POST") {
+        const b = await req.json().catch(() => ({}));
+        if (b.hp) return json(env, req, { ok: true });            // 人には見えない欄に入力がある＝ロボット。保存しない
+        const str = (v, n) => String(v == null ? "" : v).normalize("NFKC").replace(/\u0000/g, "").trim().slice(0, n);
+        const m = { kind: str(b.kind, 40), title: str(b.title, 100), body: String(b.body == null ? "" : b.body).replace(/\u0000/g, "").trim().slice(0, 3000),
+          name: str(b.name, 60), email: str(b.email, 200), code: str(b.code, 30), page: str(b.page, 200) };
+        if (!CONTACT_KINDS.includes(m.kind) || !m.title || !m.body) return fail(env, req, 400, "bad_contact");
+        if (m.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email)) return fail(env, req, 400, "bad_email");
+        if (Number(b.t) > 0 && now - Number(b.t) < 3000) return json(env, req, { ok: true });   // 開いて3秒以内の送信＝ロボットとみなす
+        const ip = req.headers.get("CF-Connecting-IP") || "?";
+        const rk = `rl:contact:${hex(await hmac(env.TOKEN_SECRET || "x", ip)).slice(0, 16)}:${Math.floor(now / 36e5)}`;
+        const n = Number((await env.MN.get(rk)) || 0);
+        if (n >= 5) return fail(env, req, 429, "too_many");       // 1時間に5通まで
+        await env.MN.put(rk, String(n + 1), { expirationTtl: 7200 });
+        const id = `${now}-${hex(crypto.getRandomValues(new Uint8Array(4)))}`;
+        await env.MN.put("msg:" + id, JSON.stringify({ id, at: now, ...m, done: false }));
+        if (env.RESEND_API_KEY && env.CONTACT_TO) {               // 任意：届いたことをメールで知らせる
+          await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ from: env.MAIL_FROM || "まなびゲーム箱 <onboarding@resend.dev>", to: [env.CONTACT_TO], subject: "【まなびゲーム箱】お問い合わせ：" + m.title,
+              text: `項目：${m.kind}\nタイトル：${m.title}\nお名前：${m.name || "（なし）"}\n返信先：${m.email || "（なし）"}\n利用コード：${m.code || "（なし）"}\n\n${m.body}\n\n管理画面（admin.html）の「お問い合わせ」で確認できます。` }) }).catch(() => {});
+        }
+        return json(env, req, { ok: true, id });
+      }
+
       // ---- 管理用（X-Admin-Key が必要） ----
       if (p.startsWith("/api/admin/")) {
         const key = req.headers.get("X-Admin-Key") || "";
@@ -249,6 +275,24 @@ export default {
           const code = newCode();
           await putRec(env, code, { s: b.subject, p: b.period, created: now, devices: [], note: String(b.note || "").slice(0, 200), manual: true });
           return json(env, req, { code, subject: b.subject, period: b.period });
+        }
+        if (ap === "messages" && req.method === "GET") {   // お問い合わせの一覧（新しい順）
+          const out = []; let cursor;
+          do {
+            const l = await env.MN.list({ prefix: "msg:", cursor });
+            for (const k of l.keys) { const v = await env.MN.get(k.name); if (v) out.push(JSON.parse(v)); }
+            cursor = l.list_complete ? null : l.cursor;
+          } while (cursor && out.length < 500);
+          out.sort((a, b) => b.at - a.at);
+          return json(env, req, { messages: out });
+        }
+        if (ap === "message" && req.method === "POST") {    // 対応ずみにする／もどす／消す
+          const b = await req.json().catch(() => ({}));
+          const key = "msg:" + String(b.id || "").replace(/[^0-9a-f-]/g, "");
+          const v = await env.MN.get(key); if (!v) return fail(env, req, 404, "not_found");
+          if (b.delete) { await env.MN.delete(key); return json(env, req, { ok: true, deleted: true }); }
+          const m = JSON.parse(v); m.done = !!b.done; await env.MN.put(key, JSON.stringify(m));
+          return json(env, req, { ok: true, message: m });
         }
         const cm = ap.match(/^code\/(.+)$/);
         if (cm && req.method === "GET") {                 // 利用コードを調べる

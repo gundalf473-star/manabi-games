@@ -118,7 +118,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   }
   render();
   const fb=(data.site&&data.site.feedback)||null;
-  document.getElementById('foot').innerHTML=`ゲーム ${games.length}本　・　${fb?`<a href="${esc(fb.base+'?usp=pp_url'+(fb.type?'&'+fb.type+'='+encodeURIComponent(fb.kansou):'')+(fb.game?'&'+fb.game+'='+encodeURIComponent('サイト全体'):''))}" target="_blank" rel="noopener" style="color:inherit">ご意見・ご感想</a>　・　`:''}<a href="parent.html" style="color:inherit">保護者ページ（学習の記録）</a>　・　<a href="privacy.html" style="color:inherit">プライバシーポリシー</a>　・　<a href="tokushoho.html" style="color:inherit">特定商取引法に基づく表記</a>`;
+  document.getElementById('foot').innerHTML=`ゲーム ${games.length}本　・　${fb?`<a href="${esc(fb.base+'?usp=pp_url'+(fb.type?'&'+fb.type+'='+encodeURIComponent(fb.kansou):'')+(fb.game?'&'+fb.game+'='+encodeURIComponent('サイト全体'):''))}" target="_blank" rel="noopener" style="color:inherit">ご意見・ご感想</a>　・　`:''}<a href="parent.html" style="color:inherit">保護者ページ（学習の記録）</a>　・　<a href="contact.html" style="color:inherit">お問い合わせ</a>　・　<a href="privacy.html" style="color:inherit">プライバシーポリシー</a>　・　<a href="tokushoho.html" style="color:inherit">特定商取引法に基づく表記</a>`;
 })();
 </script>
 </body>

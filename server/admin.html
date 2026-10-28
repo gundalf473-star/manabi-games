@@ -52,6 +52,11 @@ pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:
     <div><button class="warn" id="rev">このコードを使えなくする（返金したときなど）</button></div>
     <pre id="o4"></pre>
     <p class="note">状態：unused＝まだ使われていない、active＝利用中、expired＝期間終了、revoked＝使えなくした。日時は「〜時点」のミリ秒で、下に日本時間でも表示します。</p></section>
+  <section class="box"><h2>5. お問い合わせ</h2>
+    <p class="note">お問い合わせフォーム（contact.html）から届いたものです。新しい順に並びます。返信は、書かれた返信先のメールアドレスに、ふだんのメールで送ってください。</p>
+    <div class="row" style="align-items:center"><button id="msgs">読みこむ</button><label style="display:flex;gap:6px;align-items:center;flex:none;min-width:0;font-weight:400"><input type="checkbox" id="showdone" style="width:auto"> 対応ずみも表示する</label></div>
+    <p class="note" id="msgcount"></p>
+    <div id="msglist" style="display:flex;flex-direction:column;gap:10px"></div></section>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -76,6 +81,23 @@ const act=(p,extra={})=>async()=>{ try{ show('o4',await call('/api/admin/'+p,{me
 $('reset').onclick=act('reset-devices');
 $('ext').onclick=()=>act('extend',{days:Number($('days').value)})();
 $('rev').onclick=()=>{ if(confirm('このコードを使えなくします。よろしいですか？'))act('revoke')(); };
+const escH=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let MSG=[];
+function drawMsgs(){
+  const all=$('showdone').checked, list=MSG.filter(m=>all||!m.done), open=MSG.filter(m=>!m.done).length;
+  $('msgcount').textContent=`全部で${MSG.length}件（まだ対応していないもの ${open}件）`;
+  $('msglist').innerHTML=list.length?list.map(m=>`<div style="border:1px solid var(--rule);border-radius:8px;padding:10px 12px;${m.done?'opacity:.6':''}">
+    <div style="font-size:12px;color:var(--muted)">${new Date(m.at).toLocaleString('ja-JP')}　${escH(m.kind)}${m.done?'　<b style="color:var(--ok)">対応ずみ</b>':''}</div>
+    <div style="font-weight:700">${escH(m.title)}</div>
+    <div style="white-space:pre-wrap;word-break:break-word;margin:4px 0">${escH(m.body)}</div>
+    <div style="font-size:13px">お名前：${escH(m.name||'（なし）')}　返信先：${m.email?`<a href="mailto:${escH(m.email)}?subject=${encodeURIComponent('Re: '+m.title)}">${escH(m.email)}</a>`:'（なし・返信不要）'}　利用コード：${escH(m.code||'（なし）')}</div>
+    <div class="row" style="margin-top:6px;align-items:center"><button class="sub" data-done="${escH(m.id)}" data-v="${m.done?0:1}">${m.done?'未対応にもどす':'対応ずみにする'}</button>${m.code?`<button class="sub" data-look="${escH(m.code)}">このコードを調べる</button>`:''}<button class="warn" data-del="${escH(m.id)}">消す</button></div></div>`).join(''):'<p class="note">ありません。</p>';
+  $('msglist').querySelectorAll('[data-done]').forEach(b=>b.onclick=async()=>{ try{ await call('/api/admin/message',{method:'POST',body:JSON.stringify({id:b.dataset.done,done:b.dataset.v==='1'})}); const m=MSG.find(x=>x.id===b.dataset.done); m.done=b.dataset.v==='1'; drawMsgs(); }catch(e){ alert('失敗：'+e.message); } });
+  $('msglist').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(!confirm('このお問い合わせを消します。元にはもどせません。よろしいですか？'))return; try{ await call('/api/admin/message',{method:'POST',body:JSON.stringify({id:b.dataset.del,delete:true})}); MSG=MSG.filter(x=>x.id!==b.dataset.del); drawMsgs(); }catch(e){ alert('失敗：'+e.message); } });
+  $('msglist').querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>{ $('c').value=b.dataset.look; $('look').click(); $('c').scrollIntoView({block:'center'}); });
+}
+$('msgs').onclick=async()=>{ try{ MSG=(await call('/api/admin/messages')).messages; drawMsgs(); }catch(e){ $('msgcount').textContent='読みこめませんでした：'+e.message; } };
+$('showdone').onchange=drawMsgs;
 </script>
 </body>
 </html>
