@@ -11,6 +11,7 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
+| 販促チラシ：チラシ印刷（server/flyer.html）・二次元コードから利用コードが入る（plan.html）・管理画面で利用コードをまとめて作ってCSVで保存 | ― | ― | 必要（admin.html と flyer.html をパソコンに置く） |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 

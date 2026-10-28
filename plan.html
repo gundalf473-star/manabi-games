@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>利用中のプラン | {{SITE_NAME}}</title>
+<script>/* チラシの二次元コード（plan.html#c=利用コード）から来たとき：コードを受け取り、アクセス解析に送られないよう、すぐアドレスから消す */
+(function(){try{var m=location.hash.match(/[#&]c=([A-Za-z0-9-]{12,20})/);if(m){window.mnPrefill=m[1].toUpperCase();history.replaceState(null,'',location.pathname+location.search);}}catch(e){}})();</script>
 {{GA}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -77,6 +79,7 @@ function add(){
       <p id="m" role="alert" style="margin:0;min-height:1.5em;font-weight:700"></p>
       <div><button id="go" style="border:0;border-radius:8px;padding:10px 22px;font-weight:700;cursor:pointer;background:var(--fg);color:var(--surface)">使う</button></div></form>
     <p class="note">利用期間は、はじめて利用コードを入れたときから始まります。1つの利用コードで3台まで使えます。</p>`;
+  if(window.mnPrefill){ const c=document.getElementById('c'), m=document.getElementById('m'); c.value=window.mnPrefill; m.style.color='var(--ink)'; m.textContent='チラシの利用コードが入りました。「使う」を押すと、有料版が使えるようになります。'; c.scrollIntoView({block:'center'}); }
   document.getElementById('f').onsubmit=async ev=>{ev.preventDefault();
     const m=document.getElementById('m'), v=document.getElementById('c').value; if(!v.trim())return;
     try{ const e=await A.activate(v); m.style.color='var(--ok)'; m.textContent=`「${A.SNAME[e.s]}・${A.PNAME[e.p]}」が使えるようになりました（${A.fmt(e.exp)}まで）。`; document.getElementById('c').value=''; show(); }
