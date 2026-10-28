@@ -9,6 +9,9 @@
 //                  RESEND_API_KEY（任意。利用コードをメールで送るとき／お問い合わせをメールで知らせるとき）
 //   変数           SITE_URL（例 https://xxxx.github.io/manabi）, MAIL_FROM（任意。例 まなびゲーム箱 <info@example.com>）, CONTACT_TO（任意。お問い合わせを知らせる先のメール）
 
+// ---- 販売の受付。準備中は false（購入ページの buy.html の OPEN も同じにする）----
+const SALES_OPEN = false;
+
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
 const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科" };
 const PERIODS = {
@@ -154,6 +157,7 @@ export default {
 
       // 支払いページへ
       if (p === "/api/checkout" && req.method === "POST") {
+        if (!SALES_OPEN) return fail(env, req, 503, "noapi");
         const b = await req.json().catch(() => ({}));
         const amount = PRICES[b.subject] && PRICES[b.subject][b.period];
         if (!amount) return fail(env, req, 400, "bad_plan");

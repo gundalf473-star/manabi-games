@@ -82,6 +82,8 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
 (function(){
 const A=window.mnAccess, app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* 販売を始めるときは true にする（サーバー server/worker.js の SALES_OPEN も true にする） */
+const OPEN=false;
 const yen=n=>n.toLocaleString('ja-JP')+'円';
 const q=new URLSearchParams(location.search);
 // サーバーが使えないとき（準備中）に見せる料金表。値段はサーバー（server/worker.js）の PRICES が正です
@@ -98,7 +100,7 @@ async function boot(){
 }
 function gamesOf(s){ return GAMES.filter(g=>s==='all'||g.subject===SUBJ_JA[s]); }
 function render(){
-  const P=PL||FALLBACK, ready=!!PL, price=P.prices[sel.s][sel.p];
+  const P=PL||FALLBACK, ready=OPEN&&!!PL, price=P.prices[sel.s][sel.p];
   const single=P.prices.kokugo[sel.p];
   /* 1日あたりの値段（長い期間ほど安くなることが見えるように）と、全教科のお得な額 */
   const DAYS={d1:1,w1:7,m1:30,y1:365};
