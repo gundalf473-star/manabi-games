@@ -78,7 +78,7 @@ const show=(el,d)=>{ if(d&&d.exp){d.exp_jst=new Date(d.exp).toLocaleString('ja-J
 $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$('key').value.trim());
   try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
-  catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':'つながりません。アドレスを確かめてください。'); } };
+  catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
 $('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); let out=[];
   for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); } show('o2',out.join('\n')); } };
 $('issue').onclick=async()=>{ try{ show('o3',await call('/api/admin/issue',{method:'POST',body:JSON.stringify({subject:$('is').value,period:$('ip').value,note:$('in').value})})); }catch(e){ show('o3','失敗：'+e.message); } };
