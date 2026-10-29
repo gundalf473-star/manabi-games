@@ -36,6 +36,7 @@
 | 中高一貫コースの理科：物理5単元・化学4単元・生物4単元（高校の発展科目、各100問・無料版5問） | 必要（GAMES に c-ph1〜5・c-ch1〜4・c-bi1〜4 を "chuko" で追加） | 13単元のパックを入れる | ― |
 | 中高一貫コースの料金を教科ごとに（国語・数学・英語・理科・社会 各1ヵ月4,000円、中高一貫 全教科 1ヵ月8,000円。中学受験と同じ値段） | 必要（worker.js を貼り直す） | いらない | ― |
 | 中高一貫コースの国語：口語文法①②・中学の漢字①②・語句と語彙・古典文法・漢文の句法・詩歌と文学史（各100問・無料版5問） | 必要（GAMES に c-bunpo1・c-bunpo2・c-kanji1・c-kanji2・c-goku・c-koten・c-kanbun・c-inbun を "ckokugo" で追加） | 8単元のパックを入れる | ― |
+| 中高一貫コースの社会：中学地理5・中学公民5・高校の地理総合・歴史総合・テーマ史・公共・政治経済・倫理（各100問・無料版5問） | 必要（GAMES に c-chiri1・c-chiri2・c-chiri3・c-chiri4・c-chiri5・c-komin1・c-komin2・c-komin3・c-komin4・c-komin5・c-chirisogo・c-rekisogo・c-tankyu・c-kokyo・c-seikei・c-rinri を "cshakai" で追加） | 16単元のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
