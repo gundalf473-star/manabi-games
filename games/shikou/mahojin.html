@@ -1,0 +1,294 @@
+<title>魔方陣・数のピラミッド</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="魔方陣・数のピラミッド">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="すぐ下の2つの数の和を入れる数のピラミッドと、たて・横・ななめの和をそろえる魔方陣、辺の和をそろえる魔三角陣の思考力パズル。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.mjex{font-size:14px;border-left:4px solid var(--ok);padding:4px 0 4px 10px;background:var(--surface);border-radius:4px}
+.mjex ol{margin:4px 0;padding-left:1.4em}
+.mjex li{margin:2px 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>魔方陣・数のピラミッド</h1>
+    <p class="lead">たし算・ひき算と、ならび方のきまりを使って、空いているマスの数を推理しよう。5つのレベルから1問ずつ。ヒントなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"pyr","n":3,"sol":[6,7,4,13,11,24],"g":[true,true,true,false,false,false],"steps":[{"i":3,"v":13,"t":"下から2段目・左から1番目：6＋7＝13"},{"i":4,"v":11,"t":"下から2段目・左から2番目：7＋4＝11"},{"i":5,"v":24,"t":"下から3段目・左から1番目：13＋11＝24"}],"lv":1,"id":"1-01"},{"kind":"pyr","n":4,"sol":[12,3,1,10,15,4,11,19,15,34],"g":[true,false,false,true,false,false,true,true,true,false],"steps":[{"i":2,"v":1,"t":"下から1段目・左から3番目：11−10＝1（上の数から、となりの数をひく）"},{"i":5,"v":4,"t":"下から2段目・左から2番目：15−11＝4（上の数から、となりの数をひく）"},{"i":1,"v":3,"t":"下から1段目・左から2番目：4−1＝3（上の数から、となりの数をひく）"},{"i":4,"v":15,"t":"下から2段目・左から1番目：12＋3＝15"},{"i":9,"v":34,"t":"下から4段目・左から1番目：19＋15＝34"}],"lv":2,"id":"2-01"},{"kind":"ms","size":3,"S":15,"showS":false,"set":[1,2,3,4,5,6,7,8,9],"sol":[4,9,2,3,5,7,8,1,6],"g":[false,false,true,false,true,false,true,false,true],"steps":[{"i":-1,"v":0,"t":"1〜9の合計は45。3つの行に分けると、1つの行の和は 45÷3＝15。たて・横・ななめも、和はすべて15です。"},{"i":7,"v":1,"t":"下の行：15−8−6＝1"},{"i":1,"v":9,"t":"まん中の列：15−5−1＝9"},{"i":0,"v":4,"t":"上の行：15−9−2＝4"},{"i":3,"v":3,"t":"左の列：15−4−8＝3"},{"i":5,"v":7,"t":"まん中の行：15−3−5＝7"}],"lv":3,"id":"3-01"},{"kind":"ms","size":3,"S":18,"showS":true,"set":[2,3,4,5,6,7,8,9,10],"setlab":"2〜10","sol":[7,8,3,2,6,10,9,4,5],"g":[true,false,false,false,false,false,true,false,true],"steps":[{"i":4,"v":6,"t":"まん中：18÷3＝6（3×3の魔方陣では、まん中の数は1列の和の3分の1）"},{"i":7,"v":4,"t":"下の行：18−9−5＝4"},{"i":3,"v":2,"t":"左の列：18−7−9＝2"},{"i":5,"v":10,"t":"まん中の行：18−2−6＝10"},{"i":1,"v":8,"t":"まん中の列：18−6−4＝8"},{"i":2,"v":3,"t":"上の行：18−7−8＝3"}],"lv":4,"id":"4-01"},{"kind":"pyr","n":3,"sol":[7,2,3,9,5,14],"g":[true,false,true,false,false,true],"steps":[{"i":1,"v":2,"t":"下から1段目・左から2番目を□とします。上の数を□で表していくと、下から2段目は「□＋7」・「□＋3」、下から3段目は「□×2＋10」。下から3段目・左から1番目は 14 なので、□×2＋10＝14。□×2＝14−10＝4、□＝4÷2＝2"},{"i":3,"v":9,"t":"下から2段目・左から1番目：7＋2＝9"},{"i":4,"v":5,"t":"下から2段目・左から2番目：2＋3＝5"}],"lv":5,"id":"5-01"}];
+const ID='mahojin';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>魔方陣・数のピラミッド 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 魔方陣・数のピラミッド：kind='pyr'（n段, sol は下の段から左→右）, 'ms'（size 3/4, S, showS, set）, 'tri'（魔三角陣 k=1辺の数, S, set）。
+   g[i]=true ははじめからある数。答えはヒントの条件にすべて合えばクリア（保存した答えとくらべない） */
+const HINTWORD='ヒント';
+const LVD={1:'ピラミッド（たし算）',2:'ピラミッド（逆算）',3:'3×3魔方陣（1〜9）',4:'魔方陣・魔三角陣',5:'4×4魔方陣・□の式'};
+const RULES=`<ol class="rules">
+  <li><b>数のピラミッド</b>：どのマスの数も、<b>すぐ下の2つの数の和</b>です。上の数から下の数をひいて、逆にたどることもできます。</li>
+  <li><b>魔方陣</b>：決められた数を1回ずつ使い、<b>たて・横・ななめ</b>の数の和がどれも同じになるようにします。</li>
+  <li><b>魔三角陣</b>：三角形の<b>どの辺</b>の数の和も同じになるようにします。</li>
+  <li>空いているマスをタップしてえらび、下の数字ボタンで入れよう。答えは1つに決まります。</li></ol>`;
+const TRIS=k=>{const m=k-2,L=[],B=[],Rr=[];for(let i=0;i<m;i++){L.push(3+i);B.push(3+m+i);Rr.push(3+2*m+i);}return [[0,...L,1],[1,...B,2],[2,...Rr,0]];};
+const LINES={3:[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],4:[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]]};
+function pyrIdx(n){const I=[];let k=0;for(let r=0;r<n;r++){I.push([]);for(let j=0;j<n-r;j++)I[r].push(k++);}return I;}
+function triples(n){const I=pyrIdx(n),T=[];for(let r=1;r<n;r++)for(let j=0;j<n-r;j++)T.push([I[r-1][j],I[r-1][j+1],I[r][j]]);return T;}
+function startStage(p){P=p;S={v:p.sol.map((x,i)=>p.g[i]?String(x):''),sel:null,hints:0,done:false,msg:'',bad:[],hl:-1,fact:false};
+  S.sel=p.g.findIndex(x=>!x);S.maxlen=Math.max(...p.sol.map(x=>String(x).length));begin(p);draw();}
+const num=i=>S.v[i]===''?null:+S.v[i];
+function lines(){return P.kind==='ms'?LINES[P.size]:P.kind==='tri'?TRIS(P.k):[];}
+function lineSum(l){let s=0;for(const i of l){const v=num(i);if(v==null)return null;s+=v;}return s;}
+/* 赤くするマス：ピラミッドの和が合わない所、同じ数が2回、使えない数 */
+function wrongCells(){const w=new Set();
+  if(P.kind==='pyr'){for(const [a,b,c] of triples(P.n)){const A=num(a),B=num(b),C=num(c);if(A!=null&&B!=null&&C!=null&&A+B!==C)[a,b,c].forEach(i=>{if(!P.g[i])w.add(i);});}}
+  else{const cnt={};S.v.forEach((x,i)=>{if(x!=='')(cnt[x]=cnt[x]||[]).push(i);});
+    Object.entries(cnt).forEach(([x,is])=>{if(is.length>1||!P.set.includes(+x))is.forEach(i=>{if(!P.g[i])w.add(i);});});}
+  return w;}
+function solvedNow(){
+  if(S.v.some(x=>x===''))return false;const v=S.v.map(Number);
+  if(P.kind==='pyr')return v.every(x=>x>0)&&triples(P.n).every(([a,b,c])=>v[a]+v[b]===v[c]);
+  const ok=[...v].sort((a,b)=>a-b).join()===[...P.set].sort((a,b)=>a-b).join();if(!ok)return false;
+  const sums=lines().map(lineSum);return sums.every(s=>s===sums[0])&&(P.kind==='ms'&&!P.showS?true:sums[0]===P.S);
+}
+function cellTxt(i,cx,cy,fs){const g=P.g[i],x=S.v[i],bad=S.bad.includes(i)||S.wr.has(i);
+  return x===''?'':`<text x="${cx}" y="${cy+fs*0.36}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="${bad?'#c8352d':g?'#2a2520':S.lock&&S.lock[i]?'#a97c12':'#7c3aed'}" font-family="sans-serif">${x}</text>`;}
+const hit=(i,x,y,w,h,round)=>P.g[i]?'':`<rect class="hit" data-i="${i}" x="${x}" y="${y}" width="${w}" height="${h}" ${round?`rx="${w/2}"`:''} fill="transparent" style="cursor:pointer"/>`;
+function boardSVG(){S.wr=wrongCells();let s='',W,H;
+  if(P.kind==='pyr'){const n=P.n,BW=64,BH=48,I=pyrIdx(n),fs=S.maxlen>=3?20:23;W=n*BW+8;H=n*BH+8;
+    for(let r=0;r<n;r++)for(let j=0;j<n-r;j++){const i=I[r][j],x=4+r*BW/2+j*BW,y=4+(n-1-r)*BH,sel=S.sel===i,g=P.g[i];
+      s+=`<rect x="${x+2}" y="${y+2}" width="${BW-4}" height="${BH-4}" rx="6" fill="${g?'#efeae1':S.hl===i?'#fef3c7':sel?'#ede4fd':'#fff'}" stroke="${sel?'#7c3aed':S.bad.includes(i)?'#c8352d':'#b9ae9c'}" stroke-width="${sel?3.5:1.5}"/>`;
+      s+=cellTxt(i,x+BW/2,y+BH/2,fs)+hit(i,x,y,BW,BH);}}
+  else if(P.kind==='ms'){const n=P.size,U=n===3?76:62,M=30,fs=n===3?30:24;W=n*U+2*M;H=n*U+2*M;
+    s+=`<rect x="${M}" y="${M}" width="${n*U}" height="${n*U}" fill="#fff" stroke="#3b2f6b" stroke-width="3"/>`;
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){const i=r*n+c,x=M+c*U,y=M+r*U,sel=S.sel===i,g=P.g[i];
+      s+=`<rect x="${x}" y="${y}" width="${U}" height="${U}" fill="${g?'#efeae1':S.hl===i?'#fef3c7':sel?'#ede4fd':'#fff'}" stroke="#b9ae9c" stroke-width="1.2"/>`;
+      if(sel)s+=`<rect x="${x+2.5}" y="${y+2.5}" width="${U-5}" height="${U-5}" fill="none" stroke="#7c3aed" stroke-width="4"/>`;
+      if(S.bad.includes(i))s+=`<rect x="${x+2.5}" y="${y+2.5}" width="${U-5}" height="${U-5}" fill="none" stroke="#c8352d" stroke-width="4"/>`;
+      s+=cellTxt(i,x+U/2,y+U/2,fs)+hit(i,x,y,U,U);}
+    s+=`<rect x="${M}" y="${M}" width="${n*U}" height="${n*U}" fill="none" stroke="#3b2f6b" stroke-width="3"/>`;
+    /* 線の和（うまった線だけ） */
+    const L=LINES[n],lab=(l,x,y)=>{const t=lineSum(l);if(t==null)return '';const col=P.showS?(t===P.S?'#1d7a4c':'#c8352d'):'#6a625a';return `<text x="${x}" y="${y}" text-anchor="middle" font-size="14" font-weight="700" fill="${col}" font-family="sans-serif">${t}</text>`;};
+    for(let r=0;r<n;r++)s+=lab(L[r],M+n*U+M/2,M+r*U+U/2+5);
+    for(let c=0;c<n;c++)s+=lab(L[n+c],M+c*U+U/2,M+n*U+M/2+5);
+    const dl=(l,x,y,mk)=>{const t=lineSum(l);if(t==null)return '';const col=P.showS?(t===P.S?'#1d7a4c':'#c8352d'):'#6a625a';return `<text x="${x}" y="${y}" text-anchor="middle" font-size="13" font-weight="700" fill="${col}" font-family="sans-serif">${mk}${t}</text>`;};
+    s+=dl(L[2*n],M+n*U+M/2-2,M+n*U+M/2+5,'＼')+dl(L[2*n+1],M/2+2,M+n*U+M/2+5,'／');}
+  else{const k=P.k,sides=TRIS(k),N=P.sol.length,r=k===3?25:22,fs=21;W=320;H=k===3?286:306;
+    const A=[W/2,34],B=[34,H-46],C=[W-34,H-46],pos=[];pos[0]=A;pos[1]=B;pos[2]=C;
+    const put=(side,P0,P1)=>side.slice(1,-1).forEach((i,t)=>{const f=(t+1)/(k-1);pos[i]=[P0[0]+(P1[0]-P0[0])*f,P0[1]+(P1[1]-P0[1])*f];});
+    put(sides[0],A,B);put(sides[1],B,C);put(sides[2],C,A);
+    s+=`<polygon points="${A} ${B} ${C}" fill="none" stroke="#cbbfa8" stroke-width="5" stroke-linejoin="round"/>`;
+    for(let i=0;i<N;i++){const [x,y]=pos[i],sel=S.sel===i,g=P.g[i];
+      s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${g?'#efeae1':S.hl===i?'#fef3c7':sel?'#ede4fd':'#fff'}" stroke="${sel?'#7c3aed':S.bad.includes(i)?'#c8352d':'#3b2f6b'}" stroke-width="${sel||S.bad.includes(i)?4:2}"/>`;
+      s+=cellTxt(i,x,y,fs)+hit(i,x-r-9,y-r-9,2*r+18,2*r+18,true);}  /* タップできる範囲は丸より少し大きく */
+    const lab=(side,x,y)=>{const t=lineSum(side);if(t==null)return '';return `<text x="${x}" y="${y}" text-anchor="middle" font-size="15" font-weight="700" fill="${t===P.S?'#1d7a4c':'#c8352d'}" font-family="sans-serif">和 ${t}</text>`;};
+    s+=lab(sides[0],40,H/2-40)+lab(sides[2],W-40,H/2-40)+lab(sides[1],W/2,H-6);}
+  return `<svg id="bd" viewBox="0 0 ${W} ${H}" style="max-width:${Math.min(W*1.15,420)}px" role="img" aria-label="${P.kind==='pyr'?'数のピラミッド':P.kind==='ms'?'魔方陣':'魔三角陣'}">${s}</svg>`;
+}
+function info(){
+  if(P.kind==='pyr')return `どのマスの数も、<b>すぐ下の2つの数の和</b>です。空いているマスをうめよう。${P.steps.some(s=>s.t.includes('□'))?'<br><span class="note">ヒント：わからない数を□として、上の数を□を使って表してみよう。</span>':''}`;
+  if(P.kind==='ms')return `${P.setlab||'1〜9'}${/数$/.test(P.setlab||'')?'':'の数'}を<b>1回ずつ</b>使います。${P.showS?`たて・横・ななめの和は、どれも<b>${P.S}</b>。`:'たて・横・ななめの<b>3つの数の和がどれも同じ</b>になるようにしよう。'}`;
+  return `1〜${P.set.length}の数を<b>1回ずつ</b>使います。三角形の<b>どの辺の数の和も${P.S}</b>になるようにしよう。`;
+}
+function draw(){
+  app.innerHTML=`${topBar()}
+    <p class="qq" style="font-size:15px;font-weight:400">${info()}</p>
+    <div class="boardw">${boardSVG()}</div>
+    ${S.done?'':`<div class="pad">${[1,2,3,4,5,6,7,8,9,0].map(d=>`<button data-v="${d}">${d}</button>`).join('')}<button data-v="-1" class="er">消す</button></div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||'マスをえらんで、数字ボタンで入れよう。'}</p>
+    <div class="row"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="note">${P.kind==='pyr'?'計算が合わないところは赤くなります。':P.kind==='ms'?'1つの線がうまると、その和が'+(P.showS?'<b style="color:var(--ok)">緑</b>（合っている）か<b style="color:var(--ng)">赤</b>で':'')+'外に出ます。同じ数が2回あると赤くなります。':'1つの辺がうまると、その和が出ます。'}ヒントは、まちがいを教えるか、次に決まるマスを理由といっしょに入れます（星がへります）。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<div class="mjex"><b>解き方の例</b><ol>${P.steps.map(s=>`<li>${esc(s.t)}</li>`).join('')}</ol>${P.kind==='ms'&&P.size===3?'<p class="note" style="margin:0">3×3の魔方陣では、まん中の数は、いつも「1列の和÷3」になります。</p>':''}</div>`);return;}
+  app.querySelectorAll('#bd .hit').forEach(h=>h.onclick=()=>{S.sel=+h.dataset.i;S.msg='';S.msgc='';S.bad=[];draw();});
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>put(+b.dataset.v));
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('reset').onclick=()=>{S.v=S.v.map((x,i)=>P.g[i]||(S.lock&&S.lock[i])?x:'');S.msg='';S.bad=[];S.hl=-1;draw();};
+}
+function put(d){
+  const i=S.sel;if(i==null||i<0||P.g[i])return;
+  if(S.lock&&S.lock[i]){S.msg='ヒントで入れたマスは変えられません。';S.msgc='';draw();return;}
+  S.bad=[];S.hl=-1;S.msg='';S.msgc='';
+  if(d<0)S.v[i]=S.v[i].slice(0,-1);
+  else{const cur=S.v[i].length>=S.maxlen?'':S.v[i];const t=String(+(cur+d));S.v[i]=t==='0'?'':t;  /* 0だけは入れない（どの数も1以上） */
+    if(S.maxlen===1){const n=S.v.length;for(let k=1;k<n;k++){const j=(i+k)%n;if(!P.g[j]&&S.v[j]===''){S.sel=j;break;}}}}
+  if(S.v.every(x=>x!=='')){if(solvedNow())S.done=true;else{S.msg='全部うまりましたが、どこかちがいます。赤いところや和を見なおそう。';S.msgc='ng';}}
+  draw();
+}
+function hint(){
+  const bad=S.v.map((x,i)=>i).filter(i=>!P.g[i]&&S.v[i]!==''&&+S.v[i]!==P.sol[i]);
+  S.hints++;
+  if(bad.length){S.bad=bad;S.msg=`ヒント：まちがっているマスが ${bad.length}こ あります（赤い枠）。消してから考えなおそう（ヒント ${S.hints}回）。`;S.msgc='ng';draw();return;}
+  const k=P.steps.findIndex(s=>s.i>=0&&+S.v[s.i]!==s.v);if(k<0){S.hints--;return;}
+  const st=P.steps[k],facts=P.steps.slice(0,k).filter(s=>s.i<0&&!S.fact).map(s=>s.t);if(facts.length)S.fact=true;
+  S.v[st.i]=String(st.v);S.lock=S.lock||{};S.lock[st.i]=true;S.sel=st.i;S.hl=st.i;S.bad=[];
+  S.msg=`ヒント（${S.hints}回）：${facts.map(t=>esc(t.replace(/。$/,''))+'。 ').join('')}${esc(st.t)}`;S.msgc='';
+  if(solvedNow())S.done=true;draw();
+}
+document.addEventListener('keydown',e=>{if(!S||S.done||!P||!P.kind||!document.getElementById('bd'))return;
+  if(/^[0-9]$/.test(e.key))put(+e.key);else if(e.key==='Backspace'||e.key==='Delete')put(-1);});
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

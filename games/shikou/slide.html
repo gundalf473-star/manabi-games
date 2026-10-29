@@ -126,7 +126,7 @@ const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
 
 /* ======== パズルごとの部分 ======== */
 /* スライドパズル（3×3）：p={s:[9マス、0が空き], opt:最短手数} */
-const HINTWORD='ヒントや、最短より多い手数';
+const HINTWORD='ヒントや手数のオーバー';
 const LVD={1:'最短4〜6手',2:'最短7〜10手',3:'最短11〜14手',4:'最短15〜18手',5:'最短19〜22手'};
 const RULES=`<ol class="rules">
   <li>空いているマスのとなりのタイルをタップすると、タイルがすべって動きます。</li>
@@ -183,7 +183,7 @@ function showClear(extra){
   const idx=QS.indexOf(p), nx=QS[idx+1];
   document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
     <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
-    <span>${S.hints?`${HINTWORD} ${S.hints}回でクリアしました。${HINTWORD}なしなら ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
     <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
     ${PAID?'':PAIDLINK}`;
   if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };

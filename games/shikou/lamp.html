@@ -1,0 +1,347 @@
+<title>ランプの暗号</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="プログラミング的思考">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="1・2・4・8…の数が決まったランプをON・OFFして数を表す、プログラミング的思考のパズル。数をつくる・読む・暗号・たし算・こわれたランプさがしまで。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.lrows{display:flex;flex-direction:column;gap:2px;width:100%}
+.lrow{display:grid;grid-template-columns:50px 1fr 32px;align-items:center;gap:4px}
+.lrow svg{width:100%}
+.lt{font-size:12px;white-space:nowrap;font-weight:700;color:#3b2f6b;text-align:right}
+.lq{font-size:20px;font-weight:700;color:#3b2f6b;text-align:center;font-variant-numeric:tabular-nums}
+.lline{border-top:3px solid #3b2f6b;margin:2px 0 4px 54px}
+.ltbl{display:grid;gap:3px;font-size:13px}
+.ltbl.kn{grid-template-columns:repeat(5,1fr)}
+.ltbl.en{grid-template-columns:repeat(7,1fr)}
+.ltbl span{display:flex;justify-content:center;align-items:baseline;gap:3px;background:var(--pick);border-radius:5px;padding:2px 0;font-variant-numeric:tabular-nums;color:var(--muted)}
+.ltbl b{font-size:16px;color:var(--fg)}
+.lans{display:flex;justify-content:center}
+.lans output{min-width:110px;min-height:46px;border:2px solid var(--ink);border-radius:10px;padding:2px 12px;text-align:center;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg)}
+.pad button.go2{background:var(--fg);color:var(--surface)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>ランプの暗号</h1>
+    <p class="lead">ON・OFFのランプで数を表して、暗号を読みとこう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"make","n":4,"t":8,"show":true,"id":"1-01","lv":1},{"kind":"make","n":5,"t":17,"show":false,"id":"2-01","lv":2},{"kind":"dec","n":5,"tbl":"kana","w":"たこ","vals":[16,10],"ds":["いぬ","くつ","たく"],"id":"3-01","lv":3},{"kind":"add","n":6,"x":14,"y":6,"t":20,"id":"4-01","lv":4},{"kind":"par","m":3,"g":[[0,1,0,1],[0,1,1,0],[1,0,0,0],[0,0,1,1]],"br":[2,0],"id":"5-01","lv":5}];
+const ID='lamp';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>ランプの暗号 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* ランプの暗号：kind='make'（t,n,show）'read'（v,n,mode）'dec'（tbl,w,vals）'enc'（tbl,ch,t）'add'（x,y,t）'next'（seq,t）'par'（m,g,br）'cnt'（q,n,k,a） */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'ランプ4こ（8・4・2・1）',2:'ランプ5こ（16まで）',3:'ランプの暗号を読む・つくる',4:'たし算と、数のならび',5:'こわれたランプさがし・何通り？'};
+const RULES=`<ol class="rules">
+  <li>ランプは<b>ついている（ON）</b>か<b>消えている（OFF）</b>かのどちらかです。</li>
+  <li>ランプには、右から<b>1・2・4・8・16・32</b>の数が決まっています（左へ1つ進むごとに2倍）。</li>
+  <li><b>ついているランプの数をたした合計</b>が、ランプの表す数です。例：8と2と1がついていたら 8＋2＋1＝<b>11</b>。</li>
+  <li>レベル3の暗号は、数を文字に直します。英語は <b>A＝1, B＝2, …, Z＝26</b>。かなは <b>あ＝1, い＝2, う＝3, …</b>と「あいうえお順」に <b>ほ＝30</b>まで（問題の画面に表があります）。</li>
+  <li>ランプをタップするとON・OFFが切りかわります。できたら「これでOK」をおそう。</li></ol>`;
+const EN='ABCDEFGHIJKLMNOPQRSTUVWXYZ', KN='あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほ';
+const bitsOf=(v,n)=>Array.from({length:n},(_,i)=>(v>>(n-1-i))&1);
+const valOf=b=>b.reduce((a,x,i)=>a+(x?2**(b.length-1-i):0),0);
+const onList=v=>{const o=[];for(let k=6;k>=0;k--)if(v&(1<<k))o.push(1<<k);return o;};
+const sumStr=v=>onList(v).join('＋')+(onList(v).length>1?'＝'+v:'');
+const chOf=(tbl,v)=>(tbl==='en'?EN:KN)[v-1];
+function startStage(p){
+  P=p;S={hints:0,done:false,msg:'',msgc:'',hint:false,wrong:[],pad:'',b:Array(p.n||0).fill(0),pick:null};
+  if(p.kind==='read'&&p.mode==='choice')S.opts=shuffle([p.v,...p.ds]);
+  if(p.kind==='dec')S.opts=shuffle([p.w,...p.ds]);
+  if(p.kind==='cnt')S.opts=shuffle([p.a,...p.ds]);
+  begin(p);draw();
+}
+/* ランプ1こ */
+function lamp(x,y,r,on){
+  return (on?`<circle cx="${x}" cy="${y}" r="${r+7}" fill="#fde68a" opacity=".7"/>`:'')+
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="${on?'#fbbf24':'#d6d3d1'}" stroke="${on?'#b45309':'#78716c'}" stroke-width="2.5"/>`+
+    (on?`<circle cx="${x-r*0.35}" cy="${y-r*0.35}" r="${r*0.28}" fill="#fff" opacity=".7"/>`:`<path d="M${x-r*0.4},${y+r*0.15} h${r*0.8}" stroke="#a8a29e" stroke-width="2"/>`);
+}
+/* ランプの列（左が大きい） */
+function row(b,opt){
+  opt=opt||{};const n=b.length,U=54,H=opt.lab===false?54:80;let o='';
+  b.forEach((on,i)=>{const x=U*i+U/2,y=27;
+    o+=`<g ${opt.tap?`class="lp" data-i="${i}" style="cursor:pointer"`:''}><rect x="${U*i+2}" y="0" width="${U-4}" height="${H}" fill="transparent"/>${lamp(x,y,18,on)}`+
+      (opt.lab===false?'':`<text x="${x}" y="72" text-anchor="middle" font-size="17" font-weight="700" fill="#3b2f6b" font-family="sans-serif">${2**(n-1-i)}</text>`)+`</g>`;});
+  return `<svg ${opt.id?`id="${opt.id}"`:''} viewBox="-2 -6 ${n*U+4} ${H+8}" style="width:100%;max-width:${Math.min(n*64,360)}px" role="img" aria-label="ランプ">${o}</svg>`;
+}
+function tbl(t){
+  if(t==='en')return `<div class="ltbl en">${[...EN].map((c,i)=>`<span><b>${c}</b>${i+1}</span>`).join('')}</div>`;
+  return `<div class="ltbl kn">${[...KN].map((c,i)=>`<span><b>${c}</b>${i+1}</span>`).join('')}</div>`;
+}
+const isTap=()=>['make','enc','add','next'].includes(P.kind);
+const target=()=>P.t;
+function question(){
+  const k=P.kind;
+  if(k==='make')return `ランプをつけて、<b style="font-size:24px">${P.t}</b> を表そう。`;
+  if(k==='read')return 'このランプが表している数は、いくつ？';
+  if(k==='dec')return `ランプの暗号を読もう。1列が1文字です（${P.tbl==='en'?'A＝1, B＝2, …':'あ＝1, い＝2, …'}）。どんなことば？`;
+  if(k==='enc')return `「<b style="font-size:24px">${P.ch}</b>」を、ランプで表そう。下の表を見て、まず数を調べよう。`;
+  if(k==='add')return '上の2つの数を<b>たした答え</b>を、いちばん下のランプで表そう。';
+  if(k==='next')return 'ランプが、あるきまりで変わっていきます。<b>5番目</b>をランプで表そう。';
+  if(k==='par')return `どの横の列も、どのたての列も、<b>ついているランプが偶数こ</b>（0こ・2こ・4こ）になるように、右と下に<b>チェックランプ</b>（むらさきのわく）をつけました。ところが、ランプが<b>1つだけこわれて</b>、ONとOFFが逆になっています。こわれたランプをタップしよう。`;
+  /* cnt */
+  const vs=n=>Array.from({length:n},(_,i)=>2**(n-1-i)).join('・');
+  if(P.q==='all')return `ランプが${P.n}こ（${vs(P.n)}）あります。ON・OFFの組み合わせで、<b>0もふくめて何通りの数</b>を表せる？`;
+  if(P.q==='max')return `ランプが${P.n}こ（${vs(P.n)}）あります。表せる<b>いちばん大きい数</b>はいくつ？`;
+  if(P.q==='need')return `ランプ（1・2・4・8・…と2倍ずつ）を使って、<b>0から${P.n}までのすべての数</b>を表したい。ランプは<b>最低何こ</b>いる？`;
+  if(P.q==='one')return `ランプが${P.n}こ（${vs(P.n)}）あります。1から${2**P.n-1}までの数のうち、<b>「1」のランプがついている数</b>はいくつある？`;
+  return `ランプが${P.n}こ（${vs(P.n)}）あります。<b>ちょうど${P.k}こ</b>だけONにして表せる数は、何通り？`;
+}
+function fig(){
+  const k=P.kind,lab=t=>`<div class="lrow"><span class="lt">${t}</span>`;
+  if(k==='make'||k==='enc')return row(S.b,{tap:true,id:'tap'});
+  if(k==='read')return row(bitsOf(P.v,P.n));
+  if(k==='dec')return `<div class="lrows">${P.vals.map((v,i)=>`${lab((i+1)+'文字目')}${row(bitsOf(v,5),{lab:i===P.vals.length-1})}<span class="lq">${S.done?chOf(P.tbl,v):'？'}</span></div>`).join('')}</div>`;
+  if(k==='add')return `<div class="lrows">${lab('')}${row(bitsOf(P.x,P.n),{lab:false})}<span class="lq">${S.hint||S.done?P.x:''}</span></div>${lab('＋')}${row(bitsOf(P.y,P.n),{lab:false})}<span class="lq">${S.hint||S.done?P.y:''}</span></div><div class="lline"></div>${lab('答え')}${row(S.b,{tap:true,id:'tap'})}<span class="lq"></span></div></div>`;
+  if(k==='next')return `<div class="lrows">${P.seq.map((v,i)=>`${lab((i+1)+'番目')}${row(bitsOf(v,P.n),{lab:false})}<span class="lq">${S.hint||S.done?v:''}</span></div>`).join('')}${lab('<b>5番目</b>')}${row(S.b,{tap:true,id:'tap'})}<span class="lq">？</span></div></div>`;
+  if(k==='par')return parSVG();
+  if(P.q==='need')return '';
+  return row(Array(P.n).fill(P.q==='max'?1:0));
+}
+function parSVG(){
+  const m=P.m,N=m+1,U=50,M=4,extra=S.hint||S.done?30:0;let o='';
+  const rc=r=>P.g[r].reduce((a,b)=>a+b,0),cc=c=>P.g.reduce((a,r)=>a+r[c],0);
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){const x=M+c*U,y=M+r*U,chk=r===m||c===m,on=P.g[r][c];
+    const isBr=S.done&&r===P.br[0]&&c===P.br[1],bad=S.wrong.includes(r*N+c);
+    o+=`<g class="pl" data-i="${r*N+c}" style="cursor:pointer"><rect x="${x+2}" y="${y+2}" width="${U-4}" height="${U-4}" rx="8" fill="${chk?'#ede4fd':'#f6efdd'}" stroke="${isBr?'#c8352d':chk?'#7c3aed':'#d9cfb8'}" stroke-width="${isBr?4:chk?2:1}" ${chk?'stroke-dasharray="5 3"':''}/>${lamp(x+U/2,y+U/2,14,on)}${bad?`<path d="M${x+10},${y+10} L${x+U-10},${y+U-10} M${x+U-10},${y+10} L${x+10},${y+U-10}" stroke="#c8352d" stroke-width="3" opacity=".6"/>`:''}</g>`;}
+  if(extra){for(let r=0;r<N;r++){const v=rc(r);o+=`<text x="${M+N*U+15}" y="${M+r*U+U/2+6}" text-anchor="middle" font-size="17" font-weight="700" fill="${v%2?'#c8352d':'#6a625a'}" font-family="sans-serif">${v}</text>`;}
+    for(let c=0;c<N;c++){const v=cc(c);o+=`<text x="${M+c*U+U/2}" y="${M+N*U+22}" text-anchor="middle" font-size="17" font-weight="700" fill="${v%2?'#c8352d':'#6a625a'}" font-family="sans-serif">${v}</text>`;}}
+  const W=N*U+2*M+extra;
+  return `<svg viewBox="0 0 ${W} ${W}" style="width:100%;max-width:${Math.min(W*1.15,340)}px" role="img" aria-label="ランプのならび">${o}</svg>`;
+}
+function hintText(){
+  const k=P.kind;
+  if(k==='make'||k==='enc'){const t=P.t,big=onList(t)[0];
+    return (k==='enc'?`「${P.ch}」は ${t} です。`:'')+`<b>大きいランプから</b>考えよう。${t}をこえない、いちばん大きいランプは <b>${big}</b>。`+(t-big?`${big}をつけると、のこりは ${t-big}。のこりも同じように考えます。`:`${big}をつけたら、のこりは 0 です。`);}
+  if(k==='read')return 'ついているランプの下の数だけを、全部たそう。消えているランプは数えません。';
+  if(k==='dec'){const v=P.vals[0];return `1文字目は ${sumStr(v)}。表で${v}をさがすと「${chOf(P.tbl,v)}」です。2文字目からも同じように。`;}
+  if(k==='add')return `上の数は ${P.x}、下の数は ${P.y} です（ランプの右に数を書きました）。たし算をしてから、答えをランプで表そう。`;
+  if(k==='next')return 'それぞれの数をランプの右に書きました。数がどのようにふえているか、となりどうしの<b>ちがい</b>や<b>何倍か</b>を調べよう。';
+  if(k==='par')return '右と下に、その列でついているランプの数を書きました。<b>奇数（赤い数）</b>になっている横の列と、たての列をさがそう。';
+  if(P.q==='max')return 'いちばん大きい数にするには、どのランプをONにすればよいかな？ そのときの数を全部たそう。';
+  if(P.q==='all')return 'ランプが1こなら 0と1 の2通り。ランプを1こふやすと、そのランプがOFFのときとONのときで、通りの数が2倍になります。';
+  if(P.q==='need')return 'ランプが1こなら1まで、2こなら3まで、3こなら7まで表せます。ランプを1こふやすと、表せる数はどこまでになる？';
+  if(P.q==='one')return '「1」のランプがついている数は、1, 3, 5, 7, …の奇数です。';
+  return `${P.n}このランプから、ONにする${P.k}こをえらぶえらび方を、もれなく数えよう。表に書くと数えやすい。`;
+}
+function explain(){
+  const k=P.kind;
+  if(k==='make')return `${sumStr(P.t)}。大きいランプから順に決めると、まよわず作れます。`;
+  if(k==='read')return `ついているのは ${onList(P.v).join('・')} のランプ。${sumStr(P.v)} です。`;
+  if(k==='dec')return P.vals.map(v=>`${sumStr(v)}→「${chOf(P.tbl,v)}」`).join('、')+`。答えは「${P.w}」です。`;
+  if(k==='enc')return `「${P.ch}」は ${P.t}。${sumStr(P.t)} なので、${onList(P.t).join('・')} のランプをつけます。`;
+  if(k==='add')return `${P.x}＋${P.y}＝${P.t}。${sumStr(P.t)} です。同じランプどうしをたすと、1つ左のランプ1こ分になります（1＋1＝2、2＋2＝4、…）。これが、ランプのくり上がりです。`;
+  if(k==='next'){const s=P.seq.join('、');
+    if(P.rule==='ar')return `${s} と、${P.k}ずつふえています。5番目は ${P.seq[3]}＋${P.k}＝${P.t}。`;
+    if(P.rule==='dbl')return `${s} と、2倍ずつになっています。ランプで見ると、ついているランプが<b>1つずつ左にずれて</b>います。5番目は ${P.seq[3]}×2＝${P.t}。`;
+    const d=P.seq.slice(1).map((v,i)=>v-P.seq[i]);return `ふえ方が ${d.join('、')} と1ずつ大きくなっています。次は ${d[2]+1}ふえて、${P.seq[3]}＋${d[2]+1}＝${P.t}。`;}
+  if(k==='par')return `上から${P.br[0]+1}番目の横の列と、左から${P.br[1]+1}番目のたての列だけ、ついているランプが奇数こでした。2つの列が交わるランプがこわれています。チェックランプがあると、まちがいを見つけるだけでなく、<b>場所</b>までわかります。`;
+  if(P.q==='all')return `ランプ1こふえるごとに2倍。${Array(P.n).fill(2).join('×')}＝${P.a}通りです。`;
+  if(P.q==='max')return `全部つけると ${Array.from({length:P.n},(_,i)=>2**(P.n-1-i)).join('＋')}＝${P.a}。これは「次のランプの数${P.a+1}より1小さい数」です。`;
+  if(P.q==='need')return `ランプ${P.a-1}こでは ${2**(P.a-1)-1}まで、${P.a}こなら ${2**P.a-1}まで表せます。だから最低${P.a}こです。`;
+  if(P.q==='one')return `「1」のランプがつくのは奇数のときです。1から${2**P.n-1}までの奇数は${P.a}こあります。`;
+  return `${P.n}こから${P.k}こをえらぶえらび方は${P.a}通り。えらび方がちがえば、表す数もちがいます。`;
+}
+function answerArea(){
+  const k=P.kind;
+  if(S.opts){const lb=o=>P.kind==='dec'?o:o+(P.kind==='cnt'&&(P.q==='all'||P.q==='k')?'通り':P.kind==='cnt'&&P.q==='need'?'こ':P.kind==='cnt'&&P.q==='one'?'こ':'');
+    return `<div class="opts4 txt">${S.opts.map((o,i)=>{const a=k==='dec'?P.w:k==='cnt'?P.a:P.v;return `<button class="ob ${S.done&&o===a?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span><b style="font-size:21px">${lb(o)}</b></button>`;}).join('')}</div>`;}
+  if(k==='read')return S.done?'':`<div class="lans"><output id="out">${S.pad||'&nbsp;'}</output></div><div class="pad">${[1,2,3,4,5,6,7,8,9,0].map(d=>`<button data-d="${d}">${d}</button>`).join('')}<button class="er" data-d="x">消す</button><button class="er go2" data-d="ok">こたえる</button></div>`;
+  if(isTap())return S.done?'':`${P.kind==='make'&&P.show?`<p class="note" style="text-align:center;font-size:16px">いまの数：<b style="font-size:22px;color:var(--ink)">${valOf(S.b)}</b></p>`:''}<div class="row" style="justify-content:center"><button class="btn go" id="ok">これでOK</button><button class="btn" id="clr">全部消す</button></div>`;
+  return '';
+}
+function draw(){
+  const tb=(P.kind==='dec'||P.kind==='enc')?tbl(P.tbl):'';
+  app.innerHTML=`${topBar()}
+    <p class="qq">${question()}</p>
+    ${P.kind==='cnt'&&P.q==='need'?'':`<div class="boardw">${fig()}</div>`}
+    ${tb}
+    ${answerArea()}
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">${explain()}</p>`);return;}
+  const ng=m=>{S.hints++;S.msg=m;S.msgc='ng';draw();};
+  app.querySelectorAll('.lp').forEach(g=>g.addEventListener('click',()=>{S.b[+g.dataset.i]^=1;S.msg='';draw();}));
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,a=P.kind==='dec'?P.w:P.kind==='cnt'?P.a:P.v;
+    if(S.opts[i]===a){S.done=true;draw();}else{S.wrong.push(i);ng('ちがいます。もう一度考えてみよう。');}});
+  app.querySelectorAll('.pl').forEach(g=>g.addEventListener('click',()=>{const i=+g.dataset.i,N=P.m+1;
+    if(i===P.br[0]*N+P.br[1]){S.done=true;draw();}else if(!S.wrong.includes(i)){S.wrong.push(i);ng('そのランプはこわれていません。横とたての列を、ひとつずつ数えてみよう。');}}));
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>{const d=b.dataset.d;
+    if(d==='x')S.pad=S.pad.slice(0,-1);else if(d==='ok'){if(!S.pad)return;if(+S.pad===P.v){S.done=true;}else{S.pad='';return ng('ちがいます。ついているランプの数を、もう一度たしてみよう。');}}
+    else if(S.pad.length<3)S.pad=(S.pad==='0'?'':S.pad)+d;draw();});
+  const ok=document.getElementById('ok');
+  if(ok){ok.onclick=()=>{const v=valOf(S.b);if(v===target()){S.done=true;draw();}
+      else ng(`ちがいます。いまのランプは ${v} を表しています。`+(P.kind==='make'?'':'')); };
+    document.getElementById('clr').onclick=()=>{S.b=S.b.map(()=>0);S.msg='';draw();};}
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
