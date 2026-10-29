@@ -197,7 +197,7 @@ const REC={
   'kisoku-p-rec':{f:'kisoku-full.html',total:100},
   'tenkai-p-rec':{f:'tenkai-full.html',total:100},
   'ronri-p-rec':{f:'ronri-full.html',total:100}};
-const STARS={'tokushu-p-stars':{f:'tokushu-puzzle-full.html',total:60},'tokushu-f-stars':{f:'tokushu-puzzle.html',total:null},'michi-p-stars':{f:'michi-full.html',total:100},'michi-f-stars':{f:'michi.html',total:null},'heimen-p-stars':{f:'heimen-full.html',total:100},'heimen-f-stars':{f:'heimen.html',total:null}};
+const STARS={'tokushu-p-stars':{f:'tokushu-puzzle-full.html',total:60},'tokushu-f-stars':{f:'tokushu-puzzle.html',total:null},'michi-p-stars':{f:'michi-full.html',total:100},'michi-f-stars':{f:'michi.html',total:null},'heimen-p-stars':{f:'heimen-full.html',total:100},'heimen-f-stars':{f:'heimen.html',total:null},'sujitsunagi-p-stars':{f:'sujitsunagi-full.html',total:100},'sujitsunagi-f-stars':{f:'sujitsunagi.html',total:null},'shikitsume-p-stars':{f:'shikitsume-full.html',total:100},'shikitsume-f-stars':{f:'shikitsume.html',total:null},'tsumiki-p-stars':{f:'tsumiki-full.html',total:100},'tsumiki-f-stars':{f:'tsumiki.html',total:null}};
 const state=r=>{if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 // 問題の記録の見せ方（品詞は { } の中が問われた言葉、係り受けは | から後ろを消す）
 const showQ=s=>esc(String(s).replace(/\|.*$/,'')).replace(/\{(.+?)\}/,'<mark>$1</mark>');
