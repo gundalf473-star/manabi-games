@@ -130,14 +130,14 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   try{ const latest=(data.site&&data.site.newsLatest)||'', seen=localStorage.getItem('mn-news-seen')||'';
     if(latest&&latest>seen){ const a=document.getElementById('newslink'); a.insertAdjacentHTML('beforeend','<span class="dot" aria-label="新しいお知らせがあります"></span>'); } }catch(e){}
   /* 無料版と有料版を1つの単元にまとめる（file の -full を取ったものが同じなら同じ単元） */
-  const base=f=>String(f).replace(/-full(\.html)$/,'$1'), UM={}, units=[];
+  const base=f=>String(f).replace(/(-full|300)(\.html)$/,'$2'), UM={}, units=[];
   games.forEach(g=>{const k=base(g.file);if(!UM[k]){UM[k]={k,subject:g.subject,unit:g.unit};units.push(UM[k]);}UM[k][g.paid?'paid':'free']=g;});
   units.forEach(u=>{const g=u.free||u.paid;u.title=u.free?u.free.title:u.paid.title.replace(/\s*\d+問$/,'');u.desc=g.description;u.grade=g.grade||'';u.players=g.players||'';u.added=(u.paid||g).added;});
   const LS=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}};
   let fav=LS('mn-fav-j',[]); if(!Array.isArray(fav))fav=[];
   const favIdx=k=>fav.findIndex(f=>base(f)===k);
   const hist=(()=>{const h=LS('mn-history',[]);return Array.isArray(h)?h:[];})();
-  const playedPaid=k=>hist.some(e=>e&&e.f===k.replace(/\.html$/,'-full.html'));
+  const playedPaid=k=>{const u=UM[k];return !!(u&&u.paid)&&hist.some(e=>e&&e.f===u.paid.file);};
   function toggleFav(k){const i=favIdx(k);if(i>=0)fav.splice(i,1);else{if(fav.length>=8){note('「わたしの単元」に入れられるのは8つまでです。どれかを外してください。');return;}const u=UM[k];fav.unshift(u&&u.paid&&(playedPaid(k)||!u.free)?u.paid.file:k);}
     try{localStorage.setItem('mn-fav-j',JSON.stringify(fav));}catch(e){note('この端末では保存できませんでした。');}window.mnMine&&window.mnMine();render();}
   function note(t){const m=document.getElementById('mine2');const p=document.createElement('p');p.className='hint';p.style.color='var(--s3)';p.textContent=t;m.prepend(p);setTimeout(()=>p.remove(),3000);}
@@ -186,13 +186,13 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
       const w=Object.values(r).filter(v=>st(v)==='weak').length; if(w)weak.push([byFile[o.f],w]);});
     weak.sort((a,b)=>b[1]-a[1]);
     const weakBy={};weak.forEach(([g,w])=>{weakBy[base(g.file)]=(weakBy[base(g.file)]||0)+w;});
-    const R0=rd('mn-review',{})||{},td0=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),dueBy=k=>{const m=R0[k.replace(/\.html$/,'')];return m&&typeof m==='object'?Object.values(m).filter(r=>r&&r.d<=td0).length:0;};
+    const R0=rd('mn-review',{})||{},td0=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),dueBy=k=>{const u=UM[k];if(!u)return 0;const ids=new Set([u.free,u.paid].filter(Boolean).map(g=>g.file.replace(/(-full)?\.html$/,'')));let n=0;ids.forEach(id=>{const m=R0[id];if(m&&typeof m==='object')n+=Object.values(m).filter(r=>r&&r.d<=td0).length;});return n;};
     const mineKeys=new Set();
     window.mnMine=function(){const box=document.getElementById('mine2'),items=[],seen=mineKeys;seen.clear();
       fav.forEach(f=>{const k=base(f),u=UM[k];if(u&&!seen.has(k)){seen.add(k);items.push({u,f,star:true});}});
       let rc=0;for(let i=hist.length-1;i>=0&&rc<3;i--){const e=hist[i];if(!e||!e.f||e.f==='daily.html')continue;const k=base(e.f),u=UM[k];if(!u||seen.has(k))continue;seen.add(k);items.push({u,f:e.f,star:false,t:e.t,sc:e.n!=null?`${e.s} / ${e.n}問`:e.a?`${e.k} / ${e.a}問`:''});rc++;}
       if(!items.length){box.innerHTML='<div class="label">わたしの単元</div><p class="hint">ゲームのカードや画面で「☆ わたしの単元」を押すと、ここにならびます。遊んだゲームも、ここに出ます。</p>';return;}
-      box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=(f.includes('-full')?u.paid:u.free)||u.free||u.paid,n=dueBy(u.k),w=weakBy[u.k]||0,d=t?new Date(t):null;
+      box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=[u.paid,u.free].find(x=>x&&x.file===f)||u.free||u.paid,n=dueBy(u.k),w=weakBy[u.k]||0,d=t?new Date(t):null;
         return `<div class="mi" style="--c:${color(u.subject)}"><span class="k">${star?'★ ':'最近 '}${esc(u.subject)}・${esc(u.unit)}</span><a class="t" href="${g.url}">${esc(u.title)}</a><span class="s">${n?`<span class="due">今日の解き直し ${n}問</span>`:''}${w?`<span class="due" style="background:var(--s5)">にがて ${w}問</span>`:''}${d?`<span>${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span>`:''}${u.paid&&u.free?(g.paid?'<span>有料版</span>':'<span>無料版</span>'):''}<button type="button" class="starb" aria-pressed="${star}" data-k="${esc(u.k)}">${star?'★ 外す':'☆ 入れる'}</button><a class="go" href="${g.url}">あそぶ →</a></span></div>`;}).join('')+'</div>';
       box.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));};
     window.mnMine();

@@ -164,7 +164,7 @@ footer a{color:inherit}
     fav.forEach(f=>{const k=base(f),u=U[k];if(u&&!seen.has(k)){seen.add(k);items.push({u,f,star:true});}});
     let rec=0;for(let i=hist.length-1;i>=0&&rec<3;i--){const e=hist[i];if(!e||!e.f)continue;const k=base(e.f),u=U[k];if(!u||seen.has(k))continue;seen.add(k);items.push({u,f:e.f,star:false,t:e.t,sc:e.n!=null?`${e.s} / ${e.n}問`:e.a?`${e.k} / ${e.a}問`:''});rec++;}
     if(!items.length){box.innerHTML='<div class="label">わたしの単元</div><p class="hint">単元のカードやゲームの画面で「☆ わたしの単元」を押すと、ここにならびます。遊んだ単元も、ここに出ます。</p>';return;}
-    box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=u[f.includes('-full')?'paid':'free']||u.free||u.paid,n=due(u.k),d=t?new Date(t):null;
+    box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=[u.paid,u.free].find(x=>x&&x.file===f)||u.free||u.paid,n=due(u.k),d=t?new Date(t):null;
       return `<div class="mi" style="--c:${color(u.subject)}"><span class="k">${star?'★ ':'最近 '}${esc(u.subject)}・${esc(u.folder)}</span><a class="t" href="../${g.url}">${esc(u.title)}</a>
       <span class="s">${n?`<span class="due">今日の解き直し ${n}問</span>`:''}${d?`<span>${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span>`:''}${g.paid?'<span>有料版</span>':'<span>無料版</span>'}${star?`<button type="button" class="starb" aria-pressed="true" data-k="${esc(u.k)}" title="わたしの単元から外す">★ 外す</button>`:`<button type="button" class="starb" aria-pressed="false" data-k="${esc(u.k)}">☆ 入れる</button>`}<a class="go" href="../${g.url}">はじめる →</a></span></div>`;}).join('')+'</div>';
     box.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));

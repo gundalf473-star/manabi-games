@@ -81,7 +81,7 @@ function parseForm(u) {
 const FB = parseForm((site.feedbackForm || "").trim());
 // 「わたしの単元」に入れる★ボタン（この端末の localStorage にだけ保存。中高一貫は mn-fav、中学受験は mn-fav-j）。一覧の上に出る
 const STAR = (course) => `<button type="button" id="mn-star" style="position:fixed;left:calc(122px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer">☆ わたしの単元</button><script>(function(){var K='${course === "chuko" ? "mn-fav" : "mn-fav-j"}',MAX=8,b=document.getElementById('mn-star');
-function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}function base(f){return String(f).replace(/-full(\\.html)$/,'$1');}function idx(a){var k=base(file());for(var i=0;i<a.length;i++)if(base(a[i])===k)return i;return -1;}
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}function base(f){return String(f).replace(/(-full|300)(\\.html)$/,'$2');}function idx(a){var k=base(file());for(var i=0;i<a.length;i++)if(base(a[i])===k)return i;return -1;}
 function ld(){try{var a=JSON.parse(localStorage.getItem(K)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function sv(a){try{localStorage.setItem(K,JSON.stringify(a));return true;}catch(e){return false;}}
 function show(){var on=idx(ld())>=0;b.textContent=on?'★ わたしの単元':'☆ わたしの単元';b.style.background=on?'#b4442d':'#1d2b45';b.setAttribute('aria-pressed',on?'true':'false');b.title=on?'わたしの単元から外す':'一覧のいちばん上の「わたしの単元」に入れる';}
