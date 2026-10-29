@@ -1,0 +1,255 @@
+<title>ビルディングパズル 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="ビルディング（論理）">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="ビルディングパズルの有料版。3×3から5×5まで、まわりの数字が少ない難しい問題もふくむ、5つのレベルに20問ずつ、全100問。答えは1つに決まる。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:52px;min-height:52px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:22px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:64px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>ビルディングパズル 100問</h1>
+    <p class="lead">まわりの数字をヒントに、ビルの高さを決めよう。5つのレベルに20問ずつ。ヒントなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='building';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>ビルディングパズル 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* ビルディングパズル：p={n, cl:[上,右,下,左]（0は数字なし。上・下は左の列から、右・左は上の行から）, sol} */
+const HINTWORD='ヒント';
+const LVD={1:'3×3',2:'4×4 ・ 数字ぜんぶ',3:'4×4 ・ 数字半分',4:'5×5 ・ 数字多め',5:'5×5 ・ 数字少なめ'};
+const BC=['#93c5fd','#86efac','#fcd34d','#fdba74','#f9a8d4'];
+const BD=['#2563eb','#16a34a','#ca8a04','#ea580c','#db2777'];
+const U=62, M=38;
+function startStage(p){P=p;const n=p.n;S={g:Array.from({length:n},()=>Array(n).fill(0)),lock:Array.from({length:n},()=>Array(n).fill(false)),sel:[0,0],hints:0,done:false,msg:''};begin(p);draw();}
+const seen=a=>{let m=0,k=0;for(const x of a)if(x>m){m=x;k++;}return k;};
+function building(x,y,v,n,dup){
+  const bh=10+v*(U-22)/n, bw=U*.5, bx=x+(U-bw)/2+3, by=y+U-6-bh, c=BC[(v-1)%5], d=BD[(v-1)%5];
+  let s=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${c}" stroke="${d}" stroke-width="1.5"/>`+
+    `<polygon points="${bx+bw},${by} ${bx+bw+7},${by-5} ${bx+bw+7},${by+bh-5} ${bx+bw},${by+bh}" fill="${d}" opacity=".75"/>`+
+    `<polygon points="${bx},${by} ${bx+7},${by-5} ${bx+bw+7},${by-5} ${bx+bw},${by}" fill="${c}" stroke="${d}" stroke-width="1"/>`;
+  for(let f=0;f<v;f++){const wy=by+bh-((f+1)*bh/v)+3;if(wy<by+2)continue;for(const wx of [bx+5,bx+bw-12])s+=`<rect x="${wx}" y="${wy}" width="7" height="${Math.max(3,bh/v-7)}" fill="#fff" opacity=".85"/>`;}
+  s+=`<circle cx="${x+13}" cy="${y+14}" r="10" fill="${dup?'#c8352d':'#2a2520'}"/><text x="${x+13}" y="${y+19}" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="sans-serif">${v}</text>`;
+  return s;
+}
+function exampleSVG(){
+  /* 1〜4 のビルを左から見ると、見えるのは 3 つ（2・3・4）。1 は 2 のうしろにかくれる */
+  const row=[2,1,3,4]; let s='';
+  row.forEach((v,i)=>{s+=`<rect x="${40+i*U}" y="4" width="${U-2}" height="${U-2}" rx="5" fill="#f6f3ec" stroke="#d6cdbd"/>`+building(40+i*U,4,v,4,false);});
+  s+=`<circle cx="18" cy="${4+U/2}" r="14" fill="#ede4fd" stroke="#7c3aed"/><text x="18" y="${9+U/2}" text-anchor="middle" font-size="16" font-weight="700" fill="#3b2f6b" font-family="sans-serif">3</text>`;
+  return `<svg viewBox="0 0 ${40+4*U+4} ${U+10}" style="width:100%;max-width:300px" aria-label="例：左から見ると3つ見える">${s}</svg>`;
+}
+function lineOf(side,i){const n=P.n,g=S.g;
+  if(side===0)return [...Array(n).keys()].map(r=>g[r][i]);
+  if(side===1)return [...g[i]].reverse();
+  if(side===2)return [...Array(n).keys()].map(r=>g[r][i]).reverse();
+  return [...g[i]];}
+function dupAt(r,c){const v=S.g[r][c];if(!v)return false;for(let k=0;k<P.n;k++){if(k!==c&&S.g[r][k]===v)return true;if(k!==r&&S.g[k][c]===v)return true;}return false;}
+function solved(){return S.g.every((row,r)=>row.every((v,c)=>v===P.sol[r][c]));}
+function boardSVG(){
+  const n=P.n, VW=n*U+2*M; let s='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){const x=M+c*U,y=M+r*U,v=S.g[r][c],sel=S.sel&&S.sel[0]===r&&S.sel[1]===c,dup=dupAt(r,c);
+    s+=`<rect x="${x+1.5}" y="${y+1.5}" width="${U-3}" height="${U-3}" rx="6" fill="${S.lock[r][c]?'#efe9fb':'#f6f3ec'}" stroke="${dup?'#c8352d':'#d6cdbd'}" stroke-width="${dup?2.5:1.5}"/>`;
+    if(v)s+=building(x,y,v,n,dup);
+    if(sel)s+=`<rect x="${x+2}" y="${y+2}" width="${U-4}" height="${U-4}" rx="6" fill="none" stroke="#7c3aed" stroke-width="4"/>`;
+    s+=`<rect class="hit" data-r="${r}" data-c="${c}" x="${x}" y="${y}" width="${U}" height="${U}" fill="transparent" style="cursor:pointer"/>`;}
+  P.cl.forEach((arr,side)=>arr.forEach((v,i)=>{if(!v)return;
+    const cx=side===0||side===2?M+i*U+U/2:side===1?M+n*U+M/2:M/2, cy=side===1||side===3?M+i*U+U/2:side===0?M/2:M+n*U+M/2;
+    const L=lineOf(side,i), full=L.every(x=>x), ok=full&&seen(L)===v;
+    const col=full?(ok?'#1d7a4c':'#c8352d'):'#7c3aed', fill=full?(ok?'#e0f0e6':'#f8e3e1'):'#ede4fd';
+    s+=`<circle cx="${cx}" cy="${cy}" r="14" fill="${fill}" stroke="${col}" stroke-width="2"/><text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="17" font-weight="700" fill="${col}" font-family="sans-serif">${v}</text>`;}));
+  return `<svg id="bd" viewBox="0 0 ${VW} ${VW}" style="max-width:${Math.min(VW,440)}px" role="img" aria-label="ビルディングパズルの盤">${s}</svg>`;
+}
+function draw(){
+  const n=P.n;
+  app.innerHTML=`${topBar()}
+    <div class="boardw">${boardSVG()}</div>
+    ${S.done?'':`<div class="pad">${[...Array(n).keys()].map(i=>`<button data-v="${i+1}">${i+1}</button>`).join('')}<button data-v="0" class="er">消す</button></div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||'マスをえらんで、ビルの高さを入れよう。'}</p>
+    <div class="row"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="note">まわりの数字は、列（行）がうまると<b style="color:var(--ok)">緑</b>（合っている）か<b style="color:var(--ng)">赤</b>（合っていない）になります。同じ列・行に同じ高さがあると赤くなります。ヒントは1マスの答えを入れます（星がへります）。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear();return;}
+  app.querySelectorAll('#bd .hit').forEach(h=>h.onclick=()=>{S.sel=[+h.dataset.r,+h.dataset.c];S.msg='';S.msgc='';draw();});
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>put(+b.dataset.v));
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('reset').onclick=()=>{S.g=S.g.map((row,r)=>row.map((v,c)=>S.lock[r][c]?v:0));S.msg='';draw();};
+}
+function put(v){
+  if(!S.sel)return; const [r,c]=S.sel;
+  if(S.lock[r][c]){S.msg='ヒントで入れたマスは変えられません。';S.msgc='';draw();return;}
+  S.g[r][c]=v; S.msg=''; S.msgc='';
+  if(v){ /* 次の空いているマスへ */ const n=P.n;for(let k=1;k<=n*n;k++){const i=(r*n+c+k)%(n*n),rr=Math.floor(i/n),cc=i%n;if(!S.g[rr][cc]){S.sel=[rr,cc];break;}} }
+  if(S.g.every(row=>row.every(x=>x))){ if(solved())S.done=true; else {S.msg='全部うまりましたが、どこかちがいます。赤いところを見なおそう。';S.msgc='ng';} }
+  draw();
+}
+function hint(){
+  const n=P.n, cand=[];
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(S.g[r][c]!==P.sol[r][c])cand.push([r,c]);
+  if(!cand.length)return;
+  /* まちがっているマスを先に、なければ空いているマスから */
+  cand.sort((a,b)=>(S.g[b[0]][b[1]]?1:0)-(S.g[a[0]][a[1]]?1:0));
+  const [r,c]=S.sel&&cand.some(x=>x[0]===S.sel[0]&&x[1]===S.sel[1])?S.sel:cand[0];
+  S.g[r][c]=P.sol[r][c]; S.lock[r][c]=true; S.hints++;
+  S.msg=`ヒント：1マス入れました（ヒント ${S.hints}回）。`; S.msgc='';
+  if(solved())S.done=true; draw();
+}
+document.addEventListener('keydown',e=>{if(!S||S.done||!P||P.n==null||!document.getElementById('bd'))return;
+  if(/^[1-9]$/.test(e.key)&&+e.key<=P.n)put(+e.key);else if(e.key==='Backspace'||e.key==='Delete'||e.key==='0')put(0);
+  else{const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(d&&S.sel){e.preventDefault();S.sel=[(S.sel[0]+d[0]+P.n)%P.n,(S.sel[1]+d[1]+P.n)%P.n];draw();}}});
+
+const RULES=`<ol class="rules">
+  <li>どの<b>たての列</b>にも<b>横の行</b>にも、高さ 1〜（マスの数）のビルを<b>1つずつ</b>建てよう。</li>
+  <li>まわりの数字は、そこから見たときに<b>見えるビルの数</b>です。高いビルのうしろにある低いビルは、かくれて見えません。</li>
+  <li>マスをタップしてえらび、下の数字ボタンで高さを入れよう。</li>
+  <li>答えは1つに決まります。</li></ol>
+  <div style="display:flex;justify-content:center">${exampleSVG()}</div>`;
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD} ${S.hints}回でクリアしました。${HINTWORD}なしなら ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
