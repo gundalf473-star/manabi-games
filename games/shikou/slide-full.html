@@ -1,0 +1,234 @@
+<title>スライドパズル 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="スライドパズル（移動パズル）">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="スライドパズルの有料版。最短4手から22手まで、5つのレベルに20問ずつ、全100問。最短の次の一手を教えるヒントつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>スライドパズル 100問</h1>
+    <p class="lead">タイルをすべらせて、1〜8を順番にならべよう。最短手数で完成すると★3つ。5つのレベルに20問ずつ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='slide';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>スライドパズル 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* スライドパズル（3×3）：p={s:[9マス、0が空き], opt:最短手数} */
+const HINTWORD='ヒントや、最短より多い手数';
+const LVD={1:'最短4〜6手',2:'最短7〜10手',3:'最短11〜14手',4:'最短15〜18手',5:'最短19〜22手'};
+const RULES=`<ol class="rules">
+  <li>空いているマスのとなりのタイルをタップすると、タイルがすべって動きます。</li>
+  <li>1〜8を、<b>左上から順番</b>にならべたら完成（右下が空き）。</li>
+  <li>問題ごとに<b>最短の手数</b>があります。最短で完成すると★3つ。</li>
+  <li>ヒントは、最短で完成させるための次の一手を教えます。</li></ol>`;
+const TC=['','#f87171','#fb923c','#fbbf24','#a3e635','#34d399','#22d3ee','#818cf8','#e879f9'];
+const NB=i=>[i-3,i+3,i-1,i+1].filter(j=>j>=0&&j<9&&!(Math.abs(j-i)===1&&Math.floor(j/3)!==Math.floor(i/3)));
+function startStage(p){P=p;S={s:p.s.slice(),moves:0,hint:0,hints:0,done:false,msg:'',hl:-1};begin(p);draw();}
+const solvedS=s=>s.every((v,i)=>v===(i===8?0:i+1));
+function boardSVG(){
+  const U=92,M=6;let o=`<rect x="0" y="0" width="${3*U+2*M}" height="${3*U+2*M}" rx="14" fill="#3b2f6b"/>`;
+  S.s.forEach((v,i)=>{const x=M+(i%3)*U,y=M+Math.floor(i/3)*U;
+    if(!v){o+=`<rect x="${x+4}" y="${y+4}" width="${U-8}" height="${U-8}" rx="10" fill="#2a2150"/>`;return;}
+    const ok=v===i+1;
+    o+=`<g class="tile" data-i="${i}" style="cursor:pointer"><rect x="${x+4}" y="${y+4}" width="${U-8}" height="${U-8}" rx="10" fill="${TC[v]}" stroke="${S.hl===i?'#fff':ok?'#fef3c7':'rgba(0,0,0,.2)'}" stroke-width="${S.hl===i?5:ok?3:1}"/><rect x="${x+12}" y="${y+10}" width="${U-24}" height="${U*0.22}" rx="6" fill="#fff" opacity=".3"/><text x="${x+U/2}" y="${y+U*0.66}" text-anchor="middle" font-size="${U*0.46}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.25)" stroke-width="1" font-family="sans-serif">${v}</text></g>`;});
+  return `<svg id="bd" viewBox="0 0 ${3*U+2*M} ${3*U+2*M}" style="max-width:340px" role="img" aria-label="スライドパズル">${o}</svg>`;
+}
+function draw(){
+  app.innerHTML=`${topBar()}
+    <div class="boardw">${boardSVG()}</div>
+    <div class="row" style="justify-content:space-between"><span class="note">手数 <b>${S.moves}</b>　・　最短 ${P.opt}手</span></div>
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||'空きのとなりのタイルをタップしよう。'}</p>
+    <div class="row"><button class="btn" id="hint">ヒント（次の一手）</button><button class="btn" id="reset">やりなおす</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){S.hints=S.hint+(S.moves>P.opt?1:0)+(S.moves>P.opt+10?1:0);
+    showClear(`<p style="margin:0">あなたは ${S.moves}手、最短は ${P.opt}手でした。${S.moves===P.opt?'最短で完成！':'最短の手数を目指して、もう一度やってみよう。'}</p>`);return;}
+  app.querySelectorAll('.tile').forEach(t=>t.addEventListener('pointerdown',()=>move(+t.dataset.i)));
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('reset').onclick=()=>{S.s=P.s.slice();S.moves=0;S.msg='';S.hl=-1;draw();};
+}
+function move(i){const z=S.s.indexOf(0);if(!NB(z).includes(i))return;[S.s[z],S.s[i]]=[S.s[i],S.s[z]];S.moves++;S.hl=-1;S.msg='';if(solvedS(S.s))S.done=true;draw();}
+/* 最短の次の一手：A*（マンハッタン距離）でさがす。候補は二分ヒープで管理 */
+function nextMove(s0){
+  const key=s=>s.join('');const h=s=>s.reduce((a,v,i)=>v?a+Math.abs(Math.floor((v-1)/3)-Math.floor(i/3))+Math.abs((v-1)%3-i%3):a,0);
+  const heap=[];const push=x=>{heap.push(x);let i=heap.length-1;while(i>0){const p=(i-1)>>1;if(heap[p][0]<=heap[i][0])break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p;}};
+  const pop=()=>{const top=heap[0],last=heap.pop();if(heap.length){heap[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;if(l<heap.length&&heap[l][0]<heap[m][0])m=l;if(r<heap.length&&heap[r][0]<heap[m][0])m=r;if(m===i)break;[heap[m],heap[i]]=[heap[i],heap[m]];i=m;}}return top;};
+  push([h(s0),0,s0,null]);const best=new Map([[key(s0),0]]);let n=0;
+  while(heap.length&&n<400000){n++;const [f,g,s,first]=pop();
+    if(solvedS(s))return first;
+    if(best.get(key(s))<g)continue;
+    const z=s.indexOf(0);for(const j of NB(z)){const t=s.slice();[t[z],t[j]]=[t[j],t[z]];const k=key(t);if(best.has(k)&&best.get(k)<=g+1)continue;best.set(k,g+1);push([g+1+h(t),g+1,t,first===null?j:first]);}}
+  return null;
+}
+function hint(){const j=nextMove(S.s);if(j==null)return;S.hint++;S.hl=j;S.msg=`ヒント：光っているタイルを動かそう（ヒント ${S.hint}回）。`;S.msgc='';draw();}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD} ${S.hints}回でクリアしました。${HINTWORD}なしなら ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
