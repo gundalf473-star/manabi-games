@@ -74,6 +74,17 @@ a.chip{text-decoration:none;color:var(--c,var(--ink));border-color:var(--c,var(-
 .card .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 .card .btns a{flex:1;min-width:120px;text-align:center;border-radius:6px;padding:7px 10px;font-weight:700;font-size:14px;text-decoration:none;border:2px solid var(--c);color:var(--c)}
 .card .btns a.p{background:var(--c);color:var(--surface)}
+.mine{display:flex;flex-direction:column;gap:8px}
+.mine .row{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.mi{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--c);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.mi .k{font-size:12px;font-weight:700;color:var(--c)}
+.mi a.t{font-family:var(--display);font-size:17px;font-weight:700;color:inherit;text-decoration:none;line-height:1.4}
+.mi .s{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.mi .due{color:#fff;background:var(--s3);border-radius:4px;padding:0 6px;font-weight:700;font-size:12px}
+.mi .go{margin-left:auto;font-weight:700;color:var(--c);text-decoration:none;font-size:14px}
+.starb{border:1px solid var(--rule);background:var(--surface);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;padding:2px 8px;margin-left:auto;color:var(--muted)}
+.starb[aria-pressed="true"]{color:#fff;background:var(--s3);border-color:var(--s3)}
+.mine .hint{font-size:13px;color:var(--muted);margin:0}
 .empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
 .daily{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
@@ -92,6 +103,7 @@ footer a{color:inherit}
     <p class="lead">中高一貫校に進んだ人のための、入学準備と中学の学習。中学受験の算数で身につけた力を、数学・英語・国語へつなげます。</p>
     <nav class="topnav"><a href="../buy.html?s=chuko">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../parent.html#chuko">保護者ページ</a><a href="../index.html">中学受験のゲーム</a></nav>
   </header>
+  <section class="mine" id="mine" aria-label="わたしの単元"></section>
   <section class="points" aria-label="このコースの特長">
     <div class="point"><h2>算数から数学へ</h2><p>つるかめ算・旅人算・比など、受験で使った解き方を方程式や関数で解き直します。知っている問題だから、新しい考え方がすっと入ります。</p></div>
     <div class="point"><h2>学校の進み方に合わせて</h2><p>単元は学年ではなく内容で分けています。先取りの速い学校でも、自分の学校の進み具合に合わせて選べます。</p></div>
@@ -101,7 +113,6 @@ footer a{color:inherit}
     <a class="cont" href="tango.html"><span class="k">毎日の英単語</span><span class="t" id="tg-t">1日10語・中1〜中3の約1000語</span><span class="s" id="tg-s">まちがえた単語は、日をあけてもう一度。無料</span></a>
     <a class="cont" href="test.html"><span class="k">定期テスト対策</span><span class="t" id="ts-t">テストの日と範囲から、毎日の計画を</span><span class="s" id="ts-s">にがての問題から先に</span></a>
   </section>
-  <div id="contbox"></div>
   <section id="subjbox" hidden>
     <div class="fbar">
       <div><div class="label">教科</div><div class="subjects" id="subjects"></div></div>
@@ -136,8 +147,30 @@ footer a{color:inherit}
   let subj=h0[0]||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
   let grade=h0[1]||(()=>{try{return localStorage.getItem('mn-chuko-grade')||'すべて';}catch(e){return 'すべて';}})(); if(!GR.some(x=>x[0]===grade))grade='すべて';
   const save=()=>{history.replaceState(null,'',subj==='すべて'&&grade==='すべて'?location.pathname:'#'+encodeURIComponent(subj)+(grade==='すべて'?'':'/'+encodeURIComponent(grade)));try{localStorage.setItem('mn-chuko-grade',grade);}catch(e){}};
+  /* わたしの単元：★を付けた単元（mn-fav）と、最近遊んだ単元（mn-history）。今日の解き直しの数（mn-review）も出す */
+  const LS=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}};
+  const base=f=>String(f).replace(/-full(\.html)$/,'$1');
+  let fav=LS('mn-fav',[]); if(!Array.isArray(fav))fav=[];
+  const favIdx=k=>fav.findIndex(f=>base(f)===k);
+  const H=LS('mn-history',[]), hist=Array.isArray(H)?H:[];
+  const playedPaid=k=>hist.some(e=>e&&e.f===k.replace(/\.html$/,'-full.html'));
+  const dayN=()=>{const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);};
+  const due=k=>{const m=(LS('mn-review',{})||{})[k.replace(/\.html$/,'')]||{},t=dayN();let n=0;for(const q in m)if(m[q]&&m[q].d<=t)n++;return n;};
+  function toggleFav(k){const i=favIdx(k);if(i>=0)fav.splice(i,1);else{if(fav.length>=8){alertBox('「わたしの単元」に入れられるのは8つまでです。どれかを外してください。');return;}const u=U[k];fav.unshift(u&&u.paid&&playedPaid(k)?u.paid.file:k);}
+    try{localStorage.setItem('mn-fav',JSON.stringify(fav));}catch(e){alertBox('この端末では保存できませんでした。');}renderMine();render();}
+  function alertBox(t){const m=document.getElementById('mine');const p=document.createElement('p');p.className='hint';p.style.color='var(--s3)';p.textContent=t;m.prepend(p);setTimeout(()=>p.remove(),3000);}
+  function renderMine(){
+    const box=document.getElementById('mine'), items=[], seen=new Set();
+    fav.forEach(f=>{const k=base(f),u=U[k];if(u&&!seen.has(k)){seen.add(k);items.push({u,f,star:true});}});
+    let rec=0;for(let i=hist.length-1;i>=0&&rec<3;i--){const e=hist[i];if(!e||!e.f)continue;const k=base(e.f),u=U[k];if(!u||seen.has(k))continue;seen.add(k);items.push({u,f:e.f,star:false,t:e.t,sc:e.n!=null?`${e.s} / ${e.n}問`:e.a?`${e.k} / ${e.a}問`:''});rec++;}
+    if(!items.length){box.innerHTML='<div class="label">わたしの単元</div><p class="hint">単元のカードやゲームの画面で「☆ わたしの単元」を押すと、ここにならびます。遊んだ単元も、ここに出ます。</p>';return;}
+    box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=u[f.includes('-full')?'paid':'free']||u.free||u.paid,n=due(u.k),d=t?new Date(t):null;
+      return `<div class="mi" style="--c:${color(u.subject)}"><span class="k">${star?'★ ':'最近 '}${esc(u.subject)}・${esc(u.folder)}</span><a class="t" href="../${g.url}">${esc(u.title)}</a>
+      <span class="s">${n?`<span class="due">今日の解き直し ${n}問</span>`:''}${d?`<span>${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span>`:''}${g.paid?'<span>有料版</span>':'<span>無料版</span>'}${star?`<button type="button" class="starb" aria-pressed="true" data-k="${esc(u.k)}" title="わたしの単元から外す">★ 外す</button>`:`<button type="button" class="starb" aria-pressed="false" data-k="${esc(u.k)}">☆ 入れる</button>`}<a class="go" href="../${g.url}">はじめる →</a></span></div>`;}).join('')+'</div>';
+    box.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
+  }
   const card=u=>`<div class="card">
-        <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}</span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
+        <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${favIdx(u.k)>=0}" title="一覧のいちばん上の「わたしの単元」に入れる">${favIdx(u.k)>=0?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
         <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
   /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
   const PRI=['算数から数学へ','正負の数・文字式','一次方程式','比例と反比例','平面図形','連立方程式','一次関数','図形の性質と証明','確率とデータの活用','式の展開と平方根','二次方程式と関数','相似と三平方の定理','数学Ⅰ','数学A','数学Ⅱ','数学B','数学C',
@@ -161,9 +194,11 @@ footer a{color:inherit}
       const fs=[...new Set(us.map(u=>u.folder))].map(f=>{const x=us.filter(u=>u.folder===f).sort((a,b)=>a.g0-b.g0||a.g1-b.g1);return {f,x,g:Math.min(...x.map(u=>u.g0))};}).sort((a,b)=>fo(a)-fo(b));
       return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${us.length}単元</span></div>${fs.map(({f,x})=>{const id='f-'+encodeURIComponent(s+'-'+f).replace(/%/g,'');jumps.push(`<a class="chip" style="--c:${color(s)}" href="#${id}" data-id="${id}">${esc(f)}</a>`);
         return `<details class="fold" id="${id}" ${open?'open':''}><summary>${esc(f)}<span class="n">${x.length}単元</span></summary><div class="grid">${x.map(card).join('')}</div></details>`;}).join('')}</section>`;}).join('<div style="height:16px"></div>');
+    L.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
     const J=document.getElementById('jump'); document.getElementById('jumpbox').hidden=!open; J.innerHTML=open?jumps.join(''):'';
     J.querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();const d=document.getElementById(a.dataset.id);d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});});
   }
+  renderMine();
   render();
   window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/');subj=subjects.includes(h[0])?h[0]:'すべて';if(h[1]&&GR.some(x=>x[0]===h[1]))grade=h[1];render();});
   /* 毎日の英単語・定期テストのようす */
@@ -172,12 +207,6 @@ footer a{color:inherit}
       document.getElementById('tg-t').textContent=tg.days[t]?'今日の10語はおわり！':'今日の10語にちょうせん';document.getElementById('tg-s').textContent=n?n+'日連続':'まちがえた単語は、日をあけてもう一度';}
     const ts=JSON.parse(localStorage.getItem('mn-test')||'null');
     if(ts&&ts.date){const d=Math.round((Date.parse(ts.date)-Date.parse(t))/864e5);if(d>=0){document.getElementById('ts-t').textContent=ts.name+'まで あと'+d+'日';document.getElementById('ts-s').textContent='今日やることを見る';}}
-  }catch(e){}
-  /* 前回のつづき（この端末の記録から） */
-  try{ const H=JSON.parse(localStorage.getItem('mn-history')||'[]'), byFile={}; games.forEach(g=>byFile[g.file]=g);
-    const last=Array.isArray(H)?[...H].reverse().find(e=>e&&byFile[e.f]):null;
-    if(last){const g=byFile[last.f],d=new Date(last.t),sc=last.n!=null?`${last.s} / ${last.n}問`:last.a?`${last.k} / ${last.a}問`:'';
-      document.getElementById('contbox').innerHTML=`<a class="cont" href="../${g.url}"><span class="k">前回のつづき</span><span class="t">${esc(g.title)}</span><span class="s">${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span></a>`;}
   }catch(e){}
 })();
 </script>

@@ -79,6 +79,14 @@ function parseForm(u) {
   } catch (e) { console.warn("feedbackForm のURLが読めません"); return null; }
 }
 const FB = parseForm((site.feedbackForm || "").trim());
+// 中高一貫コース：「わたしの単元」に入れる★ボタン（この端末の localStorage の mn-fav にだけ保存）。一覧の上に出る
+const STAR = `<button type="button" id="mn-star" style="position:fixed;left:calc(122px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer">☆ わたしの単元</button><script>(function(){var K='mn-fav',MAX=8,b=document.getElementById('mn-star');
+function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}function base(f){return String(f).replace(/-full(\\.html)$/,'$1');}function idx(a){var k=base(file());for(var i=0;i<a.length;i++)if(base(a[i])===k)return i;return -1;}
+function ld(){try{var a=JSON.parse(localStorage.getItem(K)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+function sv(a){try{localStorage.setItem(K,JSON.stringify(a));return true;}catch(e){return false;}}
+function show(){var on=idx(ld())>=0;b.textContent=on?'★ わたしの単元':'☆ わたしの単元';b.style.background=on?'#b4442d':'#1d2b45';b.setAttribute('aria-pressed',on?'true':'false');b.title=on?'わたしの単元から外す':'一覧のいちばん上の「わたしの単元」に入れる';}
+b.onclick=function(){var a=ld(),i=idx(a);if(i>=0)a.splice(i,1);else{if(a.length>=MAX){b.textContent='8つまでです';setTimeout(show,1600);return;}a.unshift(file());}if(!sv(a)){b.textContent='保存できません';setTimeout(show,1600);return;}show();};
+show();})();</script>`;
 const FEEDBACK = fs.readFileSync(path.join(ROOT, "scripts", "feedback.html"), "utf8")
   .replace("__FEEDBACK__", () => JSON.stringify(FB).replace(/</g, "\\u003c"));
 
@@ -142,9 +150,9 @@ for (const file of walk(GAMES)) {
   if (!/<!doctype/i.test(html)) {
     const hm = html.match(/^(?:\s*(?:<title>[^<]*<\/title>|<meta[^>]*>|<link[^>]*>))+/i);
     const headBits = hm ? hm[0] : ""; html = html.slice(headBits.length);
-    html = `<!doctype html>\n<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">${headBits}\n${GAME_GA}\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head><body>\n${html}\n${back}\n${FEEDBACK}\n</body></html>`;
+    html = `<!doctype html>\n<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">${headBits}\n${GAME_GA}\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head><body>\n${html}\n${back}${course === "chuko" ? STAR : ""}\n${FEEDBACK}\n</body></html>`;
   } else {
-    html = html.replace(/<\/body>/i, `${back}${FEEDBACK}</body>`).replace(/<\/head>/i, `${GAME_GA}</head>`);
+    html = html.replace(/<\/body>/i, `${back}${course === "chuko" ? STAR : ""}${FEEDBACK}</body>`).replace(/<\/head>/i, `${GAME_GA}</head>`);
   }
   // 中高一貫コースのしるし（利用コードの確かめで使う）。フォルダで決まったときも、ページに書きこむ
   if (course === "chuko" && !pickMeta(html, "game:course")) html = html.replace(/<\/head>/i, (m) => `<meta name="game:course" content="chuko">` + m);
