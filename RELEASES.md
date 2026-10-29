@@ -21,6 +21,7 @@
 | 思考力の新単元8本（ロボット迷路・折り紙切り紙・一筆書き・虫食い算覆面算・立体の見え方・ナンプレ・天びん・スライドパズル）と、算数「場合の数」（各100問・無料版5問） | 必要（GAMES に nanpure・robot・origami・hitofude・mushikui・mikata・tenbin・slide・baai を追加） | 9本を入れる | ― |
 | 思考力の新単元「数字つなぎパズル」「ブロックしきつめ」「積み木の数」「ビルディングパズル」（各100問・無料版5問） | 必要（GAMES に sujitsunagi・shikitsume・tsumiki・building を追加） | sujitsunagi・shikitsume・tsumiki・building を入れる | ― |
 | 中高一貫コースの土台：入口ページ（chuko/index.html）・トップの入口（中高一貫コースのゲームが1本でもあると表示）・購入ページに「中高一貫コース」プランと継続割引（中学受験のプランを買ったことがある人は20%引き・1コード1回）・保護者ページのコース切りかえ。「全教科」には中高一貫コースは入らない | 必要（SUBJECTS・PRICES に chuko、CONTINUE_OFF、/api/continue。値段は仮） | ― | 利用コードの教科に「中高一貫コース」を追加 |
+| 中高一貫コースの入学準備パック4単元「算数から数学へ」「正負の数・文字式」「中1英単語・英文法」「古文入門」（各100問・無料版5問） | 必要（GAMES に c-sansu-sugaku・c-seifu・c-eigo1・c-kobun を "chuko" で追加） | c-sansu-sugaku・c-seifu・c-eigo1・c-kobun を入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
