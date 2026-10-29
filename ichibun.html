@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>毎日の一文要約 | {{SITE_NAME}}</title>
+<meta name="description" content="毎日、短い文章を読んで一文にまとめる国語の練習。字数カウンタ、大事な言葉のチェック、模範の要約とチェック表で、自分で確かめられます。書いた要約は保護者ページでも見られます。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。続けた日数 → 今日の文章 → 書く欄（字数）→ 確かめ（大事な言葉・模範・チェック表・自己評価）→ 前に書いた要約 */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --ac:#c4553a; --acsoft:#f6e4de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --pick:#eceee8; --gold:#b88a1e; --paper:#fbfaf6;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --ac:#e47a5f; --acsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; --paper:#1a1c1b; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7vw,38px);line-height:1.2;margin:0}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ac)}
+button,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;font-weight:700;color:var(--ac);letter-spacing:.1em}
+.streak{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.streak .n{font-family:var(--display);font-size:40px;line-height:1;color:var(--ac)}
+.streak .n small{font-size:16px;color:var(--fg);margin-left:2px}
+.streak .s{color:var(--muted);font-size:14px}
+.text{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.text h2{font-family:var(--display);font-size:20px;margin:0 0 6px}
+.text p{margin:0;line-height:1.95}
+textarea{width:100%;box-sizing:border-box;min-height:88px;border:2px solid var(--rule);border-radius:8px;padding:10px 12px;background:var(--surface);resize:vertical;line-height:1.7}
+textarea:focus{border-color:var(--fg)}
+.cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.cnt.over{color:var(--ng);font-weight:700}
+.btn{display:inline-block;border:0;border-radius:99px;padding:10px 22px;font-weight:700;cursor:pointer;background:var(--fg);color:var(--surface);text-decoration:none}
+.btn.sub{background:var(--pick);color:var(--fg)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kw{display:flex;gap:6px;flex-wrap:wrap}
+.kw span{border-radius:99px;padding:2px 12px;font-size:14px;font-weight:700;background:var(--pick);color:var(--muted)}
+.kw span.hit{background:var(--oksoft);color:var(--ok)}
+.mine{background:var(--pick);border-radius:8px;padding:8px 12px}
+.mine mark{background:var(--oksoft);color:var(--ok);font-weight:700;border-radius:3px;padding:0 1px}
+.model{border-left:4px solid var(--ok);padding:4px 0 4px 12px;font-weight:700}
+.check{display:grid;gap:6px}
+.check label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--ok)}
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rate button{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.rate button b{font-size:24px} .rate button small{font-size:12px;color:var(--muted)}
+.rate button[aria-pressed="true"]{border-color:var(--ac);background:var(--acsoft)}
+.hist{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.hist li{border-left:4px solid var(--rule);padding:2px 0 2px 10px}
+.hist li small{color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>毎日の一文要約</h1>
+    <p class="lead" id="date"></p>
+  </header>
+  <section class="box"><div class="streak" id="streak"></div></section>
+  <section class="box" id="app"></section>
+  <section class="box" id="histbox"></section>
+  <section class="box"><p class="note">書きかた：①筆者がいちばん言いたいこと（「つまり」「このように」「だから」のあとや、最後の文）を見つける　②「たとえば」のあとの具体例は入れない　③字数の中で、一つの文にまとめる。<br>大事な言葉が入っているかは目安です。言いかえて書いていても、意味が合っていれば正解です。記録はこの端末の中だけにあります。</p></section>
+  <footer><a href="index.html">← ゲーム一覧へ</a>　・　<a href="games/kokugo/yoyaku.html">要約トレーニング</a>　・　<a href="parent.html">保護者ページ</a></footer>
+</div>
+<script>
+(function(){
+window.mnTitle='毎日の一文要約';
+const D=[{"t":"カラスのかしこさ","b":"カラスは、とてもかしこい鳥です。たとえば、かたいクルミを道路に置き、車にひかせて、からをわって食べるカラスがいます。また、人の顔を覚えて、いやなことをした人には近づかないそうです。カラスは、まわりのようすをよく見て、工夫して生きているのです。","k":[["カラス"],["かしこい","工夫"],["まわり","ようす"]],"m":"カラスは、まわりのようすをよく見て工夫して生きる、かしこい鳥だ。","lim":40},{"t":"歩くことのよさ","b":"歩くことは、手軽にできる運動です。特別な道具もいらず、いつでもどこでもできます。歩くと足やこしの力がつくだけでなく、気分もすっきりします。毎日少しずつ歩くことは、体にも心にもよいのです。","k":[["歩く"],["体"],["心","気分"]],"m":"歩くことは手軽にでき、体にも心にもよい運動だ。","lim":40},{"t":"お米ができるまで","b":"わたしたちが毎日食べているお米は、春に田植えをしてから、秋にかり取るまで、半年ほどかかります。その間、農家の人は、水の量を調整したり、草を取ったりして、いねを育てます。一つぶのお米には、多くの手間と時間がかかっているのです。","k":[["お米","米"],["手間"],["時間"]],"m":"お米は、農家の人が長い時間と多くの手間をかけて育てている。","lim":40},{"t":"図書館の役割","b":"図書館は、本を借りるだけの場所ではありません。調べものの方法を教えてもらったり、新聞や昔の資料を読んだりすることもできます。最近では、地域の人が集まる行事を開く図書館もふえています。図書館は、学びと人をつなぐ場所なのです。","k":[["図書館"],["学び","調べ"],["人","地域"],["つなぐ"]],"m":"図書館は本を借りるだけでなく、学びと人をつなぐ場所だ。","lim":40},{"t":"ことわざの知恵","b":"「急がば回れ」ということわざがあります。急いでいるときほど、あぶない近道より、安全な遠回りのほうが結局早い、という意味です。ことわざには、昔の人が経験から学んだ知恵がつまっています。","k":[["ことわざ"],["昔の人"],["経験"],["知恵"]],"m":"ことわざには、昔の人が経験から学んだ知恵がつまっている。","lim":40},{"t":"ペンギンの体","b":"ペンギンは鳥ですが、空を飛ぶことはできません。そのかわり、つばさはひれのような形をしていて、水の中をすばやく泳ぐことができます。ペンギンの体は、空ではなく海で暮らすのに合ったつくりになっているのです。","k":[["ペンギン"],["海","水"],["合った","向いた","適した"]],"m":"ペンギンは飛べないが、体は海で暮らすのに合ったつくりになっている。","lim":45},{"t":"練習の続け方","b":"新しいことを始めても、なかなか続かないことがあります。続けるこつは、一回の量を少なくすることです。一日十分でも、毎日続ければ一年で六十時間をこえます。大きな目標も、小さな練習の積み重ねで近づけるのです。","k":[["少し","少なく","小さな"],["続け","積み重ね"],["目標"]],"m":"練習は少しずつでも毎日続ければ、大きな目標に近づける。","lim":40},{"t":"あいまいな言葉","b":"「ちょっと待って」と言われても、それが一分なのか十分なのかはわかりません。日本語には、このようなあいまいな言葉がたくさんあります。大事な約束をするときは、「五分待って」のように、はっきり伝えることが大切です。","k":[["あいまい"],["大事","約束"],["はっきり"]],"m":"大事な約束では、あいまいな言葉をさけ、はっきり伝えることが大切だ。","lim":40},{"t":"木のかんきょう","b":"森の木は、たがいに助け合って生きていると言われます。根のまわりにいる小さなきのこの仲間を通して、養分をやりとりしているのです。弱った木に、まわりの木が養分を分けることもあるそうです。森は、一本一本の木がつながった大きな仲間なのです。","k":[["森","木"],["つながっ","助け合"],["養分"]],"m":"森の木は、地下で養分をやりとりして、助け合って生きている。","lim":40},{"t":"手紙のよさ","b":"今はメールで、すぐに気持ちを伝えられます。それでも、手書きの手紙をもらうとうれしいものです。字の形や、書くのにかけた時間から、相手の思いが伝わってくるからです。","k":[["手紙","手書き"],["思い","気持ち"],["伝わる","伝える"]],"m":"手書きの手紙は、字や時間から相手の思いが伝わるのでうれしい。","lim":40},{"t":"ハチの巣の形","b":"ミツバチの巣は、六角形の部屋がすき間なくならんでいます。六角形は、少ない材料で、じょうぶで広い部屋を作ることができる形です。ミツバチは、むだのない形で巣を作っているのです。","k":[["ミツバチ","ハチ"],["六角形"],["むだ","少ない材料"],["じょうぶ"]],"m":"ミツバチは、少ない材料でじょうぶに作れる六角形で巣を作る。","lim":40},{"t":"ゆずり合いの心","b":"電車で席をゆずったり、せまい道で先に通してあげたりすることがあります。ほんの小さなことですが、ゆずられた人はうれしい気持ちになります。ゆずり合いの心があれば、みんなが気持ちよく過ごせるのです。","k":[["ゆずり合"],["みんな"],["気持ちよく","うれしい"]],"m":"ゆずり合いの心があれば、みんなが気持ちよく過ごせる。","lim":30},{"t":"昔の遊び","b":"こま回しやけん玉などの昔の遊びは、道具はかんたんですが、上手になるには練習が必要です。うまくいかないとき、どうすればいいかを自分で考え、何度もためします。昔の遊びは、工夫する力やねばり強さを育ててくれるのです。","k":[["昔の遊び"],["工夫"],["ねばり強"]],"m":"昔の遊びは、工夫する力やねばり強さを育ててくれる。","lim":40},{"t":"天気とことわざ","b":"「ツバメが低く飛ぶと雨」と言われます。雨が近づくと空気がしめり、ツバメのえさになる虫が低いところを飛ぶからです。天気のことわざには、生き物のようすをよく観察した知恵がこめられています。","k":[["天気"],["ことわざ"],["観察"],["知恵"]],"m":"天気のことわざには、生き物をよく観察した知恵がこめられている。","lim":40},{"t":"聞く力","b":"話し合いでは、話すことばかりに気をとられがちです。しかし、相手の話を最後まで聞かなければ、本当の考えはわかりません。よい話し合いをするには、まず聞く力が大切なのです。","k":[["聞く"],["話し合い"],["相手"]],"m":"よい話し合いには、相手の話を最後まで聞く力が大切だ。","lim":35},{"t":"ダンゴムシの役目","b":"ダンゴムシは、落ち葉やかれた草を食べます。そのふんは、土の中の小さな生き物によって分解され、植物の養分になります。小さなダンゴムシは、ゆたかな土を作る大切な役目をしているのです。","k":[["ダンゴムシ"],["土"],["養分","落ち葉"],["役目","役わり"]],"m":"ダンゴムシは落ち葉を食べて、ゆたかな土を作る役目をしている。","lim":40},{"t":"まちがいノート","b":"テストでまちがえた問題を、ノートに書き写して、もう一度解く人がいます。どこでまちがえたのかを見直すと、自分の苦手がわかります。まちがいは、自分を強くするための大切な材料なのです。","k":[["まちがい"],["苦手"],["見直"]],"m":"まちがいを見直すと苦手がわかり、自分を強くする材料になる。","lim":40},{"t":"水の旅","b":"海の水は、太陽の熱で水じょう気になり、空で雲になります。雲から雨がふり、川となって、また海へもどります。水は、すがたを変えながら、地球をぐるぐるとめぐっているのです。","k":[["水"],["すがた","形"],["めぐ","じゅんかん","もどる"]],"m":"水は、すがたを変えながら、地球をめぐっている。","lim":30},{"t":"給食の工夫","b":"学校の給食では、栄養のバランスが考えられています。また、地元でとれた野菜を使ったり、行事に合わせたこんだてにしたりする工夫もあります。給食は、体を育てるだけでなく、食について学ぶ機会にもなっているのです。","k":[["給食"],["栄養","体"],["食について学ぶ","学ぶ"]],"m":"給食は体を育てるだけでなく、食について学ぶ機会にもなっている。","lim":40},{"t":"音のつたわり方","b":"音は、空気がふるえることで伝わります。たいこをたたくと、たいこの皮がふるえ、そのふるえがまわりの空気に伝わって、耳に届くのです。空気のない宇宙では、音は伝わりません。","k":[["音"],["空気"],["ふるえ"]],"m":"音は、空気のふるえによって伝わる。","lim":25},{"t":"ふるさとの祭り","b":"わたしの町では、夏に大きな祭りがあります。子どもからお年よりまで、町じゅうの人が準備にかかわります。祭りは、楽しいだけでなく、町の人どうしのつながりを深める行事なのです。","k":[["祭り"],["町の人","人どうし"],["つながり"]],"m":"祭りは楽しいだけでなく、町の人どうしのつながりを深める。","lim":40},{"t":"ほめ言葉の使い方","b":"「すごいね」とほめるより、「最後まであきらめずに走ったね」とほめるほうが、相手の心に残ります。何がよかったのかが具体的にわかるからです。ほめるときは、よかった点をくわしく伝えるとよいのです。","k":[["ほめ"],["具体的","くわしく"],["よかった"]],"m":"ほめるときは、何がよかったかを具体的に伝えるとよい。","lim":35},{"t":"海のプラスチック","b":"海には、大量のプラスチックごみがただよっています。細かくくだけたプラスチックを、魚や鳥が食べてしまうこともあります。ごみをへらし、正しく捨てることが、海の生き物を守ることにつながります。","k":[["プラスチック","ごみ"],["海の生き物"],["守る"]],"m":"プラスチックごみをへらして正しく捨てることが、海の生き物を守る。","lim":45},{"t":"地図を読む力","b":"地図アプリを使えば、道に迷うことは少なくなりました。それでも、紙の地図を読む力は役に立ちます。全体の位置関係をつかむことで、アプリがなくても自分で道を考えられるからです。","k":[["地図"],["読む力"],["自分で"]],"m":"紙の地図を読む力があれば、自分で道を考えられるので役に立つ。","lim":40},{"t":"植物と光","b":"植物は、光の方に向かってのびる性質があります。まどぎわに置いた植木ばちの草花が、外のほうにかたむくのはそのためです。植物は、光を求めて体の向きを変えているのです。","k":[["植物"],["光"],["向き","のびる"]],"m":"植物は、光を求めて、光の方へ向かってのびる。","lim":30},{"t":"日記を書くこと","b":"日記を書くと、その日のことをふり返ることになります。楽しかったことだけでなく、うまくいかなかったことを書くと、次はどうしようかと考えるきっかけになります。日記は、自分を見つめる時間を作ってくれるのです。","k":[["日記"],["ふり返","見つめ"],["自分"]],"m":"日記を書くことは、自分をふり返り見つめる時間を作ってくれる。","lim":40},{"t":"リサイクルの前に","b":"ごみを資源にもどすリサイクルは大切です。しかし、それより先に大切なのは、ごみそのものをへらすことです。リサイクルにも、運んだりとかしたりするためのエネルギーが必要だからです。","k":[["リサイクル"],["へらす","減らす"],["先に","まず"]],"m":"リサイクルより先に、ごみそのものをへらすことが大切だ。","lim":30},{"t":"チームワーク","b":"サッカーでは、一人がどんなにうまくても勝てるとはかぎりません。パスをつないだり、仲間の動きを見て守ったりすることが必要です。チームで力を合わせることで、一人ではできないことができるのです。","k":[["チーム","仲間"],["力を合わせ"],["一人ではできない"]],"m":"チームで力を合わせれば、一人ではできないことができる。","lim":35},{"t":"時間の使い方","b":"同じ一時間でも、何をするか決めてから始めると、多くのことができます。反対に、なんとなく過ごすと、あっという間に時間がたってしまいます。時間を上手に使うには、先にやることを決めることが大切です。","k":[["時間"],["決め"],["先に","まず"]],"m":"時間を上手に使うには、先にやることを決めることが大切だ。","lim":35},{"t":"におい","b":"においをかぐと、昔の出来事を急に思い出すことがあります。においを感じる部分は、記憶や気持ちに関わる脳の部分と近いところでつながっているからだと考えられています。においは、思い出をよび起こす力を持っているのです。","k":[["におい"],["思い出","記憶"]],"m":"においには、思い出をよび起こす力がある。","lim":25}];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const KEY='mn-ichibun';
+const jst=t=>new Date(t+9*36e5).toISOString().slice(0,10);
+const today=jst(Date.now());
+const dayNo=k=>Math.round(Date.parse(k)/864e5);
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'?v:{};}catch(e){return {};}}
+let S=load(); S.days=S.days||{}; S.log=S.log||[];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const [y,m,d]=today.split('-').map(Number), WD='日月火水木金土';
+document.getElementById('date').textContent=`${y}年${m}月${d}日（${WD[new Date(Date.UTC(y,m-1,d)).getUTCDay()]}）の文章`;
+function streak(){let n=0,k=dayNo(today);if(S.days[today]==null)k--;while(S.days[new Date(k*864e5).toISOString().slice(0,10)]!=null){n++;k--;}return n;}
+const todayIdx=((dayNo(today)*7)%D.length+D.length)%D.length;
+let idx=todayIdx, daily=true, done=false;
+const RATE=[['◎','よくできた'],['○','まあまあ'],['△','もう少し']];
+function drawStreak(){const n=streak();document.getElementById('streak').innerHTML=`<span class="n">${n}<small>日連続</small></span><span class="s">${S.days[today]!=null?'今日の一文要約はおわりました。':'今日の文章を一文にまとめよう。'}</span>`;}
+function draw(){
+  const p=D[idx], old=daily&&S.days[today]!=null?S.log.find(e=>e.d===today&&e.daily):null;
+  const app=document.getElementById('app');
+  app.innerHTML=`<div class="label">${daily?'今日の文章':'練習の文章'}</div>
+    <div class="text"><h2>${esc(p.t)}</h2><p>${esc(p.b)}</p></div>
+    <div class="label">${p.lim}字以内の一文にまとめよう</div>
+    <textarea id="ta" placeholder="ここに書こう" maxlength="120">${old?esc(old.x):''}</textarea>
+    <div class="cnt" id="cnt"></div>
+    <div class="row"><button class="btn" id="chk">書けたので確かめる</button><span class="note">大事な言葉は ${p.k.length}つあります</span></div>
+    <div id="res"></div>`;
+  const ta=document.getElementById('ta');
+  const upd=()=>{const n=[...ta.value.replace(/\s/g,'')].length;const c=document.getElementById('cnt');c.textContent=`${n}字 / ${p.lim}字以内`;c.classList.toggle('over',n>p.lim);document.getElementById('chk').disabled=n<5;};
+  ta.oninput=upd;upd();
+  document.getElementById('chk').onclick=()=>check(p,ta.value.trim());
+  if(old)check(p,old.x,old.r);
+}
+function check(p,x,rated){
+  done=true;
+  const hits=p.k.map(g=>g.find(w=>x.includes(w))||null);
+  let mk=esc(x);
+  hits.filter(Boolean).sort((a,b)=>b.length-a.length).forEach(w=>{mk=mk.split(esc(w)).join(`\u0001${esc(w)}\u0002`);});
+  mk=mk.replace(/\u0001/g,'<mark>').replace(/\u0002/g,'</mark>');
+  const n=[...x.replace(/\s/g,'')].length;
+  document.getElementById('res').innerHTML=`<div class="label">大事な言葉（${hits.filter(Boolean).length} / ${p.k.length}）</div>
+    <div class="kw">${p.k.map((g,i)=>`<span class="${hits[i]?'hit':''}">${hits[i]?'✓ ':''}${esc(g[0])}${g.length>1?`<small style="font-weight:400">（${g.slice(1).map(esc).join('・')}でもよい）</small>`:''}</span>`).join('')}</div>
+    <div class="mine">${mk}</div>
+    <div class="label">模範の要約</div><div class="model">${esc(p.m)}</div>
+    <div class="label">チェック表（自分で確かめよう）</div>
+    <div class="check">${['筆者がいちばん言いたいことが入っている','「たとえば」のあとの具体例を入れていない','文章に書かれていないことを入れていない',`${p.lim}字以内の、一つの文になっている`].map((t,i)=>`<label><input type="checkbox" ${i===3&&n<=p.lim&&!/。.+。/.test(x)?'checked':''}> ${t}</label>`).join('')}</div>
+    <div class="label">自分の評価</div>
+    <div class="rate">${RATE.map(([a,b],i)=>`<button data-r="${i}" aria-pressed="${rated===i}"><b>${a}</b><small>${b}</small></button>`).join('')}</div>
+    <div class="row" id="after">${rated!=null?nextBtns():''}</div>`;
+  document.getElementById('ta').readOnly=true;document.getElementById('chk').remove();
+  document.querySelectorAll('.rate button').forEach(b=>b.onclick=()=>{
+    const r=+b.dataset.r;document.querySelectorAll('.rate button').forEach(z=>z.setAttribute('aria-pressed',String(z===b)));
+    const e=S.log.find(e=>e.d===today&&e.i===idx&&e.daily===daily);
+    if(e)e.r=r;else{S.log.push({d:today,i:idx,t:p.t,x,r,daily});if(S.log.length>200)S.log=S.log.slice(-200);}
+    if(daily&&S.days[today]==null)S.days[today]=r;
+    save();track('ichibun_done',{daily,r,hits:hits.filter(Boolean).length});drawStreak();hist();
+    document.getElementById('after').innerHTML=nextBtns();bindNext();
+  });
+  bindNext();
+}
+const nextBtns=()=>`<button class="btn sub" id="more">べつの文章で練習</button><a class="btn sub" href="games/kokugo/yoyaku.html">要約トレーニングへ</a>`;
+function bindNext(){const b=document.getElementById('more');if(b)b.onclick=()=>{let j;do j=Math.floor(Math.random()*D.length);while(j===idx&&D.length>1);idx=j;daily=false;done=false;draw();window.scrollTo({top:0,behavior:'smooth'});};}
+function hist(){
+  const L=S.log.slice(-10).reverse(), box=document.getElementById('histbox');
+  box.innerHTML=`<div class="label">前に書いた要約</div>`+(L.length?`<ul class="hist">${L.map(e=>`<li><small>${e.d.slice(5).replace('-','/')}・${esc(e.t)}${e.daily?'':'（練習）'}・自分の評価 ${RATE[e.r]?RATE[e.r][0]:''}</small><br>${esc(e.x)}</li>`).join('')}</ul>`:'<p class="note">まだありません。書いた要約はここにたまります。</p>');
+}
+drawStreak();draw();hist();
+})();
+</script>
+</body>
+</html>

@@ -181,7 +181,7 @@ function home(){
   document.getElementById('more').onclick=()=>start(makeSet(grade,null),false);
 }
 function start(set,daily){
-  S={set,daily,i:0,res:[],t0:Date.now(),inp:''};track('drill_start',{grade,daily});draw();
+  S={set,daily,i:0,res:[],t0:Date.now(),inp:''};track('level_start',{level_name:GL[grade][0]+(daily?'・今日の5問':'・練習')});draw();
   clearInterval(timer);timer=setInterval(()=>{const e=document.getElementById('tm');if(e)e.textContent=sec()+'秒';},500);
 }
 const sec=()=>Math.round((Date.now()-S.t0)/1000);
@@ -207,7 +207,7 @@ function answer(){
   const p=S.set[S.i], v=parse(S.inp), out=document.getElementById('out'), fb=document.getElementById('fb');
   if(!v){fb.className='fb ng';fb.textContent='数の形で入れてね（例：12、0.5、3/4、1と1/2）';return;}
   const ok=eq(v,p.v), A=showA(p.v,p.k);
-  S.res.push({q:p.q,box:p.box,a:A,inp:S.inp,ok});S.lock=true;
+  S.res.push({q:p.q,box:p.box,a:A,inp:S.inp,ok});track('answer_question',{correct:ok,question:p.q});S.lock=true;
   out.className=ok?'ok':'ng';fb.className='fb '+(ok?'ok':'ng');
   fb.textContent=ok?(S.inp.replace(/\s/g,'')!==A&&S.inp!==showF(p.v)?`せいかい！（${A} とも書けます）`:'せいかい！'):`ざんねん。答えは ${A}`;
   setTimeout(()=>{S.lock=false;S.inp='';S.i++;if(S.i<5)draw();else done();},ok?700:1800);
@@ -218,7 +218,7 @@ function done(){
     if(!D.g[k]){D.g[k]=[sc,t];if(D.days[today]==null)D.days[today]=t;
       if(sc===5&&(D.best[grade]==null||t<D.best[grade])){D.best[grade]=t;note='ベスト記録です！';}save();}
     else note='（今日の記録は1回目のものです）';}
-  track('drill_done',{grade,daily:S.daily,score:sc,sec:t});
+  track('level_end',{level_name:GL[grade][0]+(S.daily?'・今日の5問':'・練習'),score:sc,total:5});
   app.innerHTML=`<section class="box"><div class="big">${sc} / 5</div><p style="text-align:center;margin:0;font-weight:700">タイム ${t}秒　${note}</p>
     <ul class="list">${S.res.map(r=>`<li class="${r.ok?'':'ng'}">${r.box?r.q:r.q+' ＝ '+r.a}${r.box?`　□＝${r.a}`:''}${r.ok?'':`<br><small>あなたの答え：${r.inp}</small>`}</li>`).join('')}</ul>
     <div class="row"><button class="btn" id="back">もどる</button><button class="btn sub" id="again">べつの5問で練習</button><a class="btn sub" href="games/sansu/gyakusan.html">計算と逆算クイズへ</a></div></section>`;

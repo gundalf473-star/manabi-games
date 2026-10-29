@@ -14,6 +14,7 @@
 | 販促チラシ：チラシ印刷（server/flyer.html）・二次元コードから利用コードが入る（plan.html）・管理画面で利用コードをまとめて作ってCSVで保存 | ― | ― | 必要（admin.html と flyer.html をパソコンに置く） |
 | 算数の新単元「計算と逆算」「数の性質」（確認後の版・各100問） | 必要（GAMES に gyakusan・seishitsu を追加） | gyakusan・seishitsu を入れる | ― |
 | 間をあけた解き直し（まちがえた問題を1・3・7・14日後にもう一度。有料版のすべての問題ゲーム）・毎日の計算ドリル（drill.html、無料） | ― | ― | ― |
+| 国語の新単元「接続語・指示語」（確認後の版・100問）「要約トレーニング」（確認後の版・30題80問）、毎日の一文要約（ichibun.html、無料）、保護者ページに「国語の要約」 | 必要（GAMES に setsuzoku・yoyaku を追加） | setsuzoku・yoyaku を入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 

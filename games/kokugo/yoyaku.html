@@ -1,0 +1,319 @@
+<title>要約トレーニング</title>
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="要約">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="説明文と物語を読んで、段落の役割、要約えらび、要約の組み立て、気持ちの変化のまとめにちょうせんする国語ゲーム。オリジナルの文章2題。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に文章（段落番号つき・たたんで読める）→ 下に問題（段落の役割／要約えらび／組み立て／心情）。赤茶を差し色に（国語シリーズ） */
+:root{
+  --bg:#f5f6f3; --surface:#ffffff; --fg:#23262b; --muted:#646a70; --rule:#dadcd6;
+  --ac:#c4553a; --acsoft:#f6e4de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --pick:#eceee8; --gold:#b88a1e; --paper:#fbfaf6;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --ac:#e47a5f; --acsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; --paper:#1a1c1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141615; --surface:#1d201f; --fg:#e8eae6; --muted:#9ea4a0; --rule:#323634;
+  --ac:#e47a5f; --acsoft:#3a2520; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --pick:#262a28; --gold:#d9ab45; --paper:#1a1c1b; color-scheme:dark}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--fg)}
+h1 small{display:block;font-size:15px;color:var(--ac);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--ac);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:99px;padding:10px 22px;font-weight:700;cursor:pointer;background:var(--fg);color:var(--surface)}
+.btn.sub{background:var(--pick);color:var(--fg)}
+.btn:disabled{opacity:.4;cursor:default}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:18px} .lvtabs button small{font-size:11px;color:var(--muted)}
+.lvtabs button.cur{border-color:var(--ac);background:var(--acsoft)}
+.plist{display:grid;gap:8px}
+.pitem{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:10px 14px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px}
+.pitem:hover{border-color:var(--fg)}
+.pitem .kd{flex:none;font-size:11px;font-weight:700;border-radius:4px;padding:0 6px;color:var(--surface);background:var(--ac)}
+.pitem .kd.st{background:var(--ok)}
+.pitem .tt{flex:1;font-weight:700}
+.pitem .mk{flex:none;display:flex;gap:3px}
+.pitem .mk i{width:10px;height:10px;border-radius:50%;background:var(--rule)}
+.pitem .mk i.ok{background:var(--ok)} .pitem .mk i.ng{background:var(--gold)}
+.big{display:flex;flex-direction:column;gap:2px;border:2px solid var(--ac);border-radius:8px;padding:12px 14px;background:var(--acsoft);cursor:pointer;text-align:left}
+.big:disabled{opacity:.45;cursor:default}
+.big .nm{font-weight:700} .big .ds{font-size:12px;color:var(--muted)}
+.habit{display:grid;gap:6px}
+.habit .hr{display:grid;grid-template-columns:7.5em 1fr 2.5em;gap:8px;align-items:center;font-size:13px}
+.habit .bar{height:10px;border-radius:5px;background:var(--pick);overflow:hidden}
+.habit .bar i{display:block;height:100%;background:var(--gold)}
+.habit .adv{font-size:13px;border-left:4px solid var(--gold);padding:2px 0 2px 10px}
+/* 文章 */
+.text{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.text h2{font-family:var(--display);font-size:20px;margin:0}
+.text p{margin:0;display:flex;gap:8px;line-height:1.9}
+.text p .n{flex:none;width:22px;height:22px;margin-top:4px;border-radius:50%;border:1.5px solid var(--muted);color:var(--muted);display:grid;place-items:center;font-size:12px;font-weight:700}
+.text.fold p{display:none} .text.fold p:first-of-type{display:flex}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font-size:12px;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--pick);color:var(--muted)}
+.steps span.cur{background:var(--ac);color:var(--surface)}
+.steps span.ok{background:var(--oksoft);color:var(--ok)} .steps span.ng{background:var(--ngsoft);color:var(--ng)}
+.qh{font-weight:700;font-size:17px;margin:0}
+/* 段落の役割 */
+.rl{display:flex;flex-direction:column;gap:4px;border-bottom:1px dashed var(--rule);padding-bottom:8px}
+.rl .pn{font-weight:700;font-size:14px}
+.rl .pn small{font-weight:400;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--rule);background:var(--surface);border-radius:99px;padding:3px 12px;cursor:pointer;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+.chip.right{background:var(--oksoft);color:var(--ok);border-color:var(--ok)}
+.chip.wrong{background:var(--ngsoft);color:var(--ng);border-color:var(--ng)}
+.chip:disabled{cursor:default}
+.legend{font-size:12px;color:var(--muted);display:grid;grid-template-columns:auto 1fr;gap:0 10px}
+.legend b{color:var(--fg)}
+/* 選択肢 */
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--fg);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.55}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.op .ty{display:block;font-size:12px;font-weight:700;margin-top:2px}
+/* 組み立て */
+.line{min-height:56px;border:2px dashed var(--rule);border-radius:8px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--paper)}
+.line.ok{border-style:solid;border-color:var(--ok);background:var(--oksoft)} .line.ng{border-style:solid;border-color:var(--ng);background:var(--ngsoft)}
+.line .ph{color:var(--muted);font-size:13px}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.tile{border:1.5px solid var(--fg);background:var(--surface);border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:700;line-height:1.4}
+.tile:disabled{opacity:.25;cursor:default}
+.line .tile{background:var(--acsoft);border-color:var(--ac)}
+.cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cnt.over{color:var(--ng);font-weight:700}
+/* 心情 */
+.hs{display:grid;gap:10px}
+.hs .slot{border:1px solid var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.hs .slot b{font-size:13px;color:var(--ac)}
+.hs .arrow{text-align:center;color:var(--muted);line-height:1}
+.hs .opts{display:grid;gap:6px}
+.hs .opts button{border:1.5px solid var(--rule);background:var(--surface);border-radius:6px;padding:6px 10px;text-align:left;cursor:pointer;line-height:1.5}
+.hs .opts button[aria-pressed="true"]{border-color:var(--fg);background:var(--pick);font-weight:700}
+.hs .opts button.right{border-color:var(--ok);background:var(--oksoft);color:var(--ok);font-weight:700}
+.hs .opts button.wrong{border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{border-left:4px solid var(--ok);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:4px}
+.res.bad{border-color:var(--ng)}
+.res b{font-size:17px}
+.ex{font-size:15px}
+.model{font-size:15px;background:var(--pick);border-radius:6px;padding:8px 10px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--ac);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--acsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--ac)}
+.paid .pd{font-size:13px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>国語</small>要約トレーニング</h1>
+    <p class="lead">説明文と物語を読んで、要約の力をつけよう。段落の役割 → 要約えらび → 要約の組み立て。物語は気持ちの変化をまとめます。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+/* 文章データ：kind=説明文|物語, paras=段落, roles=段落ごとの正しい役割（ふた通りあるときは両方）, sum=要約えらび（d=[文,まちがいの型]）, tiles=組み立て, heart=気持ちの変化 */
+const PAID=false;
+let QS=[{"id":"e01","lv":1,"kind":"説明文","title":"あいさつの力","paras":["朝、「おはよう」と言われると、なんとなく気持ちが明るくなります。あいさつには、どんな力があるのでしょうか。","たとえば、転校してきたばかりの子に、クラスの子が「おはよう」と声をかけたとします。それだけで、その子は「ここにいてもいいんだ」と安心できるでしょう。","また、近所の人とあいさつをしていると、何か困ったことがあったときに助け合いやすくなります。ふだんから顔を知っているからです。","このように、あいさつは、人と人との心をつなぐ力を持っています。短い言葉ですが、毎日大切にしたいものです。"],"roles":[["話題"],["具体例"],["具体例"],["まとめ・主張"]],"sum":{"a":"あいさつは人と人との心をつなぐ力を持つので、毎日大切にしたい。","d":[["転校生に「おはよう」と言うと、その子は安心できる。","具体例"],["あいさつさえすれば、どんな困りごともすぐに解決する。","言いすぎ"],["あいさつは短い言葉なので、あまり意味はない。","逆"]]},"e":"第1段落で「あいさつにはどんな力があるか」と問いかけ、第2・3段落で例をあげ、第4段落の「このように」でまとめています。要約はまとめの段落を中心にします。","tiles":{"ans":["あいさつは","人と人との","心をつなぐ","力を持っている。"],"decoy":["転校生を","安心させる"],"lim":30}},{"id":"s01","lv":1,"kind":"物語","title":"なわとび","paras":["二重とびが、どうしてもできない。何回やっても、なわが足にひっかかる。ゆうたは、なわを地面に投げ出した。「もう、やめた。ぼくには無理だ。」","そのとき、となりで見ていたけんじが言った。「さっきより、ジャンプが高くなってたよ。あと少しじゃない？」","ゆうたは、はっとした。自分では気づかなかったけれど、たしかに足がかるくなってきている気がする。","ゆうたは、もう一度なわを拾い上げた。「よし、あと十回だけやってみる。」"],"sum":{"a":"二重とびができずにあきらめかけたゆうたが、けんじの言葉で、もう一度がんばろうと思う話。","d":[["けんじが、ゆうたに二重とびのこつを教えてあげる話。","なし"],["ゆうたが、二重とびを百回とべるようになる話。","言いすぎ"],["やる気だったゆうたが、けんじの言葉でやる気をなくす話。","心情逆"]]},"e":"「はじめの気持ち→きっかけ→あとの気持ち」でまとめます。こつを教えたとは書かれておらず、とべるようになったとも書かれていません。","heart":{"b":["できなくて、あきらめかけている","うまくいって、うれしい","けんじにおこっている"],"k":["けんじに「ジャンプが高くなってた」と言われた","先生にしかられた","二重とびが急にできた"],"a":["もう一度がんばってみようと思う","やっぱりやめようと思う","けんじにやつあたりしたい"],"e":"「もう、やめた」（あきらめ）→けんじの言葉→「よし、あと十回だけやってみる」（やる気）という変化です。"}}];
+const ID='yoyaku';
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const NUM='①②③④⑤⑥';
+const LABELS=[['話題','何について書くかを示す・問いかける'],['具体例','たとえを使って、くわしく示す'],['説明','理由やしくみを説明する'],['ほかの考え','筆者とはちがう考え・反対の立場'],['まとめ・主張','筆者のまとめ・いちばん言いたいこと']];
+const TYPE={具体例:['具体例だけ','具体例だけを書いていて、筆者の言いたいことが入っていない','「たとえば」の段落は省いて、「このように」「つまり」「だから」のあとを探そう'],
+  一部:['一部だけ','文章の一部分だけで、全体のまとめになっていない','話題と、筆者のまとめの両方が入っているか確かめよう'],
+  言いすぎ:['言いすぎ','文章に書かれている以上のことを言っている','「すべて」「かならず」「決して」「だけ」など、強すぎる言葉に気をつけよう'],
+  逆:['筆者の考えと逆','筆者の考えと反対のことを言っている','「しかし」のあとと、最後の段落で、筆者の立場を確かめよう'],
+  なし:['書かれていない','文章に書かれていないことが入っている','文章に書いてあることだけで、まとめよう'],
+  心情逆:['気持ちが逆','気持ちの変化が、文章と反対になっている','はじめと終わりの気持ちを、せりふや行動から確かめよう']};
+const MODEN={role:'段落の役割',sum:'要約えらび',tile:'要約の組み立て',heart:'気持ちの変化'};
+const modesOf=p=>p.kind==='説明文'?['role','sum','tile']:['sum','heart'];
+const keyOf=(p,m)=>`「${p.title}」${MODEN[m]}`;   // 保護者ページの「まちがえた問題」にそのまま出る
+const PFX=PAID?ID+'-p':ID;
+let rec=store.get(PFX+'-rec',{}), types=store.get(PFX+'-type',{}), lv=store.get(PFX+'-lv',1);
+const saveRec=()=>store.set(PFX+'-rec',rec);
+const state=k=>{const r=rec[k];if(!r)return 'new';if(r[0]>=1&&r[0]>=r[1])return r[1]?'weak2':'ok';return 'weak';};
+const record=(p,m,ok)=>{const k=keyOf(p,m);if(PAID&&window.mnReview)mnReview.mark(ID,k,ok);const r=rec[k]||[0,0];r[ok?0:1]++;rec[k]=r;saveRec();track('answer_question',{correct:ok,question:k});};
+const PAIDLINK=`<a class="paid" href="yoyaku-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>要約トレーニング 30題</b>（有料版）</span><span class="pd">オリジナルの説明文20題・物語10題、全80問。5つのレベル。自分がえらびやすい「まちがいの型」がわかり、まちがえた問題は日をあけて解き直せます。</span></a>`;
+let cur=null;   // {p, modes, i, res:{}} 今とり組んでいる文章
+let queue=null; // 解き直しの順番 [{p,m}]
+
+function home(){
+  cur=null;queue=null;
+  if(!PAID){
+    app.innerHTML=`<div class="label">あそびかた</div>
+      <p style="margin:0">文章を読んで、順番に問題にこたえよう。説明文は「段落の役割 → 要約えらび → 要約の組み立て」、物語は「要約えらび → 気持ちの変化」です。</p>
+      <div class="plist">${QS.map(p=>item(p)).join('')}</div>${habitHtml()}${PAIDLINK}`;
+    bindItems();return;
+  }
+  const L=QS.filter(p=>p.lv===lv);
+  const due=dueList();
+  const done=QS.reduce((s,p)=>s+modesOf(p).filter(m=>rec[keyOf(p,m)]&&rec[keyOf(p,m)][0]).length,0);
+  app.innerHTML=`<div class="row" style="justify-content:space-between"><span class="label" style="font-size:14px;color:var(--fg)">できた問題</span><b style="font-family:var(--display);font-size:24px">${done}<small style="font-size:14px;color:var(--muted);font-family:var(--body)"> / 80問</small></b></div>
+    <button class="big" id="review" ${due.length?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${due.length}問）</span></button>
+    <div class="label">レベルをえらぶ</div>
+    <div class="lvtabs">${[1,2,3,4,5].map(k=>{const ps=QS.filter(p=>p.lv===k);const n=ps.reduce((s,p)=>s+modesOf(p).length,0);const d=ps.reduce((s,p)=>s+modesOf(p).filter(m=>rec[keyOf(p,m)]&&rec[keyOf(p,m)][0]).length,0);return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${d}/${n}</small></button>`;}).join('')}</div>
+    <div class="plist">${L.map(p=>item(p)).join('')}</div>
+    ${habitHtml()}
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(PFX+'-lv',lv);home();});
+  document.getElementById('review').onclick=()=>{queue=shuffle(due);nextQueue();};
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};types={};saveRec();store.set(PFX+'-type',types);home();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+  bindItems();
+}
+function dueList(){const o=[];if(!window.mnReview)return o;QS.forEach(p=>modesOf(p).forEach(m=>{if(mnReview.isDue(ID,keyOf(p,m)))o.push({p,m});}));return o;}
+function item(p){
+  const mk=modesOf(p).map(m=>{const s=state(keyOf(p,m));return `<i class="${s==='ok'?'ok':s==='new'?'':'ng'}" title="${MODEN[m]}"></i>`;}).join('');
+  return `<button class="pitem" data-id="${p.id}"><span class="kd ${p.kind==='物語'?'st':''}">${p.kind}</span><span class="tt">${esc(p.title)}</span><span class="mk">${mk}</span></button>`;
+}
+function bindItems(){app.querySelectorAll('.pitem').forEach(b=>b.onclick=()=>open(QS.find(p=>p.id===b.dataset.id)));}
+function habitHtml(){
+  const ent=Object.entries(types).filter(([k,n])=>TYPE[k]&&n>0).sort((a,b)=>b[1]-a[1]);
+  if(!ent.length)return `<div class="label">まちがいの型</div><p class="note">要約えらびでまちがえると、どんな型のまちがいが多いかがここに出ます。</p>`;
+  const mx=ent[0][1];
+  return `<div class="label">あなたがえらびやすい「まちがいの型」</div><div class="habit">${ent.map(([k,n])=>`<div class="hr"><span>${TYPE[k][0]}</span><span class="bar"><i style="width:${n/mx*100}%"></i></span><span>${n}回</span></div>`).join('')}
+    <div class="adv"><b>${TYPE[ent[0][0]][0]}</b>が多いようです。${TYPE[ent[0][0]][2]}。</div></div>`;
+}
+function open(p,only){
+  cur={p,modes:only?[only]:modesOf(p),i:0,res:{},fold:false};track('level_start',{level_name:(only?'解き直し：':'')+p.title});draw();
+}
+function nextQueue(){
+  if(!queue||!queue.length){home();return;}
+  const {p,m}=queue.shift();open(p,m);
+}
+function textHtml(){
+  const p=cur.p;
+  return `<div class="text ${cur.fold?'fold':''}" id="text"><h2>${esc(p.title)}</h2>${p.paras.map((t,i)=>`<p><span class="n">${i+1}</span><span>${esc(t)}</span></p>`).join('')}</div>
+    <div class="row" style="justify-content:space-between"><div class="steps">${cur.modes.map((m,j)=>`<span class="${j===cur.i?'cur':cur.res[m]===true?'ok':cur.res[m]===false?'ng':''}">${MODEN[m]}</span>`).join('')}</div><button class="linkbtn" id="fold">${cur.fold?'文章をぜんぶ見る':'文章をたたむ'}</button></div>`;
+}
+function draw(){
+  const m=cur.modes[cur.i];
+  app.innerHTML=textHtml()+`<div id="task"></div><div id="after"></div>`;
+  document.getElementById('fold').onclick=()=>{cur.fold=!cur.fold;document.getElementById('text').classList.toggle('fold',cur.fold);document.getElementById('fold').textContent=cur.fold?'文章をぜんぶ見る':'文章をたたむ';};
+  ({role:taskRole,sum:taskSum,tile:taskTile,heart:taskHeart})[m]();
+}
+function after(ok,html){
+  const m=cur.modes[cur.i];cur.res[m]=ok;record(cur.p,m,ok);
+  const last=cur.i>=cur.modes.length-1;
+  if(last)track('level_end',{level_name:(cur.modes.length===1&&queue?'解き直し：':'')+cur.p.title,score:Object.values(cur.res).filter(v=>v).length,total:cur.modes.length});
+  document.getElementById('after').innerHTML=`<div class="res ${ok?'':'bad'}"><b style="color:var(--${ok?'ok':'ng'})">${ok?'せいかい！':'ざんねん'}</b>${html}</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="nx">${last?(queue&&queue.length?'次の解き直しへ':'おわる'):'次へ：'+MODEN[cur.modes[cur.i+1]]}</button>${!last?'':`<button class="btn sub" id="again">この文章をもう一度</button>`}</div>`;
+  const s=app.querySelectorAll('.steps span')[cur.i];if(s){s.className=ok?'ok':'ng';}
+  document.getElementById('nx').onclick=()=>{if(!last){cur.i++;draw();window.scrollTo({top:0,behavior:'smooth'});}else if(queue)nextQueue();else home();};
+  const ag=document.getElementById('again');if(ag)ag.onclick=()=>open(cur.p);
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+/* 段落の役割 */
+function taskRole(){
+  const p=cur.p, pick=p.paras.map(()=>null);
+  const T=document.getElementById('task');
+  T.innerHTML=`<p class="qh">それぞれの段落の役割をえらぼう。</p>
+    <div class="legend">${LABELS.map(([a,b])=>`<b>${a}</b><span>${b}</span>`).join('')}</div>
+    ${p.paras.map((t,i)=>`<div class="rl"><span class="pn">第${i+1}段落 <small>${esc(t.slice(0,18))}…</small></span><div class="chips" data-i="${i}">${LABELS.map(([a])=>`<button class="chip" data-v="${a}" aria-pressed="false">${a}</button>`).join('')}</div></div>`).join('')}
+    <div class="row"><button class="btn" id="chk" disabled>こたえあわせ</button></div>`;
+  T.querySelectorAll('.chips').forEach(c=>c.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
+    const i=+c.dataset.i;pick[i]=b.dataset.v;c.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    document.getElementById('chk').disabled=pick.some(v=>!v);}));
+  document.getElementById('chk').onclick=()=>{
+    let all=true;
+    T.querySelectorAll('.chips').forEach(c=>{const i=+c.dataset.i, good=p.roles[i];const okk=good.includes(pick[i]);if(!okk)all=false;
+      c.querySelectorAll('.chip').forEach(x=>{x.disabled=true;if(good.includes(x.dataset.v))x.classList.add('right');else if(x.dataset.v===pick[i])x.classList.add('wrong');});});
+    document.getElementById('chk').remove();
+    const keep=p.roles.map((g,i)=>g.includes('まとめ・主張')?NUM[i]:null).filter(Boolean).join('');
+    after(all,`<span class="ex">要約では、<b>まとめ・主張</b>の段落（${keep}）を中心にします。具体例やほかの考えの段落は、ふつうは省きます。</span>`);
+  };
+}
+/* 要約えらび */
+function taskSum(){
+  const p=cur.p, opts=shuffle([[p.sum.a,null],...p.sum.d]);
+  const T=document.getElementById('task');
+  T.innerHTML=`<p class="qh">この${p.kind}の要約として、いちばんよいものはどれですか。</p>
+    <div class="ch">${opts.map(([t,ty],i)=>`<button class="op" data-i="${i}"><span class="k">${'アイウエ'[i]}</span><span>${esc(t)}</span></button>`).join('')}</div>`;
+  T.querySelectorAll('.op').forEach(b=>b.onclick=()=>{
+    const [t,ty]=opts[+b.dataset.i], ok=!ty;
+    T.querySelectorAll('.op').forEach((x,j)=>{x.disabled=true;const tj=opts[j][1];
+      if(!tj)x.classList.add('right');else x.querySelector('span:last-child').insertAdjacentHTML('beforeend',`<span class="ty">（${TYPE[tj][0]}）</span>`);
+      if(x===b&&!ok)x.classList.add('wrong');});
+    if(!ok){types[ty]=(types[ty]||0)+1;store.set(PFX+'-type',types);}
+    after(ok,`${ok?'':`<span class="ex">えらんだものは<b>「${TYPE[ty][0]}」</b>の型：${TYPE[ty][1]}。</span>`}<span class="ex">${esc(p.e)}</span>`);
+  });
+}
+/* 要約の組み立て */
+function taskTile(){
+  const p=cur.p, t=p.tiles, bank=shuffle([...t.ans,...t.decoy]), line=[];
+  const T=document.getElementById('task');
+  const paint=()=>{
+    const s=line.map(i=>bank[i]).join('');
+    T.querySelector('.line').innerHTML=line.length?line.map((i,j)=>`<button class="tile" data-j="${j}">${esc(bank[i])}</button>`).join(''):'<span class="ph">下の札をタップして、ならべよう（もう一度タップでもどす）</span>';
+    T.querySelectorAll('.bank .tile').forEach(b=>b.disabled=line.includes(+b.dataset.i));
+    const c=T.querySelector('.cnt');c.textContent=`${s.length}字 / ${t.lim}字以内`;c.classList.toggle('over',s.length>t.lim);
+    document.getElementById('chk').disabled=!line.length;
+    T.querySelectorAll('.line .tile').forEach(b=>b.onclick=()=>{line.splice(+b.dataset.j,1);paint();});
+  };
+  T.innerHTML=`<p class="qh">札をならべて、${t.lim}字以内の要約を作ろう。<br><small style="font-weight:400;color:var(--muted)">使わない札もあります。</small></p>
+    <div class="line"></div><span class="cnt"></span>
+    <div class="bank">${bank.map((w,i)=>`<button class="tile" data-i="${i}">${esc(w)}</button>`).join('')}</div>
+    <div class="row"><button class="btn" id="chk">こたえあわせ</button><button class="btn sub" id="clr">やり直す</button></div>`;
+  T.querySelectorAll('.bank .tile').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!line.includes(i)){line.push(i);paint();}});
+  document.getElementById('clr').onclick=()=>{line.length=0;paint();};
+  document.getElementById('chk').onclick=()=>{
+    const got=line.map(i=>bank[i]), ok=got.length===t.ans.length&&got.every((w,j)=>w===t.ans[j]);
+    T.querySelector('.line').classList.add(ok?'ok':'ng');T.querySelectorAll('button').forEach(b=>b.disabled=true);
+    const used=got.filter(w=>t.decoy.includes(w));
+    after(ok,`<span class="model">正しい要約：${esc(t.ans.join(''))}</span>${used.length?`<span class="ex">「${used.map(esc).join('」「')}」は、要約には入れない札です（具体例や、言いすぎ・反対の内容）。</span>`:''}`);
+  };
+  paint();
+}
+/* 気持ちの変化 */
+function taskHeart(){
+  const p=cur.p, h=p.heart, sl=[['はじめの気持ち','b'],['きっかけ（出来事）','k'],['変わったあとの気持ち','a']];
+  const opts={b:shuffle(h.b),k:shuffle(h.k),a:shuffle(h.a)}, pick={};
+  const T=document.getElementById('task');
+  T.innerHTML=`<p class="qh">主人公の気持ちの変化をまとめよう。</p>
+    <div class="hs">${sl.map(([nm,k],j)=>`${j?'<div class="arrow">▼</div>':''}<div class="slot"><b>${nm}</b><div class="opts" data-k="${k}">${opts[k].map((t,i)=>`<button data-i="${i}" aria-pressed="false">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div>
+    <div class="row"><button class="btn" id="chk" disabled>こたえあわせ</button></div>`;
+  T.querySelectorAll('.opts').forEach(o=>o.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=o.dataset.k;pick[k]=opts[k][+b.dataset.i];
+    o.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.getElementById('chk').disabled=Object.keys(pick).length<3;}));
+  document.getElementById('chk').onclick=()=>{
+    let ok=true;
+    T.querySelectorAll('.opts').forEach(o=>{const k=o.dataset.k, good=h[k][0];if(pick[k]!==good)ok=false;
+      o.querySelectorAll('button').forEach(x=>{x.disabled=true;const v=opts[k][+x.dataset.i];if(v===good)x.classList.add('right');else if(v===pick[k])x.classList.add('wrong');});});
+    document.getElementById('chk').remove();
+    if(pick.b!==h.b[0]||pick.a!==h.a[0]){types['心情逆']=(types['心情逆']||0)+1;store.set(PFX+'-type',types);}
+    after(ok,`<span class="model">${esc(h.b[0])} → ${esc(h.k[0])} → ${esc(h.a[0])}</span><span class="ex">${esc(h.e)}</span>`);
+  };
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:'yoyaku.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

@@ -160,6 +160,8 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
       due.sort((a,b)=>b[1]-a[1]);
       if(due.length){const [g,n]=due[0], all=due.reduce((s,x)=>s+x[1],0);
         out.push(`<a class="m" href="${g.url}" style="--c:${color(g.subject)}"><span class="k">今日の解き直し</span><span class="t">${esc(g.title)}</span><span class="s">${n}問${due.length>1?`（ぜんぶで ${all}問・${due.length}本）`:''}　「今日の解き直し」をえらんでね</span></a>`);}}
+    {const x=rd('mn-ichibun',{})||{},d=x.days||{};let n=0,k=Math.round(Date.parse(today)/864e5);if(d[today]==null)k--;while(d[new Date(k*864e5).toISOString().slice(0,10)]!=null){n++;k--;}
+      out.splice(1,0,`<a class="m" href="ichibun.html" style="--c:var(--s3)"><span class="k">毎日の一文要約</span><span class="t">${d[today]!=null?'今日はおわり。またあした！':'今日の文章を一文にまとめよう'}</span><span class="s">${n?`<span class="big">${n}</span> 日連続`:'国語・自分で書いて確かめる'}</span></a>`);}
     out.splice(1,0,`<a class="m" href="drill.html" style="--c:var(--s1)"><span class="k">毎日の計算ドリル</span><span class="t">${(()=>{const x=rd('mn-drill',{})||{};return x.days&&x.days[today]?'今日はおわり。タイム '+x.days[today]+'秒':'今日の5問にちょうせん';})()}</span><span class="s">${(()=>{const x=rd('mn-drill',{})||{},d=x.days||{};let n=0,k=Math.round(Date.parse(today)/864e5);if(d[today]==null)k--;while(d[new Date(k*864e5).toISOString().slice(0,10)]!=null){n++;k--;}return n?`<span class="big">${n}</span> 日連続`:'小4・小5・小6から選べます';})()}</span></a>`);
     document.getElementById('mine').innerHTML=out.join('');
   })();
