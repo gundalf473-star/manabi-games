@@ -59,6 +59,21 @@ button{font:inherit;color:inherit}
 .card p{margin:0;font-size:14px;color:var(--muted);flex:1}
 .card .meta{display:flex;gap:12px;font-size:12px;color:var(--muted)}
 .card .play{font-weight:700;color:var(--c);font-size:14px}
+.fbar{display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:3px 12px;cursor:pointer;font-size:14px;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+a.chip{text-decoration:none;color:var(--c,var(--ink));border-color:var(--c,var(--rule))}
+.fold{border:1px solid var(--rule);border-radius:8px;background:color-mix(in srgb,var(--surface) 55%,transparent);scroll-margin-top:12px}
+.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;padding:10px 14px;font-family:var(--display);font-weight:700;font-size:17px;color:var(--c)}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸";transition:transform .15s;display:inline-block}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>summary .n{font-family:var(--body);font-size:13px;color:var(--muted);font-weight:400}
+.fold>.grid{padding:0 12px 12px}
+.card .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.card .btns a{flex:1;min-width:120px;text-align:center;border-radius:6px;padding:7px 10px;font-weight:700;font-size:14px;text-decoration:none;border:2px solid var(--c);color:var(--c)}
+.card .btns a.p{background:var(--c);color:var(--surface)}
 .empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
 .daily{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
@@ -88,8 +103,11 @@ footer a{color:inherit}
   </section>
   <div id="contbox"></div>
   <section id="subjbox" hidden>
-    <div class="label">教科</div>
-    <div class="subjects" id="subjects"></div>
+    <div class="fbar">
+      <div><div class="label">教科</div><div class="subjects" id="subjects"></div></div>
+      <div><div class="label">学年</div><div class="chips" id="grades"></div></div>
+      <div id="jumpbox" hidden><div class="label">分野へ移動</div><div class="chips" id="jump"></div></div>
+    </div>
   </section>
   <main id="list"></main>
   <footer><a href="../index.html">中学受験のゲーム一覧</a>　・　<a href="../parent.html#chuko">保護者ページ（学習の記録）</a>　・　<a href="../contact.html">お問い合わせ</a>　・　<a href="../privacy.html">プライバシーポリシー</a>　・　<a href="../tokushoho.html">特定商取引法に基づく表記</a></footer>
@@ -102,20 +120,52 @@ footer a{color:inherit}
   let data; try{ data=await (await fetch('../games.json',{cache:'no-cache'})).json(); }catch(e){ if(!L.children.length)L.innerHTML='<p class="empty">一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
   const games=data.games.filter(g=>g.course==='chuko');
   if(!games.length){ L.innerHTML='<div class="empty"><b>単元を準備しています。</b>公開したら、トップページの「お知らせ」でお知らせします。</div>'; return; }
+  /* 無料版と有料版を1つの単元にまとめる（file の -full を取ったものが同じなら同じ単元） */
+  const key=g=>g.file.replace(/-full(\.html)$/,'$1'), U={}, units=[];
+  games.forEach(g=>{const k=key(g);if(!U[k]){U[k]={k,subject:g.subject};units.push(U[k]);}U[k][g.paid?'paid':'free']=g;});
+  const ORDER=['入学前','中1','中2','中3','高1','高2','高3'];
+  const gi=x=>{x=x.trim();if(/小学|入学前/.test(x))return 0;const i=ORDER.indexOf(x);return i<0?null:i;};
+  units.forEach(u=>{const g=u.free||u.paid;u.title=(u.paid?u.paid.title.replace(/\s*100問$/,''):g.title.replace(/クイズ$/,''));u.desc=(u.free||g).description;u.grade=g.grade||'';u.added=(u.paid||g).added;
+    const p=decodeURIComponent(g.url).split('/');u.folder=p.length>=5?p[3]:'その他';
+    const m=u.grade.split('〜'),a=gi(m[0]||''),b=m.length>1?(m[1].trim()?gi(m[1]):6):a;u.g0=a==null?0:a;u.g1=b==null?6:b;});
+  const GR=[['すべて',0,6],['入学前',0,0],['中1',1,1],['中2',2,2],['中3',3,3],['高校',4,6]];
+  const fits=(u,gr)=>{const r=GR.find(x=>x[0]===gr)||GR[0];return u.g0<=r[2]&&u.g1>=r[1];};
   const subjects=[...new Set(games.map(g=>g.subject))], color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
-  const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10), isNew=g=>g.added&&(Date.parse(today)-Date.parse(g.added))/864e5<14;
-  let subj=decodeURIComponent(location.hash.slice(1))||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+  const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10), isNew=u=>u.added&&(Date.parse(today)-Date.parse(u.added))/864e5<14;
+  const h0=decodeURIComponent(location.hash.slice(1)).split('/');
+  let subj=h0[0]||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+  let grade=h0[1]||(()=>{try{return localStorage.getItem('mn-chuko-grade')||'すべて';}catch(e){return 'すべて';}})(); if(!GR.some(x=>x[0]===grade))grade='すべて';
+  const save=()=>{history.replaceState(null,'',subj==='すべて'&&grade==='すべて'?location.pathname:'#'+encodeURIComponent(subj)+(grade==='すべて'?'':'/'+encodeURIComponent(grade)));try{localStorage.setItem('mn-chuko-grade',grade);}catch(e){}};
+  const card=u=>`<div class="card">
+        <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}</span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
+        <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
+  /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
+  const PRI=['算数から数学へ','正負の数・文字式','一次方程式','比例と反比例','平面図形','連立方程式','一次関数','図形の性質と証明','確率とデータの活用','式の展開と平方根','二次方程式と関数','相似と三平方の定理','数学Ⅰ','数学A','数学Ⅱ','数学B','数学C',
+    '中1英単語・英文法','絵で学ぶ英語','過去形・進行形','中学英文法','会話と読解','高校英文法','英検5級対策','英検4級対策','英検3級対策','英検準2級対策','英検準2級プラス対策','英検2級対策','英検準1級対策','英検ライティング','英検リスニング',
+    '古文入門','口語文法','中学の漢字','古文単語と漢文入門','語句と語彙','評論の読み方','国語表現','詩歌と文学史','古典文法','漢文の句法','論証と批評',
+    '物理','化学','生物','地学','物理基礎','化学基礎','生物基礎','地学基礎','高校物理','高校化学','高校生物',
+    '地理','世界史','日本史','公民','歴史総合と探究'];
+  const fo=x=>{const i=PRI.indexOf(x.f);return i<0?1000+x.g:i;};
   function render(){
-    const S=document.getElementById('subjects'); document.getElementById('subjbox').hidden=subjects.length<2;
-    S.innerHTML=['すべて',...subjects].map(s=>`<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${esc(s)}<span class="n">${s==='すべて'?games.length:games.filter(g=>g.subject===s).length}</span></button>`).join('');
-    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;history.replaceState(null,'',subj==='すべて'?location.pathname:'#'+encodeURIComponent(subj));render();});
-    const shown=games.filter(g=>subj==='すべて'||g.subject===subj);
-    L.innerHTML=[...new Set(shown.map(g=>g.subject))].map(s=>{const gs=shown.filter(g=>g.subject===s);
-      return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div><div class="grid">${gs.map(g=>`<a class="card" href="../${g.url}">
-        <span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid?'<span class="tag paid">有料版</span>':''}${isNew(g)?'<span class="tag new">NEW</span>':''}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>
-        <div class="meta">${g.grade?`<span>${esc(g.grade)}</span>`:''}<span class="play" style="margin-left:auto">はじめる →</span></div></a>`).join('')}</div></section>`;}).join('<div style="height:16px"></div>');
+    const S=document.getElementById('subjects'); document.getElementById('subjbox').hidden=false;
+    const inG=units.filter(u=>fits(u,grade));
+    S.innerHTML=['すべて',...subjects].map(s=>`<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${esc(s)}<span class="n">${s==='すべて'?inG.length:inG.filter(u=>u.subject===s).length}</span></button>`).join('');
+    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;save();render();});
+    const Gs=document.getElementById('grades');
+    Gs.innerHTML=GR.map(x=>`<button class="chip" aria-pressed="${x[0]===grade}" data-g="${x[0]}">${x[0]}</button>`).join('');
+    Gs.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{grade=b.dataset.g;save();render();});
+    const shown=inG.filter(u=>subj==='すべて'||u.subject===subj);
+    if(!shown.length){L.innerHTML='<p class="empty">この学年の単元はまだありません。ほかの学年や教科を選んでください。</p>';document.getElementById('jumpbox').hidden=true;return;}
+    const open=subj!=='すべて', jumps=[];
+    L.innerHTML=[...new Set(shown.map(u=>u.subject))].map(s=>{const us=shown.filter(u=>u.subject===s);
+      const fs=[...new Set(us.map(u=>u.folder))].map(f=>{const x=us.filter(u=>u.folder===f).sort((a,b)=>a.g0-b.g0||a.g1-b.g1);return {f,x,g:Math.min(...x.map(u=>u.g0))};}).sort((a,b)=>fo(a)-fo(b));
+      return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${us.length}単元</span></div>${fs.map(({f,x})=>{const id='f-'+encodeURIComponent(s+'-'+f).replace(/%/g,'');jumps.push(`<a class="chip" style="--c:${color(s)}" href="#${id}" data-id="${id}">${esc(f)}</a>`);
+        return `<details class="fold" id="${id}" ${open?'open':''}><summary>${esc(f)}<span class="n">${x.length}単元</span></summary><div class="grid">${x.map(card).join('')}</div></details>`;}).join('')}</section>`;}).join('<div style="height:16px"></div>');
+    const J=document.getElementById('jump'); document.getElementById('jumpbox').hidden=!open; J.innerHTML=open?jumps.join(''):'';
+    J.querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();const d=document.getElementById(a.dataset.id);d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});});
   }
   render();
+  window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/');subj=subjects.includes(h[0])?h[0]:'すべて';if(h[1]&&GR.some(x=>x[0]===h[1]))grade=h[1];render();});
   /* 毎日の英単語・定期テストのようす */
   try{ const tg=JSON.parse(localStorage.getItem('mn-tango')||'null'), t=new Date(Date.now()+9*36e5).toISOString().slice(0,10);
     if(tg&&tg.days){let n=0,k=Math.floor((Date.now()+9*36e5)/864e5);const y=d=>new Date(d*864e5).toISOString().slice(0,10);if(!tg.days[y(k)])k--;while(tg.days[y(k)]){n++;k--;}
