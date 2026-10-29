@@ -1,0 +1,274 @@
+<title>物理基礎 波と音クイズ</title>
+
+<meta name="game:course" content="chuko"><meta name="game:subject" content="理科">
+<meta name="game:unit" content="物理基礎 波と音">
+<meta name="game:grade" content="高1">
+<meta name="game:players" content="1人">
+<meta name="description" content="波の要素と v＝fλ、重ね合わせと定常波、音の速さとうなり、弦の振動、気柱の共鳴まで、5つのレベルから1問ずつの物理基礎クイズ。全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。レベルの札（5段階）→ 4択の問題 → 正解の印と解き方 → 結果と復習。朱色を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.q{margin:0;white-space:pre-line;font-size:18px;font-weight:700;line-height:1.7}
+.q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.5}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{display:flex;gap:14px;align-items:flex-start}
+.seal{flex:none;width:64px;height:64px;border-radius:8px;border:3px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:26px;transform:rotate(-6deg)}
+.seal.x{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.res .t{display:flex;flex-direction:column;gap:6px}
+.res .v{font-family:var(--display);font-size:20px}
+.res .v.ok{color:var(--ok)} .res .v.ng{color:var(--ng)}
+.ex{font-size:15px;border-left:4px solid var(--seal);padding:2px 0 2px 12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.matome{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.matome dt{font-weight:700;color:var(--seal)}
+.matome dd{margin:0}
+.tblw{overflow-x:auto}
+.dtbl{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.tblcap{font-size:13px;color:var(--muted);margin:0 0 6px}
+.dtbl th,.dtbl td{border:1px solid var(--rule);padding:6px 4px;text-align:center}
+.dtbl th{background:var(--sealsoft)}
+.dtbl .rh{text-align:left;width:34%;font-size:13px}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.cats{grid-template-columns:1fr}}
+.cat{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.cat:hover:not(:disabled){border-color:var(--ink)}
+.cat:disabled{opacity:.4;cursor:default}
+.cat .nm{font-weight:700;font-size:17px}
+.cat .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.cat .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right}
+.timeline dd{margin:0}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-family:var(--body)}
+.rank{width:92px;height:92px;border-radius:50%;border:5px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{color:var(--ok)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>理科クイズ</small>物理基礎 波と音クイズ</h1>
+    <p class="lead">波の式、定常波、音、弦、気柱。5つのレベルから1問ずつ。全5問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
+const PAID=false;
+let QS=[{"c":"L1","lv":1,"q":"振動数 5Hz、波長 2m の波の速さは何 m/s？","a":"10m/s","d":["2.5m/s","7m/s","20m/s"],"e":"v＝fλ＝5×2＝10（m/s）です。"},{"c":"L2","lv":2,"q":"波長 2m の波がつくる定常波で、隣り合う節と節の間隔は何 m？","a":"1m","d":["2m","4m","0.5m"],"e":"λ/2＝1（m）です。"},{"c":"L3","lv":3,"q":"気温 15℃ のときの空気中の音速は何 m/s？（V＝331.5＋0.6t）","a":"340.5m/s","d":["346.5m/s","331.5m/s","681m/s"],"e":"331.5＋0.6×15＝340.5（m/s）です。"},{"c":"L4","lv":4,"q":"長さ 0.5m の弦を伝わる波の速さが 200m/s のとき、基本振動の振動数は何 Hz？","a":"200Hz","d":["400Hz","100Hz","201Hz"],"e":"λ＝2×0.5＝1m、f＝200÷1＝200（Hz）です。"},{"c":"L5","lv":5,"q":"長さ 0.17m の閉管の基本振動の振動数は何 Hz？（音速 340m/s、開口端補正は無視）","a":"500Hz","d":["1000Hz","2000Hz","250Hz"],"e":"λ＝4L＝0.68m、f＝340÷0.68＝500（Hz）です。"}];
+const CATS={L1:["レベル1 波の要素","v＝fλ・T＝1/f"],L2:["レベル2 重ね合わせと定常波","腹と節・反射"],L3:["レベル3 音の性質","音速・うなり"],L4:["レベル4 弦の振動","固有振動・倍振動"],L5:["レベル5 気柱の共鳴","閉管・開管"]};
+const LVN={1:'基本',2:'標準',3:'発展'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>esc(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'c-pk4-p-best':'c-pk4-best',{}), rec=store.get('c-pk4-p-rec',{});
+const saveRec=()=>store.set('c-pk4-p-rec',rec);
+const qkey=q=>q.q;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const PAIDLINK=`<a class="paid" href="c-pk4-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>物理基礎 波と音 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。波の要素、重ね合わせと定常波、音の性質、弦の振動、気柱の共鳴の5段階、各20問。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt>波の式</dt><dd>v＝fλ、T＝1/f（v：速さ、f：振動数、λ：波長、T：周期）</dd><dt>横波と縦波</dt><dd>横波：振動方向が進行方向に垂直。縦波（疎密波）：平行。音は縦波</dd><dt>定常波</dt><dd>逆向きに進む同じ波が重なってできる。隣り合う節（腹）の間隔は λ/2</dd><dt>音</dt><dd>空気中の音速 V＝331.5＋0.6t（m/s）。うなりの回数 f＝｜f₁−f₂｜</dd><dt>弦</dt><dd>両端が節。n 倍振動の波長 λ＝2L/n、振動数 f＝nv/2L</dd><dt>気柱</dt><dd>閉管：閉口端が節・開口端が腹、λ＝4L/n（n 奇数）。開管：両端が腹、λ＝2L/n</dd></dl>`;
+
+async function decrypt(){ return mnAccess.load('c-pk4'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'c-pk4',err:err,free:'c-pk4.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">物理基礎 波と音のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">レベルをえらぶ（1回10問）</div>
+    <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
+        return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
+      <button class="cat" data-l="all"><span class="nm">物理基礎 波と音まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
+      <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
+      <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">物理基礎 波と音のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    start(shuffle(pool).slice(0,10));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'c-pk4-p-':'c-pk4-')+course});
+  newQ();
+}
+function figSVG(f){
+  if(f.tbl){ const t=f.tbl; return `<div class="tblw">${t.cap?`<p class="tblcap">${esc(t.cap)}</p>`:''}<table class="dtbl"><tr>${t.head.map((h,i)=>`<th${i?'':' class="rh"'}>${esc(h)}</th>`).join('')}</tr>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th class="rh">${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`; }
+  /* てこ・棒・ばねの図。線は濃い色、おもりは四角、ばねばかりの引く力は矢印 */
+  const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`;
+  const T=(x,y,t,cls,anc)=>`<text x="${x}" y="${y}" class="${cls||'lb'}" text-anchor="${anc||'middle'}">${esc(t)}</text>`;
+  const W=(x,y,lb)=>`<rect x="${x-14}" y="${y}" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(x,y+36,lb);
+  const UP=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2+9} L${x},${y2} L${x+6},${y2+9}"/>`+T(x,y2-6,lb);
+  const DN=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2-9} L${x},${y2} L${x+6},${y2-9}"/>`+T(x,y2+16,lb);
+  const spr=(x,y1,y2)=>{const n=8,h=(y2-y1-12)/n;let d=`M${x},${y1} L${x},${y1+6}`;for(let i=0;i<n;i++)d+=` L${x+(i%2?-9:9)},${y1+6+h*(i+.5)}`;d+=` L${x},${y2-6} L${x},${y2}`;return `<path d="${d}"/>`;};
+  const sprH=(x1,x2,y)=>{const n=8,w=(x2-x1-12)/n;let d=`M${x1},${y} L${x1+6},${y}`;for(let i=0;i<n;i++)d+=` L${x1+6+w*(i+.5)},${y+(i%2?-9:9)}`;d+=` L${x2-6},${y} L${x2},${y}`;return `<path d="${d}"/>`;};
+  const ceil=(a,b)=>L(a,14,b,14)+Array.from({length:Math.floor((b-a)/12)},(_,i)=>L(a+6+i*12,14,a+i*12,6)).join('');
+  let g='',vb='0 0 320 170';
+  if(f.lev){ const o=f.lev,c=160,u=22,y=48; vb='0 0 320 140';
+    g+=`<rect x="${c-6*u-10}" y="${y-3}" width="${12*u+20}" height="6" rx="2" fill="#c9ced8"/>`;
+    for(let i=1;i<=6;i++){ g+=L(c-i*u,y-3,c-i*u,y+3)+L(c+i*u,y-3,c+i*u,y+3)+T(c-i*u,y-9,String(i),'tk')+T(c+i*u,y-9,String(i),'tk'); }
+    g+=`<path d="M${c},${y+3} L${c-10},${y+28} L${c+10},${y+28} Z" fill="#c9ced8"/>`+L(c-15,y+28,c+15,y+28);
+    const hang=(x,lb,k)=>{ if(lb[0]==='↓') return DN(x,y+3,y+60,lb.slice(1)); return L(x,y+3,x,y+42+k*0)+W(x,y+42,lb); };
+    o.L.forEach(([p,lb])=>g+=hang(c-p*u,lb,0)); o.R.forEach(([p,lb])=>g+=hang(c+p*u,lb,0));
+  }
+  if(f.bar){ const o=f.bar,x0=30,x1=290,y=74,X=p=>x0+p/o.len*(x1-x0); vb='0 0 320 175';
+    g+=`<rect x="${x0}" y="${y-4}" width="${x1-x0}" height="8" rx="2" fill="#c9ced8"/>`+T(160,y-34,'棒の長さ '+o.len+'cm','tk');
+    g+=L(x0,y-24,x0,y-16)+L(x1,y-24,x1,y-16)+L(x0,y-20,x1,y-20);
+    if(o.f!=null){ const fx=X(o.f); g+=`<path d="M${fx},${y+4} L${fx-12},${y+28} L${fx+12},${y+28} Z" fill="#c9ced8"/>`+T(fx,y+42,'支点','tk'); if(o.f>0&&o.f<o.len) g+=T((x0+fx)/2,y+18,o.f+'cm','tk'); }
+    if(o.m) g+=`<circle cx="160" cy="${y}" r="3.5" fill="#232a36" stroke="none"/>`+T(160,y+60,'棒の重さ '+o.m+'（一様）','tk');
+    (o.w||[]).forEach(([p,lb])=>{const x=X(p); g+=L(x,y+4,x,y+20)+W(x,y+20,lb); if(p>0&&p<o.len) g+=T((x0+x)/2,y+18,p+'cm','tk');});
+    (o.up||[]).forEach(([p,lb])=>{const x=X(p); g+=UP(x,y-4,y-46+12,lb).replace('','');});
+  }
+  if(f.spr){ const o=f.spr,w=o.w; vb='0 0 320 200';
+    if(o.t==='one') g+=ceil(130,190)+spr(160,14,110)+W(160,110,w[0]);
+    if(o.t==='ser') g+=ceil(130,190)+spr(160,14,72)+`<circle cx="160" cy="76" r="4" fill="#232a36" stroke="none"/>`+spr(160,80,140)+W(160,140,w[0])+T(184,48,'A','tk','start')+T(184,114,'A','tk','start');
+    if(o.t==='ser2') g+=ceil(130,190)+spr(160,14,66)+`<rect x="146" y="66" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(186,81,w[0],'lb','start')+spr(160,86,142)+W(160,142,w[1]);
+    if(o.t==='par') g+=ceil(80,240)+spr(110,14,104)+spr(210,14,104)+`<rect x="90" y="104" width="140" height="6" rx="2" fill="#c9ced8"/>`+L(160,110,160,124)+W(160,124,w[0]);
+    if(o.t==='paroff') g+=ceil(80,240)+spr(100,14,104)+spr(220,14,104)+`<rect x="96" y="104" width="128" height="6" rx="2" fill="#c9ced8"/>`+L(140,110,140,124)+W(140,124,w[0])+T(120,100,'10cm','tk')+T(180,100,'20cm','tk');
+    if(o.t==='wall') g+=sprH(100,220,40)+L(70,40,100,40)+L(220,40,250,40)+`<circle cx="70" cy="52" r="12"/><circle cx="250" cy="52" r="12"/>`+L(58,52,58,110)+L(262,52,262,110)+W(58,110,w[0])+W(262,110,w[1])+L(70,64,250,64);
+  }
+  return `<div class="fig"><svg viewBox="${vb}" role="img" aria-label="問題の図"><g stroke="#232a36" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg></div>`;
+}
+function newQ(){ const q=G.list[G.i]; G.ch=shuffle([q.a,...q.d]); G.done=false; G.pick=null; render(); }
+function render(){
+  const q=G.list[G.i], d=G.done;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}</span></div>
+    <p class="q">${qhtml(q.q)}</p>
+    ${q.fig?figSVG(q.fig):''}
+    <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${esc(c)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(G.ch[+b.dataset.i]));
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'c-pk4-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="res"><div class="seal ${G.ok?'':'x'}" aria-hidden="true">${G.ok?'正':'惜'}</div>
+      <div class="t"><span class="v ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</span>
+      <span>答え：<b>${esc(q.a)}</b></span></div></div>
+    <div class="ex">${esc(q.e)}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'c-pk4-p-':'c-pk4-')+course,success:s===n,score:s,total:n});
+  const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'c-pk4-p-best':'c-pk4-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！物理基礎 波と音はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、何が「もとにする量」かを確かめよう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
