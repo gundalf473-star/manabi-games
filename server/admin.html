@@ -83,8 +83,8 @@ $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$
   try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
   catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
-$('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); let out=[];
-  for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); } show('o2',out.join('\n')); } };
+$('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); if(!/^https:\/\//.test(base()))return show('o2','先に「1. サーバーとの接続」にサーバーのアドレス（https:// で始まるもの）と管理キーを入れて、「保存して接続を確かめる」を押してください。'); let out=[];
+  for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); if(/fetch|network|load failed/i.test(e.message)&&out.length>=3&&out.every(x=>x.startsWith('失敗'))){ out.push('','サーバーにつながらないため、止めました。「1. サーバーとの接続」の「保存して接続を確かめる」を押して、つながるか確かめてください。'); show('o2',out.join('\n')); return; } } show('o2',out.join('\n')); } };
 $('bulk').onclick=async()=>{ const n=Math.max(1,Math.min(200,parseInt($('bn').value,10)||0)), sj=$('is').value, pd=$('ip').value, note=$('in').value;
   const SJ={all:'全教科',kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',chuko:'中高一貫コース'}, PD={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
   if(!confirm(SJ[sj]+'・'+PD[pd]+' の利用コードを '+n+' こ作ります。よろしいですか？'))return;
