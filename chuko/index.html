@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>中高一貫コース｜中学の数学・英語・国語をゲームで｜{{SITE_NAME}}</title>
+<meta name="description" content="中高一貫校に進んだ人のための、入学準備と中学の学習。中学受験の算数で身につけた力を、数学・英語・国語へつなげます。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* 中高一貫コース：トップと同じ組み立て（教科 → 単元 → カード）で、色と文字を少し大人っぽく */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --fg:#17202c; --muted:#5a6473; --rule:#d9dde3; --ink:#0f3b4c; --accent:#0e7c7b;
+  --s1:#1f5fbf; --s2:#0e7c7b; --s3:#b4442d; --s4:#6a4fb3; --s5:#a8740d; --s6:#2d6a3e;
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1318; --surface:#171d25; --fg:#e5e9ee; --muted:#9ba5b3; --rule:#2a323d; --ink:#7cc6d6; --accent:#45b8b5;
+  --s1:#6f9ef0; --s2:#45b8b5; --s3:#ee8a73; --s4:#a993ea; --s5:#e0b454; --s6:#6fbf84; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.4vw,40px);line-height:1.25;margin:2px 0 0;color:var(--ink);text-wrap:balance}
+.lead{margin:8px 0 0;color:var(--muted);max-width:38em}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.topnav a{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:4px 14px;text-decoration:none}
+.topnav a:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button{font:inherit;color:inherit}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.point{background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:14px 16px}
+.point h2{font-family:var(--display);font-size:17px;margin:0 0 4px;color:var(--ink)}
+.point p{margin:0;font-size:14px;color:var(--muted)}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.subjects{display:flex;gap:8px;flex-wrap:wrap}
+.subj{border:2px solid var(--rule);background:var(--surface);border-radius:6px;padding:7px 16px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:8px}
+.subj .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.subj[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:var(--surface)}
+.subj[aria-pressed="true"] .n{color:var(--surface);opacity:.85}
+.group{display:flex;flex-direction:column;gap:10px}
+.gh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--c);padding-bottom:4px}
+.gh h2{margin:0;font-family:var(--display);font-weight:700;font-size:19px;color:var(--c)}
+.gh span{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-width:0}
+.card:hover{border-color:var(--c)}
+.card .tags{display:flex;gap:6px}
+.card .tag{font-size:12px;font-weight:700;color:var(--c);border:1px solid var(--c);border-radius:4px;padding:0 6px}
+.card .tag.paid{color:var(--surface);background:var(--c)}
+.card .tag.new{color:#fff;background:var(--s3);border-color:var(--s3)}
+.card h3{margin:0;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.4}
+.card p{margin:0;font-size:14px;color:var(--muted);flex:1}
+.card .meta{display:flex;gap:12px;font-size:12px;color:var(--muted)}
+.card .play{font-weight:700;color:var(--c);font-size:14px}
+.empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
+.cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
+.cont .k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em}
+.cont .t{font-family:var(--display);font-size:18px;font-weight:700}
+.cont .s{font-size:13px;color:var(--muted)}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><a href="../index.html">{{SITE_NAME}}</a>　／　中高一貫コース</div>
+    <h1>中高一貫コース</h1>
+    <p class="lead">中高一貫校に進んだ人のための、入学準備と中学の学習。中学受験の算数で身につけた力を、数学・英語・国語へつなげます。</p>
+    <nav class="topnav"><a href="../buy.html?s=chuko">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../parent.html#chuko">保護者ページ</a><a href="../index.html">中学受験のゲーム</a></nav>
+  </header>
+  <section class="points" aria-label="このコースの特長">
+    <div class="point"><h2>算数から数学へ</h2><p>つるかめ算・旅人算・比など、受験で使った解き方を方程式や関数で解き直します。知っている問題だから、新しい考え方がすっと入ります。</p></div>
+    <div class="point"><h2>学校の進み方に合わせて</h2><p>単元は学年ではなく内容で分けています。先取りの速い学校でも、自分の学校の進み具合に合わせて選べます。</p></div>
+    <div class="point"><h2>英語は入学前から</h2><p>中学受験組がいちばん出遅れやすいのが英語です。単語と文法の土台を、春休みから少しずつ固めます。</p></div>
+  </section>
+  <div id="contbox"></div>
+  <section id="subjbox" hidden>
+    <div class="label">教科</div>
+    <div class="subjects" id="subjects"></div>
+  </section>
+  <main id="list"></main>
+  <footer><a href="../index.html">中学受験のゲーム一覧</a>　・　<a href="../parent.html#chuko">保護者ページ（学習の記録）</a>　・　<a href="../contact.html">お問い合わせ</a>　・　<a href="../privacy.html">プライバシーポリシー</a>　・　<a href="../tokushoho.html">特定商取引法に基づく表記</a></footer>
+</div>
+<script>
+(async function(){
+  const COLORS=['--s1','--s2','--s3','--s4','--s5','--s6'];
+  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const L=document.getElementById('list');
+  let data; try{ data=await (await fetch('../games.json',{cache:'no-cache'})).json(); }catch(e){ if(!L.children.length)L.innerHTML='<p class="empty">一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
+  const games=data.games.filter(g=>g.course==='chuko');
+  if(!games.length){ L.innerHTML='<div class="empty"><b>最初の単元を準備しています。</b><br>「算数から数学へ」「正負の数・文字式」「中1英単語・英文法」「古文入門」の入学準備パックから公開します。公開したら、トップページの「お知らせ」でお知らせします。</div>'; return; }
+  const subjects=[...new Set(games.map(g=>g.subject))], color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
+  const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10), isNew=g=>g.added&&(Date.parse(today)-Date.parse(g.added))/864e5<14;
+  let subj=decodeURIComponent(location.hash.slice(1))||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+  function render(){
+    const S=document.getElementById('subjects'); document.getElementById('subjbox').hidden=subjects.length<2;
+    S.innerHTML=['すべて',...subjects].map(s=>`<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${esc(s)}<span class="n">${s==='すべて'?games.length:games.filter(g=>g.subject===s).length}</span></button>`).join('');
+    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;history.replaceState(null,'',subj==='すべて'?location.pathname:'#'+encodeURIComponent(subj));render();});
+    const shown=games.filter(g=>subj==='すべて'||g.subject===subj);
+    L.innerHTML=[...new Set(shown.map(g=>g.subject))].map(s=>{const gs=shown.filter(g=>g.subject===s);
+      return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div><div class="grid">${gs.map(g=>`<a class="card" href="../${g.url}">
+        <span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid?'<span class="tag paid">有料版</span>':''}${isNew(g)?'<span class="tag new">NEW</span>':''}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>
+        <div class="meta">${g.grade?`<span>${esc(g.grade)}</span>`:''}<span class="play" style="margin-left:auto">はじめる →</span></div></a>`).join('')}</div></section>`;}).join('<div style="height:16px"></div>');
+  }
+  render();
+  /* 前回のつづき（この端末の記録から） */
+  try{ const H=JSON.parse(localStorage.getItem('mn-history')||'[]'), byFile={}; games.forEach(g=>byFile[g.file]=g);
+    const last=Array.isArray(H)?[...H].reverse().find(e=>e&&byFile[e.f]):null;
+    if(last){const g=byFile[last.f],d=new Date(last.t),sc=last.n!=null?`${last.s} / ${last.n}問`:last.a?`${last.k} / ${last.a}問`:'';
+      document.getElementById('contbox').innerHTML=`<a class="cont" href="../${g.url}"><span class="k">前回のつづき</span><span class="t">${esc(g.title)}</span><span class="s">${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span></a>`;}
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

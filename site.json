@@ -9,7 +9,9 @@
     "国語",
     "理科",
     "社会",
-    "思考力"
+    "思考力",
+    "数学",
+    "英語"
   ],
   "feedbackForm": "",
   "apiBase": "https://manabi-api.gundalf473.workers.dev",

@@ -69,6 +69,12 @@ button{font:inherit;color:inherit}
 .mine .s{font-size:13px;color:var(--muted)}
 .mine .big{font-family:var(--display);font-size:26px;color:var(--s2);line-height:1.1}
 .topnav button.inst{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px dashed var(--ink);border-radius:99px;padding:4px 14px;cursor:pointer}
+.chuko{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--rule);border-left:5px solid #0e7c7b;border-radius:10px;padding:12px 16px;text-decoration:none;color:inherit}
+.chuko:hover{border-color:#0e7c7b}
+.chuko .k{font-size:12px;font-weight:700;color:#0e7c7b;letter-spacing:.05em}
+.chuko .t{font-family:var(--display);font-size:19px;line-height:1.35}
+.chuko .s{font-size:13px;color:var(--muted)}
+.chuko .go{margin-left:auto;font-weight:700;color:#0e7c7b;white-space:nowrap}
 .howto{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font-size:14px}
 footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
 </style>
@@ -81,6 +87,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a><button class="inst" id="inst" hidden>ホーム画面に追加</button></nav>
     <div class="howto" id="howto" hidden></div>
   </header>
+  <a class="chuko" id="chukoentry" href="chuko/index.html" hidden><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="k">中学生になったら</span><span class="t">中高一貫コース</span><span class="s">入学準備から、中学の数学・英語・国語まで。算数で身につけた力を、そのまま中学の勉強へ。</span></span><span class="go">見る →</span></a>
   <section id="minebox"><div class="mine" id="mine"></div></section>
   <section>
     <div class="label">教科</div>
@@ -99,7 +106,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   let data;
   try{ data=await (await fetch('games.json',{cache:'no-cache'})).json(); }
   catch(e){ document.getElementById('list').innerHTML='<p class="empty">ゲームの一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
-  const games=data.games, subjects=[...new Set(games.map(g=>g.subject))];
+  const games=data.games.filter(g=>g.course!=='chuko'), subjects=[...new Set(games.map(g=>g.subject))];
   const color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
   const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   /* 公開して14日以内のゲームに NEW（日本時間の今日で数える） */

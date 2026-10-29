@@ -40,7 +40,7 @@ pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:
     <div><button id="up">入れる</button></div><pre id="o2"></pre></section>
 
   <section class="box"><h2>3. 利用コードを作る（テスト・プレゼント・おわび用）</h2>
-    <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option><option value="shikou">思考力</option></select></div>
+    <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option><option value="shikou">思考力</option><option value="chuko">中高一貫コース</option></select></div>
     <div><label for="ip">期間</label><select id="ip"><option value="d1">1日</option><option value="w1">1週間</option><option value="m1" selected>1ヵ月</option><option value="y1">1年</option></select></div></div>
     <label for="in">メモ（だれに渡したか など）</label><input id="in">
     <div><button id="issue">作る</button></div><pre id="o3"></pre>
@@ -86,7 +86,7 @@ $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$
 $('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); let out=[];
   for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); } show('o2',out.join('\n')); } };
 $('bulk').onclick=async()=>{ const n=Math.max(1,Math.min(200,parseInt($('bn').value,10)||0)), sj=$('is').value, pd=$('ip').value, note=$('in').value;
-  const SJ={all:'全教科',kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力'}, PD={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
+  const SJ={all:'全教科',kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',chuko:'中高一貫コース'}, PD={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
   if(!confirm(SJ[sj]+'・'+PD[pd]+' の利用コードを '+n+' こ作ります。よろしいですか？'))return;
   const rows=[['利用コード','教科','期間','宛名','使い始め期限','メモ','作った日']], today=new Date().toLocaleDateString('ja-JP'); let ng=0;
   for(let i=0;i<n;i++){ try{ const d=await call('/api/admin/issue',{method:'POST',body:JSON.stringify({subject:sj,period:pd,note:note})}); rows.push([d.code,SJ[sj],PD[pd],'','',note,today]); }catch(e){ ng++; }

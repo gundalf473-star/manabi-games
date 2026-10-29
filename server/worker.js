@@ -13,7 +13,8 @@
 const SALES_OPEN = false;
 
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
-const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科" };
+// all（全教科）は中学受験の5教科。chuko（中高一貫コース）は中学生向けの別のプランで、全教科には入りません
+const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科", chuko: "中高一貫コース" };
 const PERIODS = {
   d1: { name: "1日", ms: 1 * 864e5 },
   w1: { name: "1週間", ms: 7 * 864e5 },
@@ -27,7 +28,11 @@ const PRICES = {
   shakai: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   shikou: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   all: { d1: 2000, w1: 4000, m1: 8000, y1: 40000 },
+  chuko: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },   // 仮の値段。公開前に決める
 };
+// ---- 継続割引：中学受験のプランを買ったことがある人が、中高一貫コースを買うときの割引（％）。0 にすると割引なし ----
+// 前に買った利用コード（購入したもの。手で作ったコードは対象外）を入れると、1つのコードにつき1回だけ使えます
+const CONTINUE_OFF = 20;
 // ---- 有料版のゲームと教科 ----
 const GAMES = {
   chusho: "kokugo", setsuzoku: "kokugo", kanji: "kokugo", shinjo: "kokugo", hyoron: "kokugo", jukugo: "kokugo", keigo: "kokugo", koji: "kokugo", hyogen: "kokugo", yoyaku: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
@@ -36,6 +41,7 @@ const GAMES = {
   genshi: "shakai", asuka: "shakai", nara: "shakai", kamakura: "shakai", taisho: "shakai", muromachi: "shakai", sengoku: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai", heian: "shakai", sengo: "shakai", chikei: "shakai", kiko: "shakai", nogyo: "shakai", suisan: "shakai", kogyo: "shakai", boeki: "shakai", koumin: "shakai", todofuken: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
+  // 中高一貫コース（games/chuko/ のゲーム）は "chuko" と書く。例 "c-sansu-sugaku": "chuko",
   tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika", yokai: "rika", rikakeisan: "rika", jikken: "rika", energy: "rika", kukimizu: "rika", jintaikeisan: "rika", shokubutsu: "rika", dobutsu: "rika", nensho: "rika", kisho: "rika", chiso: "rika", furiko: "rika", hikari: "rika", ondo: "rika", jishaku: "rika", biseibutsu: "rika", kankyo: "rika", kigu: "rika",
 };
 const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い・返金について", "問題のまちがいについて", "ゲームの不具合について", "個人情報の取り扱いについて", "その他"];
@@ -107,8 +113,10 @@ async function issueForSession(env, s) {
   const sub = s.metadata && s.metadata.subject, per = s.metadata && s.metadata.period;
   if (!PRICES[sub] || !PRICES[sub][per]) throw new Error("bad metadata");
   const code = newCode();
-  const rec = { s: sub, p: per, created: Date.now(), devices: [], session: s.id, amount: s.amount_total, email: (s.customer_details && s.customer_details.email) || "" };
+  const prev = (s.metadata && s.metadata.prev) || "";
+  const rec = { s: sub, p: per, created: Date.now(), devices: [], session: s.id, amount: s.amount_total, email: (s.customer_details && s.customer_details.email) || "", ...(prev ? { prev } : {}) };
   await putRec(env, code, rec);
+  if (prev) { const pr = await getRec(env, prev); if (pr && !pr.contUsed) { pr.contUsed = s.id; await putRec(env, prev, pr); } }   // 継続割引に使ったしるし
   const out = { code, subject: sub, period: per };
   await env.MN.put("sess:" + s.id, JSON.stringify(out));
   if (env.RESEND_API_KEY && rec.email) {
@@ -134,6 +142,16 @@ async function readToken(env, tok) {
   if (!safeEq(sig, b64u(await hmac(env.TOKEN_SECRET, body)))) return null;
   try { return JSON.parse(new TextDecoder().decode(fromB64u(body))); } catch (e) { return null; }
 }
+// 継続割引に使える利用コードか（中学受験のプランで、購入したもので、まだ割引に使っていない）
+async function continueRec(env, raw) {
+  const code = normCode(raw); if (!code) return { error: "bad_code" };
+  const rec = await getRec(env, code);
+  if (!rec) return { error: "not_found" };
+  if (rec.revoked || rec.manual || rec.s === "chuko") return { error: "not_eligible" };
+  if (rec.contUsed) return { error: "used" };
+  return { code, rec };
+}
+const offPrice = (amount) => Math.round(amount * (100 - CONTINUE_OFF) / 1000) * 10;
 function statusOf(rec, now) {
   if (rec.revoked) return "revoked";
   if (rec.exp) return now < rec.exp ? "active" : "expired";
@@ -147,7 +165,7 @@ export default {
     try {
       // 料金表
       if (p === "/api/plans" && req.method === "GET")
-        return json(env, req, { subjects: SUBJECTS, periods: Object.fromEntries(Object.entries(PERIODS).map(([k, v]) => [k, v.name])), prices: PRICES, maxDevices: MAX_DEVICES, games: GAMES, test: String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test") });
+        return json(env, req, { subjects: SUBJECTS, periods: Object.fromEntries(Object.entries(PERIODS).map(([k, v]) => [k, v.name])), prices: PRICES, continueOff: CONTINUE_OFF, maxDevices: MAX_DEVICES, games: GAMES, test: String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test") });
 
       // 運営からの緊急のお知らせ（全ページの上に帯で出す）。なければ null
       if (p === "/api/notice" && req.method === "GET") {
@@ -155,14 +173,28 @@ export default {
         return json(env, req, { notice: n ? JSON.parse(n) : null });
       }
 
+      // 継続割引が使えるか（購入ページで、前の利用コードを入れたとき）
+      if (p === "/api/continue" && req.method === "POST") {
+        const b = await req.json().catch(() => ({}));
+        if (!CONTINUE_OFF) return fail(env, req, 400, "no_discount");
+        const r = await continueRec(env, b.code);
+        return r.error ? fail(env, req, r.error === "not_found" ? 404 : 400, r.error) : json(env, req, { ok: true, code: r.code, off: CONTINUE_OFF });
+      }
+
       // 支払いページへ
       if (p === "/api/checkout" && req.method === "POST") {
         if (!SALES_OPEN) return fail(env, req, 503, "noapi");
         const b = await req.json().catch(() => ({}));
-        const amount = PRICES[b.subject] && PRICES[b.subject][b.period];
+        let amount = PRICES[b.subject] && PRICES[b.subject][b.period];
         if (!amount) return fail(env, req, 400, "bad_plan");
+        let prev = "";
+        if (b.prev && b.subject === "chuko" && CONTINUE_OFF) {
+          const r = await continueRec(env, b.prev);
+          if (r.error) return fail(env, req, 400, r.error);
+          prev = r.code; amount = offPrice(amount);
+        }
         const site = (env.SITE_URL || "").replace(/\/$/, "");
-        const name = `まなびゲーム箱 有料版（${SUBJECTS[b.subject]}・${PERIODS[b.period].name}）`;
+        const name = `まなびゲーム箱 有料版（${SUBJECTS[b.subject]}・${PERIODS[b.period].name}）${prev ? `継続割引${CONTINUE_OFF}%` : ""}`;
         const s = await stripe(env, "POST", "checkout/sessions", {
           mode: "payment", locale: "ja",
           // Stripe が販売者になる「Managed Payments」は使わない（販売者は当サイト。特商法の表記もこちら）
@@ -172,7 +204,7 @@ export default {
           "line_items[0][price_data][unit_amount]": String(amount),
           "line_items[0][price_data][product_data][name]": name,
           "line_items[0][price_data][product_data][description]": "利用コードで使う有料版。利用期間は、はじめてコードを入れたときから始まります。自動更新はありません。",
-          "metadata[subject]": b.subject, "metadata[period]": b.period,
+          "metadata[subject]": b.subject, "metadata[period]": b.period, ...(prev ? { "metadata[prev]": prev } : {}),
           "payment_intent_data[metadata][subject]": b.subject, "payment_intent_data[metadata][period]": b.period,
           success_url: `${site}/buy.html?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${site}/buy.html?canceled=1&s=${b.subject}`,
@@ -227,7 +259,7 @@ export default {
         if (!subj) return fail(env, req, 404, "no_game");
         const tk = await readToken(env, (req.headers.get("Authorization") || "").replace(/^Bearer\s+/, ""));
         if (!tk) return fail(env, req, 401, "bad_token");
-        if (tk.s !== "all" && tk.s !== subj) return fail(env, req, 403, "subject");
+        if (tk.s !== subj && !(tk.s === "all" && subj !== "chuko")) return fail(env, req, 403, "subject");
         if (now >= tk.exp) return fail(env, req, 410, "expired", { exp: tk.exp });
         if (now >= tk.t) return fail(env, req, 401, "renew");
         const rec = await getRec(env, tk.c);
