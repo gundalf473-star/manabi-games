@@ -30,7 +30,7 @@ const PRICES = {
 };
 // ---- 有料版のゲームと教科 ----
 const GAMES = {
-  chusho: "kokugo", setsuzoku: "kokugo", kanji: "kokugo", shinjo: "kokugo", hyoron: "kokugo", yoyaku: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
+  chusho: "kokugo", setsuzoku: "kokugo", kanji: "kokugo", shinjo: "kokugo", hyoron: "kokugo", jukugo: "kokugo", keigo: "kokugo", koji: "kokugo", hyogen: "kokugo", yoyaku: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
   "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", gyakusan: "sansu", seishitsu: "sansu", hayasa: "sansu", menseki: "sansu", kakudo: "sansu", soji: "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou", michi: "shikou", heimen: "shikou", sujitsunagi: "shikou", shikitsume: "shikou", tsumiki: "shikou", building: "shikou",
   genshi: "shakai", asuka: "shakai", nara: "shakai", kamakura: "shakai", taisho: "shakai", muromachi: "shakai", sengoku: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
