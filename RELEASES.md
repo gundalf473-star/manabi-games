@@ -37,6 +37,7 @@
 | 中高一貫コースの料金を教科ごとに（国語・数学・英語・理科・社会 各1ヵ月4,000円、中高一貫 全教科 1ヵ月8,000円。中学受験と同じ値段） | 必要（worker.js を貼り直す） | いらない | ― |
 | 中高一貫コースの国語：口語文法①②・中学の漢字①②・語句と語彙・古典文法・漢文の句法・詩歌と文学史（各100問・無料版5問） | 必要（GAMES に c-bunpo1・c-bunpo2・c-kanji1・c-kanji2・c-goku・c-koten・c-kanbun・c-inbun を "ckokugo" で追加） | 8単元のパックを入れる | ― |
 | 中高一貫コースの社会：中学地理5・中学公民5・高校の地理総合・歴史総合・テーマ史・公共・政治経済・倫理（各100問・無料版5問） | 必要（GAMES に c-chiri1・c-chiri2・c-chiri3・c-chiri4・c-chiri5・c-komin1・c-komin2・c-komin3・c-komin4・c-komin5・c-chirisogo・c-rekisogo・c-tankyu・c-kokyo・c-seikei・c-rinri を "cshakai" で追加） | 16単元のパックを入れる | ― |
+| 中高一貫コースの英語：絵で学ぶ英語7・中学英文法14・会話と読解2・高校英文法10・英検5級/4級/準2級プラス①②/準1級①②・英検ライティング2・英検リスニング3（各100問・無料版5問。絵の単元とリスニングは gen.py の PIC/EN_UI/LISTEN を使う） | 必要（GAMES に 44単元を "ceigo" で追加） | 44単元のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
