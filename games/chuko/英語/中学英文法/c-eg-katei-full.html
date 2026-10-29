@@ -1,10 +1,10 @@
-<title>仮定法 100問</title>
+<title>仮定法の基本（If I were・I wish） 100問</title>
 <meta name="game:paid" content="利用コード">
 <meta name="game:course" content="chuko"><meta name="game:subject" content="英語">
-<meta name="game:unit" content="仮定法">
+<meta name="game:unit" content="仮定法の基本（If I were・I wish）">
 <meta name="game:grade" content="中3">
 <meta name="game:players" content="1人">
-<meta name="description" content="仮定法の有料版。If I were…、If I had…, I would／could…、I wish＋過去形、ふつうの条件の if との区別、事実の文からの書きかえまで、5段階×20問の全100問。問題はすべてオリジナルです。">
+<meta name="description" content="「仮定法の基本」の有料版。If I were…、If I had…, I would／could…、I wish＋過去形、ふつうの条件の if との区別、事実の文からの書きかえまで、5段階×20問の全100問。問題はすべてオリジナルです。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -110,7 +110,7 @@ button{font:inherit;color:inherit}
 
 <div class="wrap">
   <header>
-    <h1><small>英語クイズ</small>仮定法 100問</h1>
+    <h1><small>英語クイズ</small>仮定法の基本（If I were・I wish） 100問</h1>
     <p class="lead">If I were…・If I had…, I would／could…・I wish…、ふつうの if とのちがい、事実の文からの書きかえ。5つのレベルに20問ずつ。1回10問。</p>
   </header>
   <section class="box" id="app"></section>
@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="c-eg-katei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>仮定法 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。If I were、一般動詞の過去形と would・could、I wish、ふつうの if との区別、書きかえの5段階、各20問（すべてオリジナル）。</span></a>`;
+const PAIDLINK=`<a class="paid" href="c-eg-katei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>仮定法の基本（If I were・I wish） 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。If I were、一般動詞の過去形と would・could、I wish、ふつうの if との区別、書きかえの5段階、各20問（すべてオリジナル）。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>仮定法過去</dt><dd>今の事実とちがうことを仮定する言い方。動詞を過去形にして「今」のことを表す</dd><dt>形</dt><dd>If＋主語＋過去形 〜, 主語＋would（could）＋動詞の原形 …</dd><dt>be動詞は were</dt><dd>主語が I・he・she でも、ふつう were を使う。If I were you, …（私があなたなら）</dd><dt>would と could</dt><dd>would＝〜するだろうに、could＝〜できるだろうに。どちらもあとは動詞の原形</dd><dt>I wish</dt><dd>I wish＋主語＋過去形（were・could）。今かなわない願い「〜ならいいのに」</dd><dt>ふつうの if</dt><dd>実際にありうる条件は現在形。If it rains tomorrow, I will stay home.</dd><dt>見分け方</dt><dd>「〜のに」と事実と反対なら仮定法、本当に起こりうるならふつうの if</dd><dt>書きかえ</dt><dd>Because I don't have a car, I can't drive. → If I had a car, I could drive.（否定と肯定が入れかわる）</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-eg-katei'); }
@@ -149,7 +149,7 @@ function home(){
   if(PAID)return homePaid();
   app.innerHTML=`<div class="label">あそびかた</div>
     <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">仮定法のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">仮定法の基本（If I were・I wish）のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
   document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
 }
@@ -162,11 +162,11 @@ function homePaid(){
     <div class="label">レベルをえらぶ（1回10問）</div>
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
-      <button class="cat" data-l="all"><span class="nm">仮定法まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="all"><span class="nm">仮定法の基本（If I were・I wish）まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
       ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">仮定法のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">仮定法の基本（If I were・I wish）のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
@@ -259,7 +259,7 @@ function result(){
   if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'c-eg-katei-p-best':'c-eg-katei-best',best);}
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
-    <p style="margin:0">${r===1?'全問正解！仮定法はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、何が「もとにする量」かを確かめよう。'}</p>
+    <p style="margin:0">${r===1?'全問正解！仮定法の基本（If I were・I wish）はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、何が「もとにする量」かを確かめよう。'}</p>
     <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
