@@ -13,8 +13,13 @@
 const SALES_OPEN = false;
 
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
-// all（全教科）は中学受験の5教科。chuko（中高一貫コース）は中学生向けの別のプランで、全教科には入りません
-const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科", chuko: "中高一貫コース" };
+// all（全教科）は中学受験の5教科。中高一貫コースは中学生向けの別のプランで、中学受験の全教科には入りません
+// 中高一貫コースは教科ごと（ckokugo〜cshakai）と、中高一貫コースの全教科（chuko）。値段は中学受験の1教科・全教科と同じ（2026-10-29変更）
+const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科", ckokugo: "中高一貫 国語", csugaku: "中高一貫 数学", ceigo: "中高一貫 英語", crika: "中高一貫 理科", cshakai: "中高一貫 社会", chuko: "中高一貫 全教科" };
+const CHUKO_SUBJ = { ckokugo: "国語", csugaku: "数学", ceigo: "英語", crika: "理科", cshakai: "社会" };
+const isChuko = (s) => s === "chuko" || Object.prototype.hasOwnProperty.call(CHUKO_SUBJ, s);
+// その利用コードの教科（tokenS）で、そのゲームの教科（subj）が使えるか
+const covers = (tokenS, subj) => tokenS === subj || (tokenS === "all" && !isChuko(subj)) || (tokenS === "chuko" && isChuko(subj));
 const PERIODS = {
   d1: { name: "1日", ms: 1 * 864e5 },
   w1: { name: "1週間", ms: 7 * 864e5 },
@@ -28,7 +33,12 @@ const PRICES = {
   shakai: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   shikou: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   all: { d1: 2000, w1: 4000, m1: 8000, y1: 40000 },
-  chuko: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },   // 中高一貫コース（1ヵ月4000円・2026-10-29決定）
+  ckokugo: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  csugaku: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  ceigo: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  crika: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  cshakai: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  chuko: { d1: 2000, w1: 4000, m1: 8000, y1: 40000 },   // 中高一貫コースの全教科
 };
 // ---- 継続割引：中学受験のプランを買ったことがある人が、中高一貫コースを買うときの割引（％）。0 にすると割引なし ----
 // 前に買った利用コード（購入したもの。手で作ったコードは対象外）を入れると、1つのコードにつき1回だけ使えます
@@ -41,8 +51,8 @@ const GAMES = {
   genshi: "shakai", asuka: "shakai", nara: "shakai", kamakura: "shakai", taisho: "shakai", muromachi: "shakai", sengoku: "shakai", "edo-zenki": "shakai", "edo-chuki": "shakai", "edo-koki": "shakai",
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai", heian: "shakai", sengo: "shakai", chikei: "shakai", kiko: "shakai", nogyo: "shakai", suisan: "shakai", kogyo: "shakai", boeki: "shakai", koumin: "shakai", todofuken: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
-  // 中高一貫コース（games/chuko/ のゲーム）は "chuko" と書く。例 "c-sansu-sugaku": "chuko",
-  "c-sansu-sugaku": "chuko", "c-seifu": "chuko", "c-eigo1": "chuko", "c-kobun": "chuko", "c-hoteishiki": "chuko", "c-hirei": "chuko", "c-heimen": "chuko", "c-eigo-kako": "chuko", "c-kobun2": "chuko", "c-eiken3": "chuko", "c-sekai1": "chuko", "c-sekai2": "chuko", "c-sekai3": "chuko", "c-sekai4": "chuko", "c-nihon1": "chuko", "c-nihon2": "chuko", "c-nihon3": "chuko", "c-butsuri1": "chuko", "c-butsuri2": "chuko", "c-butsuri3": "chuko", "c-kagaku1": "chuko", "c-kagaku2": "chuko", "c-kagaku3": "chuko", "c-eiken-p2a": "chuko", "c-eiken-p2b": "chuko", "c-eiken2a": "chuko", "c-eiken2b": "chuko", "c-ronri1": "chuko", "c-ronri2": "chuko", "c-ronri3": "chuko", "c-hyogen": "chuko", "c-renritsu": "chuko", "c-ichiji": "chuko", "c-zukei2": "chuko", "c-kakuritsu": "chuko", "c-tenkai": "chuko", "c-niji": "chuko", "c-sanheiho": "chuko", "c-su1": "chuko", "c-sankaku": "chuko", "c-baai": "chuko", "c-su2a": "chuko", "c-su2b": "chuko", "c-su2c": "chuko", "c-su2d": "chuko", "c-su2e": "chuko", "c-sub": "chuko", "c-suc": "chuko", "c-sub2": "chuko", "c-suc2": "chuko", "c-seibutsu1": "chuko", "c-seibutsu2": "chuko", "c-seibutsu3": "chuko", "c-chigaku1": "chuko", "c-chigaku2": "chuko", "c-chigaku3": "chuko", "c-pk1": "chuko", "c-pk2": "chuko", "c-pk3": "chuko", "c-pk4": "chuko", "c-pk5": "chuko", "c-ck1": "chuko", "c-ck2": "chuko", "c-ck3": "chuko", "c-ck4": "chuko", "c-bk1": "chuko", "c-bk2": "chuko", "c-bk3": "chuko", "c-bk4": "chuko", "c-ek1": "chuko", "c-ek2": "chuko", "c-ek3": "chuko", "c-ph1": "chuko", "c-ph2": "chuko", "c-ph3": "chuko", "c-ph4": "chuko", "c-ph5": "chuko", "c-ch1": "chuko", "c-ch2": "chuko", "c-ch3": "chuko", "c-ch4": "chuko", "c-bi1": "chuko", "c-bi2": "chuko", "c-bi3": "chuko", "c-bi4": "chuko",
+  // 中高一貫コース（games/chuko/ のゲーム）は、フォルダの教科で ckokugo・csugaku・ceigo・crika・cshakai のどれかを書く
+  "c-sansu-sugaku": "csugaku", "c-seifu": "csugaku", "c-eigo1": "ceigo", "c-kobun": "ckokugo", "c-hoteishiki": "csugaku", "c-hirei": "csugaku", "c-heimen": "csugaku", "c-eigo-kako": "ceigo", "c-kobun2": "ckokugo", "c-eiken3": "ceigo", "c-sekai1": "cshakai", "c-sekai2": "cshakai", "c-sekai3": "cshakai", "c-sekai4": "cshakai", "c-nihon1": "cshakai", "c-nihon2": "cshakai", "c-nihon3": "cshakai", "c-butsuri1": "crika", "c-butsuri2": "crika", "c-butsuri3": "crika", "c-kagaku1": "crika", "c-kagaku2": "crika", "c-kagaku3": "crika", "c-eiken-p2a": "ceigo", "c-eiken-p2b": "ceigo", "c-eiken2a": "ceigo", "c-eiken2b": "ceigo", "c-ronri1": "ckokugo", "c-ronri2": "ckokugo", "c-ronri3": "ckokugo", "c-hyogen": "ckokugo", "c-renritsu": "csugaku", "c-ichiji": "csugaku", "c-zukei2": "csugaku", "c-kakuritsu": "csugaku", "c-tenkai": "csugaku", "c-niji": "csugaku", "c-sanheiho": "csugaku", "c-su1": "csugaku", "c-sankaku": "csugaku", "c-baai": "csugaku", "c-su2a": "csugaku", "c-su2b": "csugaku", "c-su2c": "csugaku", "c-su2d": "csugaku", "c-su2e": "csugaku", "c-sub": "csugaku", "c-suc": "csugaku", "c-sub2": "csugaku", "c-suc2": "csugaku", "c-seibutsu1": "crika", "c-seibutsu2": "crika", "c-seibutsu3": "crika", "c-chigaku1": "crika", "c-chigaku2": "crika", "c-chigaku3": "crika", "c-pk1": "crika", "c-pk2": "crika", "c-pk3": "crika", "c-pk4": "crika", "c-pk5": "crika", "c-ck1": "crika", "c-ck2": "crika", "c-ck3": "crika", "c-ck4": "crika", "c-bk1": "crika", "c-bk2": "crika", "c-bk3": "crika", "c-bk4": "crika", "c-ek1": "crika", "c-ek2": "crika", "c-ek3": "crika", "c-ph1": "crika", "c-ph2": "crika", "c-ph3": "crika", "c-ph4": "crika", "c-ph5": "crika", "c-ch1": "crika", "c-ch2": "crika", "c-ch3": "crika", "c-ch4": "crika", "c-bi1": "crika", "c-bi2": "crika", "c-bi3": "crika", "c-bi4": "crika",
   tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika", yokai: "rika", rikakeisan: "rika", jikken: "rika", energy: "rika", kukimizu: "rika", jintaikeisan: "rika", shokubutsu: "rika", dobutsu: "rika", nensho: "rika", kisho: "rika", chiso: "rika", furiko: "rika", hikari: "rika", ondo: "rika", jishaku: "rika", biseibutsu: "rika", kankyo: "rika", kigu: "rika",
 };
 const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い・返金について", "問題のまちがいについて", "ゲームの不具合について", "個人情報の取り扱いについて", "その他"];
@@ -148,7 +158,7 @@ async function continueRec(env, raw) {
   const code = normCode(raw); if (!code) return { error: "bad_code" };
   const rec = await getRec(env, code);
   if (!rec) return { error: "not_found" };
-  if (rec.revoked || rec.manual || rec.s === "chuko") return { error: "not_eligible" };
+  if (rec.revoked || rec.manual || isChuko(rec.s)) return { error: "not_eligible" };
   if (rec.contUsed) return { error: "used" };
   return { code, rec };
 }
@@ -189,7 +199,7 @@ export default {
         let amount = PRICES[b.subject] && PRICES[b.subject][b.period];
         if (!amount) return fail(env, req, 400, "bad_plan");
         let prev = "";
-        if (b.prev && b.subject === "chuko" && CONTINUE_OFF) {
+        if (b.prev && isChuko(b.subject) && CONTINUE_OFF) {
           const r = await continueRec(env, b.prev);
           if (r.error) return fail(env, req, 400, r.error);
           prev = r.code; amount = offPrice(amount);
@@ -260,7 +270,7 @@ export default {
         if (!subj) return fail(env, req, 404, "no_game");
         const tk = await readToken(env, (req.headers.get("Authorization") || "").replace(/^Bearer\s+/, ""));
         if (!tk) return fail(env, req, 401, "bad_token");
-        if (tk.s !== subj && !(tk.s === "all" && subj !== "chuko")) return fail(env, req, 403, "subject");
+        if (!covers(tk.s, subj)) return fail(env, req, 403, "subject");
         if (now >= tk.exp) return fail(env, req, 410, "expired", { exp: tk.exp });
         if (now >= tk.t) return fail(env, req, 401, "renew");
         const rec = await getRec(env, tk.c);
