@@ -202,7 +202,7 @@ const REC={
   'kigu-p-rec':{f:'kigu-full.html',total:100},
   'wariai-p-rec':{f:'wariai-full.html',total:100},
   'gyakusan-p-rec':{f:'gyakusan-full.html',total:100},
-  'baai-p-rec':{f:'baai-full.html',total:100},'c-sansu-sugaku-p-rec':{f:'c-sansu-sugaku-full.html',total:100},'c-seifu-p-rec':{f:'c-seifu-full.html',total:100},'c-eigo1-p-rec':{f:'c-eigo1-full.html',total:100},'c-kobun-p-rec':{f:'c-kobun-full.html',total:100},
+  'baai-p-rec':{f:'baai-full.html',total:100},'c-sansu-sugaku-p-rec':{f:'c-sansu-sugaku-full.html',total:100},'c-seifu-p-rec':{f:'c-seifu-full.html',total:100},'c-eigo1-p-rec':{f:'c-eigo1-full.html',total:100},'c-kobun-p-rec':{f:'c-kobun-full.html',total:100},'c-hoteishiki-p-rec':{f:'c-hoteishiki-full.html',total:100},'c-hirei-p-rec':{f:'c-hirei-full.html',total:100},'c-heimen-p-rec':{f:'c-heimen-full.html',total:100},'c-eigo-kako-p-rec':{f:'c-eigo-kako-full.html',total:100},'c-kobun2-p-rec':{f:'c-kobun2-full.html',total:100},'c-eiken3-p-rec':{f:'c-eiken3-full.html',total:100},
   'seishitsu-p-rec':{f:'seishitsu-full.html',total:100},
   'hayasa-p-rec':{f:'hayasa-full.html',total:100},
   'menseki-p-rec':{f:'menseki-full.html',total:100},
@@ -241,6 +241,7 @@ const order=['算数','国語','理科','社会','思考力'];
 const subjOf={},urlOf={};
 const crsOf={};   // コース（juken＝中学受験、chuko＝中高一貫コース）。一覧にないページ（今日の1問など）は中学受験
 games.forEach(g=>{const f=decodeURIComponent(g.url.split('/').pop());subjOf[f]=g.subject;urlOf[f]=g.url;crsOf[f]=g.course||'juken';});
+['tango.html','test.html'].forEach(f=>{crsOf[f]='chuko';});   // 中高一貫コースの毎日の英単語・定期テスト対策
 const cOf=f=>crsOf[f]||'juken';
 const COLORS=['--s1','--s2','--s3','--s4','--s5','--s6'];
 const color=s=>{const i=order.indexOf(s);return `var(${COLORS[(i<0?5:i)%6]})`;};
@@ -359,8 +360,26 @@ function render(){
   }).filter(Boolean);
 
   const label={7:'この7日間',30:'この30日間',all:'これまで'}[range];
+  // 中高一貫コース：中だるみの注意と、定期テスト・英単語のようす
+  const chuko=crs!=='chuko'||sample?'':(()=>{
+    const lines=[], warn=[];
+    const lastC=data.reduce((m,e)=>Math.max(m,e.t),0), gap=lastC?Math.floor((today-new Date(ymd(lastC)).getTime())/DAY):null;
+    if(gap!=null&&gap>=3)warn.push(`<b>${gap}日間、学習の記録がありません。</b>「毎日の英単語」の10語（3分ほど）からでも、声をかけてみてください。`);
+    const tg=read('mn-tango',null); let st=0;
+    if(tg&&tg.days){let k=Math.floor((now+9*36e5)/DAY);const y=d=>new Date(d*DAY).toISOString().slice(0,10);if(!tg.days[y(k)])k--;while(tg.days[y(k)]){st++;k--;}}
+    lines.push(st?`毎日の英単語は <b>${st}日連続</b>。`:`毎日の英単語は、まだ続いていません。 <a href="chuko/tango.html">毎日の英単語へ →</a>`);
+    const ts=read('mn-test',null);
+    if(ts&&ts.date){const d=Math.round((Date.parse(ts.date)-Date.parse(new Date(now+9*36e5).toISOString().slice(0,10)))/DAY);
+      if(d>=0){let tot=0,m=0;(ts.units||[]).forEach(id=>{const o=Object.entries(REC).find(([k,v])=>v.f===id+'-full.html');if(!o)return;tot+=o[1].total;const r=read(o[0],{})||{};m+=Object.values(r).filter(v=>state(v)==='master').length;});
+        lines.push(`<b>${esc(ts.name)}</b>まで あと <b>${d}日</b>。範囲 ${tot}問のうち 覚えた問題 ${m}問（${tot?Math.round(m/tot*100):0}%）。`);
+        if(d<=7&&tot&&m/tot<.5)warn.push(`テストまで1週間を切りましたが、範囲の半分以上がまだ「覚えた」になっていません。 <a href="chuko/test.html">今日やることを見る →</a>`);}}
+    else lines.push(`定期テストの日と範囲を登録すると、毎日の計画と進み具合が出ます。 <a href="chuko/test.html">定期テスト対策へ →</a>`);
+    const ew=Object.entries(recInfo).filter(([f])=>/英語/.test(subjOf[f]||'')).reduce((a,[,c])=>a+c.weak,0);
+    if(ew>=10)warn.push(`英語のにがてが <b>${ew}問</b> たまっています。英語の単元で「にがて」をえらぶと、まちがえた問題から出ます。`);
+    return `<section class="card week"><h2>中高一貫コースのようす</h2>${warn.length?`<div class="sample" style="background:#fde8e6;color:#7a1f17">${warn.join('<br>')}</div>`:''}<ul style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>
+      <p class="note">中学に入ると、親が勉強を見る時間はへりがちです。点数より「続けているか」「にがてを放っていないか」を、週に一度ここで確かめてみてください。</p></section>`;})();
   app.innerHTML=`<div style="display:flex;flex-direction:column;gap:18px">
-    ${crsTabs()}
+    ${crsTabs()}${chuko}
     ${sample?`<div class="sample">見本のデータを表示しています（架空の記録です）。 <button class="linkbtn" id="unsmp">見本を閉じる</button></div>`:''}
     <div class="bar-row"><div class="seg" role="group" aria-label="期間">${[[7,'7日'],[30,'30日'],['all','ぜんぶ']].map(([v,t])=>`<button data-r="${v}" aria-pressed="${String(range)===String(v)}">${t}</button>`).join('')}</div>
       <div class="tools"><button class="btn" id="print">印刷する</button></div></div>

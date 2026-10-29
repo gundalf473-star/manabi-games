@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>定期テスト対策｜テストの日と範囲から毎日の計画を｜{{SITE_NAME}}</title>
+<meta name="description" content="定期テストの日と範囲（単元）を選ぶと、テストまでの日数で毎日やる問題数を割りふります。にがての問題から先に。進み具合は保護者ページでも見られます。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。テストの登録（日・範囲）→ カウントダウンと全体の進み → 今日やること（単元ごと） */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --fg:#17202c; --muted:#5a6473; --rule:#d9dde3; --ink:#0f3b4c; --accent:#0e7c7b;
+  --ok:#1d8150; --ng:#c8352d; --gold:#a8740d; --pick:#e6f2f1;
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1318; --surface:#171d25; --fg:#e5e9ee; --muted:#9ba5b3; --rule:#2a323d; --ink:#7cc6d6; --accent:#45b8b5;
+  --ok:#4cc184; --ng:#f07468; --gold:#e0b454; --pick:#17302f; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6.4vw,36px);line-height:1.25;margin:2px 0 0;color:var(--ink)}
+h2{font-family:var(--display);font-size:18px;margin:0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+input[type=text],input[type=date]{border:1px solid var(--rule);border-radius:6px;padding:8px 10px;background:transparent;min-width:0;width:100%;box-sizing:border-box}
+.units{display:grid;gap:6px}
+.unit{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--rule);border-radius:8px;padding:8px 10px;cursor:pointer}
+.unit input{width:20px;height:20px;margin-top:3px;flex:none}
+.unit .s{font-size:12px;color:var(--muted)}
+.subj{font-size:12px;font-weight:700;color:var(--accent);margin-top:6px}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;font-size:17px}
+.btn.sub{background:var(--pick);color:var(--fg);font-size:15px;padding:8px 14px}
+.btn:disabled{opacity:.5;cursor:default}
+.count{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.count .n{font-family:var(--display);font-size:48px;font-weight:700;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.bar{height:10px;background:var(--rule);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.todo{display:grid;gap:8px}
+.item{border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.item.done{border-left-color:var(--ok);opacity:.85}
+.item .t{font-weight:700;font-family:var(--display);font-size:17px}
+.item .m{font-size:13px;color:var(--muted)}
+.item .go{align-self:flex-start;font-weight:700}
+.chk{color:var(--ok);font-weight:700}
+.note{font-size:13px;color:var(--muted);margin:0}
+.err{color:var(--ng);font-weight:700;margin:0;min-height:1.2em}
+footer{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><a href="index.html">中高一貫コース</a></div>
+    <h1>定期テスト対策</h1>
+    <p class="lead">テストの日と範囲を選ぶと、テストまでの毎日に問題を割りふります。にがての問題から先に解いていきましょう。</p>
+  </header>
+  <div id="app"><p class="note">読みこんでいます…</p></div>
+  <footer><a href="index.html">← 中高一貫コースへ</a>　・　<a href="../parent.html#chuko">保護者ページ</a></footer>
+</div>
+<script>
+(async function(){
+const KEY='mn-test', app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rd=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const jst=()=>new Date(Date.now()+9*36e5).toISOString().slice(0,10);
+const days=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+let data; try{data=await (await fetch('../games.json',{cache:'no-cache'})).json();}catch(e){app.innerHTML='<p class="err">単元の一覧を読みこめませんでした。ページを再読みこみしてください。</p>';return;}
+/* 中高一貫コースの有料版（100問の単元）。記録の場所（rec）は保護者ページと同じ */
+const recOf={}; Object.entries(data.rec||{}).forEach(([k,o])=>{recOf[o.f]={key:k,total:o.total};});
+const UNITS=data.games.filter(g=>g.course==='chuko'&&g.paid&&recOf[g.file]).map(g=>({id:g.file.replace(/-full\.html$/,''),file:g.file,title:g.title,subject:g.subject,unit:g.unit,url:'../'+g.url,...recOf[g.file]}));
+const state=r=>{if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+function stat(u){const r=rd(u.key,{})||{};let m=0,w=0,t=0;Object.values(r).forEach(v=>{const s=state(v);if(s==='master')m++;else if(s==='weak')w++;else if(s==='try')t++;});return {master:m,weak:w,tried:t,left:Math.max(0,u.total-m)};}
+function todayCount(u){const H=rd('mn-history',[]);const t=jst();return (Array.isArray(H)?H:[]).filter(e=>e&&e.f===u.file&&new Date(e.t+9*36e5).toISOString().slice(0,10)===t).reduce((s,e)=>s+(e.a||0),0);}
+let T=rd(KEY,null);
+function setup(){
+  const t=jst(), def=T||{name:'',date:'',units:[]};
+  const bySubj={};UNITS.forEach(u=>{(bySubj[u.subject]=bySubj[u.subject]||[]).push(u);});
+  app.innerHTML=`<section class="box"><h2>${T?'テストを変える':'テストを登録する'}</h2>
+    <div><div class="label">テストの名前</div><input type="text" id="nm" maxlength="30" placeholder="例：1学期 中間テスト" value="${esc(def.name)}"></div>
+    <div><div class="label">テストの日（1日目）</div><input type="date" id="dt" min="${t}" value="${esc(def.date)}"></div>
+    <div><div class="label">テストの範囲（単元をえらぶ）</div>
+      ${UNITS.length?Object.entries(bySubj).map(([s,us])=>`<div class="subj">${esc(s)}</div><div class="units">${us.map(u=>`<label class="unit"><input type="checkbox" value="${esc(u.id)}" ${def.units.includes(u.id)?'checked':''}><span><span>${esc(u.title)}</span><br><span class="s">${esc(u.unit)}・${u.total}問・覚えた ${stat(u).master}問</span></span></label>`).join('')}</div>`).join(''):'<p class="note">中高一貫コースの単元がまだありません。</p>'}
+    </div>
+    <p class="err" id="er" role="alert"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="save">計画をつくる</button>${T?'<button class="btn sub" id="cancel">もどる</button>':''}</div>
+    <p class="note">有料版（中高一貫コースのプラン）の単元から選べます。範囲に入っていない単元は、ふだんどおりに学習しましょう。</p></section>`;
+  document.getElementById('save').onclick=()=>{
+    const name=document.getElementById('nm').value.trim()||'定期テスト', date=document.getElementById('dt').value;
+    const units=[...app.querySelectorAll('.unit input:checked')].map(i=>i.value), er=document.getElementById('er');
+    if(!date||date<jst()){er.textContent='テストの日を、今日よりあとの日で入れてください。';return;}
+    if(!units.length){er.textContent='範囲の単元を1つ以上えらんでください。';return;}
+    const start=Object.fromEntries(units.map(id=>[id,stat(UNITS.find(u=>u.id===id)).master]));
+    T={name,date,units,set:jst(),start};wr(KEY,T);
+    try{window.mnTrack&&mnTrack('test_plan',{units:units.length,days:days(jst(),date)});}catch(e){}
+    plan();};
+  const c=document.getElementById('cancel'); if(c)c.onclick=plan;
+}
+function plan(){
+  if(!T){setup();return;}
+  const t=jst(), left=days(t,T.date), us=T.units.map(id=>UNITS.find(u=>u.id===id)).filter(Boolean);
+  if(left<0){app.innerHTML=`<section class="box"><h2>${esc(T.name)}は終わりました</h2><p style="margin:0">おつかれさまでした！ 次のテストを登録しておくと、また毎日の計画がつくれます。</p><div><button class="btn" id="new">次のテストを登録する</button></div></section>`;
+    document.getElementById('new').onclick=()=>{T=null;wr(KEY,null);setup();};return;}
+  const ss=us.map(u=>({u,s:stat(u),today:todayCount(u)}));
+  const tot=ss.reduce((a,x)=>a+x.u.total,0), mast=ss.reduce((a,x)=>a+x.s.master,0), gain=ss.reduce((a,x)=>a+Math.max(0,x.s.master-(T.start[x.u.id]||0)),0);
+  const dl=Math.max(1,left);   /* テストの前日まで（当日は見直しの日）。前日・当日は1日として数える */
+  const items=ss.map(x=>{const need=Math.ceil(x.s.left/dl), goal=Math.max(need,x.s.weak?10:0), done=goal>0&&x.today>=goal;
+    return {...x,goal,done};}).sort((a,b)=>(a.done-b.done)||(b.s.weak-a.s.weak)||(b.s.left-a.s.left));
+  const tg=rd('mn-tango',null), tday=tg&&tg.days&&tg.days[t];
+  app.innerHTML=`<section class="box">
+    <div class="label">${esc(T.name)}</div>
+    <div class="count"><span>テストまで あと</span><span class="n">${left}</span><span>日</span><span class="note" style="margin-left:auto">${esc(T.date.replace(/^(\d+)-0?(\d+)-0?(\d+)$/,'$2月$3日'))}</span></div>
+    <div class="bar" aria-hidden="true"><i style="width:${tot?Math.round(mast/tot*100):0}%"></i></div>
+    <p class="note">範囲 ${us.length}単元・${tot}問のうち、覚えた問題 ${mast}問（${tot?Math.round(mast/tot*100):0}%）。計画を立ててから ${gain}問ふえました。</p></section>
+  <section class="box"><h2>今日やること</h2><div class="todo">
+    ${items.map(x=>`<div class="item ${x.done?'done':''}"><span class="t">${esc(x.u.title)}</span>
+      <span class="m">${x.goal?`今日の目標 <b>${x.goal}問</b>（今日 ${x.today}問）${x.done?'　<span class="chk">✓ 達成</span>':''}`:'<span class="chk">✓ ぜんぶ覚えました。テスト前に「ぜんぶ」でもう一度</span>'}</span>
+      <span class="m">にがて ${x.s.weak}問・まだ覚えていない ${x.s.left}問${x.s.weak?'　→ まず「にがて」から':x.s.left>x.s.tried+x.s.weak?'　→ 「まだやっていない」から':''}</span>
+      <a class="go" href="${esc(x.u.url)}">この単元をひらく →</a></div>`).join('')}
+    <div class="item ${tday?'done':''}"><span class="t">毎日の英単語</span><span class="m">${tday?'<span class="chk">✓ 今日の10語はおわり</span>':'1日10語。テスト中も続けよう'}</span><a class="go" href="tango.html">英単語をひらく →</a></div>
+    </div>
+    <p class="note">目標は「まだ覚えていない問題 ÷ テストまでの日数」。単元の中で「にがて」「今日の解き直し」をえらぶと、まちがえた問題から出ます。2回以上正解して、まちがいより正解が多くなると「覚えた」になります。</p></section>
+  <section class="box"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sub" id="edit">テストの日・範囲を変える</button><button class="btn sub" id="del">このテストを消す</button></div><p class="note" id="cq"></p></section>`;
+  document.getElementById('edit').onclick=setup;
+  document.getElementById('del').onclick=()=>{const q=document.getElementById('cq');q.innerHTML='このテストの計画を消しますか？（問題の記録は消えません） <button class="btn sub" id="yes">消す</button> <button class="btn sub" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{T=null;wr(KEY,null);setup();};document.getElementById('no').onclick=()=>{q.textContent='';};};
+}
+plan();
+})();
+</script>
+</body>
+</html>

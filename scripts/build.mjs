@@ -236,12 +236,16 @@ if (CHUKO.length) index = index.replace('id="chukoentry" href="chuko/index.html"
 const verify = (site.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">` : "") + (site.bingSiteVerification ? `<meta name="msvalidate.01" content="${esc(site.bingSiteVerification)}">` : "");
 fs.writeFileSync(path.join(OUT, "index.html"), sitePage(index.replace("{{GA}}", GA), "index.html", { extraHead: verify,
   jsonld: { "@context": "https://schema.org", "@type": "WebSite", name: site.name, url: SITE_URL + "/", description: site.description, inLanguage: "ja" } }));
-// 中高一貫コースの入口（chuko/index.html）
-if (fs.existsSync(path.join(ROOT, "chuko", "index.html"))) {
+// 中高一貫コースのページ（chuko/ の中の .html）。入口のほかは学習の記録をとる。毎日の英単語には単語表を入れる
+if (fs.existsSync(path.join(ROOT, "chuko"))) {
   fs.mkdirSync(path.join(OUT, "chuko"), { recursive: true });
-  const ch = fs.readFileSync(path.join(ROOT, "chuko", "index.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA)
-    .replace('<main id="list"></main>', () => `<main id="list">${staticList(CHUKO, "../")}</main>`);
-  fs.writeFileSync(path.join(OUT, "chuko", "index.html"), sitePage(ch, "chuko/index.html"));
+  const words = fs.existsSync(path.join(ROOT, "chuko", "words.json")) ? fs.readFileSync(path.join(ROOT, "chuko", "words.json"), "utf8").trim() : "[]";
+  for (const name of fs.readdirSync(path.join(ROOT, "chuko")).filter((f) => f.endsWith(".html"))) {
+    const ch = fs.readFileSync(path.join(ROOT, "chuko", name), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", name === "index.html" ? GA : GA + HISTORY)
+      .replace('<main id="list"></main>', () => `<main id="list">${staticList(CHUKO, "../")}</main>`)
+      .replace("/*WORDS*/[]", () => words.replace(/</g, "\\u003c"));
+    fs.writeFileSync(path.join(OUT, "chuko", name), sitePage(ch, "chuko/" + name));
+  }
 }
 const privacy = fs.readFileSync(path.join(ROOT, "privacy.html"), "utf8")
   .replaceAll("{{SITE_NAME}}", esc(site.name)).replaceAll("{{CONTACT}}", esc(site.contact || "（連絡先を site.json に書いてください）")).replace("{{GA}}", GA);

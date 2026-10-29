@@ -22,6 +22,7 @@
 | 思考力の新単元「数字つなぎパズル」「ブロックしきつめ」「積み木の数」「ビルディングパズル」（各100問・無料版5問） | 必要（GAMES に sujitsunagi・shikitsume・tsumiki・building を追加） | sujitsunagi・shikitsume・tsumiki・building を入れる | ― |
 | 中高一貫コースの土台：入口ページ（chuko/index.html）・トップの入口（中高一貫コースのゲームが1本でもあると表示）・購入ページに「中高一貫コース」プランと継続割引（中学受験のプランを買ったことがある人は20%引き・1コード1回）・保護者ページのコース切りかえ。「全教科」には中高一貫コースは入らない | 必要（SUBJECTS・PRICES に chuko（1ヵ月4000円）、CONTINUE_OFF＝20、/api/continue） | ― | 利用コードの教科に「中高一貫コース」を追加 |
 | 中高一貫コースの入学準備パック4単元「算数から数学へ」「正負の数・文字式」「中1英単語・英文法」「古文入門」（各100問・無料版5問） | 必要（GAMES に c-sansu-sugaku・c-seifu・c-eigo1・c-kobun を "chuko" で追加） | c-sansu-sugaku・c-seifu・c-eigo1・c-kobun を入れる | ― |
+| 中高一貫コース：毎日の英単語（chuko/tango.html・中1〜中3の1062語・無料）、定期テスト対策（chuko/test.html）、保護者ページの中だるみ・テスト前のお知らせ、期限前の1年プラン案内。新単元「一次方程式」「比例と反比例」「平面図形」「過去形・進行形」「古文単語と漢文入門」「英検3級対策」（各100問・無料版5問） | 必要（GAMES に c-hoteishiki・c-hirei・c-heimen・c-eigo-kako・c-kobun2・c-eiken3 を "chuko" で追加） | 6単元のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 

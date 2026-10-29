@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>毎日の英単語｜中1〜中3の英単語を1日10語｜{{SITE_NAME}}</title>
+<meta name="description" content="中1〜中3の英単語約1000語を、1日10語ずつ。まちがえた単語は1日後・3日後・7日後…にもう一度出て、しっかり覚えられます。発音も聞けます。無料。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。学年と記録 → 問題（単語・4択）→ 結果。中高一貫コースの色 */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --fg:#17202c; --muted:#5a6473; --rule:#d9dde3; --ink:#0f3b4c; --accent:#0e7c7b;
+  --ok:#1d8150; --oksoft:#e0f1e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a8740d; --pick:#e6f2f1;
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1318; --surface:#171d25; --fg:#e5e9ee; --muted:#9ba5b3; --rule:#2a323d; --ink:#7cc6d6; --accent:#45b8b5;
+  --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e0b454; --pick:#17302f; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6.4vw,36px);line-height:1.25;margin:2px 0 0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gr{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.gr .nm{font-weight:700;font-size:18px}
+.gr .ds{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gr[aria-pressed="true"]{border-color:var(--accent);background:var(--pick)}
+.bar{height:8px;background:var(--rule);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats .v{font-family:var(--display);font-size:28px;font-weight:700;line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums}
+.stats .k{font-size:12px;color:var(--muted)}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;font-size:17px}
+.btn.sub{background:var(--pick);color:var(--fg);font-size:15px;padding:10px 16px}
+.btn:disabled{opacity:.5;cursor:default}
+.word{font-family:var(--display);font-size:clamp(30px,9vw,44px);font-weight:700;text-align:center;line-height:1.2;color:var(--ink);overflow-wrap:anywhere}
+.ask{text-align:center;color:var(--muted);font-size:14px;margin:0}
+.pos{display:inline-block;font-size:12px;font-weight:700;border:1px solid var(--rule);border-radius:4px;padding:0 6px;color:var(--muted);vertical-align:middle}
+.say{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:4px 14px;cursor:pointer;font-size:14px;align-self:center}
+.ops{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;cursor:pointer;font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.op.right{border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.op:disabled{cursor:default}
+.prog{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tag{font-size:12px;font-weight:700;border-radius:4px;padding:0 6px;color:#fff;background:var(--gold)}
+.res{font-family:var(--display);font-size:40px;font-weight:700;color:var(--accent);text-align:center;line-height:1.1}
+.miss{display:flex;flex-wrap:wrap;gap:6px}
+.miss span{border:1px solid var(--rule);border-radius:99px;padding:2px 10px;font-size:14px}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><a href="index.html">中高一貫コース</a></div>
+    <h1>毎日の英単語</h1>
+    <p class="lead">中1〜中3の英単語を、1日10語ずつ。まちがえた単語は、日をあけてもう一度出ます。</p>
+  </header>
+  <div id="app"></div>
+  <footer><a href="index.html">← 中高一貫コースへ</a>　・　<a href="../parent.html#chuko">保護者ページ</a></footer>
+</div>
+<script>
+(function(){
+const W=/*WORDS*/[];
+const KEY='mn-tango', N=10, IV=[1,3,7,14,30];   // 正解するたびに次に出るまでの日数をのばす。5回目の正解で「覚えた」
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rd=()=>{try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return v&&typeof v==='object'?v:null;}catch(e){return null;}};
+let S=rd()||{g:1,r:{},days:{}}; S.r=S.r||{}; S.days=S.days||{}; if(![1,2,3].includes(S.g))S.g=1;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const dayNo=()=>Math.floor((Date.now()+9*36e5)/864e5);   // 日本時間の日の番号
+const ymd=n=>new Date(n*864e5).toISOString().slice(0,10);
+const today=()=>ymd(dayNo());
+const POS={名:'名詞',動:'動詞',形:'形容詞',副:'副詞',前:'前置詞',接:'接続詞',助:'助動詞',疑:'疑問詞'};
+const id=w=>w[0]+'#'+w[2];
+const app=document.getElementById('app');
+function streak(){let n=0,k=dayNo();if(!S.days[ymd(k)])k--;while(S.days[ymd(k)]){n++;k--;}return n;}
+function gradeWords(g){return W.filter(w=>w[3]===g);}
+function counts(g){const ws=gradeWords(g);let seen=0,mast=0;ws.forEach(w=>{const r=S.r[id(w)];if(r){seen++;if(r.s>=IV.length)mast++;}});return {all:ws.length,seen,mast};}
+function dueList(){const t=dayNo();return W.filter(w=>{const r=S.r[id(w)];return r&&r.s<IV.length&&r.d<=t;});}
+/* 意味がかぶる単語（「店」の shop と store など）は、同じ問題の選択肢にしない */
+const toks=m=>m.replace(/（[^）]*）/g,'').split(/[・、]/).map(s=>s.trim()).filter(Boolean);
+const clash=(a,b)=>{const A=toks(a[1]),B=toks(b[1]);return a[0].toLowerCase()===b[0].toLowerCase()||A.some(x=>B.some(y=>x===y||x.includes(y)||y.includes(x)));};
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function options(w){
+  const pool=shuffle(W.filter(x=>x!==w&&x[2]===w[2]&&Math.abs(x[3]-w[3])<=1));
+  const out=[];
+  for(const x of pool.concat(shuffle(W.filter(x=>x!==w&&x[2]!==w[2])))){if(out.length>=3)break;if(!clash(x,w)&&out.every(o=>!clash(o,x)))out.push(x);}   // 同じ品詞で足りなければ、ほかの品詞から
+  return shuffle([w,...out]);
+}
+function makeSet(extra){
+  const due=shuffle(dueList()).slice(0,N);
+  const set=due.map(w=>({w,rev:true}));
+  const g=S.g, ws=gradeWords(g);
+  for(const w of ws){if(set.length>=N)break;if(!S.r[id(w)]&&!set.some(x=>x.w===w))set.push({w,rev:false});}   // 新しい単語は、表の順に
+  /* その学年の単語を全部出し終えたら、まだ覚えていない単語から */
+  if(set.length<N){const rest=shuffle(ws.filter(w=>{const r=S.r[id(w)];return r&&r.s<IV.length&&!set.some(x=>x.w===w);}));while(set.length<N&&rest.length)set.push({w:rest.pop(),rev:true});}
+  return set.map((x,i)=>Object.assign(x,{dir:i%3===2?'je':'ej',ops:options(x.w)}));
+}
+let R=null;   // いまの10問
+function speak(t){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u);}catch(e){}}
+function home(){
+  const c=counts(S.g), t=today(), done=S.days[t], st=streak(), due=dueList().length;
+  app.innerHTML=`<section class="box"><div class="label">学年</div>
+    <div class="grades">${[1,2,3].map(g=>{const k=counts(g);return `<button class="gr" data-g="${g}" aria-pressed="${S.g===g}"><span class="nm">中${g}</span><span class="ds">${k.mast} / ${k.all}語</span></button>`;}).join('')}</div>
+    <div class="bar" aria-hidden="true"><i style="width:${c.all?Math.round(c.mast/c.all*100):0}%"></i></div>
+    <p class="note">中${S.g}の単語 ${c.all}語のうち、覚えた単語 ${c.mast}語・出てきた単語 ${c.seen}語。正解するたびに、1日後・3日後・7日後・14日後・30日後にもう一度出て、5回目の正解で「覚えた」になります。</p></section>
+  <section class="box"><div class="stats"><div><div class="v">${st}</div><div class="k">日連続</div></div><div><div class="v">${due}</div><div class="k">今日の復習</div></div><div><div class="v">${done?done.k+'/'+done.n:'—'}</div><div class="k">今日の結果</div></div></div>
+    ${done?`<p style="margin:0;font-weight:700;text-align:center">今日の10語はおわり。またあした！</p><div style="text-align:center"><button class="btn sub" id="more">もう10語やる（記録には入りません）</button></div>`
+      :`<div style="text-align:center"><button class="btn" id="go">今日の10語をはじめる</button></div>`}
+    <p class="note">復習の単語が先に出て、残りは新しい単語です。<span class="tag">復習</span> の印がついた単語は、前にまちがえたか、覚えている最中の単語です。</p></section>`;
+  app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{S.g=+b.dataset.g;save();home();});
+  const go=document.getElementById('go')||document.getElementById('more');
+  go.onclick=()=>{R={set:makeSet(),i:0,k:0,miss:[],extra:!!done,picked:null};save();try{window.mnTrack&&mnTrack('level_start',{level_name:'中'+S.g});}catch(e){}ask();};
+}
+function ask(){
+  const q=R.set[R.i], w=q.w;
+  const prompt=q.dir==='ej'?`<div class="word" lang="en">${esc(w[0])}</div><p class="ask"><span class="pos">${POS[w[2]]}</span>　意味は？</p>`
+    :`<div class="word" style="font-size:clamp(24px,7vw,34px)">${esc(w[1])}</div><p class="ask"><span class="pos">${POS[w[2]]}</span>　英語では？</p>`;
+  app.innerHTML=`<section class="box"><div class="prog"><span>${R.i+1} / ${R.set.length}${q.rev?'　<span class="tag">復習</span>':''}</span><span>中${w[3]}の単語</span></div>
+    ${prompt}${q.dir==='ej'?`<button class="say" id="say">🔊 発音を聞く</button>`:''}
+    <div class="ops">${q.ops.map((o,i)=>`<button class="op" data-i="${i}" ${q.dir==='je'?'lang="en"':''}>${esc(q.dir==='ej'?o[1]:o[0])}</button>`).join('')}</div>
+    <div id="after"></div></section>`;
+  const sy=document.getElementById('say'); if(sy)sy.onclick=()=>speak(w[0]);
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+}
+function pick(i){
+  const q=R.set[R.i], w=q.w, ok=q.ops[i]===w;
+  app.querySelectorAll('.op').forEach((b,j)=>{b.disabled=true;if(q.ops[j]===w)b.classList.add('right');else if(j===i)b.classList.add('wrong');});
+  if(ok)R.k++;else R.miss.push(w);
+  const r=S.r[id(w)]||{s:0,d:0}, t=dayNo();
+  if(ok){r.s=Math.min(r.s+1,IV.length);r.d=t+IV[Math.min(r.s,IV.length)-1];}else{r.s=0;r.d=t+1;}
+  S.r[id(w)]=r; save();
+  try{window.mnTrack&&mnTrack('answer_question',{correct:ok,question:w[0]});}catch(e){}
+  document.getElementById('after').innerHTML=`<p style="margin:0;font-weight:700;color:var(${ok?'--ok':'--ng'})">${ok?'正解！':'ざんねん'}　<span lang="en">${esc(w[0])}</span> ＝ ${esc(w[1])}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="nx">${R.i+1<R.set.length?'次へ':'結果を見る'}</button>${q.dir==='je'?'<button class="say" id="say2">🔊 発音</button>':''}</div>`;
+  if(q.dir==='ej'&&!ok)speak(w[0]);
+  const s2=document.getElementById('say2'); if(s2)s2.onclick=()=>speak(w[0]);
+  document.getElementById('nx').onclick=()=>{R.i++;if(R.i<R.set.length)ask();else end();};
+  document.getElementById('nx').focus();
+}
+function end(){
+  const t=today();
+  if(!R.extra){S.days[t]={n:R.set.length,k:R.k};save();}
+  try{window.mnTrack&&mnTrack('level_end',{level_name:'中'+S.g,score:R.k,total:R.set.length});}catch(e){}
+  const st=streak();
+  app.innerHTML=`<section class="box" style="text-align:center"><div class="label">今日の結果</div><div class="res">${R.k} / ${R.set.length}</div>
+    <p style="margin:0">${R.extra?'練習の10語でした。':`<b>${st}日連続</b>で続いています。`}${R.k===R.set.length?'全問正解！':'まちがえた単語は、あしたもう一度出ます。'}</p>
+    ${R.miss.length?`<div class="miss" style="justify-content:center">${R.miss.map(w=>`<span><b lang="en">${esc(w[0])}</b> ${esc(w[1])}</span>`).join('')}</div>`:''}
+    <div><button class="btn" id="back">もどる</button></div></section>`;
+  document.getElementById('back').onclick=home;
+  R=null;
+}
+home();
+})();
+</script>
+</body>
+</html>

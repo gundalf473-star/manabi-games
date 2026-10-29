@@ -42,7 +42,7 @@ const GAMES = {
   "meiji-zenki": "shakai", "meiji-koki": "shakai", "sekai-chizu": "shakai", chizukigou: "shakai", heian: "shakai", sengo: "shakai", chikei: "shakai", kiko: "shakai", nogyo: "shakai", suisan: "shakai", kogyo: "shakai", boeki: "shakai", koumin: "shakai", todofuken: "shakai",
   yojijukugo300: "kokugo", kanyouku300: "kokugo",
   // 中高一貫コース（games/chuko/ のゲーム）は "chuko" と書く。例 "c-sansu-sugaku": "chuko",
-  "c-sansu-sugaku": "chuko", "c-seifu": "chuko", "c-eigo1": "chuko", "c-kobun": "chuko",
+  "c-sansu-sugaku": "chuko", "c-seifu": "chuko", "c-eigo1": "chuko", "c-kobun": "chuko", "c-hoteishiki": "chuko", "c-hirei": "chuko", "c-heimen": "chuko", "c-eigo-kako": "chuko", "c-kobun2": "chuko", "c-eiken3": "chuko",
   tentai: "rika", denki: "rika", tekobane: "rika", suiyoeki: "rika", yokai: "rika", rikakeisan: "rika", jikken: "rika", energy: "rika", kukimizu: "rika", jintaikeisan: "rika", shokubutsu: "rika", dobutsu: "rika", nensho: "rika", kisho: "rika", chiso: "rika", furiko: "rika", hikari: "rika", ondo: "rika", jishaku: "rika", biseibutsu: "rika", kankyo: "rika", kigu: "rika",
 };
 const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い・返金について", "問題のまちがいについて", "ゲームの不具合について", "個人情報の取り扱いについて", "その他"];

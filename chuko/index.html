@@ -60,6 +60,7 @@ button{font:inherit;color:inherit}
 .card .meta{display:flex;gap:12px;font-size:12px;color:var(--muted)}
 .card .play{font-weight:700;color:var(--c);font-size:14px}
 .empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
+.daily{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
 .cont .k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em}
 .cont .t{font-family:var(--display);font-size:18px;font-weight:700}
@@ -81,6 +82,10 @@ footer a{color:inherit}
     <div class="point"><h2>学校の進み方に合わせて</h2><p>単元は学年ではなく内容で分けています。先取りの速い学校でも、自分の学校の進み具合に合わせて選べます。</p></div>
     <div class="point"><h2>英語は入学前から</h2><p>中学受験組がいちばん出遅れやすいのが英語です。単語と文法の土台を、春休みから少しずつ固めます。</p></div>
   </section>
+  <section class="daily" aria-label="毎日の学習">
+    <a class="cont" href="tango.html"><span class="k">毎日の英単語</span><span class="t" id="tg-t">1日10語・中1〜中3の約1000語</span><span class="s" id="tg-s">まちがえた単語は、日をあけてもう一度。無料</span></a>
+    <a class="cont" href="test.html"><span class="k">定期テスト対策</span><span class="t" id="ts-t">テストの日と範囲から、毎日の計画を</span><span class="s" id="ts-s">にがての問題から先に</span></a>
+  </section>
   <div id="contbox"></div>
   <section id="subjbox" hidden>
     <div class="label">教科</div>
@@ -96,7 +101,7 @@ footer a{color:inherit}
   const L=document.getElementById('list');
   let data; try{ data=await (await fetch('../games.json',{cache:'no-cache'})).json(); }catch(e){ if(!L.children.length)L.innerHTML='<p class="empty">一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
   const games=data.games.filter(g=>g.course==='chuko');
-  if(!games.length){ L.innerHTML='<div class="empty"><b>最初の単元を準備しています。</b><br>「算数から数学へ」「正負の数・文字式」「中1英単語・英文法」「古文入門」の入学準備パックから公開します。公開したら、トップページの「お知らせ」でお知らせします。</div>'; return; }
+  if(!games.length){ L.innerHTML='<div class="empty"><b>単元を準備しています。</b>公開したら、トップページの「お知らせ」でお知らせします。</div>'; return; }
   const subjects=[...new Set(games.map(g=>g.subject))], color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
   const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10), isNew=g=>g.added&&(Date.parse(today)-Date.parse(g.added))/864e5<14;
   let subj=decodeURIComponent(location.hash.slice(1))||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
@@ -111,6 +116,13 @@ footer a{color:inherit}
         <div class="meta">${g.grade?`<span>${esc(g.grade)}</span>`:''}<span class="play" style="margin-left:auto">はじめる →</span></div></a>`).join('')}</div></section>`;}).join('<div style="height:16px"></div>');
   }
   render();
+  /* 毎日の英単語・定期テストのようす */
+  try{ const tg=JSON.parse(localStorage.getItem('mn-tango')||'null'), t=new Date(Date.now()+9*36e5).toISOString().slice(0,10);
+    if(tg&&tg.days){let n=0,k=Math.floor((Date.now()+9*36e5)/864e5);const y=d=>new Date(d*864e5).toISOString().slice(0,10);if(!tg.days[y(k)])k--;while(tg.days[y(k)]){n++;k--;}
+      document.getElementById('tg-t').textContent=tg.days[t]?'今日の10語はおわり！':'今日の10語にちょうせん';document.getElementById('tg-s').textContent=n?n+'日連続':'まちがえた単語は、日をあけてもう一度';}
+    const ts=JSON.parse(localStorage.getItem('mn-test')||'null');
+    if(ts&&ts.date){const d=Math.round((Date.parse(ts.date)-Date.parse(t))/864e5);if(d>=0){document.getElementById('ts-t').textContent=ts.name+'まで あと'+d+'日';document.getElementById('ts-s').textContent='今日やることを見る';}}
+  }catch(e){}
   /* 前回のつづき（この端末の記録から） */
   try{ const H=JSON.parse(localStorage.getItem('mn-history')||'[]'), byFile={}; games.forEach(g=>byFile[g.file]=g);
     const last=Array.isArray(H)?[...H].reverse().find(e=>e&&byFile[e.f]):null;
