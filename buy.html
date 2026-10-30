@@ -36,6 +36,7 @@ button{font:inherit;color:inherit}
 .opts.five{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:560px){.opts,.opts.five{grid-template-columns:1fr 1fr}}
 .opts.one{grid-template-columns:1fr}
+.ctabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--rule);border-radius:12px;padding:4px;margin:8px 0 4px}.ctabs button{flex:1 1 0;min-width:0;border:0;background:none;font:inherit;font-size:14px;font-weight:700;line-height:1.3;color:var(--muted);padding:8px 2px;border-radius:9px;cursor:pointer}.ctabs button small{display:block;font-size:11px;font-weight:400}.ctabs button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}@media (max-width:360px){.ctabs button{font-size:13px}.ctabs button small{font-size:10px}}
 .sub-label{font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px}
 .cont{border:1px dashed var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .cont input{font:inherit;font-size:17px;letter-spacing:.04em;padding:8px 10px;border:1px solid var(--rule);border-radius:6px;background:transparent;color:inherit;min-width:0;flex:1}
@@ -107,6 +108,8 @@ const TA_JA={tsansu:'算数',tkokugo:'国語',tshikou:'思考力',tchishiki:'ち
 const isT=s=>s==='teigaku'||!!TA_JA[s];
 const isJ=s=>!isC(s)&&!isK(s)&&!isT(s);
 const hasCont=s=>isC(s)||isK(s)||(isJ(s)&&!!(PL||FALLBACK).subjects.teigaku);
+const courseOf=s=>isT(s)?'teigaku':isC(s)?'chuko':isK(s)?'career':'juken';
+const CRS=[['teigaku','teigaku','低学年','小1〜3'],['juken','all','中学受験','小4〜6'],['chuko','chuko','中高一貫','中学生'],['career','career','就活・資格','大学生〜']];
 const prevName=s=>isK(s)?'中高一貫コース':isC(s)?'中学受験':'低学年コース';
 
 async function boot(){
@@ -118,6 +121,7 @@ async function boot(){
 /* 中高一貫コースは別のプラン（中学受験の全教科には入らない）。chuko は中高一貫コースの全教科 */
 function gamesOf(s){ return GAMES.filter(g=>isT(s)?g.course==='teigaku'&&(s==='teigaku'||g.subject===TA_JA[s]):isK(s)?g.course==='career'&&(s==='career'||g.subject===KA_JA[s]):isC(s)?g.course==='chuko'&&(s==='chuko'||g.subject===CH_JA[s]):g.course!=='chuko'&&g.course!=='career'&&g.course!=='teigaku'&&(s==='all'||g.subject===SUBJ_JA[s])); }
 function render(){
+  const crs=courseOf(sel.s);
   const P=PL||FALLBACK, ready=OPEN&&!!PL, off=hasCont(sel.s)&&sel.prev&&P.continueOff?P.continueOff:0;
   const base=P.prices[sel.s][sel.p], price=off?Math.round(base*(100-off)/1000)*10:base;
   const single=P.prices.kokugo[sel.p];
@@ -136,15 +140,16 @@ function render(){
     ${ready&&P.test?'<div class="test">テストモード：本物のお金は動きません。カード番号 4242 4242 4242 4242（期限は未来の日付、ほかは何でも可）で試せます。</div>':''}
     ${ready?'':'<div class="box"><p class="err" style="margin:0">有料版の販売は準備中です。料金表だけご覧いただけます。</p></div>'}
     <section class="box"><div class="label">1. 教科をえらぶ</div>
-      ${P.subjects.teigaku?`<div class="sub-label" style="margin-top:6px">小学1〜3年生（低学年コース）</div>
+      <nav class="ctabs" aria-label="コース">${CRS.filter(c=>P.subjects[c[1]]).map(([c,k,nm,sm])=>`<button type="button" data-crs="${c}" aria-pressed="${crs===c}">${nm}<small>${sm}</small></button>`).join('')}</nav>
+      ${crs==='teigaku'&&P.subjects.teigaku?`<div class="sub-label" style="margin-top:6px">小学1〜3年生（低学年コース）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isT(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='teigaku'?'算数・国語・思考力・ちしきのすべて'+(teigakuSave(sel.p)>0?`<br><b style="color:var(--accent)">${tsingles.length}教科を別々に買うより ${yen(teigakuSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>`:''}
-      <div class="sub-label" style="margin-top:6px">中学受験（小学生）</div>
+      ${crs==='juken'?`<div class="sub-label" style="margin-top:6px">中学受験（小学生）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isJ(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='all'?'国語・算数・理科・社会・思考力のすべて'+(allSave(sel.p)>0?`<br><b style="color:var(--accent)">5教科を別々に買うより ${yen(allSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
-      ${P.subjects.teigaku&&P.continueOff?`<p class="note"><b style="color:var(--accent)">低学年コースのプランを買ったことがある方は、中学受験のどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}
-      ${P.subjects.chuko?`<div class="sub-label">中高一貫校の中学生（中高一貫コース）</div>
+      ${P.subjects.teigaku&&P.continueOff?`<p class="note"><b style="color:var(--accent)">低学年コースのプランを買ったことがある方は、中学受験のどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
+      ${crs==='chuko'&&P.subjects.chuko?`<div class="sub-label" style="margin-top:6px">中高一貫校の中学生（中高一貫コース）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='chuko'?'国語・数学・英語・理科・社会・情報のすべて'+(chukoSave(sel.p)>0?`<br><b style="color:var(--accent)">${csingles.length}教科を別々に買うより ${yen(chukoSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.continueOff?`<p class="note"><b style="color:var(--accent)">中学受験のプランを買ったことがある方は、中高一貫コースのどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
-      ${P.subjects.career?`<div class="sub-label">大学生・社会人（就活・資格コース）</div>
+      ${crs==='career'&&P.subjects.career?`<div class="sub-label" style="margin-top:6px">大学生・社会人（就活・資格コース）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isK(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='career'?'SPI・ITパスポート・基本情報・統計学・簿記・TOEICのすべて'+(careerSave(sel.p)>0?`<br><b style="color:var(--accent)">${ksingles.length}教科を別々に買うより ${yen(careerSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.continueOff?`<p class="note"><b style="color:var(--accent)">中高一貫コースのプランを買ったことがある方は、就活・資格コースのどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
       <p class="games">${sel.s==='all'?'中学受験のすべての有料版':sel.s==='chuko'?'中高一貫コースのすべての有料版':sel.s==='career'?'就活・資格コースのすべての有料版':sel.s==='teigaku'?'低学年コースのすべての有料版':esc(P.subjects[sel.s])+'の有料版'}（${gamesOf(sel.s).length}本）：${gamesOf(sel.s).map(g=>esc(g.title)).join('、')||'—'}</p>
@@ -183,6 +188,7 @@ function render(){
       <tbody>${Object.entries(P.subjects).map(([k,v])=>`<tr><td>${esc(v)}</td>${Object.keys(P.periods).map(pk=>`<td>${P.prices[k][pk].toLocaleString('ja-JP')}</td>`).join('')}</tr>`).join('')}</tbody></table>
       <p class="note">無料版はいつでも無料で遊べます。まず無料版でためしてから、有料版を選ぶことをおすすめします。</p>
     </section>`;
+  app.querySelectorAll('[data-crs]').forEach(b=>b.onclick=()=>{const c=CRS.find(x=>x[0]===b.dataset.crs);if(!c||courseOf(sel.s)===c[0])return;sel.s=c[1];sel.prev='';try{history.replaceState(null,'','?s='+sel.s);}catch(e){}render();});
   app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const o=sel.s;sel.s=b.dataset.s;if(prevName(o)!==prevName(sel.s)||!hasCont(sel.s))sel.prev='';render();});
   const pvb=document.getElementById('pvb');
   if(pvb)pvb.onclick=async()=>{const v=document.getElementById('pv').value, er=document.getElementById('pverr');
