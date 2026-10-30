@@ -1,0 +1,235 @@
+<title>同じ読み方の漢字</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="ことば遊び">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="あつい（暑い・熱い・厚い）、はかる（計る・測る・量る）のように、読み方が同じで意味がちがう漢字を、文に合わせて使い分けることば遊び。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.do-card{background:#fbfaf6;border:1px solid var(--rule);border-left:6px solid var(--seal);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;color:#2a2520}
+.do-tag{font-size:13px;font-weight:700;color:var(--seal);letter-spacing:.06em}
+.do-sent{margin:0;font-size:20px;line-height:2.4;font-weight:700}
+.do-blank{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-end;vertical-align:middle;min-width:2.4em;height:2.2em;border:2px solid var(--seal);border-radius:6px;background:var(--surface);position:relative;margin:0 2px;padding:0 4px;line-height:1}
+.do-rd{position:absolute;top:-1.25em;left:0;right:0;text-align:center;font-size:12px;color:var(--seal);white-space:nowrap}
+.do-n{font-size:13px;color:var(--seal);margin:auto}
+.do-fill{color:var(--ok);background:var(--oksoft);border-radius:6px;padding:0 4px;margin:0 2px}
+.do-fill .do-n{margin-right:2px}
+.do-fill rt{font-size:11px;color:var(--ok)}
+.do-opt{font-size:26px;font-family:var(--mincho);line-height:1.3}
+.do-two{display:flex;gap:22px;font-size:22px;white-space:nowrap;justify-content:center;width:100%}
+.opts4.do-one{grid-template-columns:1fr}
+.do-notes{margin:4px 0 0;padding-left:1.2em;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.do-notes b{font-family:var(--mincho);font-size:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .do-card{background:#26221d;color:var(--fg)}}
+:root[data-theme="dark"] .do-card{background:#26221d;color:var(--fg)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>同じ読み方の漢字</h1>
+    <p class="lead">「あつい」は 暑い？ 熱い？ 厚い？　文に合う漢字をえらぼう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"k":"one","g":"ひ","q":"夕方になって、{ひ}が しずんだ。","a":"日","ds":["火"],"n":{"日":"太陽。日が しずむ・日が 当たる","火":"もえている ほのお"},"id":"1-01","lv":1},{"k":"one","g":"あつい","q":"夏の 午後は、外が とても {あつい}。","a":"暑い","ds":["熱い","厚い"],"n":{"暑い":"気温が高い（天気・部屋など）","熱い":"ものの温度が高い（お茶・スープ・おふろなど）","厚い":"はばが大きい（本・コートなど）"},"id":"2-01","lv":2},{"k":"one","g":"うつす","q":"黒板の 字を ノートに {うつす}。","a":"写す","ds":["映す","移す"],"n":{"写す":"字や絵を そのとおりに 書きとる","映す":"かがみや画面に すがたを 出す","移す":"場所を かえる"},"id":"3-01","lv":3},{"k":"one","g":"おる","q":"紙を 半分に {おっ}て、つるを 作った。","a":"折っ","ds":["織っ"],"n":{"折っ":"紙やえだを まげる","織っ":"糸で ぬのを つくる"},"id":"4-01","lv":4},{"k":"one","g":"せいかく","q":"この 時計は、{せいかく}な 時こくを 知らせる。","a":"正確","ds":["性格"],"n":{"正確":"正しくて たしかなこと","性格":"その人の 心の くせ・人がら"},"id":"5-01","lv":5}];
+const ID='douon';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>同じ読み方の漢字 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 同じ読み方の漢字：p={k:'one'|'two', g:読み, q:文（{よみ}が空らん）, a:答え, ds:まちがい, n:{選択肢:使い方}} */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'かんたんな漢字・2つからえらぶ',2:'あつい・はやい・はかる など',3:'うつす・さめる・きく など',4:'同じ読みの じゅく語も',5:'むずかしい じゅく語・空らん2つ'};
+const RULES=`<ol class="rules">
+  <li>文の中の <b>わく</b> に入る漢字を、えらぼう。わくの上の かなが 読み方です。</li>
+  <li>読み方は同じでも、<b>意味によって 漢字がちがいます</b>。文の 前とうしろを よく読もう。</li>
+  <li>レベル5には、わくが2つある問題もあります。</li>
+  <li>ヒントを見たり、まちがえたりすると、星がへります。</li></ol>`;
+function startStage(p){P=p;S={hints:0,done:false,msg:'',msgc:'',hint:false,wrong:[],opts:shuffle([p.a,...p.ds])};begin(p);draw();}
+function sentHTML(){
+  const ans=P.a.split('・');let k=0;
+  const h=esc(P.q).replace(/\{([^}]+)\}/g,(m,rd)=>{const i=k++;
+    const lab=P.k==='two'?`<span class="do-n">${'①②'[i]}</span>`:'';
+    return S.done?`<span class="do-fill">${lab}<ruby>${esc(ans[i])}<rt>${esc(rd)}</rt></ruby></span>`:`<span class="do-blank">${lab}<span class="do-rd">${esc(rd)}</span></span>`;});
+  return `<p class="do-sent">${h}</p>`;
+}
+function optHTML(o){
+  if(P.k!=='two')return `<b class="do-opt">${esc(o)}</b>`;
+  const [x,y]=o.split('・');return `<b class="do-opt do-two"><span>①${esc(x)}</span><span>②${esc(y)}</span></b>`;
+}
+function notes(){return `<ul class="do-notes">${Object.entries(P.n).filter(([w])=>P.k!=='two'||true).map(([w,t])=>`<li><b>${esc(w)}</b>：${esc(t)}</li>`).join('')}</ul>`;}
+function draw(){
+  app.innerHTML=`${topBar()}
+    <div class="do-card"><span class="do-tag">「${esc(P.g)}」と読む漢字</span>${sentHTML()}</div>
+    <p class="qq">${P.k==='two'?'①と②に入る漢字の 組み合わせは どれ？':'わくに入る 漢字は どれ？'}</p>
+    <div class="opts4 txt ${P.k==='two'?'do-one':''}">${S.opts.map((o,i)=>`<button class="ob ${S.done&&o===P.a?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${optHTML(o)}</button>`).join('')}</div>
+    ${S.hint&&!S.done?`<div class="hintbox">それぞれの使い方：${notes()}</div>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント（使い方を見る）</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">答え：<b>${esc(P.a)}</b></p>${notes()}`);return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+    if(S.opts[i]===P.a){S.done=true;}else{S.wrong.push(i);S.hints++;S.msg='ざんねん！ 文の 前とうしろの ことばを ヒントに、もう一度 考えよう。';S.msgc='ng';}draw();});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';S.msgc='';draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

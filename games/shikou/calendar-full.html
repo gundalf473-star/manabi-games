@@ -1,0 +1,291 @@
+<title>カレンダーのひみつ 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="数のパズル">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="カレンダーのひみつの有料版。曜日を読む・○日後の曜日・3×3や十字のわく・いろいろな形のわく・5回ある曜日・合計からの逆算まで、5つのレベルに20問ずつ、全100問。わくの置き方をすべてためして、答えが1つに決まることを確かめてあります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.cq{display:flex;gap:12px;align-items:center}
+.cq .qq{flex:1}
+#cal .cd{touch-action:manipulation}
+.ans{display:flex;align-items:center;justify-content:center;gap:8px;font-size:22px;font-weight:700}
+.ans output{min-width:110px;min-height:46px;border:2px solid var(--ink);border-radius:10px;padding:2px 12px;text-align:center;font-variant-numeric:tabular-nums;background:var(--bg)}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto;width:100%}
+.keys button{border:1px solid var(--rule);background:var(--pick);border-radius:10px;min-height:50px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.keys button.go{background:var(--fg);color:var(--surface);font-size:17px}
+.ex{font-size:15px;border-left:4px solid var(--ok);padding:2px 0 2px 12px;background:var(--surface);border-radius:4px}
+@media (max-width:420px){#app.box{padding:12px}.boardw{padding:4px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>カレンダーのひみつ 100問</h1>
+    <p class="lead">カレンダーをタップして、曜日や日付のなぞをとこう。3×3のわくの合計には、ふしぎなひみつがあるよ。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='calendar';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>カレンダーのひみつ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* カレンダーのひみつ：p={kind, mode:'ch'|'tap'|'num', y,m（表示する月）, hl:[目じるしの日], sh:[[dr,dc]…]（わくの形・[0,0]が★）, q, a, ds, hint, ex}
+   tap の答えは「その日を★にしたわくの合計」などで決まり、gen_calendar.py で全部の置き方をためして1つだけと確かめてある */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'曜日を読む・1週間後',2:'○日後の曜日・同じ曜日の合計',3:'3×3のわく・十字のわく',4:'いろいろな形のわく・100日後',5:'5回ある曜日・合計から逆算'};
+const RULES=`<ol class="rules">
+  <li>カレンダーを見て、問題に答えよう。答え方は3つ：<b>日付をタップ</b>／<b>4つからえらぶ</b>／<b>数字を入力</b>。</li>
+  <li>カレンダーは、<b>横にとなりの日は1ちがい</b>、<b>すぐ下の日は7ちがい</b>（1週間後）。</li>
+  <li>7日ごとに同じ曜日にもどります。○日後の曜日は、○を7でわったあまりで考えよう。</li>
+  <li>わくの問題では、わくの数の合計からわくの場所を見つけます。</li></ol>`;
+const CW='日月火水木金土';
+const CU=44;
+function cGrid(y,m){const f=new Date(y,m-1,1).getDay(),n=new Date(y,m,0).getDate(),g={},cm={};
+  for(let d=1;d<=n;d++){const r=Math.floor((f+d-1)/7),c=(f+d-1)%7;g[d]=[r,c];cm[r+','+c]=d;}return {g,cm,n,rows:Math.ceil((f+n)/7)};}
+/* ★の日をdにしたときのわくの日付（はみ出せば null） */
+function cCells(d,sh){const G=cGrid(P.y,P.m);if(!G.g[d])return null;const [r,c]=G.g[d];const out=[];
+  for(const [dr,dc] of sh){const x=G.cm[(r+dr)+','+(c+dc)];if(!x)return null;out.push(x);}return out;}
+function startStage(p){P=p;S={hints:0,done:false,msg:'',wrong:[],hint:false,inp:'',taps:[],frame:null,
+  opts:p.mode==='ch'?shuffle([p.a,...p.ds]):null};
+  if(p.kind==='b3sum'||p.kind==='c5sum')S.frame=cCells(p.hl[0],p.sh);
+  begin(p);draw();}
+function calSVG(){
+  const W=7*CU,M=4,TH=30,HH=26;
+  if(!P.y){ /* 月のわからないカレンダー（わくだけ） */
+    let s=`<text x="${M+W/2}" y="20" text-anchor="middle" font-size="17" font-weight="700" fill="#3b2f6b">ある月</text>`;
+    for(let c=0;c<7;c++){const x=M+c*CU;
+      if(c===P.w)s+=`<rect x="${x+1}" y="${TH}" width="${CU-2}" height="${HH+5*CU}" rx="6" fill="#ede4fd"/>`;
+      s+=`<text x="${x+CU/2}" y="${TH+18}" text-anchor="middle" font-size="15" font-weight="700" fill="${c===0?'#c8352d':c===6?'#2563eb':'#2a2520'}">${CW[c]}</text>`;}
+    for(let r=0;r<5;r++)for(let c=0;c<7;c++){const x=M+c*CU,y=TH+HH+r*CU;s+=`<rect x="${x+2}" y="${y+2}" width="${CU-4}" height="${CU-4}" rx="5" fill="none" stroke="#ddd6cb"/>`;
+}
+    return `<svg viewBox="0 0 ${W+2*M} ${TH+HH+5*CU+M}" style="max-width:340px" role="img" aria-label="日付のわからないカレンダー">${s}</svg>`;}
+  const G=cGrid(P.y,P.m),H=TH+HH+G.rows*CU+M;let s='';
+  s+=`<text x="${M+W/2}" y="21" text-anchor="middle" font-size="18" font-weight="700" fill="#3b2f6b">${P.y}年 ${P.m}月</text>`;
+  for(let c=0;c<7;c++)s+=`<rect x="${M+c*CU+1}" y="${TH}" width="${CU-2}" height="${HH-2}" rx="4" fill="${c===0?'#fde2e0':c===6?'#dbeafe':'#efeae1'}"/><text x="${M+c*CU+CU/2}" y="${TH+17}" text-anchor="middle" font-size="14" font-weight="700" fill="${c===0?'#c8352d':c===6?'#2563eb':'#2a2520'}">${CW[c]}</text>`;
+  const fr=new Set(S.frame||[]),wr=new Set(S.wrong.filter(x=>typeof x==='number'));
+  const ans=S.done&&P.mode==='tap'?P.a:null,ansF=new Set(ans&&P.sh?cCells(ans,P.sh)||[]:[]);
+  const showCol=S.done&&(P.kind==='nth'||P.kind==='wsum'),col=P.w;
+  for(let d=1;d<=G.n;d++){const [r,c]=G.g[d],x=M+c*CU,y=TH+HH+r*CU;
+    let fill='#fffdf8',stk='#ddd6cb';
+    if(fr.has(d)||ansF.has(d)){fill=S.done&&!fr.has(d)?'#e0f0e6':'#ede4fd';stk=S.done&&!fr.has(d)?'#1d7a4c':'#7c3aed';}
+    if(showCol&&c===col){fill='#ede4fd';stk='#7c3aed';}
+    if(d===ans){fill='#bfe5cc';stk='#1d7a4c';}
+    s+=`<g class="cd" data-d="${d}"><rect x="${x+2}" y="${y+2}" width="${CU-4}" height="${CU-4}" rx="6" fill="${fill}" stroke="${stk}" stroke-width="${fill==='#fffdf8'?1:2}"/>`;
+    if(P.hl.includes(d))s+=`<circle cx="${x+CU/2}" cy="${y+CU/2}" r="${CU*0.36}" fill="none" stroke="#e0a400" stroke-width="3"/>`;
+    s+=`<text x="${x+CU/2}" y="${y+CU/2+6}" text-anchor="middle" font-size="17" font-weight="700" fill="${c===0?'#c8352d':c===6?'#2563eb':'#2a2520'}" style="pointer-events:none">${d}</text>`;
+    if(wr.has(d))s+=`<path d="M${x+8},${y+8} L${x+CU-8},${y+CU-8} M${x+CU-8},${y+8} L${x+8},${y+CU-8}" stroke="#c8352d" stroke-width="2.5" opacity=".55" style="pointer-events:none"/>`;
+    s+='</g>';}
+  /* わくの線（タップした場所・色つきのわく） */
+  const outline=(cells,colr)=>{let o='';const set=new Set(cells);cells.forEach(d=>{const [r,c]=G.g[d],x=M+c*CU,y=TH+HH+r*CU;
+    const nb=(dr,dc)=>set.has(G.cm[(r+dr)+','+(c+dc)]);
+    if(!nb(-1,0))o+=`M${x},${y}h${CU}`;if(!nb(1,0))o+=`M${x},${y+CU}h${CU}`;if(!nb(0,-1))o+=`M${x},${y}v${CU}`;if(!nb(0,1))o+=`M${x+CU},${y}v${CU}`;});
+    return `<path d="${o}" fill="none" stroke="${colr}" stroke-width="3.5" stroke-linecap="round" style="pointer-events:none"/>`;};
+  if(S.frame)s+=outline(S.frame,'#7c3aed');
+  if(ansF.size)s+=outline([...ansF],'#1d7a4c');
+  if(S.last&&!S.done)s+=outline(S.last,'#c8352d');
+  return `<svg id="cal" viewBox="0 0 ${W+2*M} ${H}" style="max-width:400px;${P.mode==='tap'&&!S.done?'cursor:pointer':''}" role="img" aria-label="${P.y}年${P.m}月のカレンダー">${s}</svg>`;
+}
+/* わくの形の図（★のマス） */
+function shapeSVG(){const sh=P.sh,u=30;const rs=sh.map(a=>a[0]),cs=sh.map(a=>a[1]);const r0=Math.min(...rs),c0=Math.min(...cs),w=Math.max(...cs)-c0+1,h=Math.max(...rs)-r0+1;let s='';
+  sh.forEach(([r,c])=>{const x=(c-c0)*u+3,y=(r-r0)*u+3;s+=`<rect x="${x}" y="${y}" width="${u}" height="${u}" fill="#ede4fd" stroke="#7c3aed" stroke-width="2"/>`;
+    if(r===0&&c===0)s+=`<text x="${x+u/2}" y="${y+u/2+7}" text-anchor="middle" font-size="20" fill="#7c3aed">★</text>`;});
+  return `<svg viewBox="0 0 ${w*u+6} ${h*u+6}" style="width:${w*u+6}px;max-width:40%;flex:none" aria-label="わくの形">${s}</svg>`;}
+function keysHTML(){return `<div class="ans"><output id="inp">${S.inp||'&nbsp;'}</output></div>
+  <div class="keys">${['7','8','9','⌫','4','5','6','C','1','2','3','','0','OK'].map(k=>k===''?'<span></span>':`<button data-k="${k}" class="${k==='OK'?'go':''}" ${k==='OK'?'style="grid-column:span 2"':''}>${k==='OK'?'答える':k}</button>`).join('')}</div>`;}
+function ng(t){S.hints++;S.msg=t||'ちがいます。もう一度考えてみよう。';S.msgc='ng';draw();}
+function tapDay(d){
+  if(S.done)return;
+  if(d===P.a){S.done=true;S.last=null;draw();return;}
+  if(S.wrong.includes(d))return;
+  S.wrong.push(d);
+  if(P.sh){const cells=cCells(d,P.sh);
+    if(!cells){S.last=null;return ng(`${d}日を${P.kind==='shape'?'★':'まん中'}にすると、わくがカレンダーからはみ出します。`);}
+    S.last=cells;return ng(`${d}日を${P.kind==='shape'?'★':'まん中'}にすると、合計は ${cells.reduce((a,b)=>a+b,0)}。ちがいます。`);}
+  ng(`${d}日ではありません。もう一度考えてみよう。`);
+}
+function draw(){
+  const M=P.mode;
+  app.innerHTML=`${topBar()}
+    <div class="boardw">${calSVG()}</div>
+    <div class="cq">${P.kind==='shape'?shapeSVG():''}<p class="qq">${P.q}</p></div>
+    ${M==='ch'?`<div class="opts4 txt">${S.opts.map((o,i)=>`<button class="ob ${S.done&&o===P.a?'right':''} ${S.wrong.includes('o'+i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes('o'+i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span><b style="font-size:20px">${o}</b></button>`).join('')}</div>`:''}
+    ${M==='num'&&!S.done?keysHTML():''}
+    ${M==='num'&&S.done?`<div class="ans"><output>${P.a}</output></div>`:''}
+    ${S.hint&&!S.done?`<p class="hintbox">${P.hint}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||(M==='tap'?'カレンダーの日付をタップして答えよう。':'')}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p class="ex" style="margin:0">${P.ex}</p>`);return;}
+  if(M==='tap')app.querySelectorAll('#cal .cd').forEach(g=>g.onclick=()=>tapDay(+g.dataset.d));
+  if(M==='ch')app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.opts[i]===P.a){S.done=true;draw();}else{S.wrong.push('o'+i);ng();}});
+  if(M==='num')app.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(k==='C')S.inp='';else if(k==='⌫')S.inp=S.inp.slice(0,-1);
+    else if(k==='OK'){if(!S.inp)return;if(+S.inp===P.a){S.done=true;draw();return;}S.inp='';return ng(`ちがいます。もう一度考えてみよう。`);}
+    else if(S.inp.length<4)S.inp=(S.inp+k).replace(/^0+(?=\d)/,'');
+    document.getElementById('inp').innerHTML=S.inp||'&nbsp;';});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

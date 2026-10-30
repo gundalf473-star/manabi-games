@@ -1,0 +1,368 @@
+<title>かげ絵あて</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="球・円柱・円すい・三角柱などの身近な立体に、正面・真上・右横から光を当てたときのかげを考える図形パズル。かげから立体をあてる問題もあります。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.kg-fig{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%}
+.kg-name{font-size:13px;font-weight:700;color:var(--muted)}
+.kg-two{display:flex;gap:8px;align-items:center;justify-content:center;width:100%}
+.kg-two .kg-fig{flex:1.4}
+.kg-sh{margin:0;flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.kg-ob{min-height:118px}
+.kg-ob svg{max-width:100%;height:auto}
+.kg-views figure{flex:1;min-width:90px;max-width:150px}
+.kg-views figcaption{font-weight:700;color:var(--ink)}
+.kg-dir{grid-template-columns:repeat(3,1fr)}
+@media (max-width:420px){#app.box{padding:12px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>かげ絵あて</h1>
+    <p class="lead">ボールやかんづめ、とんがりぼうしに光を当てると、どんなかげができるかな？　5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"shadow","a":{"s":"sph","d":"front"},"ds":[{"s":"cone","d":"side"},{"s":"boxT","d":"side"},{"s":"cube","d":"side"}],"lv":1,"id":"1-01","S":{"sph":{"name":"球（ボールの形）","parts":[{"k":"sph","c":[0,0,1.1],"r":1.1,"col":"#4ade80"}]},"cone":{"name":"円すい（とんがりぼうしの形）","parts":[{"k":"cone","c":[0,0,0],"r":1,"h":2.4,"up":1,"col":"#c084fc"}],"note":{"top":"真上から見ると、とがった先は円の中心にかくれて、かげはただの円になります。"}},"boxT":{"name":"直方体（たて長の箱）","parts":[{"k":"box","p":[-0.8,-0.8,0],"s":[1.6,1.6,3],"col":"#fb923c"}]},"cube":{"name":"立方体（サイコロの形）","parts":[{"k":"box","p":[-1.0,-1.0,0],"s":[2,2,2],"col":"#f87171"}]}}},{"kind":"shadow","a":{"s":"cylX","d":"side"},"ds":[{"s":"cylX","d":"front"},{"s":"cone","d":"front"},{"s":"prZ","d":"top"}],"lv":2,"id":"2-01","S":{"cylX":{"name":"ねかせた円柱（横向き）","parts":[{"k":"cyl","ax":"x","c":[0,0,0.9],"r":0.9,"L":3.2,"col":"#60a5fa"}]},"cone":{"name":"円すい（とんがりぼうしの形）","parts":[{"k":"cone","c":[0,0,0],"r":1,"h":2.4,"up":1,"col":"#c084fc"}],"note":{"top":"真上から見ると、とがった先は円の中心にかくれて、かげはただの円になります。"}},"prZ":{"name":"三角柱（立てたもの）","parts":[{"k":"prism","ax":"z","c":[0,0,0],"w":2.2,"h":2,"L":2.6,"col":"#fb923c"}]}}},{"kind":"solid","a":"cone2","views":["front","top"],"ds":["cylYs","cube2","hemi2"],"why":{"cylYs":["front","top"],"cube2":["front","top"],"hemi2":["front"]},"lv":3,"id":"3-01","S":{"cone2":{"name":"円すい","parts":[{"k":"cone","c":[0,0,0],"r":1,"h":2,"up":1,"col":"#c084fc"}]},"cylYs":{"name":"ねかせた円柱（おく向き・短い）","parts":[{"k":"cyl","ax":"y","c":[0,0,1],"r":1,"L":2,"col":"#60a5fa"}]},"cube2":{"name":"立方体","parts":[{"k":"box","p":[-1.0,-1.0,0],"s":[2,2,2],"col":"#f87171"}]},"hemi2":{"name":"半球","parts":[{"k":"hemi","c":[0,0,0],"r":1,"col":"#2dd4bf"}]}}},{"kind":"shadow","a":{"s":"houseX","d":"front"},"ds":[{"s":"houseX","d":"top"},{"s":"cone","d":"side"},{"s":"cylS","d":"top"}],"lv":4,"id":"4-01","S":{"houseX":{"name":"家の形（横向きの屋根）","parts":[{"k":"box","p":[-1.0,-1.0,0],"s":[2,2,1.6],"col":"#fb923c"},{"k":"prism","ax":"x","c":[0,0,1.6],"w":2,"h":1.2,"L":2,"col":"#f87171"}]},"cone":{"name":"円すい（とんがりぼうしの形）","parts":[{"k":"cone","c":[0,0,0],"r":1,"h":2.4,"up":1,"col":"#c084fc"}],"note":{"top":"真上から見ると、とがった先は円の中心にかくれて、かげはただの円になります。"}},"cylS":{"name":"円柱（高さと直径が同じ）","parts":[{"k":"cyl","ax":"z","c":[0,0,1],"r":1,"L":2,"col":"#60a5fa"}],"note":{"front":"高さと直径が同じなので、正面からのかげは正方形です。"}}}},{"kind":"solid","a":"wedge","views":["front","side","top"],"ds":["cone2","cylS2","prXs"],"why":{"cone2":["front"],"cylS2":["side"],"prXs":["top"]},"lv":5,"id":"5-01","S":{"wedge":{"name":"まる・しかく・さんかくに見える立体","parts":[{"k":"wedge","c":[0,0,0],"r":1,"h":2,"col":"#c084fc"}],"note":{"front":"正面からは正方形、右横からは三角形、真上からは円に見える、ふしぎな立体です。"}},"cone2":{"name":"円すい","parts":[{"k":"cone","c":[0,0,0],"r":1,"h":2,"up":1,"col":"#c084fc"}]},"cylS2":{"name":"円柱（高さと直径が同じ）","parts":[{"k":"cyl","ax":"z","c":[0,0,1],"r":1,"L":2,"col":"#4ade80"}]},"prXs":{"name":"三角柱（横向き）","parts":[{"k":"prism","ax":"x","c":[0,0,0],"w":2,"h":2,"L":2,"col":"#4ade80"}]}}}];
+const ID='kagee';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>かげ絵あて 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* かげ絵あて：立体に光を当てたときのかげ（正面・真上・右横から平行な光）。
+   p.kind='shadow'（立体と光の向き→かげを4つからえらぶ：a/ds={s:立体のキー,d}）| 'dir'（かげ→どこから光を当てた？ a:'front'|'top'|'side'）| 'solid'（かげ2〜3つ→立体を4つからえらぶ：views, a, ds）
+   p.S={キー:{name,parts}}。かげは、立体の面（ポリゴン）を光の向きに平らにつぶして、ぬりつぶしてつくる。 */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'球・立方体・円柱・円すい（正面と真上）',2:'横からの光、ねている立体、光の向きあて',3:'2つのかげから立体をあてる',4:'組み合わせた立体のかげ',5:'3つのかげから立体をあてる'};
+const RULES=`<ol class="rules">
+  <li>立体に、<b>正面</b>・<b>真上</b>・<b>右横</b>のどれかから、まっすぐな光を当てます。光の反対がわのかべやゆかに、<b>かげ</b>ができます。</li>
+  <li>かげは、光の向きから見た立体の<b>りんかく</b>の形です。中は黒くぬりつぶされて、もようは見えません。</li>
+  <li>立体は、図の向きのまま動かしません。1つの問題の中のかげの絵は、どれも同じ縮尺でかいてあります（立体の絵とは、大きさがちがうことがあります）。</li>
+  <li>4つ（または3つ）の中から答えをえらぼう。まちがえたら、もう一度えらべます。</li></ol>`;
+const DN={front:'正面',top:'真上',side:'右横'};
+/* ---- 立体のポリゴン ---- */
+const NSEG=40;
+const v3=(a,b,c)=>[a,b,c],sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+function axisPt(ax,c,t,u,w){ /* 軸方向 t、それに直交する u,w */
+  if(ax==='x')return [c[0]+t,c[1]+u,c[2]+w];
+  if(ax==='y')return [c[0]+u,c[1]+t,c[2]+w];
+  return [c[0]+u,c[1]+w,c[2]+t];
+}
+function partPolys(p){
+  const F=[],E=[]; /* F: 面（点の列）, E: 目立つ辺 [点a,点b,面i,面j] */
+  const ring=(fn)=>{const R=[];for(let i=0;i<NSEG;i++){const th=2*Math.PI*i/NSEG;R.push(fn(Math.cos(th),Math.sin(th)));}return R;};
+  if(p.k==='box'){const [x,y,z]=p.p,[a,b,c]=p.s,V=[[x,y,z],[x+a,y,z],[x+a,y+b,z],[x,y+b,z],[x,y,z+c],[x+a,y,z+c],[x+a,y+b,z+c],[x,y+b,z+c]];
+    const FI=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];FI.forEach(f=>F.push(f.map(i=>V[i])));
+    const ed={};FI.forEach((f,fi)=>f.forEach((a0,j)=>{const b0=f[(j+1)%4],k=Math.min(a0,b0)+'-'+Math.max(a0,b0);(ed[k]=ed[k]||{a:V[a0],b:V[b0],f:[]}).f.push(fi);}));
+    Object.values(ed).forEach(e=>E.push([e.a,e.b,e.f[0],e.f[1]]));}
+  else if(p.k==='cyl'||p.k==='frust'){
+    const ax=p.k==='cyl'?p.ax:'z', c=p.k==='cyl'?p.c:[p.c[0],p.c[1],p.c[2]+p.h/2], L=p.k==='cyl'?p.L:p.h, r1=p.k==='cyl'?p.r:p.r1, r2=p.k==='cyl'?p.r:p.r2;
+    const A=ring((co,si)=>axisPt(ax,c,-L/2,r1*co,r1*si)),B=ring((co,si)=>axisPt(ax,c,L/2,r2*co,r2*si));
+    F.push(A.slice());F.push(B.slice());
+    for(let i=0;i<NSEG;i++){const j=(i+1)%NSEG;F.push([A[i],A[j],B[j],B[i]]);E.push([A[i],A[j],0,2+i]);E.push([B[i],B[j],1,2+i]);}}
+  else if(p.k==='cone'){const z0=p.c[2],apex=[p.c[0],p.c[1],z0+p.up*p.h],A=ring((co,si)=>[p.c[0]+p.r*co,p.c[1]+p.r*si,z0]);
+    F.push(A.slice());for(let i=0;i<NSEG;i++){const j=(i+1)%NSEG;F.push([A[i],A[j],apex]);E.push([A[i],A[j],0,1+i]);}}
+  else if(p.k==='sph'||p.k==='hemi'){const NL=p.k==='sph'?18:9,NO=32,c=p.c,r=p.r;
+    const pt=(i,j)=>{const la=p.k==='sph'?-Math.PI/2+Math.PI*i/NL:Math.PI/2*i/NL,lo=2*Math.PI*j/NO;return [c[0]+r*Math.cos(la)*Math.cos(lo),c[1]+r*Math.cos(la)*Math.sin(lo),c[2]+r*Math.sin(la)];};
+    if(p.k==='hemi'){const A=[];for(let j=0;j<NO;j++)A.push(pt(0,j));F.push(A);}
+    for(let i=0;i<NL;i++)for(let j=0;j<NO;j++){const q=[pt(i,j),pt(i,(j+1)%NO),pt(i+1,(j+1)%NO),pt(i+1,j)];F.push(q);
+      if(p.k==='hemi'&&i===0)E.push([q[0],q[1],0,F.length-1]);}}
+  else if(p.k==='pyr'){const [cx,cy,z0]=p.c,s=p.s/2,ap=[cx,cy,z0+p.h],V=[[cx-s,cy-s,z0],[cx+s,cy-s,z0],[cx+s,cy+s,z0],[cx-s,cy+s,z0]];
+    F.push(V.slice());for(let i=0;i<4;i++){F.push([V[i],V[(i+1)%4],ap]);E.push([V[i],V[(i+1)%4],0,1+i]);E.push([V[(i+1)%4],ap,1+i,1+(i+1)%4]);}}
+  else if(p.k==='prism'){const [cx,cy,z0]=p.c,w=p.w/2,h=p.h,L=p.L/2;let T;
+    if(p.ax==='y')T=t=>[[cx-w,cy+t,z0],[cx+w,cy+t,z0],[cx,cy+t,z0+h]];
+    else if(p.ax==='x')T=t=>[[cx+t,cy-w,z0],[cx+t,cy+w,z0],[cx+t,cy,z0+h]];
+    else T=t=>[[cx-w,cy+h/2,z0+L+t],[cx+w,cy+h/2,z0+L+t],[cx,cy-h/2,z0+L+t]];
+    const A=T(-L),B=T(L);F.push(A,B);for(let i=0;i<3;i++){const j=(i+1)%3;F.push([A[i],A[j],B[j],B[i]]);E.push([A[i],A[j],0,2+i]);E.push([B[i],B[j],1,2+i]);E.push([A[j],B[j],2+i,2+j]);}}
+  else if(p.k==='wedge'){const [cx,cy,z0]=p.c,r=p.r,h=p.h,top=s=>z0+h*(1-Math.abs(s));
+    const A=ring((co,si)=>[cx+r*co,cy+r*si,z0]);F.push(A.slice());
+    const T=ring((co,si)=>[cx+r*co,cy+r*si,top(si)]);
+    for(let i=0;i<NSEG;i++){const j=(i+1)%NSEG;F.push([A[i],A[j],T[j],T[i]]);E.push([A[i],A[j],0,1+i]);}
+    /* ななめの2面：奥がわ（sin>0）と手前がわ（sin<0） */
+    const back=[[cx+r,cy,z0+h]],front=[[cx+r,cy,z0+h]];
+    for(let i=0;i<=NSEG/2;i++)back.push(T[i]);back.push([cx-r,cy,z0+h]);
+    for(let i=NSEG/2;i<=NSEG;i++)front.push(T[i%NSEG]);
+    const fb=F.length;F.push(back);F.push(front);
+    for(let i=0;i<NSEG/2;i++){E.push([T[i],T[i+1],1+i,fb]);E.push([T[NSEG/2+i],T[(NSEG/2+i+1)%NSEG],1+NSEG/2+i,fb+1]);}
+    E.push([[cx-r,cy,z0+h],[cx+r,cy,z0+h],fb,fb+1]);}
+  /* 外向きの法線（へこみのない立体なので、まん中から外向きにそろえる） */
+  const allP=F.flat(),cen=[0,1,2].map(i=>allP.reduce((a,q)=>a+q[i],0)/allP.length);
+  const N=F.map(f=>{let n=[0,0,0];for(let i=0;i<f.length;i++){const a=f[i],b=f[(i+1)%f.length];n[0]+=(a[1]-b[1])*(a[2]+b[2]);n[1]+=(a[2]-b[2])*(a[0]+b[0]);n[2]+=(a[0]-b[0])*(a[1]+b[1]);}
+    const l=Math.hypot(...n)||1;n=n.map(x=>x/l);const fc=[0,1,2].map(i=>f.reduce((a,q)=>a+q[i],0)/f.length);if(dot(n,sub(fc,cen))<0)n=n.map(x=>-x);return n;});
+  return {F,N,E,cen};
+}
+/* ---- 見取り図（ななめ上から） ---- */
+const AZ=32*Math.PI/180,EL=24*Math.PI/180;
+const CU=[Math.cos(AZ),Math.sin(AZ),0],CV=[-Math.sin(AZ)*Math.sin(EL),Math.cos(AZ)*Math.sin(EL),Math.cos(EL)],CD=[Math.sin(AZ)*Math.cos(EL),-Math.cos(AZ)*Math.cos(EL),Math.sin(EL)];
+const LT=(()=>{const l=[-0.35,-0.6,0.75],n=Math.hypot(...l);return l.map(x=>x/n);})();
+const pr=q=>[dot(q,CU),-dot(q,CV)];
+function shade(hex,k){const n=parseInt(hex.slice(1),16),c=[n>>16,(n>>8)&255,n&255].map(x=>Math.round(Math.min(255,x*k)));return `rgb(${c.join(',')})`;}
+function solidSVG(sol,light,maxW){
+  const parts=sol.parts.map(p=>({p,m:partPolys(p)}));
+  parts.sort((a,b)=>dot(a.m.cen,CD)-dot(b.m.cen,CD));
+  const all=[];parts.forEach(({m})=>m.F.forEach(f=>f.forEach(q=>all.push(q))));
+  const zmax=Math.max(...all.map(q=>q[2])),xmax=Math.max(...all.map(q=>q[0])),ymin=Math.min(...all.map(q=>q[1]));
+  const zc=zmax/2;
+  const fx0=Math.min(...all.map(q=>q[0]))-0.6,fx1=xmax+0.6,fy0=ymin-0.6,fy1=Math.max(...all.map(q=>q[1]))+0.6;
+  const floor=[[fx0,fy0,0],[fx1,fy0,0],[fx1,fy1,0],[fx0,fy1,0]];
+  let arrow=null;
+  if(light==='front')arrow=[[0,ymin-2.4,zc],[0,ymin-0.35,zc]];
+  if(light==='top')arrow=[[0,0,zmax+2.0],[0,0,zmax+0.3]];
+  if(light==='side')arrow=[[xmax+2.4,0,zc],[xmax+0.35,0,zc]];
+  const pts=floor.map(pr).concat(all.map(pr)).concat(arrow?arrow.map(pr):[]);
+  const U=44,mx=Math.min(...pts.map(q=>q[0]))-0.5,my=Math.min(...pts.map(q=>q[1]))-0.5,W=Math.max(...pts.map(q=>q[0]))-mx+0.5,H=Math.max(...pts.map(q=>q[1]))-my+0.4;
+  const X=q=>{const [a,b]=pr(q);return [((a-mx)*U).toFixed(1),((b-my)*U).toFixed(1)];};
+  const PP=f=>f.map(q=>X(q).join(',')).join(' ');
+  let s=`<polygon points="${PP(floor)}" fill="#ece6d8" stroke="#d6ccb8" stroke-width="1"/>`;
+  parts.forEach(({p,m})=>{
+    const vis=m.F.map((f,i)=>dot(m.N[i],CD)>1e-6);
+    const order=m.F.map((f,i)=>i).filter(i=>vis[i]).sort((a,b)=>{const ca=m.F[a].reduce((t,q)=>t+dot(q,CD),0)/m.F[a].length,cb=m.F[b].reduce((t,q)=>t+dot(q,CD),0)/m.F[b].length;return ca-cb;});
+    order.forEach(i=>{const k=0.62+0.48*Math.max(0,dot(m.N[i],LT)),c=shade(p.col||'#93c5fd',k);s+=`<polygon points="${PP(m.F[i])}" fill="${c}" stroke="${c}" stroke-width="0.8" stroke-linejoin="round"/>`;});
+    m.E.forEach(([a,b,i,j])=>{if(vis[i]||(j!=null&&vis[j])){const A=X(a),B=X(b);s+=`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#2a2520" stroke-width="1.6" stroke-linecap="round"/>`;}});
+    /* りんかく（凸包） */
+    const P2=m.F.flat().map(pr),H2=hull(P2);s+=`<polygon points="${H2.map(([a,b])=>`${((a-mx)*U).toFixed(1)},${((b-my)*U).toFixed(1)}`).join(' ')}" fill="none" stroke="#2a2520" stroke-width="2" stroke-linejoin="round"/>`;
+  });
+  if(arrow){const A=X(arrow[0]),B=X(arrow[1]);
+    s+=`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" marker-end="url(#kgA)"/>`;
+    s+=`<circle cx="${A[0]}" cy="${A[1]}" r="11" fill="#fde047" stroke="#b45309" stroke-width="2"/>`;
+    for(let i=0;i<8;i++){const t=i*Math.PI/4;s+=`<line x1="${(+A[0]+15*Math.cos(t)).toFixed(1)}" y1="${(+A[1]+15*Math.sin(t)).toFixed(1)}" x2="${(+A[0]+20*Math.cos(t)).toFixed(1)}" y2="${(+A[1]+20*Math.sin(t)).toFixed(1)}" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>`;}}
+  const VW=W*U,VH=H*U;
+  return `<svg viewBox="-24 -24 ${(VW+48).toFixed(0)} ${(VH+48).toFixed(0)}" style="width:100%;max-width:${maxW||300}px" role="img" aria-label="${esc(sol.name)}${light?'と、'+DN[light]+'からの光':''}"><defs><marker id="kgA" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#f59e0b"/></marker></defs>${s}</svg>`;
+}
+function hull(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];
+  for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}
+  for(const p of P.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}
+  return lo.slice(0,-1).concat(up.slice(0,-1));}
+/* ---- かげ ---- */
+const flat=(d,q)=>d==='front'?[q[0],-q[2]]:d==='top'?[q[0],-q[1]]:[q[1],-q[2]];
+function shadowPolys(sol,d){const out=[];sol.parts.forEach(p=>{const m=partPolys(p);m.F.forEach(f=>out.push(f.map(q=>flat(d,q))));});return out;}
+function shadowBox(sol,d){const P=shadowPolys(sol,d).flat();return [Math.min(...P.map(q=>q[0])),Math.min(...P.map(q=>q[1])),Math.max(...P.map(q=>q[0])),Math.max(...P.map(q=>q[1]))];}
+function shadowSVG(sol,d,u,box,lab){
+  const PL=shadowPolys(sol,d),[x0,y0,x1,y1]=shadowBox(sol,d),bw=box[0],bh=box[1],pad=8;
+  const ox=(bw-(x1-x0))/2-x0,oy=(bh-(y1-y0))/2-y0;
+  const wall='#e7e5e4';
+  let s=`<rect x="0" y="0" width="${(bw*u+2*pad).toFixed(0)}" height="${(bh*u+2*pad).toFixed(0)}" rx="8" fill="${wall}"/>`;
+  s+=`<g fill="#3f3f46" stroke="#3f3f46" stroke-width="0.7" stroke-linejoin="round">${PL.map(f=>`<polygon points="${f.map(([a,b])=>`${(pad+(a+ox)*u).toFixed(1)},${(pad+(b+oy)*u).toFixed(1)}`).join(' ')}"/>`).join('')}</g>`;
+  return `<svg viewBox="0 0 ${(bw*u+2*pad).toFixed(0)} ${(bh*u+2*pad).toFixed(0)}" style="width:100%;max-width:${(bw*u+2*pad).toFixed(0)}px" role="img" aria-label="${lab||'かげ'}">${s}</svg>`;
+}
+/* ---- ゲーム ---- */
+function startStage(p){
+  P=p;S={hints:0,done:false,msg:'',msgc:'',wrong:[],hint:false};
+  if(p.kind==='dir')S.opts=['front','top','side'];
+  else S.opts=shuffle([p.a,...p.ds]);
+  begin(p);draw();
+}
+const SO=k=>P.S[k];
+function qtext(){
+  if(P.kind==='shadow')return `この立体に、<b>${DN[P.a.d]}</b>から光を当てると、どんなかげができる？`;
+  if(P.kind==='dir')return `この立体に光を当てたら、右のようなかげができました。光は<b>どこから</b>当てた？`;
+  return `${P.views.map(d=>DN[d]).join('・')}から光を当てると、下のようなかげができる立体があります。その立体はどれ？`;
+}
+function hintText(){
+  if(P.kind==='shadow')return `${DN[P.a.d]}から立体をのぞいたつもりで、いちばん外がわのりんかくを考えよう。${P.a.d==='top'?'真上から見ると、とがった先やでっぱりは、形の中にかくれます。':'高さと、いちばん太いところのはばに注目しよう。'}`;
+  if(P.kind==='dir')return '正面・真上・右横から立体を見た形を、1つずつ思いうかべて、かげの形と同じものをさがそう。';
+  return 'かげを1つずつ調べよう。1つでも合わないかげがある立体は、ちがいます。丸いかげができるのは、丸い面やふくらみがある向きです。';
+}
+function explain(){
+  if(P.kind==='shadow'){const s=SO(P.a.s);return `<p style="margin:0">${esc(s.name)}に${DN[P.a.d]}から光を当てると、${DN[P.a.d]}から見た形のりんかくが、そのままかげになります。${s.note&&s.note[P.a.d]?esc(s.note[P.a.d]):''}</p>`;}
+  if(P.kind==='dir'){const s=SO(P.s);return `<p style="margin:0">答えは<b>${DN[P.a]}</b>。${esc(s.name)}を${DN[P.a]}から見ると、このかげと同じ形になります。</p>${viewsRow(P.s,['front','top','side'],'見る')}`;}
+  const s=SO(P.a);return `<div class="kg-fig">${solidSVG(s,null,200)}</div><p style="margin:0">答えは<b>${esc(s.name)}</b>。どのかげも合います。ほかの立体は、${P.ds.some(k=>P.why[k].length<P.views.length)?'いくつかのかげは合っても、':''}どれかのかげが合いません。</p>${P.ds.map(k=>{const bad=P.why[k];return `<p class="note" style="margin:2px 0">・${esc(SO(k).name)}：${bad.map(d=>DN[d]).join('と')}からのかげがちがう</p>`;}).join('')}`;
+}
+function viewsRow(k,ds,word){
+  const sol=SO(k),bx=ds.map(d=>shadowBox(sol,d)),bw=Math.max(...bx.map(b=>b[2]-b[0])),bh=Math.max(...bx.map(b=>b[3]-b[1])),u=Math.min(30,90/Math.max(bw,bh,1));
+  return `<div class="views kg-views">${ds.map(d=>`<figure>${shadowSVG(sol,d,u,[bw+0.2,bh+0.2],DN[d]+'からのかげ')}<figcaption>${DN[d]}から${word==='見る'?'光':'光'}</figcaption></figure>`).join('')}</div>`;
+}
+function optBoxes(list){ /* list:[{s,d}] 同じ縮尺 */
+  const bx=list.map(o=>shadowBox(SO(o.s),o.d));const bw=Math.max(...bx.map(b=>b[2]-b[0])),bh=Math.max(...bx.map(b=>b[3]-b[1]));
+  return {bw:bw+0.3,bh:bh+0.3,u:Math.min(34,118/Math.max(bw+0.3,bh+0.3))};
+}
+function draw(){
+  let fig='',opts='';
+  const btn=(i,inner,cls)=>`<button class="ob ${cls||''} ${S.done&&S.opts[i]===P.a?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${inner}</button>`;
+  if(P.kind==='shadow'){
+    fig=`<div class="kg-fig">${solidSVG(SO(P.a.s),P.a.d,280)}<span class="kg-name">${esc(SO(P.a.s).name)}</span></div>`;
+    const B=optBoxes(S.opts);opts=`<div class="opts4">${S.opts.map((o,i)=>btn(i,shadowSVG(SO(o.s),o.d,B.u,[B.bw,B.bh],'かげ'+'アイウエ'[i]),'kg-ob')).join('')}</div>`;
+  }else if(P.kind==='dir'){
+    const sol=SO(P.s),b=shadowBox(sol,P.a),bw=b[2]-b[0]+0.3,bh=b[3]-b[1]+0.3;
+    fig=`<div class="kg-two"><div class="kg-fig">${solidSVG(sol,null,220)}<span class="kg-name">${esc(sol.name)}</span></div><figure class="kg-sh">${shadowSVG(sol,P.a,Math.min(30,100/Math.max(bw,bh)),[bw,bh],'できたかげ')}<figcaption>できたかげ</figcaption></figure></div>`;
+    opts=`<div class="opts4 txt kg-dir">${S.opts.map((o,i)=>btn(i,`<b style="font-size:19px">${DN[o]}から</b>`)).join('')}</div>`;
+  }else{
+    fig=viewsRow(P.a,P.views,'光');
+    opts=`<div class="opts4">${S.opts.map((k,i)=>btn(i,solidSVG(SO(k),null,150),'kg-ob')).join('')}</div>`;
+  }
+  app.innerHTML=`${topBar()}
+    <p class="qq">${qtext()}</p>
+    <div class="boardw">${fig}</div>
+    ${opts}
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.opts[i]===P.a){S.done=true;draw();}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。もう一度考えてみよう。';S.msgc='ng';draw();}});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

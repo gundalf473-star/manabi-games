@@ -1,0 +1,289 @@
+<title>句読点パズル 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="ことば遊び">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="句読点パズルの有料版。ことばの切れ目がかわる短い文から、だれのようすかが「、」でかわる長い文まで、5つのレベルに20問ずつ、全100問。どの問題も、「、」の場所と意味の決まり方をプログラムでたしかめてあります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.kt-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kt-type{font-size:13px;font-weight:700;color:#fff;background:var(--seal);border-radius:999px;padding:1px 12px}
+.kt-goal{display:flex;flex-direction:column;gap:2px;background:var(--sealsoft);border-left:6px solid var(--seal);border-radius:10px;padding:10px 14px}
+.kt-gl{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em}
+.kt-goal b{font-size:18px;line-height:1.6}
+.kt-sent{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:6px;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:12px 6px;color:#2a2520}
+.kt-u{display:inline-flex;align-items:center}
+.kt-ch{font-size:25px;font-weight:700;line-height:1;width:1em;text-align:center}
+.kt-sent.sm .kt-ch{font-size:21px}
+.kt-sent.sm .kt-gap{width:13px}
+.kt-end{width:auto}
+.kt-gap{width:17px;height:46px;border:0;padding:0;margin:0 1px;background:transparent;cursor:pointer;position:relative;touch-action:manipulation;font-size:26px;font-weight:700;color:var(--seal);line-height:1}
+.kt-gap::before{content:"";position:absolute;left:50%;top:8px;bottom:8px;border-left:2px dotted #c9bfae}
+.kt-gap:hover::before{border-left-color:var(--seal)}
+.kt-gap.hl{background:#fde68a;border-radius:6px}
+.kt-gap.on::before,.kt-gap.ok::before{display:none}
+.kt-gap.on{color:var(--ng);background:var(--ngsoft);border-radius:6px}
+.kt-gap.ok{color:var(--ok);background:var(--oksoft)}
+.kt-gap.bad::before{border-left:2px solid var(--ng);opacity:.5}
+.kt-gap:disabled{cursor:default}
+.kt-show{font-size:24px;font-weight:700;letter-spacing:.04em;line-height:1.6;padding:14px 10px;word-break:break-all}
+.opts4.kt-one{grid-template-columns:1fr}
+.kt-one .ob{align-items:stretch}
+.kt-opt{font-size:17px;line-height:1.5;text-align:left}
+.kt-big{font-size:19px;letter-spacing:.03em;word-break:break-all}
+.kt-q{font-size:15px}
+.kt-ex{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.kt-ex b{font-size:17px;word-break:break-all}
+.kt-gapdemo{display:inline-block;width:0;height:1.1em;border-left:2px dotted #a59c90;vertical-align:middle;margin:0 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kt-sent{background:#26221d;color:var(--fg)}}
+:root[data-theme="dark"] .kt-sent{background:#26221d;color:var(--fg)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>句読点パズル 100問</h1>
+    <p class="lead">「、」を打つ場所で、文の意味がかわる！　字と字のあいだをタップして「、」を打とう。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='kutouten';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>句読点パズル 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 句読点パズル：p={k:'tap'|'pick'|'ctx', ty:'seg'|'scope', s:文, end:'。'|'？', R:[{m:意味, c:[、を打ってよい場所]}], t:目標の読み方, a:答え, g:（pick）、の場所, opts:（ctx）, sg:（scope）主語「〜は」の後ろ}
+   、を g（g文字目のうしろ）に打ったとき、c に g をふくむ読み方だけがのこる。のこるのが1つなら、その意味に決まる。 */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'みじかい文で「、」をタップ',2:'ことばの切れ目がかわる文',3:'いつのことか・ことばの切れ目',4:'だれのようすか・正しい書き方',5:'長い文で、だれのようすか'};
+const RULES=`<ol class="rules">
+  <li><b>「、」（読点）</b>を打つ場所で、文の意味がかわります。</li>
+  <li><b>場所をタップ</b>：字と字のあいだの <span class="kt-gapdemo"></span> をタップして、「、」を打とう。目あての意味になればクリア。</li>
+  <li><b>意味をえらぶ</b>：「、」のある文を読んで、どちらの意味か えらぼう。</li>
+  <li><b>書き方をえらぶ</b>：目あての意味が はっきりつたわる書き方を えらぼう。</li>
+  <li>ヒントを見たり、まちがえたりすると、星がへります。</li></ol>`;
+const KNAME={tap:'「、」をタップ',pick:'意味をえらぶ',ctx:'書き方をえらぶ'};
+function startStage(p){P=p;S={hints:0,done:false,msg:'',msgc:'',hint:false,put:null,bad:[],wrong:[],
+  opts:p.k==='pick'?shuffle(p.R.map((r,i)=>i)):p.k==='ctx'?shuffle(p.opts.slice()):null};begin(p);draw();}
+const live=g=>P.R.map((r,i)=>r.c.includes(g)?i:-1).filter(i=>i>=0);   /* g に打ったとき のこる読み方 */
+const withC=g=>P.s.slice(0,g)+'、'+P.s.slice(g)+P.end;
+const plain=()=>P.s+P.end;
+function cand(){ /* ヒントで光らせる場所：どれかの読み方に決まる場所 ＋ どちらにも打てる場所1つ */
+  const n=P.s.length,res=[];for(let g=1;g<n;g++){const l=live(g);if(l.length===1)res.push(g);}
+  for(let g=1;g<n;g++){if(live(g).length>=2){res.push(g);break;}}
+  return res.sort((a,b)=>a-b);}
+function sentTap(){
+  const n=P.s.length,cs=S.hint?cand():[],br=new Set(P.b||[]);let h='',grp='';
+  for(let i=0;i<n;i++){const g=i+1;
+    grp+=`<span class="kt-ch">${esc(P.s[i])}</span>`;
+    if(g<n){const on=S.put===g,bad=S.bad.includes(g);
+      grp+=`<button class="kt-gap ${on?'on':''} ${on&&S.done?'ok':''} ${bad&&!on?'bad':''} ${cs.includes(g)&&!S.done?'hl':''}" data-g="${g}" ${S.done?'disabled':''} aria-label="${g}文字目のうしろ">${on?'、':''}</button>`;}
+    else grp+=`<span class="kt-ch kt-end">${esc(P.end)}</span>`;
+    /* 文節の切れ目（かかり方の問題）か、1字ごと（ことばの切れ目の問題）で改行できる */
+    if(g===n||!P.b||br.has(g)){h+=`<span class="kt-u">${grp}</span>`;grp='';}}
+  return `<div class="kt-sent ${n>12?'sm':''}">${h}</div>`;}
+function hintText(){
+  const SUBJ='「〜は、」のように、だれが（何が）を表すことばのすぐ後ろに「、」があると、そのあとの ようすを表すことばは、すぐ後ろのことばに かかります。';
+  if(P.k==='pick')return P.ty==='seg'?'「、」のところで いったん止まって、声に出して読んでみよう。「、」の前と後ろは、どんなことばになるかな？':P.g===P.sg?SUBJ:'「、」の前のことばは、「、」をとびこえて、もっと後ろのことばに かかります。「、」の前のことばが、だれの（何の）ようすかを考えよう。';
+  if(P.ty==='scope'&&P.t===1)return (P.k==='tap'?'光っている場所のどれかに「、」が入ります。':'')+SUBJ;
+  if(P.ty==='seg')return '光っている場所のどれかに「、」が入ります。「、」で区切ると、前と後ろが どんなことばになるか、たしかめよう。';
+  return P.k==='ctx'?'ようすを表すことばのすぐ後ろに「、」があると、そのことばは すぐ後ろのことばではなく、もっと後ろのことばに かかります。':'光っている場所のどれかに「、」が入ります。ようすを表すことばのすぐ後ろに「、」を打つと、そのことばは すぐ後ろのことばに かからなくなります。';
+}
+function readList(){ /* かいせつ：それぞれの読み方と「、」の場所 */
+  return P.R.map((r,i)=>{const n=P.s.length;let d=null;
+    for(let g=1;g<n;g++){const l=live(g);if(l.length===1&&l[0]===i){d=g;break;}}
+    return `<li><b>${esc(d?withC(d):plain())}</b><br><span class="note">→ ${esc(r.m)}${d?'':'（「、」を打たないと、こちらの意味にも読めます）'}</span></li>`;}).join('');}
+function feedback(g){
+  const l=live(g);
+  if(l.length===1&&l[0]===P.t)return null;
+  if(l.length===1)return `「${withC(g)}」だと、「${P.R[l[0]].m}」という意味になるよ。`;
+  if(l.length>=2)return `「${withC(g)}」では、まだ どちらの意味にも読めるよ。`;
+  return P.ty==='seg'||!(P.b||[]).includes(g)?`「${withC(g)}」では、ひとまとまりの ことばが とちゅうで切れて、へんな文になるよ。`:`「${withC(g)}」では、ことばのつながりが切れて、へんな文になるよ。`;
+}
+function goal(){return `<div class="kt-goal"><span class="kt-gl">目あての意味</span><b>${esc(P.R[P.t].m)}</b></div>`;}
+function draw(){
+  let body='',q='';
+  if(P.k==='tap'){q='上の意味になるように、字と字のあいだを タップして「、」を打とう。';body=goal()+sentTap();}
+  if(P.k==='pick'){q='この文は、どちらの意味かな？';
+    body=`<div class="kt-sent kt-show">${esc(withC(P.g))}</div>
+    <div class="opts4 kt-one">${S.opts.map((i,k)=>`<button class="ob ${S.done&&i===P.a?'right':''} ${S.wrong.includes(k)?'wrong':''}" data-k="${k}" ${S.done||S.wrong.includes(k)?'disabled':''}><span class="k">${'アイウエ'[k]}</span><b class="kt-opt">${esc(P.R[i].m)}</b></button>`).join('')}</div>`;}
+  if(P.k==='ctx'){q='上の意味が はっきり つたわる 書き方は どれ？';
+    body=goal()+`<div class="opts4 kt-one">${S.opts.map((g,k)=>`<button class="ob ${S.done&&g===P.a?'right':''} ${S.wrong.includes(k)?'wrong':''}" data-k="${k}" ${S.done||S.wrong.includes(k)?'disabled':''}><span class="k">${'アイウエ'[k]}</span><b class="kt-opt kt-big">${esc(withC(g))}</b></button>`).join('')}</div>`;}
+  app.innerHTML=`${topBar()}
+    <div class="kt-head"><span class="kt-type">${KNAME[P.k]}</span><span class="note">${P.ty==='seg'?'ことばの切れ目':'ことばの かかり方'}</span></div>
+    ${body}<p class="qq kt-q">${q}</p>
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${esc(S.msg||'')}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">「、」の場所で、意味がこうかわります。</p><ul class="kt-ex">${readList()}</ul>`);return;}
+  app.querySelectorAll('.kt-gap').forEach(b=>b.onclick=()=>{const g=+b.dataset.g;S.put=g;const f=feedback(g);
+    if(f===null){S.done=true;}else{if(!S.bad.includes(g)){S.bad.push(g);S.hints++;}S.msg=f;S.msgc='ng';}draw();});
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
+    const ok=P.k==='pick'?S.opts[k]===P.a:(live(S.opts[k]).length===1&&live(S.opts[k])[0]===P.t);
+    if(ok){S.done=true;}else{S.wrong.push(k);S.hints++;
+      S.msg=P.k==='pick'?'ざんねん！「、」のところで区切って、もう一度読んでみよう。':feedback(S.opts[k]);S.msgc='ng';}draw();});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';S.msgc='';draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
