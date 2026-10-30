@@ -39,6 +39,7 @@
 | 中高一貫コースの社会：中学地理5・中学公民5・高校の地理総合・歴史総合・テーマ史・公共・政治経済・倫理（各100問・無料版5問） | 必要（GAMES に c-chiri1・c-chiri2・c-chiri3・c-chiri4・c-chiri5・c-komin1・c-komin2・c-komin3・c-komin4・c-komin5・c-chirisogo・c-rekisogo・c-tankyu・c-kokyo・c-seikei・c-rinri を "cshakai" で追加） | 16単元のパックを入れる | ― |
 | 中高一貫コースの英語：絵で学ぶ英語7・中学英文法14・会話と読解2・高校英文法10・英検5級/4級/準2級プラス①②/準1級①②・英検ライティング2・英検リスニング3（各100問・無料版5問。絵の単元とリスニングは gen.py の PIC/EN_UI/LISTEN を使う） | 必要（GAMES に 44単元を "ceigo" で追加） | 44単元のパックを入れる | ― |
 | 思考力パズル10本：アルゴリズムを追え・並べかえ名人・ランプの暗号・石取りゲームの必勝法・お絵かきロジック・魔方陣・数のピラミッド・マッチ棒パズル・油分け算・川わたり・図形はいくつ？・鏡と回転（無料版5問・有料版100問） | 必要（GAMES に flow・narabe・lamp・ishitori・nonogram・mahojin・matchbou・aburawake・zukeikazu・kagami を "shikou" で追加） | 10本のパックを入れる | ― |
+| 算数11単元：円とおうぎ形・立体図形の体積と表面積・水の深さとグラフ・図形の移動・点の移動とグラフ・資料とグラフの読み取り・割合の文章題・特殊算②・方陣算・日暦算・N進法・比と比例・反比例・単位と量（各100問・無料版5問） | 必要（GAMES に enshu・rittai・mizu・idou・tenidou・shiryo・wariai2・tokushu2・hojin・hirei・tani を "sansu" で追加） | 11単元のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 

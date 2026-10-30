@@ -1,0 +1,323 @@
+<title>比と比例・反比例クイズ</title>
+
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="比と比例・反比例">
+<meta name="game:grade" content="小6〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="比を簡単にする・比例と反比例の表と式・グラフの読み取り・歯車・てこ・比例配分・速さの比を、5つのレベルから1問ずつの算数クイズ。全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。レベルの札（5段階）→ 図つきの4択問題 → 正解の印と解き方 → 結果と復習。紫を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.q{margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.5}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{display:flex;gap:14px;align-items:flex-start}
+.seal{flex:none;width:64px;height:64px;border-radius:8px;border:3px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:26px;transform:rotate(-6deg)}
+.seal.x{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.res .t{display:flex;flex-direction:column;gap:6px}
+.res .v{font-family:var(--display);font-size:20px}
+.res .v.ok{color:var(--ok)} .res .v.ng{color:var(--ng)}
+.ex{font-size:15px;border-left:4px solid var(--seal);padding:2px 0 2px 12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.matome{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.matome dt{font-weight:700;color:var(--seal)}
+.matome dd{margin:0}
+.fig .gh{fill:#d9c8fb;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gw{fill:#fbfaf6;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gn{fill:none;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gd{stroke-dasharray:4 3;stroke-width:1.2}
+.fig .gthin{stroke-width:1.1}
+.fig .gdot{fill:#232a36}
+.fig .gdim{stroke:#6b5a8e;stroke-width:1}
+.fig .gdt,.fig .glab{font-size:12px;font-weight:700;fill:#3a2f55;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .glab{fill:#232a36}
+.tblw{overflow-x:auto}
+.dtbl{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.tblcap{font-size:13px;color:var(--muted);margin:0 0 6px}
+.dtbl th,.dtbl td{border:1px solid var(--rule);padding:6px 4px;text-align:center}
+.dtbl th{background:var(--sealsoft)}
+.dtbl .rh{text-align:left;width:34%;font-size:13px}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.cats{grid-template-columns:1fr}}
+.cat{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.cat:hover:not(:disabled){border-color:var(--ink)}
+.cat:disabled{opacity:.4;cursor:default}
+.cat .nm{font-weight:700;font-size:17px}
+.cat .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.cat .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right}
+.timeline dd{margin:0}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-family:var(--body)}
+.rank{width:92px;height:92px;border-radius:50%;border:5px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{color:var(--ok)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>算数クイズ</small>比と比例・反比例クイズ</h1>
+    <p class="lead">基本から入試レベルまで、5つのレベルから1問ずつ。全5問。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
+const PAID=false;
+let QS=[{"c":"L1","lv":1,"q":"yはxに比例している。表の□にあてはまる数は？","a":"20","d":["18","24","15"],"e":"yはいつもxの4倍なので、y＝4×x。x＝5のとき 4×5＝20です。","fig":{"tbl":{"cap":"yはxに比例","head":["x","1","2","3","4","5"],"rows":[["y","4","8","12","16","□"]]}}},{"c":"L2","lv":2,"q":"グラフは、yがxに比例するようすを表しています。x＝6のとき、yはいくつ？","a":"9","d":["6","12","8"],"e":"グラフは点（4，6）を通るので、決まった数は 6÷4＝1.5。x＝6のとき 1.5×6＝9 です。","fig":{"geo":[["seg",0,0,10.6,0,0],["seg",0,0,0,7.6,0],["lab",-0.45,-0.55,"O"],["lab",10.4,-1.5,"x"],["lab",0,8.1,"y"],["seg",2.5,0,2.5,-0.15,0],["lab",2.5,-0.65,"2"],["seg",5.0,0,5.0,-0.15,0],["lab",5.0,-0.65,"4"],["seg",7.5,0,7.5,-0.15,0],["lab",7.5,-0.65,"6"],["seg",10.0,0,10.0,-0.15,0],["lab",10.0,-0.65,"8"],["seg",0,1.75,-0.15,1.75,0],["lab",-0.59,1.75,"3"],["seg",0,3.5,-0.15,3.5,0],["lab",-0.59,3.5,"6"],["seg",0,5.25,-0.15,5.25,0],["lab",-0.59,5.25,"9"],["seg",0,7.0,-0.15,7.0,0],["lab",-0.83,7.0,"12"],["seg",0.0,0.0,10.0,7.0,0],["seg",5.0,0,5.0,3.5,1],["seg",0,3.5,5.0,3.5,1],["dot",5.0,3.5]]}},{"c":"L3","lv":3,"q":"歯数48の歯車Aと、歯数16の歯車Bがかみ合っています。Aが毎分15回転するとき、Bは毎分何回転する？","a":"毎分45回転","d":["毎分5回転","毎分30回転","毎分60回転"],"e":"48×15＝720。Bは 720÷16＝45 で、毎分45回転です。","fig":{"geo":[["circ",0,0,4.8,"h"],["circ",0,0,0.864,"w"],["dot",0,0],["seg",4.8,0.0,5.1,0.0,0],["seg",4.762150566309494,0.6015995211086604,5.0597849767038365,0.6391994911779517,0],["seg",4.649199173417429,1.1937114583913029,4.9397741217560185,1.2683184245407593,0],["seg",4.462927132263607,1.766997852886454,4.741860078030082,1.8774352186918573,0],["seg",4.206272064210545,2.3124176356882336,4.469164068223704,2.4569437379187478,0],["seg",3.8832815729997474,2.821369211003871,4.125986671312232,2.997704786691613,0],["seg",3.4990494116227753,3.285826108457705,3.7177399998491985,3.4911902402363117,0],["seg",3.0596351507937105,3.698463565323788,3.2508623477183174,3.929617538156525,0],["seg",2.5719686158991832,4.0527740424096725,2.732716654392882,4.306072420060277,0],["seg",2.0437405995123488,4.343169851836894,2.1714743869818705,4.6146179675767,0],["seg",1.4832815729997477,4.565071278216736,1.575986671312232,4.850388233105282,0],["seg",0.8994303100114788,4.714978803497705,0.9556447043871961,5.0096649787163114,0],["seg",0.3013944937407049,4.790528296455704,0.32023164959949896,5.089936314984184,0],["seg",-0.3013944937407043,4.790528296455704,-0.32023164959949835,5.089936314984184,0],["seg",-0.8994303100114781,4.714978803497706,-0.9556447043871954,5.009664978716312,0],["seg",-1.4832815729997462,4.565071278216737,-1.5759866713122301,4.850388233105283,0],["seg",-2.0437405995123488,4.343169851836893,-2.171474386981871,4.614617967576699,0],["seg",-2.571968615899185,4.052774042409672,-2.732716654392884,4.306072420060276,0],["seg",-3.0596351507937105,3.698463565323788,-3.2508623477183174,3.929617538156525,0],["seg",-3.4990494116227744,3.2858261084577065,-3.7177399998491976,3.4911902402363126,0],["seg",-3.883281572999747,2.8213692110038715,-4.125986671312231,2.9977047866916133,0],["seg",-4.206272064210545,2.312417635688233,-4.469164068223704,2.4569437379187473,0],["seg",-4.462927132263606,1.766997852886455,-4.741860078030082,1.8774352186918584,0],["seg",-4.649199173417428,1.193711458391305,-4.939774121756018,1.2683184245407617,0],["seg",-4.762150566309493,0.6015995211086618,-5.0597849767038365,0.639199491177953,0],["seg",-4.8,5.878304635907295e-16,-5.1,6.245698675651501e-16,0],["seg",-4.762150566309494,-0.6015995211086606,-5.0597849767038365,-0.6391994911779518,0],["seg",-4.649199173417429,-1.193711458391302,-4.9397741217560185,-1.2683184245407582,0],["seg",-4.462927132263607,-1.766997852886454,-4.741860078030082,-1.8774352186918573,0],["seg",-4.206272064210545,-2.3124176356882336,-4.469164068223703,-2.456943737918748,0],["seg",-3.883281572999749,-2.821369211003869,-4.1259866713122335,-2.9977047866916107,0],["seg",-3.4990494116227766,-3.2858261084577043,-3.7177399998492,-3.4911902402363104,0],["seg",-3.0596351507937096,-3.698463565323789,-3.2508623477183165,-3.9296175381565255,0],["seg",-2.5719686158991824,-4.052774042409673,-2.732716654392881,-4.306072420060278,0],["seg",-2.043740599512346,-4.343169851836895,-2.171474386981868,-4.6146179675767005,0],["seg",-1.4832815729997482,-4.565071278216736,-1.5759866713122324,-4.850388233105282,0],["seg",-0.8994303100114782,-4.714978803497706,-0.9556447043871955,-5.009664978716312,0],["seg",-0.3013944937407034,-4.790528296455704,-0.32023164959949735,-5.089936314984184,0],["seg",0.3013944937407016,-4.790528296455704,0.3202316495994954,-5.089936314984184,0],["seg",0.8994303100114764,-4.714978803497706,0.9556447043871937,-5.009664978716312,0],["seg",1.4832815729997466,-4.565071278216737,1.5759866713122308,-4.850388233105283,0],["seg",2.0437405995123448,-4.343169851836896,2.171474386981866,-4.614617967576701,0],["seg",2.5719686158991846,-4.052774042409672,2.7327166543928834,-4.306072420060276,0],["seg",3.0596351507937087,-3.69846356532379,3.250862347718315,-3.929617538156527,0],["seg",3.499049411622774,-3.285826108457707,3.717739999849197,-3.4911902402363135,0],["seg",3.883281572999747,-2.821369211003872,4.125986671312231,-2.9977047866916138,0],["seg",4.206272064210543,-2.312417635688237,4.4691640682237015,-2.4569437379187518,0],["seg",4.462927132263607,-1.7669978528864536,4.741860078030082,-1.877435218691857,0],["seg",4.649199173417428,-1.1937114583913055,4.939774121756018,-1.2683184245407622,0],["seg",4.762150566309493,-0.6015995211086623,5.0597849767038365,-0.6391994911779536,0],["lab",0,5.8,"A"],["lab",0,-5.8,"歯数48"],["circ",6.7,0,1.6,"h"],["circ",6.7,0,0.35,"w"],["dot",6.7,0],["seg",8.3,0.0,8.6,0.0,0],["seg",8.19195556704697,0.5779866658994447,8.471697235868277,0.6863591657555906,0],["seg",7.882414267553055,1.0779130298344917,8.104116942719253,1.2800217229284587,0],["seg",7.413181369242461,1.4322612661680998,7.546902875975423,1.7008102535746186,0],["seg",6.847629375141284,1.5931746820720551,6.875309882980274,1.8918949349605656,0],["seg",6.262139215884668,1.5389210290765105,6.180040318863043,1.8274687220283563,0],["seg",5.73578458179319,1.2768275636483835,5.554994190879413,1.5162327318324553,0],["seg",5.339652582832618,0.8422914606037697,5.084587442113733,1.0002211094669766,0],["seg",5.127243040505757,0.2939992285065126,4.8323511106005865,0.34912408385148375,0],["seg",5.127243040505757,-0.2939992285065122,4.8323511106005865,-0.34912408385148325,0],["seg",5.339652582832618,-0.8422914606037694,5.084587442113733,-1.0002211094669762,0],["seg",5.7357845817931885,-1.2768275636483823,5.554994190879412,-1.516232731832454,0],["seg",6.262139215884667,-1.5389210290765105,6.180040318863043,-1.8274687220283563,0],["seg",6.847629375141284,-1.5931746820720551,6.875309882980275,-1.8918949349605656,0],["seg",7.41318136924246,-1.4322612661681002,7.546902875975422,-1.700810253574619,0],["seg",7.882414267553054,-1.0779130298344926,8.104116942719251,-1.2800217229284598,0],["seg",8.19195556704697,-0.5779866658994449,8.471697235868277,-0.6863591657555909,0],["lab",6.7,2.6,"B"],["lab",6.7,-2.6,"歯数16"]]}},{"c":"L4","lv":4,"q":"歯車A（歯数40）と歯車B（歯数10）がかみ合い、Bと同じ軸に歯車C（歯数30）がついています。CはD（歯数15）とかみ合っています。Aが1回転すると、Dは何回転する？","a":"8回転","d":["2回転","4回転","16回転"],"e":"Bは 40×1÷10＝4回転。同じ軸のCも4回転。Dは 30×4÷15＝8回転です。"},{"c":"L5","lv":5,"q":"歯数24の歯車Aと歯数36の歯車Bがかみ合っています。それぞれに印をつけて回し始めました。2つの印が、同時にはじめて元の位置にもどるのは、Aが何回転したとき？","a":"3回転","d":["2回転","36回転","6回転"],"e":"進んだ歯の数が24と36の公倍数になればよいので、最小公倍数の72。Aは 72÷24＝3回転（Bは2回転）です。","fig":{"geo":[["circ",0,0,2.4,"h"],["circ",0,0,0.432,"w"],["dot",0,0],["seg",2.4,0.0,2.6999999999999997,0.0,0],["seg",2.3245995867087146,0.5968557291956514,2.6151745350473035,0.6714626953451078,0],["seg",2.1031360321052723,1.1562088178441168,2.3660280361184314,1.3007349200746312,0],["seg",1.7495247058113876,1.6429130542288526,1.968215294037811,1.8482771860074592,0],["seg",1.2859843079495916,2.0263870212048363,1.4467323464432906,2.2796853988554404,0],["seg",0.7416407864998739,2.282535639108368,0.834345884812358,2.567852593996914,0],["seg",0.15069724687035246,2.395264148227852,0.1695344027291465,2.694672166756333,0],["seg",-0.44971515500573905,2.357489401748853,-0.5059295493814564,2.6521755769674593,0],["seg",-1.0218702997561744,2.1715849259184465,-1.1496040872256963,2.443033041658252,0],["seg",-1.5298175753968553,1.849231782661894,-1.7210447723214621,2.0803857554946306,0],["seg",-1.9416407864998735,1.4106846055019358,-2.1843458848123576,1.5870201811896776,0],["seg",-2.231463566131803,0.8834989264432275,-2.5103965118982785,0.9939362922486309,0],["seg",-2.3810752831547464,0.3007997605543309,-2.6787096935490897,0.3383997306236222,0],["seg",-2.381075283154747,-0.3007997605543303,-2.67870969354909,-0.33839973062362155,0],["seg",-2.2314635661318034,-0.883498926443227,-2.5103965118982785,-0.9939362922486303,0],["seg",-1.9416407864998746,-1.4106846055019344,-2.184345884812359,-1.587020181189676,0],["seg",-1.5298175753968548,-1.8492317826618945,-1.7210447723214615,-2.080385755494631,0],["seg",-1.021870299756173,-2.1715849259184474,-1.1496040872256947,-2.443033041658253,0],["seg",-0.4497151550057391,-2.357489401748853,-0.5059295493814564,-2.6521755769674593,0],["seg",0.1506972468703508,-2.395264148227852,0.16953440272914463,-2.694672166756333,0],["seg",0.7416407864998733,-2.2825356391083687,0.8343458848123574,-2.5678525939969146,0],["seg",1.2859843079495923,-2.026387021204836,1.446732346443291,-2.27968539885544,0],["seg",1.749524705811387,-1.6429130542288535,1.9682152940378101,-1.84827718600746,0],["seg",2.1031360321052714,-1.1562088178441186,2.36602803611843,-1.3007349200746334,0],["seg",2.324599586708714,-0.5968557291956528,2.6151745350473035,-0.6714626953451094,0],["lab",0,3.4,"A"],["lab",0,-3.4,"歯数24"],["circ",6.3,0,3.6,"h"],["circ",6.3,0,0.648,"w"],["dot",6.3,0],["seg",9.9,0.0,10.2,0.0,0],["seg",9.8509006922498,0.592540525010642,10.146809083270616,0.6419189020948621,0],["seg",9.704942070122284,1.1689180891368605,9.988687242632475,1.2663279298982655,0],["seg",9.46610550434336,1.713410614933465,9.729947629705308,1.8561948328445868,0],["seg",9.140905833827016,2.211165765682804,9.377647986645934,2.3954295794897043,0],["seg",8.738213657852668,2.6486060784232737,8.94139812934039,2.869323251625213,0],["seg",8.269013369240737,3.0137993217451027,8.433097816677465,3.264949265223861,0],["seg",7.74610352875069,3.2967839759582067,7.866612156146581,3.5715159739547238,0],["seg",7.183747753706877,3.4898409573815896,7.257393399849117,3.780661037163388,0],["seg",6.597285643700396,3.5877041748240117,6.622059447342096,3.8866795227260122,0],["seg",6.002714356299603,3.5877041748240117,5.977940552657904,3.8866795227260122,0],["seg",5.416252246293124,3.4898409573815896,5.3426066001508845,3.7806610371633886,0],["seg",4.85389647124931,3.2967839759582067,4.73338784385342,3.5715159739547238,0],["seg",4.330986630759263,3.0137993217451022,4.166902183322534,3.2649492652238608,0],["seg",3.8617863421473326,2.6486060784232746,3.6586018706596106,2.869323251625214,0],["seg",3.4590941661729833,2.2111657656828045,3.2223520133540653,2.3954295794897047,0],["seg",3.1338944956566395,1.7134106149334654,2.870052370294693,1.8561948328445872,0],["seg",2.895057929877715,1.1689180891368596,2.6113127573675246,1.2663279298982646,0],["seg",2.7490993077501993,0.5925405250106426,2.453190916729383,0.6419189020948627,0],["seg",2.6999999999999997,4.4087284769304716e-16,2.4,4.776122516674677e-16,0],["seg",2.749099307750199,-0.5925405250106416,2.4531909167293824,-0.6419189020948617,0],["seg",2.895057929877715,-1.1689180891368602,2.6113127573675246,-1.2663279298982653,0],["seg",3.133894495656638,-1.7134106149334634,2.8700523702946916,-1.8561948328445852,0],["seg",3.4590941661729815,-2.2111657656828028,3.2223520133540635,-2.395429579489703,0],["seg",3.8617863421473317,-2.6486060784232737,3.6586018706596097,-2.869323251625213,0],["seg",4.330986630759263,-3.0137993217451027,4.166902183322534,-3.264949265223861,0],["seg",4.853896471249311,-3.2967839759582076,4.7333878438534205,-3.5715159739547246,0],["seg",5.416252246293123,-3.4898409573815896,5.342606600150884,-3.780661037163388,0],["seg",6.002714356299602,-3.5877041748240117,5.977940552657902,-3.8866795227260122,0],["seg",6.597285643700396,-3.5877041748240117,6.622059447342096,-3.8866795227260122,0],["seg",7.183747753706875,-3.4898409573815896,7.257393399849115,-3.7806610371633886,0],["seg",7.746103528750687,-3.296783975958208,7.866612156146578,-3.571515973954725,0],["seg",8.269013369240735,-3.0137993217451036,8.433097816677463,-3.264949265223862,0],["seg",8.738213657852668,-2.6486060784232737,8.94139812934039,-2.869323251625213,0],["seg",9.140905833827018,-2.2111657656828028,9.377647986645936,-2.395429579489703,0],["seg",9.466105504343359,-1.7134106149334671,9.729947629705306,-1.8561948328445892,0],["seg",9.704942070122284,-1.1689180891368616,9.988687242632475,-1.2663279298982666,0],["seg",9.850900692249802,-0.5925405250106415,10.146809083270618,-0.6419189020948615,0],["lab",6.3,4.6,"B"],["lab",6.3,-4.6,"歯数36"]]}}];
+const CATS={L1:["レベル1 基本","比を簡単にする・比例と反比例の表と式"],L2:["レベル2 標準","グラフを読む・比例配分・速さの比"],L3:["レベル3 応用","歯車・輪じく・てこ・反比例の利用"],L4:["レベル4 発展","連比・速さと時間の比・2つのグラフ"],L5:["レベル5 入試","入試によく出る比と比例"]};
+const LVN={1:'基本',2:'標準',3:'発展'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>esc(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'hirei-p-best':'hirei-best',{}), rec=store.get('hirei-p-rec',{});
+const saveRec=()=>store.set('hirei-p-rec',rec);
+const qkey=q=>q.q;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const PAIDLINK=`<a class="paid" href="hirei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>比と比例・反比例 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。比例・反比例のグラフ、歯車、てこ、比例配分、速さの比。解き方つき。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt>比を簡単にする</dt><dd>両方の数に同じ数をかけても、同じ数でわっても比は等しい。小数・分数の比は整数になおしてから約分する</dd><dt>比例</dt><dd>xが2倍、3倍…になると、yも2倍、3倍…。式は y＝決まった数×x。グラフは原点Oを通る直線</dd><dt>反比例</dt><dd>xが2倍、3倍…になると、yは1/2倍、1/3倍…。x×yが一定で、式は y＝決まった数÷x。グラフはなめらかな曲線</dd><dt>比例配分</dt><dd>全体をa：bに分けると、小さい方＝全体×a/(a＋b)。差や一方がわかるときは、比の1にあたる量を求める</dd><dt>連比</dt><dd>A：B＝2：3、B：C＝4：5 は、Bを3と4の最小公倍数12にそろえて A：B：C＝8：12：15</dd><dt>歯車</dt><dd>かみ合う歯車は、歯数×回転数が等しい。回転数の比は歯数の比の逆。同じ軸の歯車は回転数が同じ</dd><dt>輪じく・てこ</dt><dd>重さ×（支点や中心からの）きょり が左右で等しいとつり合う。輪じくでは 重さ×半径</dd><dt>速さ・時間・道のり</dt><dd>道のりが同じ → 速さの比と時間の比は逆。時間が同じ → 速さの比＝道のりの比。速さが同じ → 時間の比＝道のりの比</dd></dl>`;
+
+async function decrypt(){ return mnAccess.load('hirei'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'hirei',err:err,free:'hirei.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">比と比例・反比例のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">レベルをえらぶ（1回10問）</div>
+    <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
+        return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
+      <button class="cat" data-l="all"><span class="nm">比と比例・反比例まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
+      <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
+      <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">比と比例・反比例のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    start(shuffle(pool).slice(0,10));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'hirei-p-':'hirei-')+course});
+  newQ();
+}
+function geoSVG(G){
+  /* 図形の図。座標はcm、yは上向き。色つき＝gh、くりぬき＝gw */
+  const P=[]; const add=(x,y)=>P.push([x,y]);
+  const rad=a=>a*Math.PI/180;
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') e[1].forEach(p=>add(p[0],p[1]));
+    if(t==='circ'){add(e[1]-e[3],e[2]-e[3]);add(e[1]+e[3],e[2]+e[3]);}
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e; if(t==='sect')add(cx,cy); for(let a=a1;a<=a2+1e-9;a+=Math.min(15,a2-a1||15)) add(cx+r*Math.cos(rad(a)),cy+r*Math.sin(rad(a))); add(cx+r*Math.cos(rad(a2)),cy+r*Math.sin(rad(a2)));}
+    if(t==='path') e[1].forEach(c=>add(c[c.length-2],c[c.length-1]));
+    if(t==='seg'||t==='dim'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='lab'||t==='dot'||t==='ra') add(e[1],e[2]);
+  });
+  const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+  const mnx=Math.min(...xs), mxx=Math.max(...xs), mny=Math.min(...ys), mxy=Math.max(...ys);
+  const W=Math.max(mxx-mnx,1), H=Math.max(mxy-mny,1), s=Math.min(236/W,160/H), pad=40, VW=320, ox=(VW-W*s)/2;
+  const X=x=>+(ox+(x-mnx)*s).toFixed(1), Y=y=>+(pad+(mxy-y)*s).toFixed(1);
+  const cls=f=>f==='h'?'gh':f==='w'?'gw':'gn';
+  const pt=(cx,cy,r,a)=>[X(cx+r*Math.cos(rad(a))),Y(cy+r*Math.sin(rad(a)))];
+  let o='';
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') o+=`<path class="${cls(e[2])}" d="M${e[1].map(p=>X(p[0])+','+Y(p[1])).join(' L')} Z"/>`;
+    if(t==='circ') o+=`<circle class="${cls(e[4])}" cx="${X(e[1])}" cy="${Y(e[2])}" r="${(e[3]*s).toFixed(1)}"/>`;
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e, f=e[6], R=(r*s).toFixed(1), p1=pt(cx,cy,r,a1), p2=pt(cx,cy,r,a2), lg=(a2-a1)>180?1:0;
+      o+= t==='sect'?`<path class="${cls(f)}" d="M${X(cx)},${Y(cy)} L${p1} A${R},${R} 0 ${lg} 0 ${p2} Z"/>`:`<path class="gn" d="M${p1} A${R},${R} 0 ${lg} 0 ${p2}"/>`;}
+    if(t==='path'){ let d=''; e[1].forEach(c=>{ if(c[0]==='M')d+=`M${X(c[1])},${Y(c[2])} `; if(c[0]==='L')d+=`L${X(c[1])},${Y(c[2])} `; if(c[0]==='A'){const R=(c[1]*s).toFixed(1); d+=`A${R},${R} 0 ${c[2]} ${c[3]?0:1} ${X(c[4])},${Y(c[5])} `;} }); o+=`<path class="${cls(e[2])}" d="${d}Z"/>`; }
+    if(t==='seg') o+=`<line class="gn${e[5]?' gd':''}" x1="${X(e[1])}" y1="${Y(e[2])}" x2="${X(e[3])}" y2="${Y(e[4])}"/>`;
+    if(t==='dot') o+=`<circle class="gdot" cx="${X(e[1])}" cy="${Y(e[2])}" r="2.6"/>`;
+    if(t==='lab') o+=`<text class="glab" x="${X(e[1])}" y="${Y(e[2])+4}" text-anchor="middle">${esc(e[3])}</text>`;
+    if(t==='ra'){const [,x,y,ux,uy,vx,vy]=e, lu=Math.hypot(ux,uy), lv=Math.hypot(vx,vy), k=7;
+      const a=[X(x)+ux/lu*k, Y(y)-uy/lu*k], b=[X(x)+ux/lu*k+vx/lv*k, Y(y)-uy/lu*k-vy/lv*k], c=[X(x)+vx/lv*k, Y(y)-vy/lv*k];
+      o+=`<path class="gn gthin" d="M${a} L${b} L${c}"/>`;}
+    if(t==='dim'){const [,x1,y1,x2,y2,txt,off]=e; const sx1=X(x1),sy1=Y(y1),sx2=X(x2),sy2=Y(y2); const dx=sx2-sx1, dy=sy2-sy1, L=Math.hypot(dx,dy)||1;
+      const nx=dy/L, ny=-dx/L, k=off*13; const a=[sx1+nx*k,sy1+ny*k], b=[sx2+nx*k,sy2+ny*k];
+      const tk=(p)=>`<line class="gdim" x1="${p[0]-nx*4}" y1="${p[1]-ny*4}" x2="${p[0]+nx*4}" y2="${p[1]+ny*4}"/>`;
+      const m=[(a[0]+b[0])/2+nx*(off>0?9:-9)*Math.sign(off||1)*0+nx*Math.sign(off||1)*9,(a[1]+b[1])/2+ny*Math.sign(off||1)*9];
+      o+=`<line class="gdim" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>${tk(a)}${tk(b)}<text class="gdt" x="${m[0].toFixed(1)}" y="${(m[1]+4).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`;}
+  });
+  return `<div class="fig"><svg viewBox="0 0 ${VW} ${(H*s+2*pad).toFixed(0)}" role="img" aria-label="問題の図">${o}</svg></div>`;
+}
+function figSVG(f){
+  if(f.geo) return geoSVG(f.geo);
+  if(f.tbl){ const t=f.tbl; return `<div class="tblw">${t.cap?`<p class="tblcap">${esc(t.cap)}</p>`:''}<table class="dtbl"><tr>${t.head.map((h,i)=>`<th${i?'':' class="rh"'}>${esc(h)}</th>`).join('')}</tr>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th class="rh">${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`; }
+  /* てこ・棒・ばねの図。線は濃い色、おもりは四角、ばねばかりの引く力は矢印 */
+  const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`;
+  const T=(x,y,t,cls,anc)=>`<text x="${x}" y="${y}" class="${cls||'lb'}" text-anchor="${anc||'middle'}">${esc(t)}</text>`;
+  const W=(x,y,lb)=>`<rect x="${x-14}" y="${y}" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(x,y+36,lb);
+  const UP=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2+9} L${x},${y2} L${x+6},${y2+9}"/>`+T(x,y2-6,lb);
+  const DN=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2-9} L${x},${y2} L${x+6},${y2-9}"/>`+T(x,y2+16,lb);
+  const spr=(x,y1,y2)=>{const n=8,h=(y2-y1-12)/n;let d=`M${x},${y1} L${x},${y1+6}`;for(let i=0;i<n;i++)d+=` L${x+(i%2?-9:9)},${y1+6+h*(i+.5)}`;d+=` L${x},${y2-6} L${x},${y2}`;return `<path d="${d}"/>`;};
+  const sprH=(x1,x2,y)=>{const n=8,w=(x2-x1-12)/n;let d=`M${x1},${y} L${x1+6},${y}`;for(let i=0;i<n;i++)d+=` L${x1+6+w*(i+.5)},${y+(i%2?-9:9)}`;d+=` L${x2-6},${y} L${x2},${y}`;return `<path d="${d}"/>`;};
+  const ceil=(a,b)=>L(a,14,b,14)+Array.from({length:Math.floor((b-a)/12)},(_,i)=>L(a+6+i*12,14,a+i*12,6)).join('');
+  let g='',vb='0 0 320 170';
+  if(f.lev){ const o=f.lev,c=160,u=22,y=48; vb='0 0 320 140';
+    g+=`<rect x="${c-6*u-10}" y="${y-3}" width="${12*u+20}" height="6" rx="2" fill="#c9ced8"/>`;
+    for(let i=1;i<=6;i++){ g+=L(c-i*u,y-3,c-i*u,y+3)+L(c+i*u,y-3,c+i*u,y+3)+T(c-i*u,y-9,String(i),'tk')+T(c+i*u,y-9,String(i),'tk'); }
+    g+=`<path d="M${c},${y+3} L${c-10},${y+28} L${c+10},${y+28} Z" fill="#c9ced8"/>`+L(c-15,y+28,c+15,y+28);
+    const hang=(x,lb,k)=>{ if(lb[0]==='↓') return DN(x,y+3,y+60,lb.slice(1)); return L(x,y+3,x,y+42+k*0)+W(x,y+42,lb); };
+    o.L.forEach(([p,lb])=>g+=hang(c-p*u,lb,0)); o.R.forEach(([p,lb])=>g+=hang(c+p*u,lb,0));
+  }
+  if(f.bar){ const o=f.bar,x0=30,x1=290,y=74,X=p=>x0+p/o.len*(x1-x0); vb='0 0 320 175';
+    g+=`<rect x="${x0}" y="${y-4}" width="${x1-x0}" height="8" rx="2" fill="#c9ced8"/>`+T(160,y-34,'棒の長さ '+o.len+'cm','tk');
+    g+=L(x0,y-24,x0,y-16)+L(x1,y-24,x1,y-16)+L(x0,y-20,x1,y-20);
+    if(o.f!=null){ const fx=X(o.f); g+=`<path d="M${fx},${y+4} L${fx-12},${y+28} L${fx+12},${y+28} Z" fill="#c9ced8"/>`+T(fx,y+42,'支点','tk'); if(o.f>0&&o.f<o.len) g+=T((x0+fx)/2,y+18,o.f+'cm','tk'); }
+    if(o.m) g+=`<circle cx="160" cy="${y}" r="3.5" fill="#232a36" stroke="none"/>`+T(160,y+60,'棒の重さ '+o.m+'（一様）','tk');
+    (o.w||[]).forEach(([p,lb])=>{const x=X(p); g+=L(x,y+4,x,y+20)+W(x,y+20,lb); if(p>0&&p<o.len) g+=T((x0+x)/2,y+18,p+'cm','tk');});
+    (o.up||[]).forEach(([p,lb])=>{const x=X(p); g+=UP(x,y-4,y-46+12,lb).replace('','');});
+  }
+  if(f.spr){ const o=f.spr,w=o.w; vb='0 0 320 200';
+    if(o.t==='one') g+=ceil(130,190)+spr(160,14,110)+W(160,110,w[0]);
+    if(o.t==='ser') g+=ceil(130,190)+spr(160,14,72)+`<circle cx="160" cy="76" r="4" fill="#232a36" stroke="none"/>`+spr(160,80,140)+W(160,140,w[0])+T(184,48,'A','tk','start')+T(184,114,'A','tk','start');
+    if(o.t==='ser2') g+=ceil(130,190)+spr(160,14,66)+`<rect x="146" y="66" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(186,81,w[0],'lb','start')+spr(160,86,142)+W(160,142,w[1]);
+    if(o.t==='par') g+=ceil(80,240)+spr(110,14,104)+spr(210,14,104)+`<rect x="90" y="104" width="140" height="6" rx="2" fill="#c9ced8"/>`+L(160,110,160,124)+W(160,124,w[0]);
+    if(o.t==='paroff') g+=ceil(80,240)+spr(100,14,104)+spr(220,14,104)+`<rect x="96" y="104" width="128" height="6" rx="2" fill="#c9ced8"/>`+L(140,110,140,124)+W(140,124,w[0])+T(120,100,'10cm','tk')+T(180,100,'20cm','tk');
+    if(o.t==='wall') g+=sprH(100,220,40)+L(70,40,100,40)+L(220,40,250,40)+`<circle cx="70" cy="52" r="12"/><circle cx="250" cy="52" r="12"/>`+L(58,52,58,110)+L(262,52,262,110)+W(58,110,w[0])+W(262,110,w[1])+L(70,64,250,64);
+  }
+  return `<div class="fig"><svg viewBox="${vb}" role="img" aria-label="問題の図"><g stroke="#232a36" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg></div>`;
+}
+function newQ(){ const q=G.list[G.i]; G.ch=shuffle([q.a,...q.d]); G.done=false; G.pick=null; render(); }
+function render(){
+  const q=G.list[G.i], d=G.done;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}</span></div>
+    <p class="q">${qhtml(q.q)}</p>
+    ${q.fig?figSVG(q.fig):''}
+    <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${esc(c)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(G.ch[+b.dataset.i]));
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'hirei-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="res"><div class="seal ${G.ok?'':'x'}" aria-hidden="true">${G.ok?'正':'惜'}</div>
+      <div class="t"><span class="v ${G.ok?'ok':'ng'}">${G.ok?'正解！':'ざんねん'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</span>
+      <span>答え：<b>${esc(q.a)}</b></span></div></div>
+    <div class="ex">${esc(q.e)}</div>
+    <div class="row"><button class="btn go" id="next">${last?'結果を見る':'次の問題へ'}</button></div></div>`;
+  const nx=document.getElementById('next'); nx.onclick=next; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
+  track('level_end',{level_name:(PAID?'hirei-p-':'hirei-')+course,success:s===n,score:s,total:n});
+  const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'hirei-p-best':'hirei-best',best);}
+  app.innerHTML=`<div class="label">結果</div>
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
+    <p style="margin:0">${r===1?'全問正解！比と比例・反比例はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、もう一度ちょうせんしよう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
