@@ -97,7 +97,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
 <body>
 <div class="wrap">
   <header>
-    <h1>{{SITE_NAME}}</h1>
+    <h1 style="display:flex;align-items:center;gap:12px"><picture style="flex:none;display:flex"><source srcset="logo-dark.svg" media="(prefers-color-scheme: dark)"><img src="logo.svg" alt="" width="58" height="42"></picture>{{SITE_NAME}}</h1>
     <p class="lead">{{SITE_DESCRIPTION}}</p>
     <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a><button class="inst" id="inst" hidden>ホーム画面に追加</button></nav>
     <div class="howto" id="howto" hidden></div>

@@ -58,7 +58,7 @@ const paidTotal = (f) => (Object.values(REC_MAP).find((o) => o.f === f) || Objec
 const EXTRA_TPL = fs.readFileSync(path.join(ROOT, "scripts", "extra.html"), "utf8");
 const BUILD_ID = Date.now().toString(36);
 // ホーム画面に追加（アプリのように開く）ためのタグ。depth はサイトのいちばん上からの深さ
-const pwaTags = (depth) => { const r = "../".repeat(depth); return `<link rel="manifest" href="${r}manifest.webmanifest"><meta name="theme-color" content="#1f3a6e"><link rel="apple-touch-icon" href="${r}apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="まなび">`; };
+const pwaTags = (depth) => { const r = "../".repeat(depth); return `<link rel="manifest" href="${r}manifest.webmanifest"><meta name="theme-color" content="#1f3a6e"><link rel="icon" href="${r}favicon.svg" type="image/svg+xml"><link rel="icon" href="${r}favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="${r}apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="まなび">`; };
 const SW_REG = (depth) => `<script>if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('${"../".repeat(depth)}sw.js').catch(function(){});});</script>`;
 
 // ご意見フォーム（site.json の feedbackForm に、Googleフォームの「事前入力したURL」を入れたときだけ使います）
@@ -331,6 +331,6 @@ if (SITE_URL) {
 fs.writeFileSync(path.join(OUT, "manifest.webmanifest"), JSON.stringify({ name: site.name, short_name: "まなび", description: site.description, lang: "ja",
   start_url: "./index.html?from=app", scope: "./", display: "standalone", background_color: "#f2f5f9", theme_color: "#1f3a6e",
   icons: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }] }, null, 1));
-for (const f of ["icon-192.png", "icon-512.png", "apple-touch-icon.png"]) if (fs.existsSync(path.join(ROOT, f))) fs.copyFileSync(path.join(ROOT, f), path.join(OUT, f));
+for (const f of ["icon-192.png", "icon-512.png", "apple-touch-icon.png", "favicon.svg", "favicon-32.png", "logo.svg", "logo-dark.svg"]) if (fs.existsSync(path.join(ROOT, f))) fs.copyFileSync(path.join(ROOT, f), path.join(OUT, f));
 fs.writeFileSync(path.join(OUT, "sw.js"), fs.readFileSync(path.join(ROOT, "scripts", "sw.js"), "utf8").replace("__BUILD__", BUILD_ID));
 console.log(`ゲーム ${list.length} 本で一覧を作りました`);
