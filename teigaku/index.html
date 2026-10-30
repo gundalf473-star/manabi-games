@@ -93,6 +93,7 @@ a.chip{text-decoration:none;color:var(--c,var(--ink));border-color:var(--c,var(-
 .cont .s{font-size:13px;color:var(--muted)}
 footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
 footer a{color:inherit}
+.ctabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:4px;overflow-x:auto}.ctabs a{flex:1 0 auto;text-align:center;font-size:14px;font-weight:700;line-height:1.3;color:var(--muted);text-decoration:none;padding:7px 8px;border-radius:9px;white-space:nowrap}.ctabs a small{display:block;font-size:11px;font-weight:400;opacity:.85}.ctabs a[aria-current]{background:var(--ink);color:var(--surface)}.ctabs a:hover:not([aria-current]){color:var(--fg);background:var(--bg)}@media (max-width:360px){.ctabs{gap:2px;padding:3px}.ctabs a{font-size:13px;padding:6px 3px}.ctabs a small{font-size:10px}}
 </style>
 </head>
 <body>
@@ -101,8 +102,9 @@ footer a{color:inherit}
     <div class="eyebrow"><a href="../index.html">{{SITE_NAME}}</a>　／　低学年コース</div>
     <h1>低学年コース</h1>
     <p class="lead">小学1〜3年生のための、中学受験の土台づくり。1回5問、ふりがなと読み上げつきで、ひとりでも楽しく続けられます。</p>
-    <nav class="topnav"><a href="../buy.html?s=teigaku">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../index.html">中学受験のゲーム（4〜6年生）</a><a href="../parent.html">保護者ページ</a></nav>
+    <nav class="topnav"><a href="../buy.html?s=teigaku">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../parent.html">保護者ページ</a></nav>
   </header>
+  <nav class="ctabs" aria-label="コース"><a href="../teigaku/index.html" aria-current="page">低学年<small>小1〜3</small></a><a href="../index.html">中学受験<small>小4〜6</small></a><a href="../chuko/index.html">中高一貫<small>中学生</small></a><a href="../career/index.html">就活・資格<small>大学生〜</small></a></nav>
   <section class="mine" id="mine" aria-label="わたしの単元"></section>
   <section class="points" aria-label="このコースの特長">
     <div class="point"><h2>ひとりで読める</h2><p>漢字にはすべてふりがなつき。🔊ボタンで問題と選択肢を読み上げるので、字を読むのがまだゆっくりな子も遊べます。</p></div>
