@@ -92,12 +92,12 @@ const OPEN=false;
 const yen=n=>n.toLocaleString('ja-JP')+'円';
 const q=new URLSearchParams(location.search);
 // サーバーが使えないとき（準備中）に見せる料金表。値段はサーバー（server/worker.js）の PRICES が正です
-const FALLBACK={subjects:{kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',chuko:'中高一貫 全教科'},periods:{d1:'1日',w1:'1週間',m1:'1ヵ月（30日）',y1:'1年（365日）'},
-  prices:{kokugo:{d1:1000,w1:2000,m1:4000,y1:20000},sansu:{d1:1000,w1:2000,m1:4000,y1:20000},rika:{d1:1000,w1:2000,m1:4000,y1:20000},shakai:{d1:1000,w1:2000,m1:4000,y1:20000},shikou:{d1:1000,w1:2000,m1:4000,y1:20000},all:{d1:2000,w1:4000,m1:8000,y1:40000},ckokugo:{d1:1000,w1:2000,m1:4000,y1:20000},csugaku:{d1:1000,w1:2000,m1:4000,y1:20000},ceigo:{d1:1000,w1:2000,m1:4000,y1:20000},crika:{d1:1000,w1:2000,m1:4000,y1:20000},cshakai:{d1:1000,w1:2000,m1:4000,y1:20000},chuko:{d1:2000,w1:4000,m1:8000,y1:40000}},continueOff:20,maxDevices:3,test:false};
+const FALLBACK={subjects:{kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',chuko:'中高一貫 全教科'},periods:{d1:'1日',w1:'1週間',m1:'1ヵ月（30日）',y1:'1年（365日）'},
+  prices:{kokugo:{d1:1000,w1:2000,m1:4000,y1:20000},sansu:{d1:1000,w1:2000,m1:4000,y1:20000},rika:{d1:1000,w1:2000,m1:4000,y1:20000},shakai:{d1:1000,w1:2000,m1:4000,y1:20000},shikou:{d1:1000,w1:2000,m1:4000,y1:20000},all:{d1:2000,w1:4000,m1:8000,y1:40000},ckokugo:{d1:1000,w1:2000,m1:4000,y1:20000},csugaku:{d1:1000,w1:2000,m1:4000,y1:20000},ceigo:{d1:1000,w1:2000,m1:4000,y1:20000},crika:{d1:1000,w1:2000,m1:4000,y1:20000},cshakai:{d1:1000,w1:2000,m1:4000,y1:20000},cjoho:{d1:1000,w1:2000,m1:4000,y1:20000},chuko:{d1:2000,w1:4000,m1:8000,y1:40000}},continueOff:20,maxDevices:3,test:false};
 let PL=null, GAMES=[], sel={s:Object.keys(FALLBACK.subjects).includes(q.get('s'))?q.get('s'):'all',p:'m1',prev:''}, agreed=false;
 const SUBJ_JA={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力'};
 /* 中高一貫コースの教科（chuko は中高一貫コースの全教科） */
-const CH_JA={ckokugo:'国語',csugaku:'数学',ceigo:'英語',crika:'理科',cshakai:'社会'};
+const CH_JA={ckokugo:'国語',csugaku:'数学',ceigo:'英語',crika:'理科',cshakai:'社会',cjoho:'情報'};
 const isC=s=>s==='chuko'||!!CH_JA[s];
 
 async function boot(){
@@ -127,11 +127,11 @@ function render(){
       <div class="sub-label" style="margin-top:6px">中学受験（小学生）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>!isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='all'?'国語・算数・理科・社会・思考力のすべて'+(allSave(sel.p)>0?`<br><b style="color:var(--accent)">5教科を別々に買うより ${yen(allSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.subjects.chuko?`<div class="sub-label">中高一貫校の中学生（中高一貫コース）</div>
-      <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='chuko'?'国語・数学・英語・理科・社会のすべて'+(chukoSave(sel.p)>0?`<br><b style="color:var(--accent)">5教科を別々に買うより ${yen(chukoSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
+      <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='chuko'?'国語・数学・英語・理科・社会・情報のすべて'+(chukoSave(sel.p)>0?`<br><b style="color:var(--accent)">${csingles.length}教科を別々に買うより ${yen(chukoSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.continueOff?`<p class="note"><b style="color:var(--accent)">中学受験のプランを買ったことがある方は、中高一貫コースのどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
       <p class="games">${sel.s==='all'?'中学受験のすべての有料版':sel.s==='chuko'?'中高一貫コースのすべての有料版':esc(P.subjects[sel.s])+'の有料版'}（${gamesOf(sel.s).length}本）：${gamesOf(sel.s).map(g=>esc(g.title)).join('、')||'—'}</p>
       ${sel.s==='all'?'<p class="note">全教科は、2教科分の値段で5教科（国語・算数・理科・社会・思考力）すべてが使えます。中高一貫コースは入りません。</p>':''}
-      ${sel.s==='chuko'?'<p class="note">中高一貫 全教科は、2教科分の値段で中高一貫コースの5教科（国語・数学・英語・理科・社会）すべてが使えます。中学受験の有料版は入りません。</p>':''}
+      ${sel.s==='chuko'?'<p class="note">中高一貫 全教科は、2教科分の値段で中高一貫コースの6教科（国語・数学・英語・理科・社会・情報）すべてが使えます。中学受験の有料版は入りません。</p>':''}
       ${isC(sel.s)&&P.continueOff?`<div class="cont"><b style="font-size:14px">継続割引（${P.continueOff}%引き）</b>
         <span class="note" style="margin:0">前に中学受験のプランを買ったときの利用コードを入れてください。期間が終わったコードでも使えます（1つのコードにつき1回）。</span>
         ${sel.prev?`<p class="ok">${esc(sel.prev)} で継続割引が使えます。 <button class="linkbtn" id="cl" style="background:none;border:0;padding:0;text-decoration:underline;cursor:pointer;font-size:14px">取り消す</button></p>`:
