@@ -259,7 +259,7 @@ function result(){
   if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'c-kobun2-p-best':'c-kobun2-best',best);}
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
-    <p style="margin:0">${r===1?'全問正解！古文単語と漢文入門はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、何が「もとにする量」かを確かめよう。'}</p>
+    <p style="margin:0">${r===1?'全問正解！古文単語と漢文入門はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解説を読み直して、もう一度ちょうせんしよう。'}</p>
     <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
