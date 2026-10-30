@@ -31,6 +31,7 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--s5);outline-offset:2px}
 .label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
 .subjects{display:flex;gap:8px;flex-wrap:wrap}
+.cath{grid-column:1/-1;margin:10px 0 0;font-size:15px;color:var(--c,var(--ink));display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--rule);padding-bottom:4px}.cath:first-child{margin-top:0}.cath span{font-size:12px;color:var(--muted);font-weight:400}
 .subj{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:8px}
 .subj .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .subj .sw{width:10px;height:10px;border-radius:2px;background:var(--c,var(--ink))}
@@ -142,6 +143,14 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   function toggleFav(k){const i=favIdx(k);if(i>=0)fav.splice(i,1);else{if(fav.length>=8){note('「わたしの単元」に入れられるのは8つまでです。どれかを外してください。');return;}const u=UM[k];fav.unshift(u&&u.paid&&(playedPaid(k)||!u.free)?u.paid.file:k);}
     try{localStorage.setItem('mn-fav-j',JSON.stringify(fav));}catch(e){note('この端末では保存できませんでした。');}window.mnMine&&window.mnMine();render();}
   function note(t){const m=document.getElementById('mine2');const p=document.createElement('p');p.className='hint';p.style.color='var(--s3)';p.textContent=t;m.prepend(p);setTimeout(()=>p.remove(),3000);}
+  /* 思考力は数が多いので、6つのなかまに分ける（新しいゲームは unit がなかまの名前。前からあるゲームはここで決める） */
+  const CAT6=['ことば遊び','図形・もよう','数のパズル','論理・推理','対戦・作戦','プログラミング'];
+  const CATMAP={'nonogram.html':'図形・もよう','shikitsume.html':'図形・もよう','matchbou.html':'図形・もよう','hitofude.html':'図形・もよう','kagami.html':'図形・もよう','zukeikazu.html':'図形・もよう','tsumiki.html':'図形・もよう','origami.html':'図形・もよう','heimen.html':'図形・もよう','mikata.html':'図形・もよう','tenkai.html':'図形・もよう',
+    'nanpure.html':'数のパズル','sujitsunagi.html':'数のパズル','mushikui.html':'数のパズル','mahojin.html':'数のパズル','aburawake.html':'数のパズル',
+    'building.html':'論理・推理','kisoku.html':'論理・推理','ronri.html':'論理・推理','tenbin.html':'論理・推理','michi.html':'論理・推理','slide.html':'論理・推理',
+    'ishitori.html':'対戦・作戦','rittai7.html':'対戦・作戦','flow.html':'プログラミング','lamp.html':'プログラミング','robot.html':'プログラミング','narabe.html':'プログラミング'};
+  units.forEach(u=>{if(u.subject==='思考力')u.cat=CAT6.includes(u.unit)?u.unit:(CATMAP[u.k]||'論理・推理');});
+  const catOf=u=>u.cat||u.unit, ALLU=units;
   let subj=decodeURIComponent(location.hash.slice(1))||'すべて', unit='すべて';
   if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
 
@@ -154,19 +163,19 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     const ub=document.getElementById('unitbox'), U=document.getElementById('units');
     if(subj==='すべて'){ub.hidden=true;}
     else{
-      const units=[...new Set(games.filter(g=>g.subject===subj).map(g=>g.unit))];
+      const units=subj==='思考力'?CAT6.filter(c=>ALLU.some(u=>u.subject==='思考力'&&u.cat===c)):[...new Set(games.filter(g=>g.subject===subj).map(g=>g.unit))];
       ub.hidden=units.length<2;
       U.innerHTML=['すべて',...units].map(u=>`<button class="unit" aria-pressed="${u===unit}" data-u="${esc(u)}">${esc(u)}</button>`).join('');
       U.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{unit=b.dataset.u;render();});
     }
 
-    const shown=units.filter(u=>(subj==='すべて'||u.subject===subj)&&(unit==='すべて'||u.unit===unit));
+    const shown=units.filter(u=>(subj==='すべて'||u.subject===subj)&&(unit==='すべて'||catOf(u)===unit));
     const groups=[...new Set(shown.map(u=>u.subject))];
     const L=document.getElementById('list');
     L.innerHTML= shown.length? groups.map(s=>{
-      const us=shown.filter(u=>u.subject===s);
+      let us=shown.filter(u=>u.subject===s); if(s==='思考力')us=us.slice().sort((a,b)=>CAT6.indexOf(a.cat)-CAT6.indexOf(b.cat));
       return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${us.length}本</span></div>
-        <div class="grid">${us.map(u=>{const on=favIdx(u.k)>=0;return `<div class="card">
+        <div class="grid">${us.map((u,i)=>{const on=favIdx(u.k)>=0;return (u.cat&&(i===0||us[i-1].cat!==u.cat)?`<h3 class="cath">${esc(u.cat)}<span>${us.filter(x=>x.cat===u.cat).length}本</span></h3>`:'')+`<div class="card">
           <span class="tags"><span class="tag">${esc(u.unit)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${on}" title="いちばん上の「わたしの単元」に入れる">${on?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
           <div class="meta">${u.grade?`<span>${esc(u.grade)}</span>`:''}${u.players?`<span>${esc(u.players)}</span>`:''}</div>
           <div class="btns">${u.free?`<a href="${u.free.url}">${u.paid?'無料であそぶ':'あそぶ →'}</a>`:''}${u.paid?`<a class="p" href="${u.paid.url}">有料版（全問）</a>`:''}</div></div>`;}).join('')}</div></section>`;
