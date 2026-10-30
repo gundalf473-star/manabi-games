@@ -276,12 +276,12 @@ const ask = "ご請求があれば、遅滞なく開示します。";
 for (const name of ["buy.html", "plan.html", "tokushoho.html", "contact.html"]) {
   const page = fs.readFileSync(path.join(ROOT, name), "utf8")
     .replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA).replace("{{ACCESS}}", () => ACCESS)
-    .replace("{{SELLER_NAME}}", esc(seller.name || "（site.json の seller.name に書いてください）"))
-    .replace("{{SELLER_MANAGER}}", esc(seller.manager || seller.name || "（site.json の seller.manager）"))
+    .replace("{{SELLER_NAME}}", esc(seller.name || ask))
+    .replace("{{SELLER_MANAGER}}", esc(seller.manager || seller.name || ask))
     .replace("{{SELLER_ADDRESS}}", esc(seller.address || ask))
     .replace("{{SELLER_PHONE}}", esc(seller.phone || ask))
     .replace("{{SELLER_EMAIL}}", esc(seller.email || site.contact || "（site.json の seller.email に書いてください）"))
-    .replace("{{SELLER_NOTE}}", (!seller.address || !seller.phone) ? "所在地・電話番号は、ご請求があればメールでお知らせします。" : "");
+    .replace("{{SELLER_NOTE}}", (() => { const m = [[!seller.name, "販売事業者・運営責任者の氏名"], [!seller.address, "所在地"], [!seller.phone, "電話番号"]].filter(x => x[0]).map(x => x[1]); return m.length ? m.join("・") + "は、ご請求があればメールで遅滞なくお知らせします。" : ""; })());
   fs.writeFileSync(path.join(OUT, name), sitePage(page, name, { noindex: name === "plan.html" }));
 }
 if (!API) console.warn("※ site.json の apiBase が空です。有料版は「販売準備中」と表示されます。");
