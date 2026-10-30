@@ -1,0 +1,308 @@
+<title>サイコロころがし 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="サイコロころがしの有料版。1回から10回ころがす問題、上・下・手前・おく・右・左の面、6が上になる道さがしまで、5つのレベルに20問ずつ、全100問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.ob svg{display:block}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>サイコロころがし 100問</h1>
+    <p class="lead">サイコロを道にそってころがすと、ゴールで上はいくつ？　向かい合う面をたすと7がひみつ。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='korogashi';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>サイコロころがし 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* サイコロころがし：p.kind='ask'（st:[上,手前,右], path:'NEWS…', ask:top|bottom|front|back|right|left, a, ds）
+   p.kind='path'（st, target, w,h, start, goal, a:正しい道, ds:ほかの3本）。向かい合う面の和は7。答えはすべてころがす計算でたしかめる */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'1〜2回ころがす',2:'3〜4回・曲がり角あり',3:'4〜6回・横や下の面も',4:'7〜10回・6つの面',5:'上が6（など）になる道はどれ？'};
+const RULES=`<ol class="rules">
+  <li>サイコロを、矢印の道にそって<b>1マスずつころがします</b>（すべらせずに、ぱたんとたおします）。</li>
+  <li>サイコロの<b>向かい合う面の数をたすと7</b>です（1と6、2と5、3と4）。</li>
+  <li>ゴールに着いたとき、上（や横）の面はいくつ？　4つの中からえらぼう。</li>
+  <li>盤は真上から見た図です。盤の上がわが<b>おく</b>（むこうがわ）、下がわが<b>手前</b>（自分のがわ）です。スタートのサイコロの「手前」の面は盤の下がわを、「右」の面は盤の右がわを向いています。</li></ol>`;
+const KD={N:[0,-1],S:[0,1],E:[1,0],W:[-1,0]};
+const kRoll=([t,f,r],d)=>d==='N'?[f,7-t,r]:d==='S'?[7-f,t,r]:d==='E'?[7-r,f,t]:[r,f,7-t];
+const kRun=(st,p)=>{let s=st.slice();for(const d of p)s=kRoll(s,d);return s;};
+const kFace=([t,f,r],a)=>({top:t,bottom:7-t,front:f,back:7-f,right:r,left:7-r})[a];
+const KASK={top:'上',bottom:'下（ゆかについている面）',front:'手前',back:'おく（むこうがわ）',right:'右',left:'左'};
+const PIP={1:[[50,50]],2:[[27,27],[73,73]],3:[[27,27],[50,50],[73,73]],4:[[27,27],[73,27],[27,73],[73,73]],5:[[27,27],[73,27],[50,50],[27,73],[73,73]],6:[[28,24],[28,50],[28,76],[72,24],[72,50],[72,76]]};
+/* 本物のサイコロのように、面の向きで2・3・6の目のならびも回るようにする。
+   もとのサイコロ：上1・手前2・右3（x=右, y=おく, z=上）。面ごとの目の位置 (a,b) は、その面の2つの向き ua,ub で表す */
+const KN={1:[0,0,1],6:[0,0,-1],2:[0,-1,0],5:[0,1,0],3:[1,0,0],4:[-1,0,0]};
+const KUV={1:[[1,0,0],[0,1,0]],6:[[1,0,0],[0,1,0]],2:[[1,0,0],[0,0,1]],5:[[1,0,0],[0,0,1]],3:[[0,1,0],[0,0,1]],4:[[0,1,0],[0,0,1]]};
+const KQ=0.46,KAB={1:[[0,0]],2:[[-KQ,KQ],[KQ,-KQ]],3:[[-KQ,-KQ],[0,0],[KQ,KQ]],4:[[-KQ,-KQ],[KQ,-KQ],[-KQ,KQ],[KQ,KQ]],5:[[-KQ,-KQ],[KQ,-KQ],[0,0],[-KQ,KQ],[KQ,KQ]],6:[[-KQ,-KQ],[0,-KQ],[KQ,-KQ],[-KQ,KQ],[0,KQ],[KQ,KQ]]};
+const kDot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+/* st=[上,手前,右] のときの、見えている面 w（'top'|'front'|'right'）の目の位置（0〜100） */
+function kPts(st,w){const [t,f,r]=st,src=[KN[t],KN[f],KN[r]],dst=[[0,0,1],[0,-1,0],[1,0,0]];
+  const rot=v=>[0,1,2].map(k=>src.reduce((s,sv,i)=>s+dst[i][k]*kDot(sv,v),0));
+  const n=w==='top'?t:w==='front'?f:r,[ua,ub]=KUV[n];
+  return KAB[n].map(([a,b])=>{const p=rot([0,1,2].map(k=>KN[n][k]+a*ua[k]+b*ub[k]));
+    return w==='top'?[(p[0]+1)*50,(1-p[1])*50]:w==='front'?[(p[0]+1)*50,(1-p[2])*50]:[(p[1]+1)*50,(1-p[2])*50];});}
+function kPips(n,pts){return `<rect x="2" y="2" width="96" height="96" rx="16" fill="#fffdf8" stroke="#2a2520" stroke-width="2" vector-effect="non-scaling-stroke"/>`+
+  (pts||PIP[n]).map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${n===1?16:10}" fill="${n===1?'#d4302a':'#2a2520'}"/>`).join('');}
+/* 真上から見た上の面（x,y が左上、大きさ s） */
+const kTopAt=(st,x,y,s)=>`<g transform="matrix(${s/100},0,0,${s/100},${x},${y})">${kPips(st[0],kPts(st,'top'))}</g>`;
+/* ななめから見たサイコロ（上・手前・右の3面） */
+function kDie([t,f,r],px,label){
+  const s=64,d=26,ox=14,oy=d+18;
+  let o=`<g transform="matrix(${s/100},0,0,${s/100},${ox},${oy})">${kPips(f,kPts([t,f,r],'front'))}</g>`;
+  o+=`<g transform="matrix(${s/100},0,${-d/100},${d/100},${ox+d},${oy-d})">${kPips(t,kPts([t,f,r],'top'))}</g>`;
+  o+=`<g transform="matrix(${d/100},${-d/100},0,${s/100},${ox+s},${oy})">${kPips(r,kPts([t,f,r],'right'))}</g>`;
+  if(label)o+=`<text x="${ox+s/2+d/2}" y="${oy-d-5}" text-anchor="middle" font-size="12" fill="#6a625a">上</text><text x="${ox+s/2}" y="${oy+s+15}" text-anchor="middle" font-size="12" fill="#6a625a">手前</text><text x="${ox+s+d+5}" y="${oy+s/2}" font-size="12" fill="#6a625a">右</text>`;
+  return `<svg viewBox="0 0 ${ox+s+d+(label?24:6)} ${oy+s+(label?20:6)}" style="width:${px}px;height:auto" role="img" aria-label="上が${t}、手前が${f}、右が${r}のサイコロ">${o}</svg>`;
+}
+function startStage(p){P=p;S={hints:0,done:false,msg:'',opts:shuffle([p.a,...p.ds]),wrong:[],hint:0,elim:[],anim:-1,busy:false};begin(p);draw();}
+const kCells=(sx,sy,p)=>{const c=[[sx,sy]];let x=sx,y=sy;for(const d of p){x+=KD[d][0];y+=KD[d][1];c.push([x,y]);}return c;};
+/* 盤：w×h のマス、道 path、ダイ（at=何回ころがしたところ） */
+function kBoard(o){
+  const U=o.U||50,M=o.lab?22:4,w=o.w,h=o.h,cells=o.path!=null?kCells(o.sx,o.sy,o.path):[[o.sx,o.sy]];
+  const on=new Set(cells.map(c=>c.join(',')));let s='';
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)s+=`<rect x="${M+x*U+1}" y="${M+y*U+1}" width="${U-2}" height="${U-2}" rx="5" fill="${on.has(x+','+y)?'#f6e7c4':'#f1ede4'}" stroke="#d9cfb8"/>`;
+  const C=([x,y])=>[M+x*U+U/2,M+y*U+U/2];
+  if(o.mark!=null&&o.mark>0){const [mx,my]=C(cells[o.mark]);s+=`<rect x="${mx-U/2+3}" y="${my-U/2+3}" width="${U-6}" height="${U-6}" rx="5" fill="none" stroke="#7c3aed" stroke-width="3"/>`;}
+  if(o.path!=null&&o.path.length){
+    s+=`<polyline points="${cells.map(C).map(p=>p.join(',')).join(' ')}" fill="none" stroke="#c2410c" stroke-width="${U*0.07}" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>`;
+    for(let i=0;i<o.path.length;i++){const [ax,ay]=C(cells[i]),[bx,by]=C(cells[i+1]),mx=(ax+bx)/2,my=(ay+by)/2,ang=Math.atan2(by-ay,bx-ax)*180/Math.PI,k=U*0.15;
+      s+=`<polygon points="${k},0 ${-k},${-k} ${-k},${k}" transform="translate(${mx},${my}) rotate(${ang})" fill="#c2410c"/>`;}
+  }
+  const g=o.goal?o.goal:cells[cells.length-1],[gx,gy]=C(g);
+  s+=`<line x1="${gx-U*0.12}" y1="${gy-U*0.32}" x2="${gx-U*0.12}" y2="${gy+U*0.32}" stroke="#2a2520" stroke-width="2.5"/><polygon points="${gx-U*0.12},${gy-U*0.32} ${gx+U*0.3},${gy-U*0.18} ${gx-U*0.12},${gy-U*0.04}" fill="#e0342f"/>`;
+  if(o.die){const at=o.dieAt||0,[x,y]=C(cells[at]),ds=U*0.7;s+=kTopAt(o.die,x-ds/2,y-ds/2,ds);}
+  if(o.tops)o.tops.forEach((v,i)=>{if(i===0||i>o.showTops)return;const [x,y]=C(cells[i]);s+=`<circle cx="${x+U*0.28}" cy="${y+U*0.28}" r="${U*0.17}" fill="#7c3aed"/><text x="${x+U*0.28}" y="${y+U*0.28+U*0.11}" text-anchor="middle" font-size="${U*0.3}" font-weight="700" fill="#fff" font-family="sans-serif">${v}</text>`;});
+  if(o.dot){const [x,y]=C(cells[0]);s+=`<circle cx="${x}" cy="${y}" r="${U*0.2}" fill="#fffdf8" stroke="#2a2520" stroke-width="2"/><text x="${x}" y="${y+U*0.1}" text-anchor="middle" font-size="${U*0.28}" font-weight="700" fill="#2a2520" font-family="sans-serif">S</text>`;}
+  if(o.lab){const W=w*U+2*M,H=h*U+2*M,ts='font-size="13" fill="#6a625a" text-anchor="middle"';
+    s+=`<text x="${W/2}" y="15" ${ts}>↑ おく</text><text x="${W/2}" y="${H-5}" ${ts}>手前 ↓</text><text x="11" y="${H/2-3}" ${ts}>←</text><text x="11" y="${H/2+13}" ${ts}>左</text><text x="${W-11}" y="${H/2-3}" ${ts}>→</text><text x="${W-11}" y="${H/2+13}" ${ts}>右</text>`;}
+  return `<svg ${o.id?`id="${o.id}"`:''} viewBox="0 0 ${w*U+2*M} ${h*U+2*M}" style="width:100%;max-width:${o.max||Math.min(w*U+2*M,330)}px" role="img" aria-label="ころがす道の図">${s}</svg>`;
+}
+function mainBoard(){
+  if(P.kind==='ask'){const n=P.path.length,at=S.anim>=0?S.anim:S.done?n:0,st=kRun(P.st,P.path.slice(0,at));
+    return kBoard({w:P.w,h:P.h,sx:P.start[0],sy:P.start[1],path:P.path,die:st,dieAt:at,lab:true,tops:S.done||S.anim>=0?P.tops:null,showTops:S.done?n:at,mark:S.done||S.anim>=0?null:hintStep(),id:'kb'});}
+  const show=S.anim>=0||S.done,at=S.anim>=0?S.anim:S.done?P.a.length:0,st=kRun(P.st,P.a.slice(0,at));
+  return kBoard({w:P.w,h:P.h,sx:P.start[0],sy:P.start[1],path:show?P.a:'',goal:P.goal,die:st,dieAt:at,lab:true,id:'kb',max:260});
+}
+const hintStep=()=>{if(P.kind!=='ask'||!S.hint)return null;const n=P.path.length;return Math.min(n-1,Math.ceil(n*S.hint/3));};
+function qtext(){
+  if(P.kind==='path')return `スタートからゴールまでころがして、ゴールで<b>上の面が${P.target}</b>になる道はどれ？`;
+  return P.ask==='top'?`ゴールに着いたとき、<b>上の面</b>の数は？`:P.ask==='bottom'?`ゴールに着いたとき、<b>下の面</b>（ゆかについている面）の数は？`:`ゴールに着いたとき、<b>${KASK[P.ask]}</b>を向いている面の数は？`;
+}
+function optHTML(o,i){
+  const cls=`ob ${S.done&&o===P.a?'right':''} ${S.wrong.includes(i)||S.elim.includes(i)?'wrong':''}`,dis=S.done||S.busy||S.wrong.includes(i)||S.elim.includes(i);
+  if(P.kind==='path')return `<button class="${cls}" data-i="${i}" ${dis?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${kBoard({w:P.w,h:P.h,sx:P.start[0],sy:P.start[1],path:o,goal:P.goal,U:34,max:150,dot:true})}${S.elim.includes(i)?`<span class="note">ゴールで上は${kRun(P.st,o)[0]}</span>`:''}</button>`;
+  return `<button class="${cls}" data-i="${i}" ${dis?'disabled':''}><span class="k">${'アイウエ'[i]}</span><svg viewBox="0 0 100 100" style="width:46px;height:46px">${kPips(o)}</svg><b style="font-size:18px">${o}</b></button>`;
+}
+function hintHTML(){
+  if(!S.hint||S.done)return '';
+  if(P.kind==='path')return `<p class="hintbox">ころがすと、<b>進む向きと反対がわ</b>（うしろがわ）の面が上に来ます。1マスずつ、上の数を書きこんでいこう。まちがいの道を${S.elim.length}本消しました。</p>`;
+  const m=hintStep(),n=P.path.length;
+  const base=`サイコロは進む向きにたおれます。<b>おく</b>へ進むと手前の面が上に、<b>左</b>へ進むと右の面が上に来ます。手前や右へ進むと、見えない反対がわの面（7からひいた数）が上に来ます。`;
+  if(m<1)return `<p class="hintbox">${base}</p>`;
+  return `<div class="hintbox"><p style="margin:0">${base}</p><div class="row" style="justify-content:center;margin-top:6px">${kDie(kRun(P.st,P.path.slice(0,m)),130,true)}<span class="note" style="color:var(--fg)">${m}回ころがして<br>むらさきのわくのマスに<br>来たところ</span></div></div>`;
+}
+function draw(){
+  const isAsk=P.kind==='ask';
+  app.innerHTML=`${topBar()}
+    <div class="boardw" style="flex-direction:column;align-items:center;gap:6px">
+      <div class="row" style="justify-content:center;gap:6px"><span class="note" style="color:var(--fg)">スタートの<br>サイコロ</span>${kDie(P.st,130,true)}</div>
+      ${mainBoard()}</div>
+    <p class="qq">${qtext()}</p>
+    <div class="opts4">${S.opts.map(optHTML).join('')}</div>
+    ${hintHTML()}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint>=2||S.busy||(isAsk&&P.path.length<2&&S.hint)?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+    if(S.opts[i]===P.a){S.busy=true;S.msg='せいかい！　ころがしてみよう…';S.msgc='ok';animate();}
+    else{S.wrong.push(i);S.hints++;S.msg='ちがいます。1マスずつ、ころがしてみよう。';S.msgc='ng';draw();}});
+  document.getElementById('hint').onclick=()=>{S.hint++;S.hints++;S.msg='';
+    if(P.kind==='path'){const c=S.opts.map((o,i)=>i).filter(i=>S.opts[i]!==P.a&&!S.wrong.includes(i)&&!S.elim.includes(i));if(c.length)S.elim.push(c[0]);}
+    draw();};
+}
+function animate(){
+  const path=P.kind==='ask'?P.path:P.a,n=path.length,me=P;S.anim=0;draw();
+  const tick=()=>{if(P!==me||!S||S.anim<0)return;
+    if(S.anim>=n){S.anim=-1;S.busy=false;S.done=true;draw();return;}
+    S.anim++;const kb=document.getElementById('kb');if(kb)kb.outerHTML=mainBoard();setTimeout(tick,n>6?330:480);};
+  setTimeout(tick,450);
+}
+function explain(){
+  const path=P.kind==='ask'?P.path:P.a,end=kRun(P.st,path),tops=[P.st[0]];let s=P.st.slice();for(const d of path){s=kRoll(s,d);tops.push(s[0]);}
+  let t=`<p style="margin:0">上の面の数は　${tops.join(' → ')}　とかわります。</p>`;
+  if(P.kind==='ask'&&P.ask!=='top'){const opp={bottom:'上',back:'手前',left:'右'}[P.ask];
+    t+=opp?`<p style="margin:0">${KASK[P.ask].replace(/（.*/,'')}の面は、${opp}の面（${kFace(end,{bottom:'top',back:'front',left:'right'}[P.ask])}）の反対なので、7 − ${kFace(end,{bottom:'top',back:'front',left:'right'}[P.ask])} ＝ <b>${P.a}</b> です。</p>`:`<p style="margin:0">ゴールでの${KASK[P.ask]}の面は <b>${P.a}</b> です。</p>`;}
+  if(P.kind==='path'){t+=`<p style="margin:0">ほかの道では、ゴールで上が ${P.ds.map(d=>kRun(P.st,d)[0]).join('・')} になります。</p>`;}
+  return t+`<div class="row" style="justify-content:center"><span class="note" style="color:var(--fg)">ゴールの<br>サイコロ</span>${kDie(end,130,true)}</div>`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

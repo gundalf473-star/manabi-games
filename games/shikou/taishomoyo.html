@@ -1,0 +1,278 @@
+<title>対称もようを完成させよう</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="方眼の見本のマスを、対称の軸で折ったり中心のまわりに半回転したりして写し、線対称・点対称なもようを完成させる図形パズル。指でなぞってぬれます。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.ts-pal{gap:8px}
+.ts-c{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;min-height:46px;touch-action:manipulation}
+.ts-c span{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+.ts-c.on{border-color:var(--seal);box-shadow:0 0 0 3px var(--sealsoft)}
+#bd{cursor:pointer}
+@media (max-width:420px){#app.box{padding:12px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>対称もようを完成させよう</h1>
+    <p class="lead">赤い線で折ると重なるように、赤い点で半回転すると重なるように、マスに色をぬろう。5つのレベルから1問ずつ。ヒントなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"id":"1-01","lv":1,"kind":"v","h":4,"w":4,"nc":1,"ans":["1..1",".11.","1111",".11."],"given":["gg..","gg..","gg..","gg.."]},{"id":"2-01","lv":2,"kind":"v","h":6,"w":6,"nc":2,"ans":["211112","..11..","12..21","..11..","222222",".2..2."],"given":["ggg...","ggg...","ggg...","ggg...","ggg...","ggg..."]},{"id":"3-01","lv":3,"kind":"vh","h":6,"w":6,"nc":2,"ans":["1....1","1....1","222222","222222","1....1","1....1"],"given":["ggg...","ggg...","ggg...","......","......","......"]},{"id":"4-01","lv":4,"kind":"p","h":6,"w":6,"nc":2,"ans":["1....2","22.1..","1..2.1","1.2..1","..1.22","2....1"],"given":["ggg...","ggg...","ggg...","ggg...","ggg...","ggg..."]},{"id":"5-01","lv":5,"kind":"p","h":8,"w":8,"nc":3,"ans":["......3.",".12..3.1","2.22.33.",".2.11...","...11.2.",".33.22.2","1.3..21.",".3......"],"given":[".gg...g.","ggg...g.","g.gggg..","...gggg.","g....ggg","gg....g.","g.ggg...","g.ggg..g"]}];
+const ID='taishomoyo';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>対称もようを完成させよう 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 対称もようを完成させよう：p={kind:'v'|'h'|'vh'|'p', h, w, nc, ans:['.12…'], given:['gg..']}
+   見本のマス（色がついていても、白くても動かせない）を、対称の軸（赤い線）や中心（赤い点）で写して、もようを完成させる。 */
+const HINTWORD='ヒント';
+const TCOL={'1':'#3b82f6','2':'#ef4444','3':'#f59e0b'};
+const TCN={'1':'あお','2':'あか','3':'きいろ'};
+const LVD={1:'たての線で左右対称',2:'たて・横の線で線対称（2色）',3:'対称の軸が2本',4:'点対称（半分から）',5:'点対称（ばらばらの見本・2〜3色）'};
+const RULES=`<ol class="rules">
+  <li><b>赤い線</b>で折るとぴったり重なるように（線対称）、または<b>赤い点</b>のまわりに半回転するとぴったり重なるように（点対称）、もようを完成させよう。</li>
+  <li>色をえらんで、白いマスをタップ（なぞってもOK）するとぬれます。同じ色でもう一度タップすると消えます。</li>
+  <li>うすい茶色のマスと、四角くぬられたマスは<b>見本</b>です。見本は変えられません。</li>
+  <li>もようが正しく完成したらクリア。</li></ol>
+  <p class="note"><b>線対称</b>：赤い線で紙を2つに折ると、両がわがぴったり重なる形。かがみにうつしたような形です。<br>
+  <b>点対称</b>：赤い点に指をあてて、紙をくるっと半回転（さかさま）させても、もとと同じに見える形。6年生で習うことばですが、レベル4から少しずつためしてみよう。</p>`;
+const TIP={v:'コツ：赤い線から同じだけはなれた、左と右のマスが同じ色になるよ。',
+  h:'コツ：赤い線から同じだけはなれた、上と下のマスが同じ色になるよ。',
+  vh:'コツ：まず たての線で左右に写して、つぎに横の線で上下に写そう。',
+  p:'コツ：紙をくるっとさかさまにしても同じに見えるもよう。赤い点をはさんで、ちょうど反対がわのマスが同じ色。左上のすみは右下のすみと、右上のすみは左下のすみと同じ色だよ。'};
+const KN={v:'たての線で折ると重なる',h:'横の線で折ると重なる',vh:'たてと横の2本の線で折ると重なる',p:'赤い点のまわりに半回転すると重なる'};
+function symMaps(){const h=P.h,w=P.w;const I=(r,c)=>[r,c],V=(r,c)=>[r,w-1-c],Hh=(r,c)=>[h-1-r,c],Pp=(r,c)=>[h-1-r,w-1-c];
+  return {v:[I,V],h:[I,Hh],vh:[I,V,Hh,Pp],p:[I,Pp]}[P.kind];}
+const isG=(r,c)=>P.given[r][c]==='g';
+/* 見本のマスを写して、完成形を決める（答えは1通り） */
+function target(){const F=symMaps(),t=[];for(let r=0;r<P.h;r++){t.push([]);for(let c=0;c<P.w;c++){let v=null;for(const f of F){const [a,b]=f(r,c);if(isG(a,b)){v=P.ans[a][b];break;}}t[r].push(v);}}return t;}
+function startStage(p){
+  P=p; S={g:p.ans.map((row,r)=>[...row].map((ch,c)=>isG(r,c)?ch:'.')),lock:p.ans.map((row,r)=>[...row].map((ch,c)=>isG(r,c))),col:'1',hints:0,done:false,msg:''};
+  S.T=target(); begin(p); draw();
+}
+const CU=()=>Math.floor(Math.min(46,330/Math.max(P.w,P.h)));
+function boardSVG(){
+  const U=CU(),M=10,VW=P.w*U+2*M,VH=P.h*U+2*M; let s='';
+  for(let r=0;r<P.h;r++)for(let c=0;c<P.w;c++){const x=M+c*U,y=M+r*U,g=isG(r,c),v=S.g[r][c];
+    s+=`<rect x="${x}" y="${y}" width="${U}" height="${U}" fill="${g?'#e9e1d0':'#ffffff'}" stroke="#c9bfae" stroke-width="1"/>`;
+    s+=`<rect id="c${r}_${c}" x="${x+(g?0.5:3)}" y="${y+(g?0.5:3)}" width="${U-(g?1:6)}" height="${U-(g?1:6)}" rx="${g?1:6}" fill="${v==='.'?'transparent':TCOL[v]}" pointer-events="none"/>`;
+    if(S.hl&&S.hl[0]===r&&S.hl[1]===c)s+=`<rect x="${x+1.5}" y="${y+1.5}" width="${U-3}" height="${U-3}" fill="none" stroke="#a97c12" stroke-width="3" pointer-events="none"/>`;}
+  s+=`<rect x="${M}" y="${M}" width="${P.w*U}" height="${P.h*U}" fill="none" stroke="#6a625a" stroke-width="2"/>`;
+  const ax=M+P.w*U/2, ay=M+P.h*U/2;
+  if(P.kind==='v'||P.kind==='vh')s+=`<line x1="${ax}" y1="2" x2="${ax}" y2="${VH-2}" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 5" pointer-events="none"/>`;
+  if(P.kind==='h'||P.kind==='vh')s+=`<line x1="2" y1="${ay}" x2="${VW-2}" y2="${ay}" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 5" pointer-events="none"/>`;
+  if(P.kind==='p')s+=`<circle cx="${ax}" cy="${ay}" r="6" fill="#dc2626" stroke="#fff" stroke-width="2" pointer-events="none"/>`;
+  return `<svg id="bd" viewBox="0 0 ${VW} ${VH}" style="max-width:${VW}px" role="img" aria-label="もようの方眼">${s}</svg>`;
+}
+function draw(){
+  app.innerHTML=`${topBar()}
+    <p class="qq" style="text-align:center">${KN[P.kind]}もようにしよう</p>
+    <div class="boardw">${boardSVG()}</div>
+    ${S.done?'':`<p class="note" style="text-align:center;margin:6px 0">${TIP[P.kind]}</p><div class="row ts-pal" style="justify-content:center">${Object.keys(TCOL).slice(0,P.nc).map(k=>`<button class="ts-c ${S.col===k?'on':''}" data-k="${k}" aria-label="${TCN[k]}"><span style="background:${TCOL[k]}"></span>${TCN[k]}</button>`).join('')}<button class="ts-c ${S.col==='.'?'on':''}" data-k="." aria-label="けす"><span style="background:#fff"></span>けす</button></div>
+    <div class="row" style="justify-content:center"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||'白いマスをタップして、色をぬろう。'}</p>
+    <p class="note">ヒントを使うと、まちがっているマスかぬるマスを1つ直します（星がへります）。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.ts-c').forEach(b=>b.onclick=()=>{S.col=b.dataset.k;draw();});
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('reset').onclick=()=>{for(let r=0;r<P.h;r++)for(let c=0;c<P.w;c++)if(!S.lock[r][c])S.g[r][c]='.';S.msg='';S.hl=null;draw();};
+  bindPaint();
+}
+function bindPaint(){
+  const svg=document.getElementById('bd'); let mode=null, last='';
+  const cellAt=e=>{const b=svg.getBoundingClientRect(),U=CU(),M=10,VW=P.w*U+2*M,k=VW/b.width;const x=(e.clientX-b.left)*k-M,y=(e.clientY-b.top)*k-M;const r=Math.floor(y/U),c=Math.floor(x/U);return (r>=0&&c>=0&&r<P.h&&c<P.w)?[r,c]:null;};
+  const paint=(r,c)=>{if(S.lock[r][c])return;const v=mode;if(S.g[r][c]===v)return;S.g[r][c]=v;const el=document.getElementById(`c${r}_${c}`);if(el)el.setAttribute('fill',v==='.'?'transparent':TCOL[v]);};
+  svg.addEventListener('pointerdown',e=>{const rc=cellAt(e);if(!rc)return;const [r,c]=rc;
+    if(S.lock[r][c]){say('見本のマスは変えられません。白いマスをぬろう。');return;}
+    e.preventDefault(); mode=(S.col!=='.'&&S.g[r][c]===S.col)?'.':S.col; last=r+','+c; paint(r,c);
+    try{svg.setPointerCapture(e.pointerId);}catch(_){} });
+  svg.addEventListener('pointermove',e=>{if(mode==null)return;const rc=cellAt(e);if(!rc)return;const k=rc.join(',');if(k===last)return;last=k;paint(rc[0],rc[1]);});
+  const end=()=>{if(mode==null)return;mode=null;check();};
+  svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+}
+const wrongCells=()=>{const L=[];for(let r=0;r<P.h;r++)for(let c=0;c<P.w;c++)if(S.g[r][c]!==S.T[r][c])L.push([r,c]);return L;};
+function check(){ if(!wrongCells().length){S.done=true;draw();} else if(S.hl){S.hl=null;} }
+function say(m,bad){S.msg=m;S.msgc=bad?'ng':'';const el=document.getElementById('msg');if(el){el.textContent=m;el.className='msg '+S.msgc;}}
+function hint(){
+  const W=wrongCells(); if(!W.length)return;
+  /* ぬるべきマスを優先し、なければ よけいにぬったマスを消す */
+  const pick=W.find(([r,c])=>S.T[r][c]!=='.'&&S.g[r][c]!=='.')||W.find(([r,c])=>S.T[r][c]!=='.')||W[0];
+  const [r,c]=pick, F=symMaps(); let src=null; for(const f of F){const [a,b]=f(r,c);if(isG(a,b)){src=[a,b];break;}}
+  S.g[r][c]=S.T[r][c]; S.lock[r][c]=true; S.hints++; S.hl=[r,c];
+  S.msg=`ヒント：光っているマスを直しました。${src?`見本の「上から${src[0]+1}番め・左から${src[1]+1}番め」のマスと同じで、${S.T[r][c]==='.'?'白（ぬらない）':TCN[S.T[r][c]]}です。`:''}`; S.msgc='';
+  if(!wrongCells().length){S.done=true;} draw();
+}
+function explain(){
+  const t={v:'たての赤い線（対称の軸）で2つに折ると、左右がぴったり重なります。これを<b>線対称</b>といいます。軸からのきょりが同じマスどうしが、同じ色になります。',
+    h:'横の赤い線（対称の軸）で2つに折ると、上下がぴったり重なります。これを<b>線対称</b>といいます。',
+    vh:'たてでも横でも、赤い線で折るとぴったり重なります。<b>対称の軸が2本</b>ある線対称なもようです。このようなもようは、まん中のまわりに半回転しても重なるので、点対称でもあります。',
+    p:'赤い点（対称の中心）を中心に、くるっと半回転（180°）させると、もとのもようとぴったり重なります。このようなもようを<b>点対称</b>といいます（6年生で習います）。赤い点をはさんでちょうど反対がわにあり、点からのきょりが同じマスどうしが、同じ色になります。たとえば、左上のすみと右下のすみは同じ色です。'}[P.kind];
+  return `<p style="margin:0">${t}</p>`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

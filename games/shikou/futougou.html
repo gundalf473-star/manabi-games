@@ -1,0 +1,288 @@
+<title>不等号パズル</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="数のパズル">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="マスの間の＜・＞に合うように数を入れる論理パズル。1列にならべる問題から、たて・横に1つずつ入れる盤の問題まで。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+@media (max-width:420px){.boardw{margin:0 -10px;padding:4px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>不等号パズル</h1>
+    <p class="lead">＜と＞に合うように数をならべよう。5つのレベルから1問ずつ。ヒントなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"id":"1-01","lv":1,"h":1,"n":3,"giv":[],"ih":[[0,0,">"],[0,1,">"]],"iv":[],"sol":[[3,2,1]]},{"id":"2-01","lv":2,"h":3,"n":3,"giv":[[0,1,2],[1,0,2],[1,2,3],[2,1,3]],"ih":[[0,1,">"],[1,0,">"],[2,1,">"]],"iv":[[1,2,">"]],"sol":[[3,2,1],[2,1,3],[1,3,2]]},{"id":"3-01","lv":3,"h":4,"n":4,"giv":[[0,0,1],[0,1,2],[1,1,3],[1,2,1],[3,1,4],[3,2,2]],"ih":[[0,0,"\u003c"],[2,2,">"]],"iv":[[0,0,"\u003c"],[1,0,"\u003c"],[1,1,">"],[2,0,">"]],"sol":[[1,2,4,3],[2,3,1,4],[4,1,3,2],[3,4,2,1]]},{"id":"4-01","lv":4,"h":5,"n":5,"giv":[[0,0,1],[0,4,5],[1,0,2],[2,0,3],[2,1,4],[2,2,5],[3,0,5],[4,2,1],[4,4,3]],"ih":[[0,1,"\u003c"],[0,2,">"],[1,3,">"],[3,2,"\u003c"],[3,3,">"]],"iv":[[0,2,">"],[1,1,"\u003c"],[1,4,">"]],"sol":[[1,2,4,3,5],[2,1,3,5,4],[3,4,5,1,2],[5,3,2,4,1],[4,5,1,2,3]]},{"id":"5-01","lv":5,"h":5,"n":5,"giv":[[0,1,3]],"ih":[[0,3,"\u003c"],[1,0,"\u003c"],[3,0,"\u003c"],[3,2,"\u003c"],[4,1,"\u003c"],[4,3,"\u003c"]],"iv":[[0,2,">"],[1,2,">"],[1,4,"\u003c"],[3,0,">"],[3,4,">"]],"sol":[[5,3,4,1,2],[2,5,3,4,1],[4,1,2,5,3],[3,4,1,2,5],[1,2,5,3,4]]}];
+const ID='futougou';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>不等号パズル 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 不等号パズル：p={h,n, giv:[[r,c,v]], ih:[[r,c,'<'|'>']]（(r,c)と右どなり）, iv:[[r,c,'<'|'>']]（(r,c)と下どなり）, sol} */
+const HINTWORD='ヒント';
+const LVD={1:'1列にならべる',2:'3×3',3:'4×4',4:'5×5',5:'5×5 ・ 手がかり少なめ'};
+const FU=60, FG=30, FM=6;
+function startStage(p){P=p;const h=p.h,n=p.n;
+  const g=Array.from({length:h},()=>Array(n).fill(0)),fix=Array.from({length:h},()=>Array(n).fill(false));
+  p.giv.forEach(([r,c,v])=>{g[r][c]=v;fix[r][c]=true;});
+  let sel=null;for(let r=0;r<h&&!sel;r++)for(let c=0;c<n;c++)if(!fix[r][c]){sel=[r,c];break;}
+  S={g,fix,lock:fix.map(row=>row.slice()),sel,hints:0,done:false,msg:'',msgc:'',chk:{}};begin(p);draw();}
+function fDup(r,c){const v=S.g[r][c];if(!v)return false;for(let k=0;k<P.n;k++)if(k!==c&&S.g[r][k]===v)return true;for(let k=0;k<P.h;k++)if(k!==r&&S.g[k][c]===v)return true;return false;}
+function fSign(a,b,s){if(!a||!b)return 0;return (a<b)===(s==='<')?1:-1;}
+function fSolved(){const h=P.h,n=P.n;for(let r=0;r<h;r++)for(let c=0;c<n;c++)if(!S.g[r][c]||fDup(r,c))return false;
+  return P.ih.every(([r,c,s])=>fSign(S.g[r][c],S.g[r][c+1],s)===1)&&P.iv.every(([r,c,s])=>fSign(S.g[r][c],S.g[r+1][c],s)===1);}
+const fX=c=>FM+c*(FU+FG), fY=r=>FM+r*(FU+FG);
+function chevron(cx,cy,dir,col){ /* dir: 'l' 左がとがる（＜）, 'r'（＞）, 'u'（上が小さい）, 'd' */
+  const a=9,b=11;let pts;
+  if(dir==='l')pts=`${cx+a},${cy-b} ${cx-a},${cy} ${cx+a},${cy+b}`;
+  else if(dir==='r')pts=`${cx-a},${cy-b} ${cx+a},${cy} ${cx-a},${cy+b}`;
+  else if(dir==='u')pts=`${cx-b},${cy+a} ${cx},${cy-a} ${cx+b},${cy+a}`;
+  else pts=`${cx-b},${cy-a} ${cx},${cy+a} ${cx+b},${cy-a}`;
+  return `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+const fCol=st=>st===1?'#1d7a4c':st===-1?'#c8352d':'#7c3aed';
+function fBoard(){
+  const h=P.h,n=P.n,U=FU;let s='';
+  for(let r=0;r<h;r++)for(let c=0;c<n;c++){const x=fX(c),y=fY(r),v=S.g[r][c],sel=S.sel&&S.sel[0]===r&&S.sel[1]===c,dup=fDup(r,c),wr=S.chk[r+','+c],fx=S.fix[r][c];
+    s+=`<rect x="${x}" y="${y}" width="${U}" height="${U}" rx="8" fill="${wr?'#f8e3e1':fx?'#e9e4d8':S.lock[r][c]?'#efe9fb':'#fff'}" stroke="${dup?'#c8352d':'#bdb4a6'}" stroke-width="${dup?3:2}"/>`;
+    if(v)s+=`<text x="${x+U/2}" y="${y+U*.7}" text-anchor="middle" font-size="${U*.55}" font-weight="700" fill="${dup||wr?'#c8352d':fx?'#2a2520':S.lock[r][c]?'#7c3aed':'#1d4ed8'}" font-family="sans-serif">${v}</text>`;
+    if(wr)s+=`<line x1="${x+10}" y1="${y+U-10}" x2="${x+U-10}" y2="${y+10}" stroke="#c8352d" stroke-width="2" opacity=".5"/>`;
+    if(sel)s+=`<rect x="${x+3}" y="${y+3}" width="${U-6}" height="${U-6}" rx="6" fill="none" stroke="#7c3aed" stroke-width="4"/>`;
+    s+=`<rect class="hit" data-r="${r}" data-c="${c}" x="${x-4}" y="${y-4}" width="${U+8}" height="${U+8}" fill="transparent" style="cursor:pointer"/>`;}
+  P.ih.forEach(([r,c,sg])=>{s+=chevron(fX(c)+U+FG/2,fY(r)+U/2,sg==='<'?'l':'r',fCol(fSign(S.g[r][c],S.g[r][c+1],sg)));});
+  P.iv.forEach(([r,c,sg])=>{s+=chevron(fX(c)+U/2,fY(r)+U+FG/2,sg==='<'?'u':'d',fCol(fSign(S.g[r][c],S.g[r+1][c],sg)));});
+  const VW=2*FM+n*U+(n-1)*FG, VH=2*FM+h*U+(h-1)*FG;
+  return `<svg id="bd" viewBox="0 0 ${VW} ${VH}" style="max-width:${Math.min(VW,430)}px" role="img" aria-label="不等号パズルの盤">${s}</svg>`;
+}
+function draw(){
+  const n=P.n;
+  app.innerHTML=`${topBar()}
+    <p class="qq" style="text-align:center">${P.h===1?`1〜${n}を1回ずつ、記号に合うようにならべよう`:`たて・横に1〜${n}を1つずつ入れよう`}</p>
+    <div class="boardw">${fBoard()}</div>
+    ${S.done?'':`<div class="pad">${[...Array(n).keys()].map(i=>`<button data-v="${i+1}">${i+1}</button>`).join('')}<button data-v="0" class="er">消す</button></div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||'マスをえらんで、数字を入れよう。'}</p>
+    <div class="row"><button class="btn" id="chk">まちがいチェック</button><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="note">記号の両がわに数が入ると、記号が<b style="color:var(--ok)">緑</b>（合っている）か<b style="color:var(--ng)">赤</b>（合っていない）になります。${P.h>1?'同じ列・行に':''}同じ数があると赤くなります。「まちがいチェック」はまちがっているマスに印をつけます（まちがいがあったときだけ星がへります）。「ヒント」は1マスの答えを入れます（星がへります）。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(fExplain());return;}
+  app.querySelectorAll('#bd .hit').forEach(hh=>hh.onclick=()=>{const r=+hh.dataset.r,c=+hh.dataset.c;
+    if(S.fix[r][c]){S.msg='はじめから書いてある数は変えられません。';S.msgc='';draw();return;}S.sel=[r,c];S.msg='';S.msgc='';draw();});
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>put(+b.dataset.v));
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('chk').onclick=check;
+  document.getElementById('reset').onclick=()=>{S.g=S.g.map((row,r)=>row.map((v,c)=>S.lock[r][c]?v:0));S.chk={};S.msg='';draw();};
+}
+function put(v){
+  if(!S.sel)return; const [r,c]=S.sel,h=P.h,n=P.n;
+  if(S.lock[r][c]){S.msg='このマスは変えられません。';S.msgc='';draw();return;}
+  S.g[r][c]=v; delete S.chk[r+','+c]; S.msg=''; S.msgc='';
+  if(v){const N=h*n;for(let k=1;k<N;k++){const i=(r*n+c+k)%N,rr=Math.floor(i/n),cc=i%n;if(!S.g[rr][cc]){S.sel=[rr,cc];break;}}}
+  if(S.g.every(row=>row.every(x=>x))){ if(fSolved())S.done=true; else {S.msg='全部うまりましたが、どこかちがいます。赤いところを見なおそう。';S.msgc='ng';} }
+  draw();
+}
+function check(){
+  S.chk={};let m=0,f=0;
+  for(let r=0;r<P.h;r++)for(let c=0;c<P.n;c++)if(S.g[r][c]&&!S.fix[r][c]){f++;if(S.g[r][c]!==P.sol[r][c]){S.chk[r+','+c]=1;m++;}}
+  if(!f){S.msg='まだ数字が入っていません。';S.msgc='';draw();return;}
+  /* まちがいがないときは星をへらさない */
+  if(m)S.hints++;
+  S.msg=m?`まちがっているマスが ${m}つ あります（赤い印）。（ヒント ${S.hints}回）`:'今入っている数字は、全部合っています！（このチェックでは星はへりません）';S.msgc=m?'ng':'ok';draw();
+}
+function hint(){
+  const cand=[];
+  for(let r=0;r<P.h;r++)for(let c=0;c<P.n;c++)if(S.g[r][c]!==P.sol[r][c])cand.push([r,c]);
+  if(!cand.length)return;
+  cand.sort((a,b)=>(S.g[b[0]][b[1]]?1:0)-(S.g[a[0]][a[1]]?1:0));
+  const [r,c]=S.sel&&cand.some(x=>x[0]===S.sel[0]&&x[1]===S.sel[1])?S.sel:cand[0];
+  S.g[r][c]=P.sol[r][c]; S.lock[r][c]=true; delete S.chk[r+','+c]; S.hints++;
+  S.msg=`ヒント：1マス入れました（ヒント ${S.hints}回）。`; S.msgc='';
+  if(fSolved())S.done=true; draw();
+}
+function fExplain(){
+  const n=P.n;
+  if(P.h===1){const row=P.sol[0];let t='';
+    row.forEach((v,c)=>{if(c)t+=` <b style="color:#7c3aed">${P.sol[0][c-1]<v?'＜':'＞'}</b> `;t+=v;});
+    return `<p class="note" style="color:var(--fg)">答え：${t}<br>ポイント：両どなりより<b>大きい</b>マス（＜ □ ＞）には大きい数、両どなりより<b>小さい</b>マスには小さい数が入ります。${n}や1がどこに入るかから考えよう。</p>`;}
+  return `<p class="note" style="color:var(--fg)">ポイント：記号の小さい方（とがった方）には <b>${n}</b> は入らず、大きい方には <b>1</b> は入りません。□＜□＜□ のように続くと、まん中には 1 も <b>${n}</b> も入りません。たて・横に同じ数が入らないことと組み合わせよう。</p>`;
+}
+document.addEventListener('keydown',e=>{if(!S||S.done||!P||!P.ih||!document.getElementById('bd'))return;
+  if(/^[1-9]$/.test(e.key)&&+e.key<=P.n)put(+e.key);else if(e.key==='Backspace'||e.key==='Delete'||e.key==='0')put(0);
+  else{const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(d&&S.sel){e.preventDefault();S.sel=[(S.sel[0]+d[0]+P.h)%P.h,(S.sel[1]+d[1]+P.n)%P.n];draw();}}});
+function fExample(){
+  const U=50,G=26;let s='';
+  [1,3,2].forEach((v,i)=>{const x=4+i*(U+G);s+=`<rect x="${x}" y="4" width="${U}" height="${U}" rx="7" fill="#fff" stroke="#bdb4a6" stroke-width="2"/><text x="${x+U/2}" y="${4+U*.72}" text-anchor="middle" font-size="28" font-weight="700" fill="#1d4ed8" font-family="sans-serif">${v}</text>`;});
+  s+=chevron(4+U+G/2,4+U/2,'l','#7c3aed')+chevron(4+2*U+G+G/2,4+U/2,'r','#7c3aed');
+  return `<svg viewBox="0 0 ${8+3*U+2*G} ${U+8}" style="width:100%;max-width:220px" aria-label="例：1＜3＞2">${s}</svg>`;
+}
+const RULES=`<ol class="rules">
+  <li>レベル1は、横にならんだマスに数を<b>1回ずつ</b>入れます（3マスなら <b>1・2・3</b>）。レベル2からは、<b>たての列</b>にも<b>横の行</b>にも1つずつ入れます（3×3の盤なら1〜3）。</li>
+  <li>マスの間の記号 <b>＜ ＞</b> は、<b>とがった方が小さい数</b>です。たての記号も同じで、とがった方（上か下）が小さい数です。</li>
+  <li>はじめから書いてある数は、そのままです。</li>
+  <li>マスをタップしてえらび、下の数字ボタンで入れよう。答えは1つに決まります。</li></ol>
+  <div style="display:flex;justify-content:center">${fExample()}</div>`;
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

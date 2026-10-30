@@ -1,0 +1,333 @@
+<title>犯人さがし</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="論理・推理">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="だれがどこにいたか、いつ台所に入ったか、アリバイの時間表などの手がかりを、○×の表に書きこんで犯人を見つける論理・推理パズル。こわい話はありません。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.hnstory{display:flex;gap:10px;align-items:flex-start;background:var(--sealsoft);border-radius:10px;padding:10px 12px}
+.hnstory svg{flex:none}
+.hnstory p{margin:0;font-size:15px;line-height:1.75}
+.hnsus{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.hnsus span{display:flex;flex-direction:column;align-items:center;font-size:12px;min-width:56px}
+.hnlab{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.05em;margin-bottom:-8px}
+.hnscroll{overflow-x:auto;max-width:100%}
+.hntt{border-collapse:collapse;font-size:12px;width:100%;background:var(--surface)}
+.hntt th,.hntt td{border:1px solid var(--rule);padding:4px 3px;text-align:center;min-width:44px}
+.hntt td{color:#9a3412;font-weight:700}
+.hnclues{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.hnclues li{font-size:16px;line-height:1.65;font-weight:700;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:6px 10px;display:flex;gap:6px}
+.hnclues li b{color:var(--seal);flex:none}
+.hngrid{border-collapse:collapse;margin:0 auto;background:var(--surface)}
+.hngrid th{font-size:12px;padding:2px 3px;line-height:1.3;border:1px solid var(--rule);background:var(--pick);font-weight:700}
+.hngrid th.sc{color:var(--ng)}
+.hngrid td{border:1px solid var(--rule);padding:0}
+.hnnm{display:flex;align-items:center;gap:2px;white-space:nowrap;font-size:13px;text-align:left}
+.hc{width:48px;height:46px;border:0;background:var(--surface);font-size:26px;font-weight:700;cursor:pointer;touch-action:manipulation;display:grid;place-items:center;padding:0}
+.hc.x{color:#6a625a}.hc.o{color:var(--ng)}
+.hc.h{background:var(--sealsoft)}
+.hc:disabled{cursor:default}
+.hnans{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px}
+.hnans .ob{padding:6px 2px;gap:2px}
+.hnans b{font-size:14px}
+.hnsteps{margin:6px 0 0;padding-left:1.4em;font-size:14px}
+.hngrid.n5 .hc{width:42px;height:44px;font-size:24px}
+.hntt.n5 th,.hntt.n5 td{min-width:0;padding:4px 1px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>犯人さがし</h1>
+    <p class="lead">ケーキを食べたのはだれ？ 花びんをたおしたのはだれ？ 手がかりを表に○×で書きこんで、犯人を見つけよう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"model":"P","n":3,"names":["くま","たぬき","ねこ"],"cols":["おふろ場","ベランダ","庭"],"scene":2,"o":"pot","ask":"植木ばちをひっくり返したのは だれ？","clues":["たぬきさんは、ベランダで せんたく物をほしていた。","くまさんは、おふろ場には いなかった。"],"ans":0,"sol":[2,1,0],"steps":[[0,[[0,1,0],[1,0,0],[1,1,1],[1,2,0],[2,1,0]]],[1,[[0,0,0],[0,2,1],[2,0,1],[2,2,0]]]],"diff":0,"story":"庭の植木ばちが、ひっくり返っていました。そのとき、くまさん・たぬきさん・ねこさんの3人は、図の3か所に 1人ずつ いました。植木ばちをひっくり返したのは、そのとき庭にいた人です。","floors":[1,2,0],"id":"1-01","lv":1},{"model":"P","n":3,"names":["たぬき","うさぎ","くま"],"cols":["リビング","ベランダ","庭"],"scene":1,"o":"shirt","ask":"せんたく物を落としたのは だれ？","clues":["うさぎさんは、リビングか 庭の どちらかにいた。","たぬきさんは、庭で 花に水をやっていた。"],"ans":2,"sol":[2,0,1],"steps":[[0,[[1,1,0]]],[1,[[0,0,0],[0,1,0],[0,2,1],[1,0,1],[1,2,0],[2,0,0],[2,1,1],[2,2,0]]]],"diff":0,"story":"ベランダのせんたく物が、1まい下に落ちていました。そのとき、たぬきさん・うさぎさん・くまさんの3人は、図の3か所に 1人ずつ いました。せんたく物を落としたのは、そのときベランダにいた人です。","floors":[1,2,0],"id":"2-01","lv":2},{"model":"T","n":4,"names":["たぬき","うさぎ","くま","ねこ"],"cols":["1時","2時","3時","4時"],"scene":2,"o":"cookie","ask":"クッキーを食べたのは だれ？","clues":["くまさんは、うさぎさんより 先に台所に入った。","ねこさんは、くまさんより 先に台所に入った。","うさぎさんは、4時には 図書館にいた。"],"ans":1,"sol":[3,2,1,0],"steps":[[0,[[1,0,0],[2,3,0]]],[1,[[2,0,0],[3,2,0],[3,3,0]]],[0,[[1,1,0]]],[2,[[0,0,0],[0,1,0],[0,2,0],[0,3,1],[1,2,1],[1,3,0],[2,1,1],[2,2,0],[3,0,1],[3,1,0]]]],"diff":0,"story":"台所のたなに、クッキーのかんがありました。たぬきさん・うさぎさん・くまさん・ねこさんの4人は、1時から4時まで、1時間ごとに1人ずつ台所に入りました（同じ時間に入った人はいません）。お母さんが2時半に見たときは、クッキーはありました。3時半に見たときは、からっぽになっていました。クッキーを食べたのは、そのあいだに台所に入った人です。","alibi":[[1,3,"図書館"]],"isal":[0,0,1],"id":"3-01","lv":3},{"model":"P","n":4,"names":["くま","たぬき","ねこ","うさぎ"],"cols":["台所","リビング","げんかん","ベランダ"],"scene":1,"o":"juice","ask":"ジュースをこぼしたのは だれ？","clues":["ねこさんと うさぎさんは、1人が1階、もう1人が2階にいた。","たぬきさんと ねこさんは、1人が1階、もう1人が2階にいた。","げんかんにいたのは、たぬきさんでも うさぎさんでもない。","うさぎさんは、リビングには いなかった。"],"ans":1,"sol":[2,1,3,0],"steps":[[0,[[0,3,0],[1,3,0]]],[1,[[2,0,0],[2,1,0],[2,2,0],[2,3,1],[3,3,0]]],[2,[[0,0,0],[0,1,0],[0,2,1],[1,2,0],[3,2,0]]],[3,[[1,0,0],[1,1,1],[3,0,1],[3,1,0]]]],"diff":0,"story":"リビングのソファに、ジュースがこぼれていました。そのとき、くまさん・たぬきさん・ねこさん・うさぎさんの4人は、図の4か所に 1人ずつ いました。ジュースをこぼしたのは、そのときリビングにいた人です。","floors":[1,1,1,2],"id":"4-01","lv":4},{"model":"T","n":5,"names":["きつね","くま","たぬき","ねこ","うさぎ"],"cols":["1時","2時","3時","4時","5時"],"scene":1,"o":"cookie","ask":"クッキーを食べたのは だれ？","clues":["きつねさんは、1時には 台所に入っていない。","きつねさんは、ねこさんより 先に台所に入った。","たぬきさんは、うさぎさんより 先に台所に入った。","ねこさんは、たぬきさんの すぐ次に 台所に入った。"],"ans":0,"sol":[1,0,2,3,4],"steps":[[0,[[0,0,0]]],[1,[[0,4,0],[3,0,0],[3,1,0]]],[2,[[2,4,0],[4,0,0]]],[3,[[1,0,1],[1,1,0],[1,2,0],[1,3,0],[1,4,0],[2,0,0],[4,3,0]]],[2,[[4,1,0]]],[3,[[0,2,0]]],[[1,3],[[0,1,1],[0,3,0],[2,1,0],[3,2,0]]],[2,[[2,2,1],[2,3,0],[3,3,1],[3,4,0],[4,2,0],[4,4,1]]]],"diff":2,"story":"台所のたなに、クッキーのかんがありました。きつねさん・くまさん・たぬきさん・ねこさん・うさぎさんの5人は、1時から5時まで、1時間ごとに1人ずつ台所に入りました（同じ時間に入った人はいません）。お母さんが1時半に見たときは、クッキーはありました。2時半に見たときは、からっぽになっていました。クッキーを食べたのは、そのあいだに台所に入った人です。","alibi":[],"isal":[0,0,0,0],"id":"5-01","lv":5}];
+const ID='hannin';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>犯人さがし 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 犯人さがし：p={model:'P'(場所)|'T'(台所に入った時間), n, names, cols, scene, story, clues, isal?, alibi?, floors?, ans, sol, steps:[[理由,[[r,c,v]…]]…]} */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'3人・場所',2:'3人・場所と時間',3:'4人・時間表',4:'4〜5人・階と「すぐ次」の手がかり',5:'5人・むずかしい推理'};
+const RULES=`<ol class="rules">
+  <li>おはなしと<b>手がかり</b>を読んで、<ruby>犯人<rt>はんにん</rt></ruby>（やった人）をさがそう。</li>
+  <li>下の<b>表</b>のマスをタップすると、<b>×</b>（ちがう）→ <b>○</b>（そう）→ 空 と変わります。わかったことを書きこもう。</li>
+  <li>1人は1つの場所（時間）だけ。たて・横の1列に、<b>○は1つずつ</b>です。</li>
+  <li>わかったら「犯人はだれ？」のボタンで答えよう。答えは1つに決まります。</li></ol>`;
+const AC={'うさぎ':['#ffffff','#f5b8c8'],'くま':['#b07a4a','#7a4f2a'],'ねこ':['#c9c4bd','#7d756b'],'きつね':['#f0953a','#ffffff'],'たぬき':['#9b8570','#4a3b2e']};
+function face(nm,sz){const [a,b]=AC[nm]||['#ddd','#999'];let e='';
+  if(nm==='うさぎ')e=`<ellipse cx="15" cy="9" rx="5" ry="13" fill="${a}" stroke="#8a7a70" stroke-width="1.5"/><ellipse cx="33" cy="9" rx="5" ry="13" fill="${a}" stroke="#8a7a70" stroke-width="1.5"/><ellipse cx="15" cy="10" rx="2.2" ry="8" fill="${b}"/><ellipse cx="33" cy="10" rx="2.2" ry="8" fill="${b}"/>`;
+  if(nm==='くま'||nm==='たぬき')e=`<circle cx="11" cy="15" r="7" fill="${a}" stroke="${b}" stroke-width="1.5"/><circle cx="37" cy="15" r="7" fill="${a}" stroke="${b}" stroke-width="1.5"/>`;
+  if(nm==='ねこ'||nm==='きつね')e=`<polygon points="7,8 10,28 22,20" fill="${a}" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="41,8 38,28 26,20" fill="${a}" stroke="#6a5a4a" stroke-width="1.5"/>`;
+  let f=`<circle cx="24" cy="30" r="15" fill="${a}" stroke="#6a5a4a" stroke-width="1.5"/>`;
+  if(nm==='きつね')f+=`<ellipse cx="24" cy="37" rx="9" ry="7" fill="#fff"/>`;
+  if(nm==='たぬき')f+=`<ellipse cx="18" cy="28" rx="5" ry="4" fill="${b}"/><ellipse cx="30" cy="28" rx="5" ry="4" fill="${b}"/>`;
+  if(nm==='くま')f+=`<ellipse cx="24" cy="36" rx="7" ry="5" fill="#e3c49e"/>`;
+  f+=`<circle cx="18" cy="28" r="2" fill="${nm==='たぬき'?'#fff':'#2a2520'}"/><circle cx="30" cy="28" r="2" fill="${nm==='たぬき'?'#fff':'#2a2520'}"/><circle cx="24" cy="34" r="2" fill="#2a2520"/>`;
+  if(nm==='ねこ')f+=`<path d="M10,33 L19,34 M10,37 L19,36 M38,33 L29,34 M38,37 L29,36" stroke="#6a5a4a" stroke-width="1"/>`;
+  return `<svg viewBox="0 0 48 48" width="${sz}" height="${sz}" aria-hidden="true">${e}${f}</svg>`;}
+function icon(o,sz){let s='';
+  if(o==='cake')s=`<polygon points="6,34 42,34 42,22 6,30" fill="#fde7c4" stroke="#b07a4a" stroke-width="1.5"/><polygon points="6,30 42,22 42,17 6,26" fill="#fff" stroke="#b07a4a" stroke-width="1.5"/><circle cx="36" cy="15" r="4" fill="#e0342f"/>`;
+  if(o==='vase')s=`<path d="M18,8 L30,8 L28,14 Q38,22 32,40 L16,40 Q10,22 20,14Z" fill="#60a5fa" stroke="#1e3a8a" stroke-width="1.5"/><path d="M12,42 L18,36 M36,42 L30,37" stroke="#1e3a8a" stroke-width="1.5"/>`;
+  if(o==='pot')s=`<polygon points="10,20 38,20 34,40 14,40" fill="#c2703d" stroke="#7a3f1d" stroke-width="1.5" transform="rotate(25 24 30)"/><circle cx="12" cy="40" r="5" fill="#8b5a2b"/><circle cx="20" cy="43" r="4" fill="#8b5a2b"/>`;
+  if(o==='juice')s=`<path d="M14,10 L34,10 L31,40 L17,40Z" fill="#fff" stroke="#6a625a" stroke-width="1.5"/><path d="M15.5,20 L32.5,20 L31,40 L17,40Z" fill="#f59e0b"/><line x1="28" y1="4" x2="25" y2="22" stroke="#e0342f" stroke-width="2"/>`;
+  if(o==='cookie')s=`<rect x="8" y="16" width="32" height="24" rx="4" fill="#93c5fd" stroke="#1e3a8a" stroke-width="1.5"/><rect x="6" y="11" width="36" height="7" rx="3" fill="#60a5fa" stroke="#1e3a8a" stroke-width="1.5"/><circle cx="24" cy="29" r="6" fill="#d9a066" stroke="#8b5a2b"/>`;
+  if(o==='shirt')s=`<path d="M14,10 L20,8 Q24,12 28,8 L34,10 L40,18 L34,21 L33,40 L15,40 L14,21 L8,18Z" fill="#86efac" stroke="#166534" stroke-width="1.5"/>`;
+  if(o==='pudding')s=`<path d="M14,16 L34,16 L38,38 L10,38Z" fill="#fcd34d" stroke="#a16207" stroke-width="1.5"/><path d="M14,16 L34,16 L35,22 Q24,26 13,22Z" fill="#92400e"/><ellipse cx="24" cy="40" rx="18" ry="3" fill="#e5e7eb"/>`;
+  return `<svg viewBox="0 0 48 48" width="${sz}" height="${sz}" aria-hidden="true">${s}</svg>`;}
+function houseSVG(){
+  /* 使う場所だけを、家の図（2階・1階・庭）にかく */
+  const fl={2:[],1:[],0:[]}; P.cols.forEach((c,i)=>fl[P.floors[i]].push(i));
+  const W=320, hasG=fl[0].length>0, HW=hasG?236:W-8, rows=[2,1].filter(f=>fl[f].length);
+  let s=`<polygon points="4,${rows.length===2?40:40} ${HW/2+4},6 ${HW+4},40" fill="#e9d7bd" stroke="#8b5a2b" stroke-width="2"/>`;
+  let y=40; const rh=54;
+  rows.forEach(f=>{const list=fl[f], w=HW/list.length;
+    s+=`<rect x="4" y="${y}" width="${HW}" height="${rh}" fill="#fbf6ec" stroke="#8b5a2b" stroke-width="2"/><text x="10" y="${y+14}" font-size="11" fill="#8b5a2b" font-family="sans-serif">${f}階</text>`;
+    list.forEach((i,k)=>{const x=4+k*w;if(k)s+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+rh}" stroke="#8b5a2b" stroke-width="2"/>`;
+      s+=room(i,x+w/2,y+rh/2,i===P.scene);});
+    y+=rh;});
+  if(hasG){s+=`<rect x="${HW+12}" y="${y-rh}" width="${W-HW-16}" height="${rh}" rx="8" fill="#d4f0dc" stroke="#16a34a" stroke-width="2"/>`;s+=room(fl[0][0],HW+12+(W-HW-16)/2,y-rh/2,fl[0][0]===P.scene);}
+  return `<svg viewBox="0 0 ${W} ${y+6}" style="width:100%;max-width:380px" role="img" aria-label="家の図">${s}</svg>`;
+}
+function room(i,x,y,sc){return (sc?`<g transform="translate(${x-12},${y-26}) scale(.5)">${icon(P.o,48).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`:'')+
+  `<text x="${x}" y="${y+(sc?16:5)}" text-anchor="middle" font-size="13" font-weight="700" fill="${sc?'#c8352d':'#3b2f6b'}" font-family="sans-serif">${P.cols[i]}</text>`;}
+function alibiTable(){
+  if(!P.alibi||!P.alibi.length)return '';
+  const m={};P.alibi.forEach(([x,t,w])=>{m[x+','+t]=w;});
+  return `<div class="hnlab">時間表（アリバイ：そのとき、ほかの場所にいた）</div><div class="hnscroll"><table class="hntt ${P.n>=5?'n5':''}"><tr><th></th>${P.cols.map(c=>`<th>${c}</th>`).join('')}</tr>
+    ${P.names.map((nm,x)=>`<tr><th>${nm}</th>${P.cols.map((_,t)=>`<td>${m[x+','+t]?esc(m[x+','+t]):''}</td>`).join('')}</tr>`).join('')}</table></div>`;
+}
+const CN='①②③④⑤⑥⑦⑧⑨⑩';
+function clueNo(){ /* アリバイ以外の手がかりに番号 */
+  const no=[];let k=0;P.clues.forEach((_,i)=>{no.push(P.isal&&P.isal[i]?null:CN[k++]);});return no;}
+function startStage(p){
+  P=p; S={g:Array.from({length:p.n},()=>Array(p.n).fill(0)),hc:{},hints:0,done:false,msg:'',msgc:'',wrong:[],step:0};
+  begin(p); draw();
+}
+function gridHTML(){
+  const head=P.model==='P'?'場所':'台所に入った時間';
+  return `<div class="hnlab">表（${head}）　マスをタップ：× → ○ → 空</div><div class="hnscroll"><table class="hngrid ${P.n>=5?'n5':''}"><tr><th></th>${P.cols.map((c,i)=>`<th class="${P.model==='P'&&i===P.scene?'sc':''}">${c}</th>`).join('')}</tr>
+    ${P.names.map((nm,r)=>`<tr><th><span class="hnnm">${P.n>=5?'':face(nm,26)}${nm}</span></th>${P.cols.map((_,c)=>{const v=S.g[r][c];
+      return `<td><button class="hc ${v===1?'x':v===2?'o':''} ${S.hc[r+','+c]?'h':''}" data-r="${r}" data-c="${c}" ${S.done?'disabled':''} aria-label="${nm}・${P.cols[c]}">${v===1?'×':v===2?'○':''}</button></td>`;}).join('')}</tr>`).join('')}</table></div>`;
+}
+function draw(){
+  const no=clueNo();
+  app.innerHTML=`${topBar()}
+    <div class="hnstory">${icon(P.o,44)}<p>${esc(P.story)}</p></div>
+    <div class="hnsus">${P.names.map(nm=>`<span>${face(nm,40)}<b>${nm}さん</b></span>`).join('')}</div>
+    ${P.model==='P'?`<div class="boardw">${houseSVG()}</div>`:alibiTable()}
+    <div class="hnlab">手がかり</div>
+    <ol class="hnclues">${P.clues.map((c,i)=>no[i]?`<li><b>${no[i]}</b>${esc(c)}</li>`:'').join('')}</ol>
+    ${gridHTML()}
+    <p class="qq">${esc(P.ask)}</p>
+    <div class="hnans">${P.names.map((nm,x)=>`<button class="ob ${S.done&&x===P.ans?'right':''} ${S.wrong.includes(x)?'wrong':''}" data-x="${x}" ${S.done||S.wrong.includes(x)?'disabled':''}>${face(nm,36)}<b>${nm}さん</b></button>`).join('')}</div>
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg}</p><div class="row"><button class="btn" id="hint">ヒント</button><button class="btn" id="clr">表を消す</button></div>
+    <p class="note">ヒントを使うと、手がかりからわかることを表に書きこみます（星がへります）。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.hc').forEach(b=>b.onclick=()=>{const r=+b.dataset.r,c=+b.dataset.c;S.g[r][c]=(S.g[r][c]+1)%3;delete S.hc[r+','+c];
+    b.className='hc '+(S.g[r][c]===1?'x':S.g[r][c]===2?'o':'');b.textContent=S.g[r][c]===1?'×':S.g[r][c]===2?'○':'';});
+  app.querySelectorAll('.hnans .ob').forEach(b=>b.onclick=()=>answer(+b.dataset.x));
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('clr').onclick=()=>{S.g=S.g.map(r=>r.map(()=>0));S.hc={};S.msg='';draw();};
+}
+const truth=(r,c)=>P.sol[r]===c?2:1;
+function answer(x){
+  if(x===P.ans){fillAll();S.done=true;draw();return;}
+  S.wrong.push(x);S.hints++;
+  const bad=S.g.some((row,r)=>row.some((v,c)=>v&&v!==truth(r,c)));
+  S.msg=`${P.names[x]}さんではありません。`+(bad?'表の中に、まちがった○×があるかもしれません。手がかりを1つずつ見直そう。':'手がかりを1つずつ表に書きこんでみよう。');
+  S.msgc='ng';draw();
+}
+function reason(i){const no=clueNo();
+  if(i===-1)return '表のきまり（たて・横に○は1つずつ）から';
+  if(i===-2)return 'すべての手がかりを合わせると';
+  const one=j=>P.isal&&P.isal[j]?'時間表のアリバイ':`手がかり${no[j]}`;
+  if(Array.isArray(i))return `${one(i[0])}と${one(i[1])}を合わせると`;
+  return `${one(i)}から`;}
+function cellsText(cells){
+  const o=cells.filter(x=>x[2]),xs=cells.filter(x=>!x[2]);
+  const t=[];o.forEach(([r,c])=>t.push(`${P.names[r]}さんは<b>${P.cols[c]}</b>（○）`));
+  if(xs.length)t.push(xs.map(([r,c])=>`${P.names[r]}さん・${P.cols[c]}`).join('、')+' は×');
+  return t.join('。');}
+function hint(){
+  /* 考え方の順に、まだ表に正しく書けていない最初のステップを書きこむ */
+  const k=P.steps.findIndex(([_,cells])=>cells.some(([r,c,v])=>S.g[r][c]!==(v?2:1)));
+  if(k<0){S.msg='表は全部うまっています。○がついている人を見て、答えよう。';S.msgc='';draw();return;}
+  const [why,cells]=P.steps[k];
+  /* まちがっているマスがあれば消しておく */
+  S.g.forEach((row,r)=>row.forEach((v,c)=>{if(v&&v!==truth(r,c))S.g[r][c]=0;}));
+  cells.forEach(([r,c,v])=>{S.g[r][c]=v?2:1;S.hc[r+','+c]=1;});
+  S.hints++; S.msg=`ヒント：${reason(why)}、${cellsText(cells).replace(/<\/?b>/g,'')}。`; S.msgc=''; draw();
+}
+function fillAll(){S.g=S.g.map((row,r)=>row.map((_,c)=>truth(r,c)));}
+function explain(){
+  const lines=P.steps.map(([why,cells])=>`<li>${reason(why)}、${cellsText(cells)}。</li>`).join('');
+  return `<p style="margin:0">${P.model==='P'?`${P.cols[P.scene]}にいたのは`:`${P.cols[P.scene]}に台所に入ったのは`} <b>${P.names[P.ans]}さん</b>。だから犯人は ${P.names[P.ans]}さんです。</p>
+  <details><summary style="cursor:pointer;font-weight:700;font-size:14px">考え方の順番を見る</summary><ol class="hnsteps">${lines}</ol></details>`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

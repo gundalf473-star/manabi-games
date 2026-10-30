@@ -1,0 +1,332 @@
+<title>色ぬりパズル 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="色ぬりパズルの有料版。5つの地域の小さな地図から、14の地域の大きな地図まで、3色でぬる・いちばん少ない色（2〜4色）でぬる・★の色が決まる理由を考える問題を、5つのレベルに20問ずつ、全100問。最少の色の数も★の色も、全部のぬり方を調べて確かめてあります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.ir-pal{gap:8px;justify-content:center}
+.ir-c{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;min-height:46px;touch-action:manipulation}
+.ir-c span{width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.3);display:inline-block}
+.ir-c.on{border-color:var(--seal);box-shadow:0 0 0 3px var(--sealsoft)}
+.boardw.iw{padding:6px}
+@media (max-width:420px){#app.box{padding:12px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>色ぬりパズル 100問</h1>
+    <p class="lead">となり合う地域がちがう色になるように、地図をぬろう。いちばん少ない色の数や、★の色が何色に決まるかも考えよう。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='ironuri';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>色ぬりパズル 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 色ぬりパズル：p={mode:'free'|'min'|'star', map:['AAB.',…], n, adj:[[…]], k, pre:{地域:色}, chi, wit, star, ans, steps:[[地域,色],…]}
+   地図の地域をタップして色をぬる。となり合う（辺でくっつく）地域は同じ色にしない。 */
+const HINTWORD='ヒントやまちがい';
+const ICOL=['#ef4444','#3b82f6','#facc15','#22c55e'], ICN=['あか','あお','きいろ','みどり'];
+const LVD={1:'3色で小さな地図をぬろう',2:'色のついた地域がある地図',3:'いちばん少ない色で',4:'★の色は何色に決まる？',5:'大きな地図で、★の色・いちばん少ない色'};
+const RULES=`<ol class="rules">
+  <li>色をえらんで地域をタップすると、ぬれます。<b>となり合う地域は、ちがう色</b>にしよう。</li>
+  <li>線（辺）でくっついている地域が「となり」です。同じ色のとなりがあると、さかい目が<b style="color:#dc2626">赤く</b>光ります。</li>
+  <li>●の印の地域は、はじめから色が決まっています。</li>
+  <li>「いちばん少ない色で」の問題は、できるだけ少ない色の数でぬろう。「★」の問題は、★の地域が何色に決まるかを考えて、★をぬって答えよう。</li></ol>`;
+function regCells(){const R=[];for(let i=0;i<P.n;i++)R.push([]);P.map.forEach((row,r)=>[...row].forEach((ch,c)=>{if(ch!=='.')R[ch.charCodeAt(0)-65].push([r,c]);}));return R;}
+const rid=(r,c)=>{if(r<0||c<0||r>=P.map.length||c>=P.map[0].length)return -1;const ch=P.map[r][c];return ch==='.'?-1:ch.charCodeAt(0)-65;};
+function startStage(p){
+  P=p; const pre={}; Object.entries(p.pre||{}).forEach(([v,x])=>pre[+v]=x);
+  S={col:0,c:Array(p.n).fill(null),lock:Array(p.n).fill(false),pre,hints:0,done:false,msg:'',chiShown:false,showSteps:false};
+  Object.entries(pre).forEach(([v,x])=>{S.c[v]=x;S.lock[v]=true;});
+  S.cells=regCells();
+  /* 地域のまん中に近いマス（印や★を置く場所） */
+  S.ctr=S.cells.map(cs=>{const mr=cs.reduce((a,x)=>a+x[0],0)/cs.length,mc=cs.reduce((a,x)=>a+x[1],0)/cs.length;return cs.reduce((b,x)=>Math.hypot(x[0]-mr,x[1]-mc)<Math.hypot(b[0]-mr,b[1]-mc)?x:b,cs[0]);});
+  begin(p); draw();
+}
+const CU=()=>Math.floor(Math.min(52,340/Math.max(P.map[0].length,P.map.length*0.9)));
+const conflicts=()=>{const L=[];for(let v=0;v<P.n;v++)for(const u of P.adj[v])if(u>v&&S.c[v]!=null&&S.c[v]===S.c[u])L.push([v,u]);return L;};
+function boardSVG(){
+  const U=CU(),M=8,H=P.map.length,W=P.map[0].length,VW=W*U+2*M,VH=H*U+2*M; let s='';
+  const bad=new Set(conflicts().map(([a,b])=>a+'-'+b));
+  const hi=new Set(S.done&&P.mode==='min'&&P.wit?[...P.wit.a,...(P.wit.c!=null?[P.wit.c]:[])]:[]);
+  if(!S.done&&S.hl!=null)hi.add(S.hl);
+  s+=`<rect x="0" y="0" width="${VW}" height="${VH}" rx="8" fill="#dbeafe"/>`;
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){const v=rid(r,c);if(v<0)continue;const x=M+c*U,y=M+r*U;
+    s+=`<rect x="${x}" y="${y}" width="${U+.6}" height="${U+.6}" fill="${S.c[v]==null?'#fffdf8':ICOL[S.c[v]]}" data-v="${v}" class="hit" style="cursor:pointer"/>`;}
+  /* さかい目 */
+  for(let r=0;r<=H;r++)for(let c=0;c<=W;c++){
+    const x=M+c*U,y=M+r*U;
+    if(c<W){const a=rid(r-1,c),b=rid(r,c);if(a!==b){const k=Math.min(a,b)+'-'+Math.max(a,b),red=bad.has(k);s+=`<line x1="${x}" y1="${y}" x2="${x+U}" y2="${y}" stroke="${red?'#dc2626':'#2a2520'}" stroke-width="${red?6:3}" stroke-linecap="round" pointer-events="none"/>`;}}
+    if(r<H){const a=rid(r,c-1),b=rid(r,c);if(a!==b){const k=Math.min(a,b)+'-'+Math.max(a,b),red=bad.has(k);s+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+U}" stroke="${red?'#dc2626':'#2a2520'}" stroke-width="${red?6:3}" stroke-linecap="round" pointer-events="none"/>`;}}}
+  /* 印 */
+  for(let v=0;v<P.n;v++){const [r,c]=S.ctr[v],cx=M+c*U+U/2,cy=M+r*U+U/2;
+    if(hi.has(v))S.cells[v].forEach(([rr,cc])=>{const x=M+cc*U,y=M+rr*U,d=6,o=(a,b)=>rid(rr+a,cc+b)!==v;const L=o(0,-1),Rr=o(0,1),T=o(-1,0),B=o(1,0);
+      const ln=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="3.5" stroke-dasharray="6 4" pointer-events="none"/>`;
+      if(T)s+=ln(x+(L?d:0),y+d,x+U-(Rr?d:0),y+d); if(B)s+=ln(x+(L?d:0),y+U-d,x+U-(Rr?d:0),y+U-d);
+      if(L)s+=ln(x+d,y+(T?d:0),x+d,y+U-(B?d:0)); if(Rr)s+=ln(x+U-d,y+(T?d:0),x+U-d,y+U-(B?d:0));});
+    if(S.pre[v]!=null)s+=`<circle cx="${cx}" cy="${cy}" r="${U*.16}" fill="#2a2520" stroke="#fff" stroke-width="2.5" pointer-events="none"/>`;
+    if(P.mode==='star'&&v===P.star)s+=`<text x="${cx}" y="${cy+U*.2}" text-anchor="middle" font-size="${U*.62}" fill="#2a2520" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none">★</text>`;
+    if(S.done&&P.mode==='min'&&P.wit&&P.wit.c===v)s+=`<text x="${cx}" y="${cy+U*.16}" text-anchor="middle" font-size="${U*.5}" font-weight="700" fill="#2a2520" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none">◎</text>`;
+    if(S.showSteps&&P.steps){const i=P.steps.findIndex(x=>x[0]===v);if(i>=0&&v!==P.star)s+=`<circle cx="${cx}" cy="${cy}" r="${U*.24}" fill="#fff" stroke="#2a2520" stroke-width="1.5" pointer-events="none"/><text x="${cx}" y="${cy+U*.12}" text-anchor="middle" font-size="${U*.32}" font-weight="700" fill="#2a2520" pointer-events="none">${i+1}</text>`;}
+  }
+  return `<svg id="bd" viewBox="0 0 ${VW} ${VH}" style="max-width:${VW}px" role="img" aria-label="地図">${s}</svg>`;
+}
+function qtext(){
+  if(P.mode==='free')return `<b>${ICN.slice(0,P.k).join('・')}</b>の${P.k}色で、となり合う地域がちがう色になるようにぬろう。`;
+  if(P.mode==='min')return `となり合う地域がちがう色になるように、<b>できるだけ少ない色の数</b>でぬろう。`;
+  return `${ICN.slice(0,3).join('・')}の3色でぬるとき、<b>★の地域は何色</b>に決まる？　★をその色でぬって答えよう。`;
+}
+function draw(){
+  const used=new Set(S.c.filter(x=>x!=null)).size;
+  app.innerHTML=`${topBar()}
+    <p class="qq">${qtext()}</p>
+    <div class="boardw iw">${boardSVG()}</div>
+    ${S.done?'':`<div class="row ir-pal">${ICOL.slice(0,P.k).map((x,i)=>`<button class="ir-c ${S.col===i?'on':''}" data-k="${i}" aria-label="${ICN[i]}"><span style="background:${x}"></span>${ICN[i]}</button>`).join('')}<button class="ir-c ${S.col==='e'?'on':''}" data-k="e" aria-label="けす"><span style="background:#fffdf8"></span>けす</button></div>
+    ${P.mode==='min'?`<p class="note" style="text-align:center">使っている色：<b>${used}色</b>${S.chiShown?`（めあて：${P.chi}色）`:''}</p>`:''}
+    <div class="row" style="justify-content:center"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||'色をえらんで、地域をタップしよう。'}</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.ir-c').forEach(b=>b.onclick=()=>{S.col=b.dataset.k==='e'?'e':+b.dataset.k;S.msg='';draw();});
+  document.getElementById('hint').onclick=hint;
+  document.getElementById('reset').onclick=()=>{for(let v=0;v<P.n;v++)if(!S.lock[v])S.c[v]=null;S.msg='';S.msgc='';draw();};
+  app.querySelectorAll('#bd .hit').forEach(h=>h.onclick=()=>tap(+h.dataset.v));
+}
+function tap(v){
+  S.hl=null;
+  if(S.lock[v]){S.msg=S.pre[v]!=null?'●の地域は、はじめから色が決まっています。':'ヒントでぬった地域は変えられません。';S.msgc='';draw();return;}
+  if(P.mode==='star'&&v===P.star){
+    if(S.col==='e')return;
+    if(S.col===P.ans){S.c[v]=S.col;S.done=true;S.showSteps=true;P.steps.forEach(([u,y])=>{S.c[u]=y;});draw();return;}
+    S.hints++; S.msg=`★は${ICN[S.col]}ではありません。もう一度考えよう（まちがい ${S.hints}回）。`; S.msgc='ng'; draw(); return;
+  }
+  S.c[v]=(S.col==='e'||S.c[v]===S.col)?null:S.col; S.msg=''; S.msgc='';
+  check(); draw();
+}
+function check(){
+  if(P.mode==='star')return;
+  if(S.c.some(x=>x==null)){ if(conflicts().length){S.msg='赤いさかい目の両がわが、同じ色になっています。';S.msgc='ng';} return; }
+  if(conflicts().length){S.msg='赤いさかい目の両がわが、同じ色になっています。';S.msgc='ng';return;}
+  if(P.mode==='free'){S.done=true;return;}
+  const used=new Set(S.c).size;
+  if(used<=P.chi){S.done=true;return;}
+  S.msg=`正しくぬれました！でも、${used}色より少ない色でもぬれます。ちょうせんしよう。`; S.msgc='';
+}
+/* ぬり方の探索：lock された地域はそのまま、なるべく今の色を生かす。maxc 色以内（使う色の種類） */
+function searchColoring(maxc){
+  const c=S.c.map((x,v)=>S.lock[v]?x:null), order=[...Array(P.n).keys()].filter(v=>!S.lock[v]).sort((a,b)=>P.adj[b].length-P.adj[a].length);
+  let nodes=0;
+  function dfs(i){
+    if(++nodes>200000)return false;
+    if(i===order.length)return true;
+    const v=order[i], usedSet=new Set(c.filter(x=>x!=null));
+    const pref=[S.c[v],...usedSet,0,1,2,3].filter((x,j,a)=>x!=null&&x<P.k&&a.indexOf(x)===j);
+    for(const x of pref){ if(P.adj[v].some(u=>c[u]===x))continue; if(!usedSet.has(x)&&usedSet.size>=maxc)continue;
+      c[v]=x; if(dfs(i+1))return true; c[v]=null; }
+    return false;
+  }
+  return dfs(0)?c:null;
+}
+function hint(){
+  if(P.mode==='min'&&!S.chiShown){S.chiShown=true;S.hints++;S.msg=`ヒント：この地図は ${P.chi}色 でぬり分けられます。`;S.msgc='';draw();return;}
+  if(P.mode==='star'){
+    const st=P.steps.find(([v,x])=>!(S.lock[v]&&S.c[v]===x)); if(!st)return;
+    const [v,x]=st, nb=[...new Set(P.adj[v].filter(u=>S.lock[u]).map(u=>S.c[u]))].filter(y=>y!==x);
+    S.hints++;
+    if(v===P.star){S.c[v]=x;S.done=true;S.showSteps=true;P.steps.forEach(([u,y])=>{S.c[u]=y;});draw();return;}
+    S.c[v]=x; S.lock[v]=true; S.hl=v;
+    S.msg=`ヒント：この地域は、となりに${nb.map(y=>ICN[y]).join('と')}があるので、${ICN[x]}に決まります。`; S.msgc='';
+    draw(); return;
+  }
+  const sol=searchColoring(P.mode==='min'?P.chi:P.k); if(!sol)return;
+  let v=S.c.findIndex((x,i)=>!S.lock[i]&&x!==sol[i]&&x!=null&&conflicts().some(([a,b])=>a===i||b===i));
+  if(v<0)v=S.c.findIndex((x,i)=>!S.lock[i]&&x!==sol[i]);
+  if(v<0)return;
+  /* 解に合わせて、まずこの地域を直す。今の色が解とちがう地域は、そのまま（自分で直す） */
+  S.c[v]=sol[v]; S.lock[v]=true; S.hints++;
+  S.hl=v; check();
+  if(!S.done&&!S.msg.startsWith('正しくぬれました')){const bad=conflicts().length;
+    S.msg=`ヒント：地域を1つぬりました（白い点線のわく）。${bad?'赤いさかい目の両がわが同じ色なので、そこも直そう。':'ほかの地域も、となりと同じ色にならないようにぬろう。'}`; S.msgc=bad?'ng':'';}
+  draw();
+}
+function explain(){
+  if(P.mode==='free')return `<p style="margin:0">となり合う地域が、どこもちがう色になりました。色のぬり方は、全部で ${P.nsol}通り あります（色の名前を入れかえたぬり方も、べつに数えます）。</p>`;
+  if(P.mode==='star'){const L=P.steps.length;
+    return `<p style="margin:0">★の地域は <b>${ICN[P.ans]}</b> に決まります。●の地域から順に、「となりに2色あれば、のこりの1色に決まる」をくり返すと、地図の番号の順（${L-1}つの地域）に色が決まって、★にたどりつきます。</p>`;}
+  const w=P.wit, m=w.a.length;
+  let why;
+  if(P.chi===2)why='となり合う地域があるので、1色ではぬれません。だから<b>2色</b>がいちばん少ない色の数です。';
+  else if(P.chi===3)why=m===3?'白い点線のわくの3つの地域は、どの2つもとなり合っているので、ちがう色が3ついります。だから<b>3色</b>がいちばん少ない色の数です。'
+    :`白い点線のわくの${m}この地域は、輪のようにつながっています。数が奇数なので、2色で交互にぬると、さいごの地域が最初の地域と同じ色になってしまいます。だから<b>3色</b>いります。`;
+  else why=m===3?'白い点線のわくの4つの地域は、どの2つもとなり合っているので、<b>4色</b>いります。'
+    :`◎の地域のまわりを、${m}この地域（奇数）が輪のように取りかこんでいます。まわりの輪には3色いるので、◎にはもう1色、全部で<b>4色</b>いります。`;
+  return `<p style="margin:0">${P.chi}色でぬれました！ ${why}</p>${P.lv===5?'<p class="note" style="margin:0">どんな地図でも、4色あればとなり合う地域をぬり分けられることが知られています（四色定理）。</p>':''}`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

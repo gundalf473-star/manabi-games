@@ -1,0 +1,316 @@
+<title>正直村とうそつき村</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="論理・推理">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="ふきだしの話から、正直村の人とうそつき村の人を見分けたり、分かれ道で正直村へ行く道を当てたりする論理・推理パズル。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.sjlist{display:flex;flex-direction:column;gap:10px}
+.sjrow{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:start}
+.sjme{display:flex;flex-direction:column;align-items:center;font-size:13px;line-height:1.2}
+.sjright{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.sjbub{position:relative;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:8px 12px;font-size:16px;font-weight:700;line-height:1.6;color:var(--fg)}
+.sjbub::before{content:"";position:absolute;left:-10px;top:16px;border:8px solid transparent;border-right:10px solid var(--ink);border-left:0}
+.sjbub.quiet{border-style:dashed;color:var(--muted);font-weight:400}
+.sjpick{display:flex;gap:6px;flex-wrap:wrap}
+.sjv{border:2px solid var(--rule);background:var(--surface);border-radius:20px;padding:6px 12px;font-weight:700;font-size:14px;cursor:pointer;min-height:40px;touch-action:manipulation}
+.sjv.v1.on{background:#e0f0e6;border-color:#1d7a4c;color:#1d7a4c}
+.sjv.v0.on{background:#f8e3e1;border-color:#c8352d;color:#c8352d}
+.sjv:disabled{cursor:default}
+.sjtag{font-size:13px;font-weight:700;border-radius:10px;padding:0 8px}
+.sjtag.v1{background:#e0f0e6;color:#1d7a4c}.sjtag.v0{background:#f8e3e1;color:#c8352d}
+.sjopts{display:flex;flex-direction:column;gap:8px}
+.sjopts .ob{flex-direction:row;align-items:flex-start;gap:8px;text-align:left}
+.sjq{font-size:15px;font-weight:700;line-height:1.6}
+.sjans{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.sjtbl{border-collapse:collapse;font-size:13px;width:100%;background:var(--surface)}
+.sjtbl th,.sjtbl td{border:1px solid var(--rule);padding:4px 6px;text-align:center}
+.sjans .ob{padding:8px 2px}.sjans b{white-space:nowrap}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>正直村とうそつき村</h1>
+    <p class="lead">いつも本当のことを言う正直村の人と、いつもうそを言ううそつき村の人。話を読んで、だれがどちらの村の人か、正直村への道はどれかを当てよう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"who","n":2,"say":[["わたしとBさんは、同じ村の人だよ。"],["わたしとAさんは、ちがう村の人だよ。"]],"ans":"01","bad":[0,0,-1,1],"id":"1-01","lv":1},{"kind":"road","n":2,"roads":2,"say":[["左の道は、正直村へ行く道だよ。"],["わたしとAさんは、ちがう村の人だよ。"]],"ans":1,"types":null,"ex":"だれがどちらの村の人かは決まりませんが、合う組み合わせ（2通り）のどれでも、正直村への道は \u003cb>右\u003c/b> になります。\u003cbr>・Aさんがうそつき村、Bさんがうそつき村の場合 → 右\u003cbr>・Aさんがうそつき村、Bさんが正直村の場合 → 右","id":"2-01","lv":2},{"kind":"reply","q":"「右の道は、正直村へ行きますか？」","yes":true,"known":0,"ans":"左","ex":"・相手がうそつき村の人なら → 正直村への道は 左\u003cbr>だから、正直村への道は \u003cb>左\u003c/b> です。","id":"3-01","lv":3},{"kind":"ask","a":"「あなたの村へ行く道は、右の道ですか？」","ds":["「右の道は、正直村へ行きますか？」","「左の道は、正直村へ行きますか？」","「あなたは正直村の人で、しかも 左の道が正直村へ行く道ですか？」"],"tbl":[["正直村の人","いいえ","はい"],["うそつき村の人","いいえ","はい"]],"ex":"「あなたの村へ行く道は、右の道ですか？」 と聞くと、相手が正直村の人でも うそつき村の人でも、正直村への道が左なら「いいえ」、右なら「はい」と答えます。だから「はい」なら \u003cb>右\u003c/b>、「いいえ」なら \u003cb>左\u003c/b> が正直村への道です。","id":"4-01","lv":4},{"kind":"who","n":4,"say":[["わたしとDさんは、ちがう村の人だよ。"],["AさんとDさんは、ちがう村の人だよ。"],["わたしかAさんの、少なくとも1人は うそつき村の人だよ。"],[]],"ans":"0010","bad":[2,1,1,2,-1,1,1,2,0,0,0,0,0,0,0,0],"id":"5-01","lv":5}];
+const ID='shojiki';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>正直村とうそつき村 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 正直村とうそつき村：kind='who'（n人・say・ans・bad）, 'road'（道を当てる）, 'ask'（質問をえらぶ）, 'reply'（答えから道） */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'2人の話',2:'3人の話・道さがし',3:'人数の話・答えから道',4:'4人の話・質問をえらぶ',5:'だまっている人・道が3本'};
+const RULES=`<ol class="rules">
+  <li><b>正直村</b>の人は、いつも<b>本当のこと</b>を言います。<b>うそつき村</b>の人は、いつも<b>うそ</b>を言います。</li>
+  <li>みんなの話（ふきだし）を読んで、だれがどちらの村の人か、正直村へ行く道はどれかを考えよう。</li>
+  <li>「この人が正直村だとしたら…」と、<b>ためしに決めて</b>、話が合うか確かめるのがコツ。</li>
+  <li>「はい」か「いいえ」で答える質問では、うそつき村の人は、本当とは<b>反対の答え</b>を言います。</li>
+  <li>答えは1つに決まります。</li></ol>`;
+const NMS='ABCD', PC=['#e0342f','#2563eb','#16a34a','#f59e0b'];
+const VL={1:'正直村',0:'うそつき村'};
+function person(x,sz){const c=PC[x];
+  return `<svg viewBox="0 0 48 56" width="${sz||46}" height="${(sz||46)*56/48}" aria-hidden="true"><path d="M8,56 Q8,34 24,34 Q40,34 40,56Z" fill="${c}"/><circle cx="24" cy="20" r="12" fill="#f6d7b8" stroke="#8a6a50" stroke-width="1.2"/>
+  <circle cx="20" cy="19" r="1.6" fill="#2a2520"/><circle cx="28" cy="19" r="1.6" fill="#2a2520"/><path d="M20,25 Q24,28 28,25" fill="none" stroke="#2a2520" stroke-width="1.4" stroke-linecap="round"/>
+  <text x="24" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">${NMS[x]}</text></svg>`;}
+function forkSVG(k,man){
+  /* 下から上へ、道が k 本に分かれる。先は雲でかくれている */
+  const ends=k===2?[[60,24],[260,24]]:[[44,24],[160,18],[276,24]], lab=k===2?['左','右']:['左','まん中','右'];
+  let s=`<rect x="0" y="0" width="320" height="150" fill="#e6f2da"/>`;
+  ends.forEach(([x,y])=>{s+=`<path d="M160,150 L160,104 Q160,86 ${(x+160)/2},${(y+90)/2+6} L${x},${y+14}" fill="none" stroke="#d9c49a" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>`;});
+  ends.forEach(([x,y],i)=>{s+=`<ellipse cx="${x}" cy="${y+8}" rx="34" ry="16" fill="#fff" stroke="#c9bfae"/><text x="${x}" y="${y+14}" text-anchor="middle" font-size="16" font-weight="700" fill="#6a625a" font-family="sans-serif">？</text>
+    <rect x="${x-24}" y="${y+34}" width="48" height="22" rx="4" fill="#fff" stroke="#8b5a2b" stroke-width="2"/><text x="${x}" y="${y+50}" text-anchor="middle" font-size="14" font-weight="700" fill="#3b2f6b" font-family="sans-serif">${lab[i]}</text>`;});
+  if(man)s+=`<g transform="translate(176,96)"><path d="M0,54 Q0,34 14,34 Q28,34 28,54Z" fill="#6a625a"/><circle cx="14" cy="22" r="10" fill="#f6d7b8" stroke="#8a6a50"/><text x="14" y="27" text-anchor="middle" font-size="12" font-weight="700" fill="#3b2f6b" font-family="sans-serif">?</text></g>`;
+  return `<svg viewBox="0 0 320 150" style="width:100%;max-width:360px;border-radius:8px" role="img" aria-label="分かれ道">${s}</svg>`;
+}
+const ROAD2='道は2本で、1本は<b>正直村</b>へ、もう1本は<b>うそつき村</b>へ行きます。どちらの村の人も、道をよく知っています。';
+const RD=k=>k===2?['左','右']:['左','まん中','右'];
+function startStage(p){
+  P=p; S={hints:0,done:false,msg:'',msgc:'',pick:p.kind==='who'?Array(p.n).fill(null):null,lock:p.kind==='who'?Array(p.n).fill(false):null,
+    wrong:[],hl:[],show:[],opts:p.kind==='ask'?shuffle([p.a,...p.ds]):null};
+  begin(p); draw();
+}
+function bubbles(){
+  return `<div class="sjlist">${P.say.map((b,x)=>{
+    const pick=S.pick?S.pick[x]:null, shown=S.show.includes(x);
+    const tag=shown&&P.types?`<span class="sjtag v${P.types[x]}">${VL[+P.types[x]]}</span>`:'';
+    return `<div class="sjrow"><div class="sjme">${person(x)}<b>${NMS[x]}さん</b></div>
+    <div class="sjright"><div class="sjbub ${b.length?'':'quiet'}">${b.length?b.map(t=>`「${esc(t)}」`).join('<br>'):'……（なにも言わない）'}</div>${tag}
+    ${S.pick?`<div class="sjpick">${[1,0].map(v=>`<button class="sjv v${v} ${pick===v?'on':''}" data-x="${x}" data-v="${v}" ${S.done||S.lock[x]?'disabled':''}>${VL[v]}</button>`).join('')}</div>`:''}</div></div>`;}).join('')}</div>`;
+}
+function qtext(){
+  if(P.kind==='who')return `それぞれの人は、<b>正直村</b>と<b>うそつき村</b>のどちらの人？`;
+  if(P.kind==='road')return `${P.roads}本の分かれ道があり、1本だけが<b>正直村</b>へ行きます。${P.n}人の話から、<b>正直村へ行く道</b>を当てよう。`;
+  if(P.kind==='ask')return `${ROAD2}分かれ道に、どちらの村の人かわからない人が1人います。「はい」か「いいえ」で答える質問を<b>1つだけ</b>して、正直村への道を知りたい。<b>かならず道がわかる質問</b>はどれ？`;
+  return `${ROAD2}分かれ道にいる人${P.known==null?'（どちらの村の人かわからない）':`は、<b>${VL[P.known]}の人</b>だとわかっています。その人`}に、${esc(P.q)} と聞くと、「<b>${P.yes?'はい':'いいえ'}</b>」と答えました。正直村へ行く道は？`;
+}
+function hints(){
+  if(P.kind==='who')return null;
+  if(P.kind==='road')return 'まず1人を「正直村」と決めて、話が合うか確かめよう。合わなければ、その人はうそつき村です。合う組み合わせが いくつかあるときは、どの場合でも同じ道になるかを見よう。'+(P.types?'（もう一度押すと、1人の村を教えます）':'');
+  if(P.kind==='ask')return '相手が正直村の人の場合と、うそつき村の人の場合の、両方で答えを考えよう。どちらの人でも「はい」なら同じ道、という質問をさがそう。うそつき村の人に「あなたの村」のことを聞くと、うそのうそで…？';
+  return P.known==null?'相手が正直村の人の場合と、うそつき村の人の場合に分けて、それぞれ正直村への道を考えよう。2つの場合で道がちがったら、「わからない」です。':'この人はいつも'+(P.known?'本当のこと':'うそ')+'を言います。「'+(P.yes?'はい':'いいえ')+'」が'+(P.known?'本当':'うそ')+'なら、本当の答えは？';
+}
+function draw(){
+  const ans=P.kind==='road'?RD(P.roads):P.kind==='reply'?['左','右','わからない']:null;
+  app.innerHTML=`${topBar()}
+    ${P.kind==='who'?'':`<div class="boardw">${forkSVG(P.kind==='road'?P.roads:2,P.kind!=='road')}</div>`}
+    <p class="qq">${qtext()}</p>
+    ${P.say?bubbles():''}
+    ${P.kind==='ask'?`<div class="sjopts">${S.opts.map((o,i)=>`<button class="ob ${S.done&&o===P.a?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span class="sjq">${esc(o)}</span></button>`).join('')}</div>`:''}
+    ${ans?`<div class="sjans">${ans.map((a,i)=>`<button class="ob ${S.done&&(P.kind==='road'?i===P.ans:a===P.ans)?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><b style="font-size:17px">${a}${a==='わからない'?'':'の道'}</b></button>`).join('')}</div>`:''}
+    ${S.hinttext&&!S.done?`<p class="hintbox">${S.hinttext}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg}</p><div class="row">${P.kind==='who'?`<button class="btn go" id="chk" ${S.pick.includes(null)?'disabled':''}>こたえあわせ</button>`:''}<button class="btn" id="hint">ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  document.getElementById('hint').onclick=hint;
+  if(P.kind==='who'){
+    app.querySelectorAll('.sjv').forEach(b=>b.onclick=()=>{S.pick[+b.dataset.x]=+b.dataset.v;S.msg='';draw();});
+    document.getElementById('chk').onclick=check;
+  }
+  app.querySelectorAll('.sjopts .ob,.sjans .ob').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    const ok=P.kind==='ask'?S.opts[i]===P.a:P.kind==='road'?i===P.ans:ans[i]===P.ans;
+    if(ok){S.done=true;draw();}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。もう一度考えてみよう。';S.msgc='ng';draw();}
+  });
+}
+function check(){
+  const m=S.pick.reduce((s,v,x)=>s+(v<<x),0), b=P.bad[m];
+  if(b<0){S.done=true;draw();return;}
+  S.hints++;
+  const t=P.say[b].map(z=>'「'+z+'」').join('');
+  S.msg=`あなたの考えでは、${NMS[b]}さんは${VL[S.pick[b]]}の人。でもそうすると、${NMS[b]}さんの${t}は${S.pick[b]?'うそ':'本当'}になってしまい、合いません。`;
+  S.msgc='ng'; draw();
+}
+function hint(){
+  S.hints++; S.msgc='';
+  if(P.kind==='who'){
+    const x=[...Array(P.n).keys()].find(x=>!S.lock[x]&&S.pick[x]!==+P.ans[x])??[...Array(P.n).keys()].find(x=>!S.lock[x]);
+    if(x==null)return;
+    S.pick[x]=+P.ans[x]; S.lock[x]=true;
+    S.msg=`ヒント：${NMS[x]}さんは ${VL[+P.ans[x]]}の人です。`; draw(); return;
+  }
+  if(P.kind==='road'&&S.hinttext&&P.types){
+    const x=[...Array(P.n).keys()].find(x=>!S.show.includes(x));
+    if(x!=null){S.show.push(x);S.msg=`ヒント：${NMS[x]}さんは ${VL[+P.types[x]]}の人です。`;}
+  }
+  S.hinttext=hints(); draw();
+}
+function explain(){
+  if(P.kind==='who'){
+    const lines=P.say.map((b,x)=>{const v=+P.ans[x];
+      if(!b.length)return `・${NMS[x]}さん（${VL[v]}）は、なにも言っていません。ほかの人の話から決まります。`;
+      return `・${NMS[x]}さん（${VL[v]}）の「${esc(b.join(''))}」は、${v?'本当':'うそ'}。`;}).join('<br>');
+    return `<p style="margin:0">答え：${P.say.map((_,x)=>`${NMS[x]}さんは<b>${VL[+P.ans[x]]}</b>`).join('、')}。</p><p style="margin:0;font-size:14px">${lines}<br>ほかの${2**P.n-1}通りの組み合わせでは、だれかの話が合わなくなります。</p>`;
+  }
+  if(P.kind==='ask'){
+    const T=P.tbl;
+    return `<table class="sjtbl"><tr><th></th><th>正直村への道が左</th><th>正直村への道が右</th></tr>${T.map(r=>`<tr><th>${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table><p style="margin:0;font-size:14px">${P.ex}</p>`;
+  }
+  return `<p style="margin:0;font-size:14px">${P.ex}</p>`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
