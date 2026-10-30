@@ -21,6 +21,8 @@ button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 16px;
 button.sub{background:var(--rule);color:var(--fg)}
 button.warn{background:var(--ng);color:#fff}
 pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-all;font-size:13px;margin:0;min-height:2em}
+.pkres details{border:1px solid var(--rule);border-radius:8px;padding:6px 10px;margin:0 0 6px}.pkres summary{cursor:pointer}.pkl{font-size:13px;line-height:1.7;margin-top:4px;word-break:break-all}.warn{color:#b4442d;font-size:14px;font-weight:700;margin:6px 0}
+button:disabled{opacity:.4;cursor:default}
 .note{font-size:13px;color:var(--muted);margin:0}
 </style>
 </head>
@@ -35,9 +37,11 @@ pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:
     <div><button id="save">保存して接続を確かめる</button></div><pre id="o1"></pre></section>
 
   <section class="box"><h2>2. 有料版の問題データを入れる</h2>
-    <p class="note">packs フォルダの JSON ファイルをまとめてえらびます（ファイル名＝ゲーム名、例 chusho.json）。問題を直したときも、同じようにえらび直せば上書きされます。</p>
-    <input id="files" type="file" accept=".json" multiple>
-    <div><button id="up">入れる</button></div><pre id="o2"></pre></section>
+    <p class="note">渡された zip ファイルを、展開せずにそのままえらべます（いくつかまとめてえらべます）。JSON ファイルをえらぶこともできます。えらぶと中身をしらべて、「新しい単元」「中身が変わった単元」「同じなので入れない単元」に分けて見せます。</p>
+    <input id="files" type="file" accept=".json,.zip,application/zip,application/json" multiple>
+    <label style="display:flex;gap:6px;align-items:center;font-size:14px"><input type="checkbox" id="again" style="width:auto"> 同じものも入れ直す</label>
+    <div id="pkres" class="pkres"></div>
+    <div class="row" style="flex-wrap:wrap"><button id="chk" type="button" style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">しらべる</button><button id="up" type="button" disabled style="flex:0 0 auto">入れる</button></div><pre id="o2"></pre></section>
 
   <section class="box"><h2>3. 利用コードを作る（テスト・プレゼント・おわび用）</h2>
     <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option><option value="shikou">思考力</option><option value="chuko">中高一貫 全教科</option><option value="ckokugo">中高一貫 国語</option><option value="csugaku">中高一貫 数学</option><option value="ceigo">中高一貫 英語</option><option value="crika">中高一貫 理科</option><option value="cshakai">中高一貫 社会</option><option value="cjoho">中高一貫 情報</option><option value="career">就活・資格 全教科</option><option value="kspin">就活・資格 SPI非言語</option><option value="kspig">就活・資格 SPI言語</option><option value="kitp">就活・資格 ITパスポート</option><option value="kfe">就活・資格 基本情報技術者</option><option value="kstat">就活・資格 統計学</option><option value="kboki">就活・資格 簿記3級</option><option value="ktoeic">就活・資格 TOEIC英語</option><option value="teigaku">低学年 全教科</option><option value="tsansu">低学年 算数</option><option value="tkokugo">低学年 国語</option><option value="tshikou">低学年 思考力</option><option value="tchishiki">低学年 ちしき</option></select></div>
@@ -69,6 +73,7 @@ pre{background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:
     <div class="row"><button id="nput">出す</button><button id="nclear">消す</button><button id="nnow">いま出ているものを見る</button></div>
     <pre id="o6"></pre></section>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v);}catch(e){return '';}};
@@ -83,8 +88,62 @@ $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$
   try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
   catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
-$('up').onclick=async()=>{ const fs=[...$('files').files]; if(!fs.length)return show('o2','ファイルをえらんでください。'); if(!/^https:\/\//.test(base()))return show('o2','先に「1. サーバーとの接続」にサーバーのアドレス（https:// で始まるもの）と管理キーを入れて、「保存して接続を確かめる」を押してください。'); let out=[];
-  for(const f of fs){ const g=f.name.replace(/\.json$/,''); try{ const d=await call('/api/admin/pack/'+g,{method:'PUT',body:await f.text()}); out.push('OK   '+g+'（'+d.bytes+'文字）'); }catch(e){ out.push('失敗 '+g+'：'+e.message); if(/fetch|network|load failed/i.test(e.message)&&out.length>=3&&out.every(x=>x.startsWith('失敗'))){ out.push('','サーバーにつながらないため、止めました。「1. サーバーとの接続」の「保存して接続を確かめる」を押して、つながるか確かめてください。'); show('o2',out.join('\n')); return; } } show('o2',out.join('\n')); } };
+/* 2. 問題データ：zip のままでも JSON でもえらべる。中身をしらべて「新しい・変わった・同じ・サーバーが知らない」に分け、入れるものだけ入れる */
+const PK={items:[],known:null};
+const fnv=t=>{let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(16)+'-'+t.length;};
+const sums=()=>{try{return JSON.parse(ls('adm-sums')||'{}')||{};}catch(e){return {};}};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function readPicked(){
+  const fs=[...$('files').files], out=[], bad=[];
+  for(const f of fs){
+    if(/\.zip$/i.test(f.name)){
+      if(!window.JSZip){bad.push(f.name+'：zip を開く部品を読みこめませんでした（インターネットにつながっているか確かめてください）。zip を展開して JSON をえらぶこともできます。');continue;}
+      try{const z=await JSZip.loadAsync(f);for(const [n,e] of Object.entries(z.files)){if(e.dir)continue;const b=n.split('/').pop();if(!/\.json$/i.test(b)||b.startsWith('._'))continue;out.push({g:b.replace(/\.json$/i,''),from:f.name,text:await e.async('string')});}}
+      catch(e){bad.push(f.name+'：zip を開けませんでした（'+e.message+'）');}
+    }else if(/\.json$/i.test(f.name)) out.push({g:f.name.replace(/\.json$/i,''),from:'',text:await f.text()});
+    else bad.push(f.name+'：zip か json のファイルではありません');
+  }
+  const m=new Map(); out.forEach(x=>m.set(x.g,x)); return {list:[...m.values()].sort((a,b)=>a.g.localeCompare(b.g)),bad};
+}
+async function check(){
+  $('up').disabled=true; $('pkres').innerHTML=''; show('o2','しらべています…');
+  const {list,bad}=await readPicked(); if(!list.length&&!bad.length){show('o2','ファイルをえらんでください。');return;}
+  let known=null,conn='';
+  if(/^https:\/\//.test(base())){try{known=(await call('/api/admin/info')).packs;}catch(e){conn='（サーバーにつながらないため、サーバーにあるかどうかは確かめられませんでした）';}}
+  else conn='（「1. サーバーとの接続」がまだなので、サーバーにあるかどうかは確かめられません）';
+  const S=sums();
+  list.forEach(x=>{
+    try{const j=JSON.parse(x.text);x.n=Array.isArray(j)?j.length:null;}catch(e){x.st='bad';return;}
+    x.sum=fnv(x.text);
+    if(known&&!(x.g in known))x.st='unknown';
+    else if(known&&!known[x.g])x.st='new';
+    else if(S[x.g]===x.sum)x.st='same';
+    else x.st=!known?'noconn':S[x.g]?'changed':'nocheck';
+  });
+  PK.items=list;
+  const LB={new:['新しい単元','入れる'],changed:['中身が変わった','入れる'],nocheck:['サーバーにある（前の記録がないので、くらべられない）','入れる'],noconn:['まだ確かめていない（サーバーにつないでから）','—'],same:['同じ（前回この画面で入れたものと同じ）','入れない'],unknown:['サーバーが知らない単元','入れない'],bad:['JSON がこわれている','入れない']};
+  const cnt={};list.forEach(x=>cnt[x.st]=(cnt[x.st]||0)+1);
+  const ORD=['new','changed','nocheck','noconn','same','unknown','bad'];
+  $('pkres').innerHTML=ORD.filter(k=>cnt[k]).map(k=>`<details ${k==='same'?'':'open'}><summary><b>${LB[k][0]}</b>：${cnt[k]}本（${LB[k][1]}）</summary><div class="pkl">${list.filter(x=>x.st===k).map(x=>esc(x.g)+(x.n!=null?'（'+x.n+'問）':'')).join('、')}</div></details>`).join('')
+    +(cnt.unknown?'<p class="warn">「サーバーが知らない単元」は、Cloudflare の worker.js がまだ古いときに出ます。先に新しい worker.js を貼りかえてから、もう一度「しらべる」を押してください。</p>':'')
+    +(bad.length?'<p class="warn">'+bad.map(esc).join('<br>')+'</p>':'');
+  const go=list.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same'));
+  $('up').textContent='入れる（'+go.length+'本）'; $('up').disabled=!go.length||!known;
+  show('o2',`えらんだファイルの中に ${list.length}本の問題データがありました。${conn}`+(known?'':'\n入れるには、先に「1. サーバーとの接続」でつながることを確かめてください。'));
+}
+$('files').onchange=check; $('again').onchange=check; $('chk').onclick=check;
+$('up').onclick=async()=>{
+  const go=PK.items.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same')); if(!go.length)return;
+  $('up').disabled=true; const S=sums(), out=[]; let ok=0,ng=0;
+  for(let i=0;i<go.length;i++){const x=go[i];
+    try{const d=await call('/api/admin/pack/'+x.g,{method:'PUT',body:x.text});S[x.g]=x.sum;ok++;out.push('OK   '+x.g+'（'+d.bytes+'文字）');}
+    catch(e){ng++;out.push('失敗 '+x.g+'：'+(e.message==='no_game'?'サーバーが知らない単元です（worker.js を貼りかえてください）':e.message));
+      if(/fetch|network|load failed/i.test(e.message)&&ng>=3&&ok===0){out.push('','サーバーにつながらないため、止めました。「1. サーバーとの接続」で、つながるか確かめてください。');break;}}
+    show('o2','入れています… '+(i+1)+' / '+go.length+'\n'+out.slice(-6).join('\n'));}
+  ls('adm-sums',JSON.stringify(S));
+  show('o2',(ng?`終わりました：成功 ${ok}本、失敗 ${ng}本。失敗したものは、もう一度「入れる」を押すと入れ直します。`:`終わりました：${ok}本すべて入りました。`)+'\n\n'+out.join('\n'));
+  const res=$('o2').textContent; await check(); show('o2',res);
+};
 $('bulk').onclick=async()=>{ const n=Math.max(1,Math.min(200,parseInt($('bn').value,10)||0)), sj=$('is').value, pd=$('ip').value, note=$('in').value;
   const SJ={all:'全教科',kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',chuko:'中高一貫 全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',career:'就活・資格 全教科',kspin:'就活・資格 SPI非言語',kspig:'就活・資格 SPI言語',kitp:'就活・資格 ITパスポート',kfe:'就活・資格 基本情報技術者',kstat:'就活・資格 統計学',kboki:'就活・資格 簿記3級',ktoeic:'就活・資格 TOEIC英語',teigaku:'低学年 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき'}, PD={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
   if(!confirm(SJ[sj]+'・'+PD[pd]+' の利用コードを '+n+' こ作ります。よろしいですか？'))return;
