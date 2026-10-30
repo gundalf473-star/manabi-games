@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>就活・資格コース｜SPI・ITパスポート・簿記・TOEICをクイズで｜{{SITE_NAME}}</title>
+<meta name="description" content="大学生・社会人のための就活・資格コース。SPI形式の非言語・言語、ITパスポート、基本情報技術者、統計学、簿記3級、TOEIC形式の英語を、スキマ時間にクイズでくり返し練習できます。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* 中高一貫コース：トップと同じ組み立て（教科 → 単元 → カード）で、色と文字を少し大人っぽく */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --fg:#17202c; --muted:#5a6473; --rule:#d9dde3; --ink:#0f3b4c; --accent:#0e7c7b;
+  --s1:#1f5fbf; --s2:#0e7c7b; --s3:#b4442d; --s4:#6a4fb3; --s5:#a8740d; --s6:#2d6a3e;
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1318; --surface:#171d25; --fg:#e5e9ee; --muted:#9ba5b3; --rule:#2a323d; --ink:#7cc6d6; --accent:#45b8b5;
+  --s1:#6f9ef0; --s2:#45b8b5; --s3:#ee8a73; --s4:#a993ea; --s5:#e0b454; --s6:#6fbf84; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+.eyebrow a{color:inherit;text-decoration:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.4vw,40px);line-height:1.25;margin:2px 0 0;color:var(--ink);text-wrap:balance}
+.lead{margin:8px 0 0;color:var(--muted);max-width:38em}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.topnav a{font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:4px 14px;text-decoration:none}
+.topnav a:hover{border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button{font:inherit;color:inherit}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.point{background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:14px 16px}
+.point h2{font-family:var(--display);font-size:17px;margin:0 0 4px;color:var(--ink)}
+.point p{margin:0;font-size:14px;color:var(--muted)}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.subjects{display:flex;gap:8px;flex-wrap:wrap}
+.subj{border:2px solid var(--rule);background:var(--surface);border-radius:6px;padding:7px 16px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:8px}
+.subj .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.subj[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:var(--surface)}
+.subj[aria-pressed="true"] .n{color:var(--surface);opacity:.85}
+.group{display:flex;flex-direction:column;gap:10px}
+.gh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--c);padding-bottom:4px}
+.gh h2{margin:0;font-family:var(--display);font-weight:700;font-size:19px;color:var(--c)}
+.gh span{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-width:0}
+.card:hover{border-color:var(--c)}
+.card .tags{display:flex;gap:6px}
+.card .tag{font-size:12px;font-weight:700;color:var(--c);border:1px solid var(--c);border-radius:4px;padding:0 6px}
+.card .tag.paid{color:var(--surface);background:var(--c)}
+.card .tag.new{color:#fff;background:var(--s3);border-color:var(--s3)}
+.card h3{margin:0;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.4}
+.card p{margin:0;font-size:14px;color:var(--muted);flex:1}
+.card .meta{display:flex;gap:12px;font-size:12px;color:var(--muted)}
+.card .play{font-weight:700;color:var(--c);font-size:14px}
+.fbar{display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:3px 12px;cursor:pointer;font-size:14px;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+a.chip{text-decoration:none;color:var(--c,var(--ink));border-color:var(--c,var(--rule))}
+.fold{border:1px solid var(--rule);border-radius:8px;background:color-mix(in srgb,var(--surface) 55%,transparent);scroll-margin-top:12px}
+.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;padding:10px 14px;font-family:var(--display);font-weight:700;font-size:17px;color:var(--c)}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸";transition:transform .15s;display:inline-block}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>summary .n{font-family:var(--body);font-size:13px;color:var(--muted);font-weight:400}
+.fold>.grid{padding:0 12px 12px}
+.card .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.card .btns a{flex:1;min-width:120px;text-align:center;border-radius:6px;padding:7px 10px;font-weight:700;font-size:14px;text-decoration:none;border:2px solid var(--c);color:var(--c)}
+.card .btns a.p{background:var(--c);color:var(--surface)}
+.mine{display:flex;flex-direction:column;gap:8px}
+.mine .row{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.mi{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--c);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.mi .k{font-size:12px;font-weight:700;color:var(--c)}
+.mi a.t{font-family:var(--display);font-size:17px;font-weight:700;color:inherit;text-decoration:none;line-height:1.4}
+.mi .s{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.mi .due{color:#fff;background:var(--s3);border-radius:4px;padding:0 6px;font-weight:700;font-size:12px}
+.mi .go{margin-left:auto;font-weight:700;color:var(--c);text-decoration:none;font-size:14px}
+.starb{border:1px solid var(--rule);background:var(--surface);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;padding:2px 8px;margin-left:auto;color:var(--muted)}
+.starb[aria-pressed="true"]{color:#fff;background:var(--s3);border-color:var(--s3)}
+.mine .hint{font-size:13px;color:var(--muted);margin:0}
+.empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
+.daily{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
+.cont .k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em}
+.cont .t{font-family:var(--display);font-size:18px;font-weight:700}
+.cont .s{font-size:13px;color:var(--muted)}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><a href="../index.html">{{SITE_NAME}}</a>　／　就活・資格コース</div>
+    <h1>就活・資格コース</h1>
+    <p class="lead">大学生・社会人のための、就職活動と資格試験の練習。1回10問、スキマ時間にくり返して、本番の形式に慣れていきます。</p>
+    <nav class="topnav"><a href="../buy.html?s=career">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../chuko/index.html">中高一貫コース</a><a href="../index.html">中学受験のゲーム</a></nav>
+  </header>
+  <section class="mine" id="mine" aria-label="わたしの単元"></section>
+  <section class="points" aria-label="このコースの特長">
+    <div class="point"><h2>就活の適性検査</h2><p>SPI形式の非言語（推論・割合・速さ・確率・資料）と言語（二語の関係・語句・長文）。中学受験で身につけた算数の力が、そのまま生きます。</p></div>
+    <div class="point"><h2>資格試験</h2><p>ITパスポート・基本情報技術者・簿記3級に、大学で学ぶ統計学。出題の形式に合わせたオリジナル問題を、5つのレベルでくり返し練習できます。</p></div>
+    <div class="point"><h2>TOEIC形式の英語</h2><p>文法・語い・短い読解。ビジネスの場面の英文で、スコアアップに必要な力を少しずつ積み上げます。</p></div>
+  </section>
+  <section id="subjbox" hidden>
+    <div class="fbar">
+      <div><div class="label">教科</div><div class="subjects" id="subjects"></div></div>
+      <div hidden><div class="label">学年</div><div class="chips" id="grades"></div></div>
+      <div id="jumpbox" hidden><div class="label">分野へ移動</div><div class="chips" id="jump"></div></div>
+    </div>
+  </section>
+  <main id="list"></main>
+  <footer><a href="../index.html">中学受験のゲーム一覧</a>　・　<a href="../chuko/index.html">中高一貫コース</a>　・　<a href="../contact.html">お問い合わせ</a>　・　<a href="../privacy.html">プライバシーポリシー</a>　・　<a href="../tokushoho.html">特定商取引法に基づく表記</a></footer>
+</div>
+<script>
+(async function(){
+  const COLORS=['--s1','--s2','--s3','--s4','--s5','--s6'];
+  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const L=document.getElementById('list');
+  let data; try{ data=await (await fetch('../games.json',{cache:'no-cache'})).json(); }catch(e){ if(!L.children.length)L.innerHTML='<p class="empty">一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
+  const games=data.games.filter(g=>g.course==='career');
+  if(!games.length){ L.innerHTML='<div class="empty"><b>単元を準備しています。</b>公開したら、トップページの「お知らせ」でお知らせします。</div>'; return; }
+  /* 無料版と有料版を1つの単元にまとめる（file の -full を取ったものが同じなら同じ単元） */
+  const key=g=>g.file.replace(/-full(\.html)$/,'$1'), U={}, units=[];
+  games.forEach(g=>{const k=key(g);if(!U[k]){U[k]={k,subject:g.subject};units.push(U[k]);}U[k][g.paid?'paid':'free']=g;});
+  const ORDER=['入学前','中1','中2','中3','高1','高2','高3'];
+  const gi=x=>{x=x.trim();if(/小学|入学前/.test(x))return 0;const i=ORDER.indexOf(x);return i<0?null:i;};
+  units.forEach(u=>{const g=u.free||u.paid;u.title=(u.paid?u.paid.title.replace(/\s*100問$/,''):g.title.replace(/クイズ$/,''));u.desc=(u.free||g).description;u.grade=g.grade||'';u.added=(u.paid||g).added;
+    const p=decodeURIComponent(g.url).split('/');u.folder=p.length>=5?p[3]:'その他';
+    const m=u.grade.split('〜'),a=gi(m[0]||''),b=m.length>1?(m[1].trim()?gi(m[1]):6):a;u.g0=a==null?0:a;u.g1=b==null?6:b;});
+  const GR=[['すべて',0,6]];
+  const fits=(u,gr)=>{const r=GR.find(x=>x[0]===gr)||GR[0];return u.g0<=r[2]&&u.g1>=r[1];};
+  const SORD=['SPI非言語','SPI言語','ITパスポート','基本情報技術者','統計学','簿記3級','TOEIC英語'];
+  const subjects=[...new Set(games.map(g=>g.subject))].sort((a,b)=>(SORD.indexOf(a)+99)%99-(SORD.indexOf(b)+99)%99), color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
+  const today=new Date(Date.now()+9*36e5).toISOString().slice(0,10), isNew=u=>u.added&&(Date.parse(today)-Date.parse(u.added))/864e5<14;
+  const h0=decodeURIComponent(location.hash.slice(1)).split('/');
+  let subj=h0[0]||'すべて'; if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+  let grade=h0[1]||(()=>{try{return localStorage.getItem('mn-career-grade')||'すべて';}catch(e){return 'すべて';}})(); if(!GR.some(x=>x[0]===grade))grade='すべて';
+  const save=()=>{history.replaceState(null,'',subj==='すべて'&&grade==='すべて'?location.pathname:'#'+encodeURIComponent(subj)+(grade==='すべて'?'':'/'+encodeURIComponent(grade)));try{localStorage.setItem('mn-career-grade',grade);}catch(e){}};
+  /* わたしの単元：★を付けた単元（mn-fav）と、最近遊んだ単元（mn-history）。今日の解き直しの数（mn-review）も出す */
+  const LS=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}};
+  const base=f=>String(f).replace(/-full(\.html)$/,'$1');
+  let fav=LS('mn-fav-k',[]); if(!Array.isArray(fav))fav=[];
+  const favIdx=k=>fav.findIndex(f=>base(f)===k);
+  const H=LS('mn-history',[]), hist=Array.isArray(H)?H:[];
+  const playedPaid=k=>hist.some(e=>e&&e.f===k.replace(/\.html$/,'-full.html'));
+  const dayN=()=>{const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);};
+  const due=k=>{const m=(LS('mn-review',{})||{})[k.replace(/\.html$/,'')]||{},t=dayN();let n=0;for(const q in m)if(m[q]&&m[q].d<=t)n++;return n;};
+  function toggleFav(k){const i=favIdx(k);if(i>=0)fav.splice(i,1);else{if(fav.length>=8){alertBox('「わたしの単元」に入れられるのは8つまでです。どれかを外してください。');return;}const u=U[k];fav.unshift(u&&u.paid&&playedPaid(k)?u.paid.file:k);}
+    try{localStorage.setItem('mn-fav-k',JSON.stringify(fav));}catch(e){alertBox('この端末では保存できませんでした。');}renderMine();render();}
+  function alertBox(t){const m=document.getElementById('mine');const p=document.createElement('p');p.className='hint';p.style.color='var(--s3)';p.textContent=t;m.prepend(p);setTimeout(()=>p.remove(),3000);}
+  function renderMine(){
+    const box=document.getElementById('mine'), items=[], seen=new Set();
+    fav.forEach(f=>{const k=base(f),u=U[k];if(u&&!seen.has(k)){seen.add(k);items.push({u,f,star:true});}});
+    let rec=0;for(let i=hist.length-1;i>=0&&rec<3;i--){const e=hist[i];if(!e||!e.f)continue;const k=base(e.f),u=U[k];if(!u||seen.has(k))continue;seen.add(k);items.push({u,f:e.f,star:false,t:e.t,sc:e.n!=null?`${e.s} / ${e.n}問`:e.a?`${e.k} / ${e.a}問`:''});rec++;}
+    if(!items.length){box.innerHTML='<div class="label">わたしの単元</div><p class="hint">単元のカードやゲームの画面で「☆ わたしの単元」を押すと、ここにならびます。遊んだ単元も、ここに出ます。</p>';return;}
+    box.innerHTML='<div class="label">わたしの単元</div><div class="row">'+items.map(({u,f,star,t,sc})=>{const g=[u.paid,u.free].find(x=>x&&x.file===f)||u.free||u.paid,n=due(u.k),d=t?new Date(t):null;
+      return `<div class="mi" style="--c:${color(u.subject)}"><span class="k">${star?'★ ':'最近 '}${esc(u.subject)}・${esc(u.folder)}</span><a class="t" href="../${g.url}">${esc(u.title)}</a>
+      <span class="s">${n?`<span class="due">今日の解き直し ${n}問</span>`:''}${d?`<span>${d.getMonth()+1}月${d.getDate()}日${sc?'・'+sc:''}</span>`:''}${g.paid?'<span>有料版</span>':'<span>無料版</span>'}${star?`<button type="button" class="starb" aria-pressed="true" data-k="${esc(u.k)}" title="わたしの単元から外す">★ 外す</button>`:`<button type="button" class="starb" aria-pressed="false" data-k="${esc(u.k)}">☆ 入れる</button>`}<a class="go" href="../${g.url}">はじめる →</a></span></div>`;}).join('')+'</div>';
+    box.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
+  }
+  const card=u=>`<div class="card">
+        <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${favIdx(u.k)>=0}" title="一覧のいちばん上の「わたしの単元」に入れる">${favIdx(u.k)>=0?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
+        <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
+  /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
+  const PRI=['推論','割合と損益','速さと料金の計算','確率と場合の数','資料の読み取りと集合','二語の関係','語句の意味と用法','文の並べかえと長文読解','ストラテジ','マネジメント','テクノロジ（基礎理論とコンピュータ）','テクノロジ（ネットワーク・セキュリティ・データベース）','アルゴリズムとプログラミング','情報セキュリティ','テクノロジとマネジメントの基礎','データの記述と要約','確率と確率分布','推定と検定','仕訳の基本','決算整理','精算表と財務諸表','文法','語い','短い読解'];
+  const fo=x=>{const i=PRI.indexOf(x.f);return i<0?1000+x.g:i;};
+  function render(){
+    const S=document.getElementById('subjects'); document.getElementById('subjbox').hidden=false;
+    const inG=units.filter(u=>fits(u,grade));
+    S.innerHTML=['すべて',...subjects].map(s=>`<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${esc(s)}<span class="n">${s==='すべて'?inG.length:inG.filter(u=>u.subject===s).length}</span></button>`).join('');
+    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;save();render();});
+    const Gs=document.getElementById('grades');
+    Gs.innerHTML=GR.map(x=>`<button class="chip" aria-pressed="${x[0]===grade}" data-g="${x[0]}">${x[0]}</button>`).join('');
+    Gs.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{grade=b.dataset.g;save();render();});
+    const shown=inG.filter(u=>subj==='すべて'||u.subject===subj);
+    if(!shown.length){L.innerHTML='<p class="empty">この学年の単元はまだありません。ほかの学年や教科を選んでください。</p>';document.getElementById('jumpbox').hidden=true;return;}
+    const open=subj!=='すべて', jumps=[];
+    L.innerHTML=[...new Set(shown.map(u=>u.subject))].map(s=>{const us=shown.filter(u=>u.subject===s);
+      const fs=[...new Set(us.map(u=>u.folder))].map(f=>{const x=us.filter(u=>u.folder===f).sort((a,b)=>a.g0-b.g0||a.g1-b.g1);return {f,x,g:Math.min(...x.map(u=>u.g0))};}).sort((a,b)=>fo(a)-fo(b));
+      return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${us.length}単元</span></div>${fs.map(({f,x})=>{const id='f-'+encodeURIComponent(s+'-'+f).replace(/%/g,'');jumps.push(`<a class="chip" style="--c:${color(s)}" href="#${id}" data-id="${id}">${esc(f)}</a>`);
+        return `<details class="fold" id="${id}" ${open?'open':''}><summary>${esc(f)}<span class="n">${x.length}単元</span></summary><div class="grid">${x.map(card).join('')}</div></details>`;}).join('')}</section>`;}).join('<div style="height:16px"></div>');
+    L.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
+    const J=document.getElementById('jump'); document.getElementById('jumpbox').hidden=!open; J.innerHTML=open?jumps.join(''):'';
+    J.querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();const d=document.getElementById(a.dataset.id);d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});});
+  }
+  renderMine();
+  render();
+  window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/');subj=subjects.includes(h[0])?h[0]:'すべて';if(h[1]&&GR.some(x=>x[0]===h[1]))grade=h[1];render();});
+})();
+</script>
+</body>
+</html>

@@ -92,13 +92,18 @@ const OPEN=false;
 const yen=n=>n.toLocaleString('ja-JP')+'円';
 const q=new URLSearchParams(location.search);
 // サーバーが使えないとき（準備中）に見せる料金表。値段はサーバー（server/worker.js）の PRICES が正です
-const FALLBACK={subjects:{kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',chuko:'中高一貫 全教科'},periods:{d1:'1日',w1:'1週間',m1:'1ヵ月（30日）',y1:'1年（365日）'},
-  prices:{kokugo:{d1:1000,w1:2000,m1:4000,y1:20000},sansu:{d1:1000,w1:2000,m1:4000,y1:20000},rika:{d1:1000,w1:2000,m1:4000,y1:20000},shakai:{d1:1000,w1:2000,m1:4000,y1:20000},shikou:{d1:1000,w1:2000,m1:4000,y1:20000},all:{d1:2000,w1:4000,m1:8000,y1:40000},ckokugo:{d1:1000,w1:2000,m1:4000,y1:20000},csugaku:{d1:1000,w1:2000,m1:4000,y1:20000},ceigo:{d1:1000,w1:2000,m1:4000,y1:20000},crika:{d1:1000,w1:2000,m1:4000,y1:20000},cshakai:{d1:1000,w1:2000,m1:4000,y1:20000},cjoho:{d1:1000,w1:2000,m1:4000,y1:20000},chuko:{d1:2000,w1:4000,m1:8000,y1:40000}},continueOff:20,maxDevices:3,test:false};
+const FALLBACK={subjects:{kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',chuko:'中高一貫 全教科',kspin:'就活・資格 SPI非言語',kspig:'就活・資格 SPI言語',kitp:'就活・資格 ITパスポート',kfe:'就活・資格 基本情報技術者',kstat:'就活・資格 統計学',kboki:'就活・資格 簿記3級',ktoeic:'就活・資格 TOEIC英語',career:'就活・資格 全教科'},periods:{d1:'1日',w1:'1週間',m1:'1ヵ月（30日）',y1:'1年（365日）'},
+  prices:{kokugo:{d1:1000,w1:2000,m1:4000,y1:20000},sansu:{d1:1000,w1:2000,m1:4000,y1:20000},rika:{d1:1000,w1:2000,m1:4000,y1:20000},shakai:{d1:1000,w1:2000,m1:4000,y1:20000},shikou:{d1:1000,w1:2000,m1:4000,y1:20000},all:{d1:2000,w1:4000,m1:8000,y1:40000},ckokugo:{d1:1000,w1:2000,m1:4000,y1:20000},csugaku:{d1:1000,w1:2000,m1:4000,y1:20000},ceigo:{d1:1000,w1:2000,m1:4000,y1:20000},crika:{d1:1000,w1:2000,m1:4000,y1:20000},cshakai:{d1:1000,w1:2000,m1:4000,y1:20000},cjoho:{d1:1000,w1:2000,m1:4000,y1:20000},chuko:{d1:2000,w1:4000,m1:8000,y1:40000},kspin:{d1:1000,w1:2000,m1:4000,y1:20000},kspig:{d1:1000,w1:2000,m1:4000,y1:20000},kitp:{d1:1000,w1:2000,m1:4000,y1:20000},kfe:{d1:1000,w1:2000,m1:4000,y1:20000},kstat:{d1:1000,w1:2000,m1:4000,y1:20000},kboki:{d1:1000,w1:2000,m1:4000,y1:20000},ktoeic:{d1:1000,w1:2000,m1:4000,y1:20000},career:{d1:2000,w1:4000,m1:8000,y1:40000}},continueOff:20,maxDevices:3,test:false};
 let PL=null, GAMES=[], sel={s:Object.keys(FALLBACK.subjects).includes(q.get('s'))?q.get('s'):'all',p:'m1',prev:''}, agreed=false;
 const SUBJ_JA={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力'};
 /* 中高一貫コースの教科（chuko は中高一貫コースの全教科） */
 const CH_JA={ckokugo:'国語',csugaku:'数学',ceigo:'英語',crika:'理科',cshakai:'社会',cjoho:'情報'};
 const isC=s=>s==='chuko'||!!CH_JA[s];
+/* 就活・資格コースの教科（career はコースの全教科） */
+const KA_JA={kspin:'SPI非言語',kspig:'SPI言語',kitp:'ITパスポート',kfe:'基本情報技術者',kstat:'統計学',kboki:'簿記3級',ktoeic:'TOEIC英語'};
+const isK=s=>s==='career'||!!KA_JA[s];
+const isJ=s=>!isC(s)&&!isK(s);
+const hasCont=s=>isC(s)||isK(s);
 
 async function boot(){
   try{ const d=await (await fetch('games.json',{cache:'no-cache'})).json(); GAMES=d.games.filter(g=>g.paid); }catch(e){}
@@ -107,16 +112,17 @@ async function boot(){
   render();
 }
 /* 中高一貫コースは別のプラン（中学受験の全教科には入らない）。chuko は中高一貫コースの全教科 */
-function gamesOf(s){ return GAMES.filter(g=>isC(s)?g.course==='chuko'&&(s==='chuko'||g.subject===CH_JA[s]):g.course!=='chuko'&&(s==='all'||g.subject===SUBJ_JA[s])); }
+function gamesOf(s){ return GAMES.filter(g=>isK(s)?g.course==='career'&&(s==='career'||g.subject===KA_JA[s]):isC(s)?g.course==='chuko'&&(s==='chuko'||g.subject===CH_JA[s]):g.course!=='chuko'&&g.course!=='career'&&(s==='all'||g.subject===SUBJ_JA[s])); }
 function render(){
-  const P=PL||FALLBACK, ready=OPEN&&!!PL, off=isC(sel.s)&&sel.prev&&P.continueOff?P.continueOff:0;
+  const P=PL||FALLBACK, ready=OPEN&&!!PL, off=hasCont(sel.s)&&sel.prev&&P.continueOff?P.continueOff:0;
   const base=P.prices[sel.s][sel.p], price=off?Math.round(base*(100-off)/1000)*10:base;
   const single=P.prices.kokugo[sel.p];
   /* 1日あたりの値段（長い期間ほど安くなることが見えるように）と、全教科のお得な額 */
   const DAYS={d1:1,w1:7,m1:30,y1:365};
   const perDay=k=>DAYS[k]?Math.round(P.prices[sel.s][k]/DAYS[k]):null;
   const cheapest=Object.keys(P.periods).filter(k=>DAYS[k]).sort((a,b)=>perDay(a)-perDay(b))[0];
-  const singles=Object.keys(P.subjects).filter(k=>k!=='all'&&!isC(k)), csingles=Object.keys(P.subjects).filter(k=>k!=='chuko'&&isC(k));
+  const singles=Object.keys(P.subjects).filter(k=>k!=='all'&&isJ(k)), csingles=Object.keys(P.subjects).filter(k=>k!=='chuko'&&isC(k)), ksingles=Object.keys(P.subjects).filter(k=>k!=='career'&&isK(k));
+  const careerSave=k=>P.prices.career&&ksingles.length?ksingles.reduce((t,x)=>t+P.prices[x][k],0)-P.prices.career[k]:0;
   const allSave=k=>P.prices.all&&singles.length?singles.reduce((t,x)=>t+P.prices[x][k],0)-P.prices.all[k]:0;
   const chukoSave=k=>P.prices.chuko&&csingles.length?csingles.reduce((t,x)=>t+P.prices[x][k],0)-P.prices.chuko[k]:0;
   app.innerHTML=`
@@ -125,15 +131,19 @@ function render(){
     ${ready?'':'<div class="box"><p class="err" style="margin:0">有料版の販売は準備中です。料金表だけご覧いただけます。</p></div>'}
     <section class="box"><div class="label">1. 教科をえらぶ</div>
       <div class="sub-label" style="margin-top:6px">中学受験（小学生）</div>
-      <div class="opts five">${Object.entries(P.subjects).filter(([k])=>!isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='all'?'国語・算数・理科・社会・思考力のすべて'+(allSave(sel.p)>0?`<br><b style="color:var(--accent)">5教科を別々に買うより ${yen(allSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
+      <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isJ(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='all'?'国語・算数・理科・社会・思考力のすべて'+(allSave(sel.p)>0?`<br><b style="color:var(--accent)">5教科を別々に買うより ${yen(allSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.subjects.chuko?`<div class="sub-label">中高一貫校の中学生（中高一貫コース）</div>
       <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isC(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='chuko'?'国語・数学・英語・理科・社会・情報のすべて'+(chukoSave(sel.p)>0?`<br><b style="color:var(--accent)">${csingles.length}教科を別々に買うより ${yen(chukoSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
       ${P.continueOff?`<p class="note"><b style="color:var(--accent)">中学受験のプランを買ったことがある方は、中高一貫コースのどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
-      <p class="games">${sel.s==='all'?'中学受験のすべての有料版':sel.s==='chuko'?'中高一貫コースのすべての有料版':esc(P.subjects[sel.s])+'の有料版'}（${gamesOf(sel.s).length}本）：${gamesOf(sel.s).map(g=>esc(g.title)).join('、')||'—'}</p>
+      ${P.subjects.career?`<div class="sub-label">大学生・社会人（就活・資格コース）</div>
+      <div class="opts five">${Object.entries(P.subjects).filter(([k])=>isK(k)).map(([k,v])=>`<button class="opt" data-s="${k}" aria-pressed="${k===sel.s}"><span class="nm">${esc(v)}</span><span class="ds">${k==='career'?'SPI・ITパスポート・基本情報・統計学・簿記・TOEICのすべて'+(careerSave(sel.p)>0?`<br><b style="color:var(--accent)">${ksingles.length}教科を別々に買うより ${yen(careerSave(sel.p))}お得</b>`:''):'有料版 '+gamesOf(k).length+'本'}</span></button>`).join('')}</div>
+      ${P.continueOff?`<p class="note"><b style="color:var(--accent)">中高一貫コースのプランを買ったことがある方は、就活・資格コースのどのプランも ${P.continueOff}%引き</b>になります。</p>`:''}`:''}
+      <p class="games">${sel.s==='all'?'中学受験のすべての有料版':sel.s==='chuko'?'中高一貫コースのすべての有料版':sel.s==='career'?'就活・資格コースのすべての有料版':esc(P.subjects[sel.s])+'の有料版'}（${gamesOf(sel.s).length}本）：${gamesOf(sel.s).map(g=>esc(g.title)).join('、')||'—'}</p>
       ${sel.s==='all'?'<p class="note">全教科は、2教科分の値段で5教科（国語・算数・理科・社会・思考力）すべてが使えます。中高一貫コースは入りません。</p>':''}
       ${sel.s==='chuko'?'<p class="note">中高一貫 全教科は、2教科分の値段で中高一貫コースの6教科（国語・数学・英語・理科・社会・情報）すべてが使えます。中学受験の有料版は入りません。</p>':''}
-      ${isC(sel.s)&&P.continueOff?`<div class="cont"><b style="font-size:14px">継続割引（${P.continueOff}%引き）</b>
-        <span class="note" style="margin:0">前に中学受験のプランを買ったときの利用コードを入れてください。期間が終わったコードでも使えます（1つのコードにつき1回）。</span>
+      ${sel.s==='career'?'<p class="note">就活・資格 全教科は、2教科分の値段で就活・資格コースの7教科すべてが使えます。中学受験・中高一貫コースの有料版は入りません。</p>':''}
+      ${hasCont(sel.s)&&P.continueOff?`<div class="cont"><b style="font-size:14px">継続割引（${P.continueOff}%引き）</b>
+        <span class="note" style="margin:0">前に${isK(sel.s)?'中高一貫コース':'中学受験'}のプランを買ったときの利用コードを入れてください。期間が終わったコードでも使えます（1つのコードにつき1回）。</span>
         ${sel.prev?`<p class="ok">${esc(sel.prev)} で継続割引が使えます。 <button class="linkbtn" id="cl" style="background:none;border:0;padding:0;text-decoration:underline;cursor:pointer;font-size:14px">取り消す</button></p>`:
         `<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="pv" placeholder="MN-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" autocapitalize="characters" ${ready?'':'disabled'}><button class="btn sub" id="pvb" ${ready?'':'disabled'}>確かめる</button></div><p class="err" id="pverr" role="alert"></p>`}</div>`:''}
     </section>
@@ -168,14 +178,14 @@ function render(){
   if(pvb)pvb.onclick=async()=>{const v=document.getElementById('pv').value, er=document.getElementById('pverr');
     if(!v.trim()){er.textContent='利用コードを入れてください。';return;}
     pvb.disabled=true; er.textContent='';
-    try{const d=await A.call('/api/continue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:v})});sel.prev=d.code;render();}
+    try{const d=await A.call('/api/continue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:v,subject:sel.s})});sel.prev=d.code;render();}
     catch(e){pvb.disabled=false; er.textContent={not_found:'この利用コードは見つかりません。文字をもう一度確かめてください。',used:'この利用コードは、もう継続割引に使われています。',not_eligible:'この利用コードは継続割引の対象ではありません（中学受験のプランを購入したときのコードが対象です）。',bad_code:'利用コードは「MN-」から始まる12文字です。'}[e.error]||A.ERR[e.error]||'確かめられませんでした。';}};
   const cl=document.getElementById('cl'); if(cl)cl.onclick=()=>{sel.prev='';render();};
   app.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{sel.p=b.dataset.p;render();});
   const ag=document.getElementById('agree'); ag.onchange=()=>{agreed=ag.checked;document.getElementById('pay').disabled=!(ready&&agreed);};
   document.getElementById('pay').onclick=async()=>{
     const bt=document.getElementById('pay'); bt.disabled=true; bt.textContent='決済画面を開いています…';
-    try{ const d=await A.call('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:sel.s,period:sel.p,prev:isC(sel.s)?sel.prev:''})});
+    try{ const d=await A.call('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:sel.s,period:sel.p,prev:hasCont(sel.s)?sel.prev:''})});
       try{window.mnTrack&&mnTrack('begin_checkout',{plan:sel.s+'-'+sel.p,value:price,currency:'JPY'});}catch(e){}
       location.href=d.url;
     }catch(e){ bt.disabled=false; bt.textContent=yen(price)+'を支払う'; document.getElementById('err').textContent=(A.ERR[e.error]||'決済画面を開けませんでした。時間をおいてもう一度ためしてください。')+(e.message?'（くわしく：'+e.message+'）':''); }
@@ -205,7 +215,7 @@ async function thanks(id){
     <p style="margin:0;font-weight:700;color:var(--ng)">この利用コードは、ほかの端末で使うときや、ブラウザの記録を消したときに必要です。必ずメモするか、画面を保存してください。</p>
     ${act?`<p style="margin:0">この端末では、もう使えるようになっています。利用期間は <b>${A.fmt(act.exp)}</b> までです。</p>`:'<p style="margin:0">有料版のゲームを開いて、この利用コードを入れてください。</p>'}
     <p class="note">1つの利用コードで3台まで使えます。ほかの端末では、有料版を開いたときに利用コードを入れてください。</p>
-    <div><a class="btn" href="${isC(o.subject)?'chuko/index.html':'index.html'}" style="display:inline-block;text-decoration:none">ゲーム一覧へ</a></div></section>`;
+    <div><a class="btn" href="${isK(o.subject)?'career/index.html':isC(o.subject)?'chuko/index.html':'index.html'}" style="display:inline-block;text-decoration:none">ゲーム一覧へ</a></div></section>`;
   document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(o.code);document.getElementById('copy').textContent='コピーしました';}catch(e){}};
   history.replaceState(null,'',location.pathname+'?session_id='+encodeURIComponent(id));
 }

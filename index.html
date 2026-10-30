@@ -102,6 +102,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     <div class="howto" id="howto" hidden></div>
   </header>
   <a class="chuko" id="chukoentry" href="chuko/index.html" hidden><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="k">中学生になったら</span><span class="t">中高一貫コース</span><span class="s">入学準備から、中学の数学・英語・国語まで。算数で身につけた力を、そのまま中学の勉強へ。</span></span><span class="go">見る →</span></a>
+  <a class="chuko" id="careerentry" href="career/index.html" hidden><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="k">大学生・社会人になったら</span><span class="t">就活・資格コース</span><span class="s">SPI・ITパスポート・基本情報・統計学・簿記・TOEIC。就活と資格試験を、クイズでくり返し練習。</span></span><span class="go">見る →</span></a>
   <section id="minebox"><div class="mine2" id="mine2" style="margin:0 0 12px"></div><div class="mine" id="mine"></div></section>
   <section>
     <div class="label">教科</div>
@@ -120,7 +121,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   let data;
   try{ data=await (await fetch('games.json',{cache:'no-cache'})).json(); }
   catch(e){ document.getElementById('list').innerHTML='<p class="empty">ゲームの一覧を読みこめませんでした。ページを再読みこみしてください。</p>'; return; }
-  const games=data.games.filter(g=>g.course!=='chuko'), subjects=[...new Set(games.map(g=>g.subject))];
+  const games=data.games.filter(g=>g.course!=='chuko'&&g.course!=='career'), subjects=[...new Set(games.map(g=>g.subject))];
   const color=s=>`var(${COLORS[subjects.indexOf(s)%COLORS.length]})`;
   const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   /* 公開して14日以内のゲームに NEW（日本時間の今日で数える） */

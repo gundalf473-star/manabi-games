@@ -85,6 +85,12 @@ a.chip{text-decoration:none;color:var(--c,var(--ink));border-color:var(--c,var(-
 .starb{border:1px solid var(--rule);background:var(--surface);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;padding:2px 8px;margin-left:auto;color:var(--muted)}
 .starb[aria-pressed="true"]{color:#fff;background:var(--s3);border-color:var(--s3)}
 .mine .hint{font-size:13px;color:var(--muted);margin:0}
+.chuko{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--rule);border-left:5px solid #0e7c7b;border-radius:10px;padding:12px 16px;text-decoration:none;color:inherit}
+.chuko:hover{border-color:#0e7c7b}
+.chuko .k{font-size:12px;font-weight:700;color:#0e7c7b;letter-spacing:.05em}
+.chuko .t{font-family:var(--display);font-size:19px;line-height:1.35}
+.chuko .s{font-size:13px;color:var(--muted)}
+.chuko .go{margin-left:auto;font-weight:700;color:#0e7c7b;white-space:nowrap}
 .empty{background:var(--surface);border:1px dashed var(--rule);border-radius:8px;padding:18px;color:var(--muted)}
 .daily{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .cont{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);border-radius:8px;padding:10px 14px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px}
@@ -104,6 +110,7 @@ footer a{color:inherit}
     <nav class="topnav"><a href="../buy.html?s=chuko">料金プラン</a><a href="../plan.html">利用コードを入れる</a><a href="../parent.html#chuko">保護者ページ</a><a href="../index.html">中学受験のゲーム</a></nav>
   </header>
   <section class="mine" id="mine" aria-label="わたしの単元"></section>
+  <a class="chuko" id="careerentry" href="../career/index.html" hidden><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="k">卒業したら</span><span class="t">就活・資格コース</span><span class="s">SPI・ITパスポート・基本情報・統計学・簿記・TOEIC。就活と資格試験を、クイズでくり返し練習。</span></span><span class="go">見る →</span></a>
   <section class="points" aria-label="このコースの特長">
     <div class="point"><h2>算数から数学へ</h2><p>つるかめ算・旅人算・比など、受験で使った解き方を方程式や関数で解き直します。知っている問題だから、新しい考え方がすっと入ります。</p></div>
     <div class="point"><h2>学校の進み方に合わせて</h2><p>単元は学年ではなく内容で分けています。先取りの速い学校でも、自分の学校の進み具合に合わせて選べます。</p></div>
