@@ -130,7 +130,14 @@ const qhtml=s=>rb(s).replace(/(正しくないもの|あてはまらないもの
 const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
 const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
 const yomi=s=>String(s).replace(RB,(m,a,b,r)=>r).replace(/[｜]/g,'').replace(/[＋+]/g,' たす ').replace(/[－−]/g,' ひく ').replace(/×/g,' かける ').replace(/÷/g,' わる ').replace(/＝/g,' は ').replace(/□/g,' しかく ').replace(/（/g,'、').replace(/）/g,'、').replace(/→/g,'、それから、').replace(/(\d)\s*(dL|mL|kg|km|cm|mm|L|g|m)(?![A-Za-z])/g,(x,d,u)=>d+({dL:'デシリットル',mL:'ミリリットル',kg:'キログラム',km:'キロメートル',cm:'センチメートル',mm:'ミリメートル',L:'リットル',g:'グラム',m:'メートル'})[u]);
-const say=t=>{try{if(!('speechSynthesis' in window))return false;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.85;const v=speechSynthesis.getVoices().filter(v=>/^ja(-|_)/i.test(v.lang));if(v.length)u.voice=v[0];speechSynthesis.speak(u);return true;}catch(e){return false;}};
+const sayNote=(b,m)=>{try{if(!b)return;let n=b.parentNode.querySelector('.saynote');if(!n){n=document.createElement('span');n.className='note saynote';b.parentNode.appendChild(n);}n.textContent=m;}catch(e){}};
+try{if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}}catch(e){}
+const say=(t,b)=>{try{if(!('speechSynthesis' in window)){sayNote(b,'この ブラウザでは 読み上げが つかえません。');return false;}const S=speechSynthesis;
+  const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.9;const vs=S.getVoices(),ja=vs.filter(v=>/^ja(-|_)/i.test(v.lang));
+    if(ja.length)u.voice=ja.find(v=>v.localService)||ja[0];else if(vs.length)sayNote(b,'この 端末には 日本語の 声が ないようです。せっていで 日本語の 音声を 入れてください。');
+    u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')sayNote(b,'読み上げが できませんでした（'+e.error+'）。音量や せっていを 確かめてください。');};
+    window.__mnU=u;S.resume();S.speak(u);};
+  if(S.speaking||S.pending){S.cancel();setTimeout(go,150);}else go();return true;}catch(e){return false;}};
 const hush=()=>{try{speechSynthesis.cancel();}catch(e){}};
 const STK='mn-stamp-t';const stamps=()=>{try{return +localStorage.getItem(STK)||0;}catch(e){return 0;}};
 const addStamp=()=>{const n=stamps()+1;try{localStorage.setItem(STK,String(n));}catch(e){}return n;};
@@ -237,7 +244,7 @@ function render(){
     ${q.fig?figSVG(q.fig):''}
     <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${rb(c)}</span></button>`).join('')}</div>
     <div id="after"></div>`;
-  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{hush();pick(G.ch[+b.dataset.i]);});const sb=document.getElementById('say');if(sb){if(!('speechSynthesis' in window))sb.hidden=true;sb.onclick=()=>say(q.say||(yomi(q.q)+'。'+G.ch.map((c,i)=>'アイウエ'[i]+'、'+yomi(c)).join('。')));}
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{hush();pick(G.ch[+b.dataset.i]);});const sb=document.getElementById('say');if(sb){if(!('speechSynthesis' in window))sb.hidden=true;sb.onclick=()=>say(q.say||(yomi(q.q)+'。'+G.ch.map((c,i)=>'アイウエ'[i]+'、'+yomi(c)).join('。')),sb);}
   if(d)explain();
 }
 function pick(c){
@@ -256,7 +263,7 @@ function explain(){
       <span>こたえ：<b>${rb(q.a)}</b></span></div></div>
     <div class="ex">${rb(q.e)}</div><div class="row"><button class="btn say" id="sayx">🔊 せつめいを よみあげ</button></div>
     <div class="row"><button class="btn go" id="next">${last?'けっかを見る':'つぎの問題へ'}</button></div></div>`;
-  const sx=document.getElementById('sayx');if(sx){if(!('speechSynthesis' in window))sx.hidden=true;sx.onclick=()=>say(yomi(q.e));}const nx=document.getElementById('next'); nx.onclick=()=>{hush();next();}; nx.focus({preventScroll:true});
+  const sx=document.getElementById('sayx');if(sx){if(!('speechSynthesis' in window))sx.hidden=true;sx.onclick=()=>say(yomi(q.e),sx);}const nx=document.getElementById('next'); nx.onclick=()=>{hush();next();}; nx.focus({preventScroll:true});
 }
 function next(){ if(++G.i<G.n)newQ(); else result(); }
 function result(){
