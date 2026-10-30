@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>読み上げのテスト｜{{SITE_NAME}}</title>
+<style>
+:root{--bg:#f2f4f8;--fg:#1f2937;--card:#fff;--rule:#d6dbe3;--acc:#0f766e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e8eaee;--card:#1e232a;--rule:#333a44;--acc:#5eead4}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e8eaee;--card:#1e232a;--rule:#333a44;--acc:#5eead4}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif;margin:0;padding:16px;line-height:1.7}
+.w{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.c{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px}
+button{font:inherit;font-weight:700;padding:10px 16px;border-radius:8px;border:2px solid var(--rule);background:var(--card);color:var(--fg);cursor:pointer;margin:4px 4px 4px 0}
+button.go{background:var(--acc);color:#fff;border-color:var(--acc)}
+#log{font-family:ui-monospace,monospace;font-size:13px;white-space:pre-wrap;margin:0}
+li{margin:2px 0}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1 style="margin:0;font-size:22px">読み上げのテスト</h1>
+  <p style="margin:0">低学年コースの「🔊 よみあげ」が鳴らないときに、原因を調べるページです。上から順に押して、下の「けっか」の文を、そのまま知らせてください。</p>
+  <div class="c">
+    <button class="go" id="b1">1. ふつうに読む</button>
+    <button id="b2">2. 声を選ばずに読む</button>
+    <button id="b3">3. 英語で読む</button>
+    <p style="margin:6px 0 0;font-size:14px">または、下の一覧の声を1つずつ押してください。</p>
+    <ul id="voices" style="padding-left:18px;margin:6px 0 0"></ul>
+  </div>
+  <div class="c"><b>けっか</b><pre id="log"></pre></div>
+</div>
+<script>
+(function(){
+const L=document.getElementById('log'),V=document.getElementById('voices');
+const log=m=>{L.textContent+=m+'\n';};
+const ok='speechSynthesis' in window;
+log('ブラウザ: '+navigator.userAgent);
+log('speechSynthesis: '+(ok?'あり':'なし'));
+if(!ok)return;
+const S=speechSynthesis;
+function list(){const vs=S.getVoices();V.innerHTML='';
+  vs.filter(v=>/^(ja|en)/i.test(v.lang)).forEach(v=>{const li=document.createElement('li');const b=document.createElement('button');b.textContent=v.name+'（'+v.lang+(v.localService?'・この端末':'・ネット')+(v.default?'・標準':'')+'）';b.onclick=()=>speak('こんにちは。読み上げの テストです。',v,'ja-JP');li.appendChild(b);V.appendChild(li);});
+  return vs;}
+let vs=list();log('はじめの声の数: '+vs.length);
+S.onvoiceschanged=()=>{vs=list();log('声の数（読みこみ後）: '+vs.length+'（日本語 '+vs.filter(v=>/^ja/i.test(v.lang)).length+'）');};
+function speak(t,voice,lang){
+  try{
+    if(S.speaking||S.pending){S.cancel();}
+    setTimeout(()=>{
+      const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=0.9;u.volume=1;if(voice)u.voice=voice;
+      const t0=Date.now();
+      u.onstart=()=>log('  → 読みはじめ（'+(Date.now()-t0)+'ms）');
+      u.onend=()=>log('  → 読みおわり（'+(Date.now()-t0)+'ms）');
+      u.onerror=e=>log('  → エラー: '+e.error);
+      window.__u=u;S.resume();S.speak(u);
+      log('読む: '+(voice?voice.name:'声の指定なし')+' / '+lang+' / speaking='+S.speaking+' pending='+S.pending+' paused='+S.paused);
+      setTimeout(()=>log('  2秒後: speaking='+S.speaking+' pending='+S.pending+' paused='+S.paused),2000);
+    },150);
+  }catch(e){log('例外: '+e.message);}
+}
+document.getElementById('b1').onclick=()=>{const vs=S.getVoices(),ja=vs.filter(v=>/^ja(-|_)/i.test(v.lang));speak('こんにちは。読み上げの テストです。',ja.find(v=>v.localService)||ja[0]||null,'ja-JP');};
+document.getElementById('b2').onclick=()=>speak('こんにちは。読み上げの テストです。',null,'ja-JP');
+document.getElementById('b3').onclick=()=>{const en=S.getVoices().filter(v=>/^en/i.test(v.lang));speak('Hello. This is a test.',en[0]||null,'en-US');};
+})();
+</script>
+</body>
+</html>
