@@ -42,6 +42,7 @@
 | 算数11単元：円とおうぎ形・立体図形の体積と表面積・水の深さとグラフ・図形の移動・点の移動とグラフ・資料とグラフの読み取り・割合の文章題・特殊算②・方陣算・日暦算・N進法・比と比例・反比例・単位と量（各100問・無料版5問） | 必要（GAMES に enshu・rittai・mizu・idou・tenidou・shiryo・wariai2・tokushu2・hojin・hirei・tani を "sansu" で追加） | 11単元のパックを入れる | ― |
 | 中高一貫コースに教科「情報」を追加：情報社会と情報モラル・情報のデジタル化・コンピュータのしくみ・ネットワークとセキュリティ・プログラミング① 変数・条件・くり返し・プログラミング② 関数・探索・整列・データの活用・モデル化とシミュレーション（各100問・無料版5問）。料金プランに「中高一貫 情報」（cjoho）を追加、中高一貫 全教科の対象に情報を追加 | 必要（SUBJECTS・CHUKO_SUBJ・PRICES に cjoho、GAMES に c-joho1・c-joho2・c-joho3・c-joho4・c-joho5・c-joho6・c-joho7・c-joho8 を "cjoho" で追加） | 8単元のパックを入れる | 必要（教科の選択肢に「中高一貫 情報」） |
 | 新コース「就活・資格コース」（games/career/・career/index.html）：SPI非言語5・SPI言語3・ITパスポート4・基本情報技術者3・統計学3・簿記3級3・TOEIC英語3（各100問・無料版5問）。料金プラン kspin・kspig・kitp・kfe・kstat・kboki・ktoeic（1教科）と career（全教科）、中高一貫のコードで継続割引 | 必要（SUBJECTS・CAREER_SUBJ・PRICES・covers・継続割引、GAMES に24単元） | 24単元のパックを入れる | 必要（教科の選択肢に就活・資格コース） |
+| 新コース「低学年コース」（games/teigaku/・teigaku/index.html）：算数8・国語7・思考力6・ちしき3（各100問・無料版5問・1回5問・ふりがな・読み上げ・スタンプ）。料金プラン tsansu・tkokugo・tshikou・tchishiki（1教科）と teigaku（全教科）、低学年のコードで中学受験コースに継続割引 | 必要（SUBJECTS・TEIGAKU_SUBJ・PRICES・covers・PREV_COURSE、GAMES に24単元） | 24単元のパックを入れる | 必要（教科の選択肢に低学年コース） |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 

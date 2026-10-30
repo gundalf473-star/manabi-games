@@ -1,0 +1,282 @@
+<title>点つなぎ・もようクイズ</title>
+
+<meta name="game:course" content="teigaku"><meta name="game:subject" content="思考力">
+<meta name="game:unit" content="点つなぎ・もよう">
+<meta name="game:grade" content="小1〜小3">
+<meta name="game:players" content="1人">
+<meta name="description" content="点つなぎの見本と同じものさがし、おりかえしたもよう、まちがいさがし、ならびのつづき、点の場所。よく見て考えるパズルを、5つのレベルから1問ずつ。全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。レベルの札（5段階）→ 4択の問題 → 正解の印と解き方 → 結果と復習。朱色を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal)}
+.nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+ruby rt{font-size:.5em;font-weight:400}.pic{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:8px}.pic.sm{display:inline-block;padding:4px}.pic svg{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}.pic.sm svg{max-width:200px;margin:4px 0}.stampbox,.stampget{align-self:flex-start;font-weight:700;font-size:15px;background:var(--sealsoft);color:var(--seal);border-radius:99px;padding:4px 14px}.stampget{font-size:17px}.btn.say{padding:6px 14px;font-size:15px;background:var(--surface);border:2px solid var(--rule)}.q{margin:0;white-space:pre-line;font-size:21px;line-height:2;font-size:18px;font-weight:700;line-height:1.7}
+.q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:12px;padding:16px 16px;font-size:19px;line-height:1.9;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.op .k{flex:none;width:30px;height:30px;margin-top:2px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:13px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op:disabled{cursor:default;opacity:.5}
+.op.right{opacity:1;border-color:var(--ok);background:var(--oksoft);color:var(--ok)}
+.op.wrong{opacity:1;border-color:var(--ng);background:var(--ngsoft);color:var(--ng)}
+.res{display:flex;gap:14px;align-items:flex-start}
+.seal{flex:none;width:64px;height:64px;border-radius:8px;border:3px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:26px;transform:rotate(-6deg)}
+.seal.x{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.res .t{display:flex;flex-direction:column;gap:6px}
+.res .v{font-family:var(--display);font-size:20px}
+.res .v.ok{color:var(--ok)} .res .v.ng{color:var(--ng)}
+.ex{font-size:17px;line-height:2;border-left:4px solid var(--seal);padding:2px 0 2px 12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.matome{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.matome dt{font-weight:700;color:var(--seal)}
+.matome dd{margin:0}
+.tblw{overflow-x:auto}
+.dtbl{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+.tblcap{font-size:13px;color:var(--muted);margin:0 0 6px}
+.dtbl th,.dtbl td{border:1px solid var(--rule);padding:6px 4px;text-align:center}
+.dtbl th{background:var(--sealsoft)}
+.dtbl .rh{text-align:left;width:34%;font-size:13px}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:13px 24px;font-size:17px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.cats{grid-template-columns:1fr}}
+.cat{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.cat:hover:not(:disabled){border-color:var(--ink)}
+.cat:disabled{opacity:.4;cursor:default}
+.cat .nm{font-weight:700;font-size:18px}
+.cat .ds{font-size:12px;color:var(--muted);line-height:1.5}
+.cat .best{font-size:12px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right}
+.timeline dd{margin:0}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-family:var(--body)}
+.rank{width:92px;height:92px;border-radius:50%;border:5px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--mincho);font-size:22px;transform:rotate(-10deg)}
+.rv{border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--surface)}
+.rv b{color:var(--ok)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.master{display:flex;flex-direction:column;gap:6px}
+.master .tp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.master .cnt{font-family:var(--display);font-size:26px;font-variant-numeric:tabular-nums}
+.master .cnt small{font-size:14px;color:var(--muted);font-family:var(--body)}
+.mbar{height:10px;background:var(--rule);border-radius:5px;overflow:hidden;display:flex}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--ok)} .mbar .w2{background:var(--gold)}
+.mleg{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mleg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;background:var(--c)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力クイズ</small>点つなぎ・もようクイズ</h1>
+    <p class="lead">よく <ruby>見<rt>み</rt></ruby>て かんがえる もようの パズル。5つの レベルから 1<ruby>問<rt>もん</rt></ruby>ずつ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script type="application/json" id="data">{}</script>
+<script>
+(function(){
+/* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
+const PAID=false;
+let QS=[{"c":"L1","lv":1,"q":"あかい せんで おると、左《ひだり》と 右《みぎ》が ぴったり かさなる もようを つくります。ただしい ものは どれ？","a":"イ","d":["ア","ウ","エ"],"e":"イは、あかい せんで おると 左《ひだり》と 右《みぎ》が ぴったり かさなります。アは ずらして ならべた もの、ウは さかさまに した もの、エは ますが 1つ ずれて いる ものです。","img":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 316 376\">\u003cpath d=\"M114 12h88M114 34h88M114 56h88M114 78h88M114 100h88M114 12v88M136 12v88M158 12v88M180 12v88M202 12v88\" stroke=\"#d4d4d4\" stroke-width=\"2\" fill=\"none\"/>\u003cpath d=\"M114 34h22v22h-22zM114 78h22v22h-22z\" fill=\"#f59e0b\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M158 6v100\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-dasharray=\"7 4\"/>\u003crect x=\"4\" y=\"116\" width=\"150\" height=\"122\" rx=\"8\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ctext x=\"18\" y=\"138\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"700\" fill=\"#1d4ed8\" text-anchor=\"middle\">ア\u003c/text>\u003cpath d=\"M43 142h88M43 164h88M43 186h88M43 208h88M43 230h88M43 142v88M65 142v88M87 142v88M109 142v88M131 142v88\" stroke=\"#d4d4d4\" stroke-width=\"2\" fill=\"none\"/>\u003cpath d=\"M43 164h22v22h-22zM87 164h22v22h-22zM43 208h22v22h-22zM87 208h22v22h-22z\" fill=\"#f59e0b\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M87 136v100\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-dasharray=\"7 4\"/>\u003crect x=\"162\" y=\"116\" width=\"150\" height=\"122\" rx=\"8\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ctext x=\"176\" y=\"138\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"700\" fill=\"#1d4ed8\" text-anchor=\"middle\">イ\u003c/text>\u003cpath d=\"M201 142h88M201 164h88M201 186h88M201 208h88M201 230h88M201 142v88M223 142v88M245 142v88M267 142v88M289 142v88\" stroke=\"#d4d4d4\" stroke-width=\"2\" fill=\"none\"/>\u003cpath d=\"M201 164h22v22h-22zM267 164h22v22h-22zM201 208h22v22h-22zM267 208h22v22h-22z\" fill=\"#f59e0b\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M245 136v100\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-dasharray=\"7 4\"/>\u003crect x=\"4\" y=\"246\" width=\"150\" height=\"122\" rx=\"8\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ctext x=\"18\" y=\"268\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"700\" fill=\"#1d4ed8\" text-anchor=\"middle\">ウ\u003c/text>\u003cpath d=\"M43 272h88M43 294h88M43 316h88M43 338h88M43 360h88M43 272v88M65 272v88M87 272v88M109 272v88M131 272v88\" stroke=\"#d4d4d4\" stroke-width=\"2\" fill=\"none\"/>\u003cpath d=\"M109 272h22v22h-22zM43 294h22v22h-22zM109 316h22v22h-22zM43 338h22v22h-22z\" fill=\"#f59e0b\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M87 266v100\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-dasharray=\"7 4\"/>\u003crect x=\"162\" y=\"246\" width=\"150\" height=\"122\" rx=\"8\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ctext x=\"176\" y=\"268\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"700\" fill=\"#1d4ed8\" text-anchor=\"middle\">エ\u003c/text>\u003cpath d=\"M201 272h88M201 294h88M201 316h88M201 338h88M201 360h88M201 272v88M223 272v88M245 272v88M267 272v88M289 272v88\" stroke=\"#d4d4d4\" stroke-width=\"2\" fill=\"none\"/>\u003cpath d=\"M267 272h22v22h-22zM201 294h22v22h-22zM201 338h22v22h-22zM267 338h22v22h-22z\" fill=\"#f59e0b\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M245 266v100\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-dasharray=\"7 4\"/>\u003c/svg>","fix":1,"say":"あかい せんで おると、ひだりと みぎが ぴったり かさなる もようを つくります。ただしい ものは どれ？。ア、イ、ウ、エの 中から えらんでね。"},{"c":"L2","lv":2,"q":"左《ひだり》と 右《みぎ》の 絵《え》で、ちがう ところは いくつ ありますか。","a":"3つ","d":["4つ","2つ","5つ"],"e":"いろが ちがう ところが 2つ、かたちが ちがう ところが 1つで、あわせて 3つです。","img":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 278 128\">\u003crect x=\"4\" y=\"4\" width=\"120\" height=\"120\" rx=\"6\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ccircle cx=\"24\" cy=\"24\" r=\"13\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"53\" y=\"13\" width=\"22\" height=\"22\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"104\" cy=\"24\" r=\"13\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"13\" y=\"53\" width=\"22\" height=\"22\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"64,51 67,59 76,60 70,66 72,75 64,70 56,75 58,66 52,60 61,59\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"93\" y=\"53\" width=\"22\" height=\"22\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"24,91 27,99 36,100 30,106 32,115 24,110 16,115 18,106 12,100 21,99\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"64\" cy=\"104\" r=\"13\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M104 91L117 115H91z\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"154\" y=\"4\" width=\"120\" height=\"120\" rx=\"6\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003ccircle cx=\"174\" cy=\"24\" r=\"13\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"203\" y=\"13\" width=\"22\" height=\"22\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"254\" cy=\"24\" r=\"13\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"163\" y=\"53\" width=\"22\" height=\"22\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"214,51 217,59 226,60 220,66 222,75 214,70 206,75 208,66 202,60 211,59\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"243\" y=\"53\" width=\"22\" height=\"22\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"174,91 177,99 186,100 180,106 182,115 174,110 166,115 168,106 162,100 171,99\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"214\" cy=\"104\" r=\"13\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"254,91 257,99 266,100 260,106 262,115 254,110 246,115 248,106 242,100 251,99\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003c/svg>"},{"c":"L3","lv":3,"q":"★から 下《した》に 1つ、左《ひだり》に 1つ、上《うえ》に 2つ すすみます。つく 点《てん》は どれ？","a":"ウ","d":["ア","イ","エ"],"e":"★から じゅんに すすむと ウに つきます。アは 1つめで 上《うえ》に すすんだ ところ、イは 2つめで 右《みぎ》に すすんだ ところ、エは かずを 1つ おおく すすんだ ところです。","img":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 218 208\">\u003cpath d=\"M20 188h0M20 146h0M20 104h0M20 62h0M20 20h0M62 188h0M62 146h0M62 104h0M62 62h0M62 20h0M104 188h0M104 146h0M104 104h0M104 62h0M104 20h0M146 188h0M146 146h0M146 104h0M146 62h0M146 20h0M188 188h0M188 146h0M188 104h0M188 62h0M188 20h0\" stroke=\"#9ca3af\" stroke-width=\"9\" stroke-linecap=\"round\"/>\u003cpolygon points=\"146,135 149,142 156,143 151,148 152,155 146,151 140,155 141,148 136,143 143,142\" fill=\"#dc2626\" stroke=\"#7f1d1d\" stroke-width=\"2\"/>\u003ccircle cx=\"104\" cy=\"20\" r=\"14\" fill=\"#2563eb\"/>\u003ctext x=\"104\" y=\"26\" font-family=\"sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">ア\u003c/text>\u003ccircle cx=\"188\" cy=\"104\" r=\"14\" fill=\"#2563eb\"/>\u003ctext x=\"188\" y=\"110\" font-family=\"sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">イ\u003c/text>\u003ccircle cx=\"104\" cy=\"104\" r=\"14\" fill=\"#2563eb\"/>\u003ctext x=\"104\" y=\"110\" font-family=\"sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">ウ\u003c/text>\u003ccircle cx=\"104\" cy=\"146\" r=\"14\" fill=\"#2563eb\"/>\u003ctext x=\"104\" y=\"152\" font-family=\"sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#fff\" text-anchor=\"middle\">エ\u003c/text>\u003c/svg>","fix":1,"say":"ほしから したに 1つ、ひだりに 1つ、うえに 2つ すすみます。つく てんは どれ？ア、イ、ウ、エの 中から えらんでね。"},{"c":"L4","lv":4,"q":"もようが きまりに したがって ならんで います。つぎに くる ものは どれ？","a":"みどりの まる","d":["あおい さんかく","あかい さんかく","きいろい まる"],"e":"かたちは 「まる・さんかく」、いろは 「あお・あか・みどり」の くりかえし です。だから つぎに くる ものは みどりの まるです。","img":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 322 48\">\u003ccircle cx=\"25\" cy=\"24\" r=\"13\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M59 11L72 35H46z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"93\" cy=\"24\" r=\"13\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M127 11L140 35H114z\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"161\" cy=\"24\" r=\"13\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M195 11L208 35H182z\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"229\" cy=\"24\" r=\"13\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M263 11L276 35H250z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"283\" y=\"10\" width=\"28\" height=\"28\" rx=\"4\" fill=\"#fff\" stroke=\"#333\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/>\u003ctext x=\"297\" y=\"31\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"700\" fill=\"#222\" text-anchor=\"middle\">？\u003c/text>\u003c/svg>","say":"もようが きまりに したがって ならんで います。つぎに くる ものは どれ？。あおい まる、あかい さんかく、みどりの まる、あおい さんかく、あかい まる、みどりの さんかく、あおい まる、あかい さんかく、はてな。"},{"c":"L5","lv":5,"q":"左《ひだり》と 右《みぎ》の 絵《え》で、ちがう ところは いくつ ありますか。","a":"5つ","d":["6つ","4つ","7つ"],"e":"いろが ちがう ところが 4つ、かたちが ちがう ところが 1つで、あわせて 5つです。","img":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 358 168\">\u003crect x=\"4\" y=\"4\" width=\"160\" height=\"160\" rx=\"6\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003cpath d=\"M24 11L37 35H11z\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"53\" y=\"13\" width=\"22\" height=\"22\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M104 11L117 35H91z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"144,11 147,19 156,20 150,26 152,35 144,30 136,35 138,26 132,20 141,19\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"24\" cy=\"64\" r=\"13\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"53\" y=\"53\" width=\"22\" height=\"22\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"104,51 107,59 116,60 110,66 112,75 104,70 96,75 98,66 92,60 101,59\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M144 51L157 75H131z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"24,91 27,99 36,100 30,106 32,115 24,110 16,115 18,106 12,100 21,99\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"64,91 67,99 76,100 70,106 72,115 64,110 56,115 58,106 52,100 61,99\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"93\" y=\"93\" width=\"22\" height=\"22\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"144,91 147,99 156,100 150,106 152,115 144,110 136,115 138,106 132,100 141,99\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"13\" y=\"133\" width=\"22\" height=\"22\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M64 131L77 155H51z\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"104\" cy=\"144\" r=\"13\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"144\" cy=\"144\" r=\"13\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"194\" y=\"4\" width=\"160\" height=\"160\" rx=\"6\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\u003cpath d=\"M214 11L227 35H201z\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"243\" y=\"13\" width=\"22\" height=\"22\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M294 11L307 35H281z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"334,11 337,19 346,20 340,26 342,35 334,30 326,35 328,26 322,20 331,19\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"214\" cy=\"64\" r=\"13\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"243\" y=\"53\" width=\"22\" height=\"22\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"294,51 297,59 306,60 300,66 302,75 294,70 286,75 288,66 282,60 291,59\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M334 51L347 75H321z\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"214,91 217,99 226,100 220,106 222,115 214,110 206,115 208,106 202,100 211,99\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"254,91 257,99 266,100 260,106 262,115 254,110 246,115 248,106 242,100 251,99\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"283\" y=\"93\" width=\"22\" height=\"22\" fill=\"#facc15\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"334,91 337,99 346,100 340,106 342,115 334,110 326,115 328,106 322,100 331,99\" fill=\"#3b82f6\" stroke=\"#333\" stroke-width=\"2\"/>\u003crect x=\"203\" y=\"133\" width=\"22\" height=\"22\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpath d=\"M254 131L267 155H241z\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003ccircle cx=\"294\" cy=\"144\" r=\"13\" fill=\"#16a34a\" stroke=\"#333\" stroke-width=\"2\"/>\u003cpolygon points=\"334,131 337,139 346,140 340,146 342,155 334,150 326,155 328,146 322,140 331,139\" fill=\"#ef4444\" stroke=\"#333\" stroke-width=\"2\"/>\u003c/svg>"}];
+const CATS={L1:["レベル1 よく <ruby>見<rt>み</rt></ruby>る","3×3の <ruby>点<rt>てん</rt></ruby>・2つの くりかえし"],L2:["レベル2 くらべる","せんの かずが ふえる・3つの くりかえし"],L3:["レベル3 おりかえす","4×4の <ruby>点<rt>てん</rt></ruby>・すすみかたを たす"],L4:["レベル4 ななめの せん","ななめの せん・いろと かたちの くりかえし"],L5:["レベル5 チャレンジ","5×5の <ruby>点<rt>てん</rt></ruby>・まん<ruby>中<rt>なか</rt></ruby>が かくれた ならび"]};
+const LVN={1:'基本',2:'標準',3:'発展'};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>rb(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const yomi=s=>String(s).replace(RB,(m,a,b,r)=>r).replace(/[｜]/g,'').replace(/[＋+]/g,' たす ').replace(/[－−]/g,' ひく ').replace(/×/g,' かける ').replace(/÷/g,' わる ').replace(/＝/g,' は ').replace(/□/g,' しかく ').replace(/（/g,'、').replace(/）/g,'、').replace(/→/g,'、それから、').replace(/(\d)\s*(dL|mL|kg|km|cm|mm|L|g|m)(?![A-Za-z])/g,(x,d,u)=>d+({dL:'デシリットル',mL:'ミリリットル',kg:'キログラム',km:'キロメートル',cm:'センチメートル',mm:'ミリメートル',L:'リットル',g:'グラム',m:'メートル'})[u]);
+const say=t=>{try{if(!('speechSynthesis' in window))return false;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.85;const v=speechSynthesis.getVoices().filter(v=>/^ja(-|_)/i.test(v.lang));if(v.length)u.voice=v[0];speechSynthesis.speak(u);return true;}catch(e){return false;}};
+const hush=()=>{try{speechSynthesis.cancel();}catch(e){}};
+const STK='mn-stamp-t';const stamps=()=>{try{return +localStorage.getItem(STK)||0;}catch(e){return 0;}};
+const addStamp=()=>{const n=stamps()+1;try{localStorage.setItem(STK,String(n));}catch(e){}return n;};
+const STAMPBOX=()=>`<div class="stampbox" aria-label="あつめたスタンプ">🌸 あつめたスタンプ <b>${stamps()}</b> こ</div>`;
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let G=null, shopUrl='', course=null;
+let best=store.get(PAID?'t-moyou-p-best':'t-moyou-best',{}), rec=store.get('t-moyou-p-rec',{});
+const saveRec=()=>store.set('t-moyou-p-rec',rec);
+const qkey=q=>q.id||q.q;
+const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
+const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
+const PAIDLINK=`<a class="paid" href="t-moyou-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>点つなぎ・もよう 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。点つなぎ・線対称・まちがいさがし・ならび・点の場所を、5段階で20問ずつ。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt><ruby>点<rt>てん</rt></ruby>つなぎ</dt><dd>1<ruby>本<rt>ぽん</rt></ruby>ずつ、どの <ruby>点<rt>てん</rt></ruby>から どの <ruby>点<rt>てん</rt></ruby>まで かを たしかめよう。はしの <ruby>点<rt>てん</rt></ruby>から かぞえると まちがえにくいよ。</dd><dt>おりかえし</dt><dd>まん<ruby>中<rt>なか</rt></ruby>の せんの すぐ となりは、すぐ となりに うつる。とおい ところは とおい ところに うつるよ。</dd><dt>まちがいさがし</dt><dd><ruby>左上<rt>ひだりうえ</rt></ruby>から じゅんに、1つずつ くらべよう。いろと かたちの 2つを <ruby>見<rt>み</rt></ruby>るよ。</dd><dt>ならび</dt><dd>おなじ ものが また <ruby>出<rt>で</rt></ruby>てくる ところを さがそう。そこまでが 1つの まとまりだよ。</dd><dt><ruby>点<rt>てん</rt></ruby>の ばしょ</dt><dd>「<ruby>右<rt>みぎ</rt></ruby>に 3つ」は <ruby>点<rt>てん</rt></ruby>を 3つ すすむ こと。ゆびで なぞって たしかめよう。</dd><dt>おうちの方へ</dt><dd>図形を正確に写す力・対称の感覚・規則を見つける力は、算数の図形と規則性の問題の土台です。</dd></dl>`;
+
+async function decrypt(){ return mnAccess.load('t-moyou'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'t-moyou',err:err,free:'t-moyou.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+function home(){
+  G=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`${STAMPBOX()}<div class="label">あそびかた</div>
+    <p style="margin:0">4つの中から 正しいものを えらぼう。こたえると せつめいが 出るよ。🔊を おすと 読みあげます。</p>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">点つなぎ・もようのまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
+  document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
+}
+function homePaid(){
+  const cnt={master:0,weak:0,new:0,try:0}; QS.forEach(q=>cnt[state(q)]++);
+  const weak=QS.filter(q=>state(q)==='weak'), fresh=QS.filter(q=>state(q)==='new');
+  app.innerHTML=`${STAMPBOX()}<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
+      <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
+      <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
+    <div class="label">レベルをえらぶ（1回5問）</div>
+    <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
+        return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/5`:''}</span></button>`;}).join('')}
+      <button class="cat" data-l="all"><span class="nm">点つなぎ・もようまるごと</span><span class="ds">5つのレベルからランダムに5問</span><span class="best">${best.all!=null?`ベスト ${best.all}/5`:''}</span></button>
+      ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
+      <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
+      <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">点つなぎ・もようのまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+  app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; course=l;
+    const pool=l==='review'?QS.filter(q=>mnReview.isDue(RVID,qkey(q))):l==='weak'?weak:l==='fresh'?fresh:l==='all'?QS:QS.filter(q=>q.c===l);
+    start(shuffle(pool).slice(0,5));
+  });
+  document.getElementById('reset').onclick=()=>{
+    document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();homePaid();};
+    document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+  };
+}
+function start(list){
+  G={list,i:0,score:0,miss:[],n:list.length};
+  track('level_start',{level_name:(PAID?'t-moyou-p-':'t-moyou-')+course});
+  newQ();
+}
+function figSVG(f){
+  if(f.tbl){ const t=f.tbl; return `<div class="tblw">${t.cap?`<p class="tblcap">${esc(t.cap)}</p>`:''}<table class="dtbl"><tr>${t.head.map((h,i)=>`<th${i?'':' class="rh"'}>${esc(h)}</th>`).join('')}</tr>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th class="rh">${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`; }
+  /* てこ・棒・ばねの図。線は濃い色、おもりは四角、ばねばかりの引く力は矢印 */
+  const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`;
+  const T=(x,y,t,cls,anc)=>`<text x="${x}" y="${y}" class="${cls||'lb'}" text-anchor="${anc||'middle'}">${esc(t)}</text>`;
+  const W=(x,y,lb)=>`<rect x="${x-14}" y="${y}" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(x,y+36,lb);
+  const UP=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2+9} L${x},${y2} L${x+6},${y2+9}"/>`+T(x,y2-6,lb);
+  const DN=(x,y1,y2,lb)=>L(x,y1,x,y2)+`<path d="M${x-6},${y2-9} L${x},${y2} L${x+6},${y2-9}"/>`+T(x,y2+16,lb);
+  const spr=(x,y1,y2)=>{const n=8,h=(y2-y1-12)/n;let d=`M${x},${y1} L${x},${y1+6}`;for(let i=0;i<n;i++)d+=` L${x+(i%2?-9:9)},${y1+6+h*(i+.5)}`;d+=` L${x},${y2-6} L${x},${y2}`;return `<path d="${d}"/>`;};
+  const sprH=(x1,x2,y)=>{const n=8,w=(x2-x1-12)/n;let d=`M${x1},${y} L${x1+6},${y}`;for(let i=0;i<n;i++)d+=` L${x1+6+w*(i+.5)},${y+(i%2?-9:9)}`;d+=` L${x2-6},${y} L${x2},${y}`;return `<path d="${d}"/>`;};
+  const ceil=(a,b)=>L(a,14,b,14)+Array.from({length:Math.floor((b-a)/12)},(_,i)=>L(a+6+i*12,14,a+i*12,6)).join('');
+  let g='',vb='0 0 320 170';
+  if(f.lev){ const o=f.lev,c=160,u=22,y=48; vb='0 0 320 140';
+    g+=`<rect x="${c-6*u-10}" y="${y-3}" width="${12*u+20}" height="6" rx="2" fill="#c9ced8"/>`;
+    for(let i=1;i<=6;i++){ g+=L(c-i*u,y-3,c-i*u,y+3)+L(c+i*u,y-3,c+i*u,y+3)+T(c-i*u,y-9,String(i),'tk')+T(c+i*u,y-9,String(i),'tk'); }
+    g+=`<path d="M${c},${y+3} L${c-10},${y+28} L${c+10},${y+28} Z" fill="#c9ced8"/>`+L(c-15,y+28,c+15,y+28);
+    const hang=(x,lb,k)=>{ if(lb[0]==='↓') return DN(x,y+3,y+60,lb.slice(1)); return L(x,y+3,x,y+42+k*0)+W(x,y+42,lb); };
+    o.L.forEach(([p,lb])=>g+=hang(c-p*u,lb,0)); o.R.forEach(([p,lb])=>g+=hang(c+p*u,lb,0));
+  }
+  if(f.bar){ const o=f.bar,x0=30,x1=290,y=74,X=p=>x0+p/o.len*(x1-x0); vb='0 0 320 175';
+    g+=`<rect x="${x0}" y="${y-4}" width="${x1-x0}" height="8" rx="2" fill="#c9ced8"/>`+T(160,y-34,'棒の長さ '+o.len+'cm','tk');
+    g+=L(x0,y-24,x0,y-16)+L(x1,y-24,x1,y-16)+L(x0,y-20,x1,y-20);
+    if(o.f!=null){ const fx=X(o.f); g+=`<path d="M${fx},${y+4} L${fx-12},${y+28} L${fx+12},${y+28} Z" fill="#c9ced8"/>`+T(fx,y+42,'支点','tk'); if(o.f>0&&o.f<o.len) g+=T((x0+fx)/2,y+18,o.f+'cm','tk'); }
+    if(o.m) g+=`<circle cx="160" cy="${y}" r="3.5" fill="#232a36" stroke="none"/>`+T(160,y+60,'棒の重さ '+o.m+'（一様）','tk');
+    (o.w||[]).forEach(([p,lb])=>{const x=X(p); g+=L(x,y+4,x,y+20)+W(x,y+20,lb); if(p>0&&p<o.len) g+=T((x0+x)/2,y+18,p+'cm','tk');});
+    (o.up||[]).forEach(([p,lb])=>{const x=X(p); g+=UP(x,y-4,y-46+12,lb).replace('','');});
+  }
+  if(f.spr){ const o=f.spr,w=o.w; vb='0 0 320 200';
+    if(o.t==='one') g+=ceil(130,190)+spr(160,14,110)+W(160,110,w[0]);
+    if(o.t==='ser') g+=ceil(130,190)+spr(160,14,72)+`<circle cx="160" cy="76" r="4" fill="#232a36" stroke="none"/>`+spr(160,80,140)+W(160,140,w[0])+T(184,48,'A','tk','start')+T(184,114,'A','tk','start');
+    if(o.t==='ser2') g+=ceil(130,190)+spr(160,14,66)+`<rect x="146" y="66" width="28" height="20" rx="2" fill="#dfe3ea"/>`+T(186,81,w[0],'lb','start')+spr(160,86,142)+W(160,142,w[1]);
+    if(o.t==='par') g+=ceil(80,240)+spr(110,14,104)+spr(210,14,104)+`<rect x="90" y="104" width="140" height="6" rx="2" fill="#c9ced8"/>`+L(160,110,160,124)+W(160,124,w[0]);
+    if(o.t==='paroff') g+=ceil(80,240)+spr(100,14,104)+spr(220,14,104)+`<rect x="96" y="104" width="128" height="6" rx="2" fill="#c9ced8"/>`+L(140,110,140,124)+W(140,124,w[0])+T(120,100,'10cm','tk')+T(180,100,'20cm','tk');
+    if(o.t==='wall') g+=sprH(100,220,40)+L(70,40,100,40)+L(220,40,250,40)+`<circle cx="70" cy="52" r="12"/><circle cx="250" cy="52" r="12"/>`+L(58,52,58,110)+L(262,52,262,110)+W(58,110,w[0])+W(262,110,w[1])+L(70,64,250,64);
+  }
+  return `<div class="fig"><svg viewBox="${vb}" role="img" aria-label="問題の図"><g stroke="#232a36" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg></div>`;
+}
+function newQ(){ const q=G.list[G.i]; G.ch=q.fix?[q.a,...q.d].sort():shuffle([q.a,...q.d]); G.done=false; G.pick=null; render(); }
+function render(){
+  const q=G.list[G.i], d=G.done;
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}</span></div>
+    <p class="q">${qhtml(q.q)}</p>${q.img?`<div class="pic">${q.img}</div>`:''}<div class="row"><button class="btn say" id="say">🔊 よみあげ</button></div>
+    ${q.fig?figSVG(q.fig):''}
+    <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${rb(c)}</span></button>`).join('')}</div>
+    <div id="after"></div>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{hush();pick(G.ch[+b.dataset.i]);});const sb=document.getElementById('say');if(sb){if(!('speechSynthesis' in window))sb.hidden=true;sb.onclick=()=>say(q.say||(yomi(q.q)+'。'+G.ch.map((c,i)=>'アイウエ'[i]+'、'+yomi(c)).join('。')));}
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const q=G.list[G.i];
+  G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
+  if(G.ok)G.score++; else G.miss.push(q);
+  track('answer_question',{category:'t-moyou-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i], last=G.i===G.n-1;
+  document.getElementById('after').innerHTML=`<div class="box" style="padding:14px;gap:12px;border-color:${G.ok?'var(--ok)':'var(--ng)'}">
+    <div class="res"><div class="seal ${G.ok?'':'x'}" aria-hidden="true">${G.ok?'◯':'△'}</div>
+      <div class="t"><span class="v ${G.ok?'ok':'ng'}">${G.ok?'せいかい！':'おしい！'}${G.newM?'<span style="font-size:13px;margin-left:8px;color:var(--ok);font-family:var(--body);font-weight:700">覚えた！</span>':''}</span>
+      <span>こたえ：<b>${rb(q.a)}</b></span></div></div>
+    <div class="ex">${rb(q.e)}</div><div class="row"><button class="btn say" id="sayx">🔊 せつめいを よみあげ</button></div>
+    <div class="row"><button class="btn go" id="next">${last?'けっかを見る':'つぎの問題へ'}</button></div></div>`;
+  const sx=document.getElementById('sayx');if(sx){if(!('speechSynthesis' in window))sx.hidden=true;sx.onclick=()=>say(yomi(q.e));}const nx=document.getElementById('next'); nx.onclick=()=>{hush();next();}; nx.focus({preventScroll:true});
+}
+function next(){ if(++G.i<G.n)newQ(); else result(); }
+function result(){
+  const n=G.n,s=G.score,r=s/n;
+  const rank=r===1?'まんてん':r>=.8?'すごい':r>=.6?'よし！':r>=.4?'あと少し':'もう一回';const got=r>=.6?addStamp():0;
+  track('level_end',{level_name:(PAID?'t-moyou-p-':'t-moyou-')+course,success:s===n,score:s,total:n});
+  const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'t-moyou-p-best':'t-moyou-best',best);}
+  app.innerHTML=`<div class="label">けっか</div>${got?`<div class="stampget">🌸 スタンプ ゲット！ これまで <b>${got}</b> こ</div>`:''}
+    <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
+    <p style="margin:0">${r===1?'ぜんぶ せいかい！ すばらしい！':r>=.6?'よくできました。まちがえた問題の せつめいを 読んでみよう。':'せつめいを 読んで、もう一回 ちょうせんしよう。'}</p>
+    <div class="row"><button class="btn go" id="again">${PAID?'レベルをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    ${PAID?'':PAIDLINK}
+    ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${q.img?`<div class="pic sm">${q.img}</div>`:''}${rb(q.q)}<br>→ <b>${rb(q.a)}</b></div>`).join('')}`:''}`;
+  document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
+  const rt=document.getElementById('retry'); if(rt)rt.onclick=()=>{course='retry';start(shuffle(G.miss));};
+}
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

@@ -80,7 +80,7 @@ function parseForm(u) {
 }
 const FB = parseForm((site.feedbackForm || "").trim());
 // 「わたしの単元」に入れる★ボタン（この端末の localStorage にだけ保存。中高一貫は mn-fav、中学受験は mn-fav-j）。一覧の上に出る
-const STAR = (course) => `<button type="button" id="mn-star" style="position:fixed;left:calc(122px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer">☆ わたしの単元</button><script>(function(){var K='${course === "chuko" ? "mn-fav" : course === "career" ? "mn-fav-k" : "mn-fav-j"}',MAX=8,b=document.getElementById('mn-star');
+const STAR = (course) => `<button type="button" id="mn-star" style="position:fixed;left:calc(122px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;border:0;opacity:.88;cursor:pointer">☆ わたしの単元</button><script>(function(){var K='${course === "chuko" ? "mn-fav" : course === "career" ? "mn-fav-k" : course === "teigaku" ? "mn-fav-t" : "mn-fav-j"}',MAX=8,b=document.getElementById('mn-star');
 function file(){try{return decodeURIComponent(location.pathname.split('/').pop()||'');}catch(e){return '';}}function base(f){return String(f).replace(/(-full|300)(\\.html)$/,'$2');}function idx(a){var k=base(file());for(var i=0;i<a.length;i++)if(base(a[i])===k)return i;return -1;}
 function ld(){try{var a=JSON.parse(localStorage.getItem(K)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function sv(a){try{localStorage.setItem(K,JSON.stringify(a));return true;}catch(e){return false;}}
@@ -139,14 +139,14 @@ for (const file of walk(GAMES)) {
   const title = (html.match(/<title>([^<]*)<\/title>/i) || [, rel.at(-1)])[1].trim();
   // フォルダ名でも分類できるように（games/算数/図形/xxx.html）
   // コース：games/chuko/ の下（または game:course が chuko）は中高一貫コース。それ以外は中学受験
-  const course = pickMeta(html, "game:course") || (rel[0] === "chuko" ? "chuko" : rel[0] === "career" ? "career" : "juken");   // games/career/ は就活・資格コース
-  const sub = (course === "chuko" && rel[0] === "chuko") || (course === "career" && rel[0] === "career") ? rel.slice(1) : rel;
+  const course = pickMeta(html, "game:course") || (rel[0] === "chuko" ? "chuko" : rel[0] === "career" ? "career" : rel[0] === "teigaku" ? "teigaku" : "juken");   // games/career/ は就活・資格コース
+  const sub = (course === "chuko" && rel[0] === "chuko") || (course === "career" && rel[0] === "career") || (course === "teigaku" && rel[0] === "teigaku") ? rel.slice(1) : rel;
   const subject = pickMeta(html, "game:subject") || (sub.length >= 2 ? sub[0] : "その他");
   const unit = pickMeta(html, "game:unit") || (sub.length >= 3 ? sub[1] : "いろいろ");
   const stat = fs.statSync(file);
 
   // ページの骨組み（文字コードなど）がなければ足して、一覧へ戻るリンクをつける
-  const back = `<a href="../${"../".repeat(rel.length - 1)}${course === "chuko" ? "chuko/" : course === "career" ? "career/" : ""}index.html" style="position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;text-decoration:none;opacity:.88">← ゲーム一覧</a>`;
+  const back = `<a href="../${"../".repeat(rel.length - 1)}${course === "chuko" ? "chuko/" : course === "career" ? "career/" : course === "teigaku" ? "teigaku/" : ""}index.html" style="position:fixed;left:calc(10px + env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:99;background:#1d2b45;color:#fff;font:700 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:99px;text-decoration:none;opacity:.88">← ゲーム一覧</a>`;
   if (!/<!doctype/i.test(html)) {
     const hm = html.match(/^(?:\s*(?:<title>[^<]*<\/title>|<meta[^>]*>|<link[^>]*>))+/i);
     const headBits = hm ? hm[0] : ""; html = html.slice(headBits.length);
@@ -155,19 +155,19 @@ for (const file of walk(GAMES)) {
     html = html.replace(/<\/body>/i, `${back}${STAR(course)}${FEEDBACK}</body>`).replace(/<\/head>/i, `${GAME_GA}</head>`);
   }
   // 中高一貫コースのしるし（利用コードの確かめで使う）。フォルダで決まったときも、ページに書きこむ
-  if ((course === "chuko" || course === "career") && !pickMeta(html, "game:course")) html = html.replace(/<\/head>/i, (m) => `<meta name="game:course" content="${course}">` + m);
+  if ((course === "chuko" || course === "career" || course === "teigaku") && !pickMeta(html, "game:course")) html = html.replace(/<\/head>/i, (m) => `<meta name="game:course" content="${course}">` + m);
   // 緊急のお知らせの帯と、このゲームへの注意
   html = html.replace(/<\/body>/i, (m) => NOTICE(rel.length) + m);
   html = afterBody(html, gameNotes(gameId(file), rel.length));
   // 検索用のタイトル（「ゲーム名｜中学受験 教科｜サイト名」）と、検索・共有のタグ。有料版は検索に出さない
   {
     const paid = pickMeta(html, "game:paid") !== "";
-    const seoTitle = `${title}｜${course === "chuko" ? "中学" : course === "career" ? "就活・資格" : "中学受験"} ${subject}｜${site.name}`;
+    const seoTitle = `${title}｜${course === "chuko" ? "中学" : course === "career" ? "就活・資格" : course === "teigaku" ? "低学年" : "中学受験"} ${subject}｜${site.name}`;
     const url = pageUrl("games/" + rel.join("/"));
     const desc = pickMeta(html, "description");
     html = html.replace(/<title>[^<]*<\/title>/i, `<title>${esc(seoTitle)}</title>`);
     const ld = { "@context": "https://schema.org", "@type": "LearningResource", name: title, description: desc, url, inLanguage: "ja",
-      learningResourceType: /パズル|ゲーム/.test(title) ? "パズル" : "クイズ", educationalLevel: course === "chuko" ? "中学生（中高一貫校）" : course === "career" ? "大学生・社会人" : "小学生（中学受験）", about: subject,
+      learningResourceType: /パズル|ゲーム/.test(title) ? "パズル" : "クイズ", educationalLevel: course === "chuko" ? "中学生（中高一貫校）" : course === "career" ? "大学生・社会人" : course === "teigaku" ? "小学1〜3年生（中学受験準備）" : "小学生（中学受験）", about: subject,
       isAccessibleForFree: !paid, isPartOf: { "@type": "WebSite", name: site.name, url: SITE_URL + "/" } };
     html = addHead(html, `<script>window.mnTitle=${JSON.stringify(title).replace(/</g, "\\u003c")};</script>` + seoTags({ url, title: seoTitle, desc, noindex: paid, jsonld: paid ? null : ld, type: "article" }));
     if (!paid) SITEMAP.push(url);
@@ -238,10 +238,11 @@ function staticList(games, pre = "") {
     return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${gs.length}本</span></div><div class="grid">` + gs.map((g) => `<a class="card" href="${pre}${g.url}"><span class="tags"><span class="tag">${esc(g.unit)}</span>${g.paid ? '<span class="tag paid">有料版</span>' : ""}</span><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p><div class="meta">${g.grade ? `<span>${esc(g.grade)}</span>` : ""}${g.players ? `<span>${esc(g.players)}</span>` : ""}<span class="play" style="margin-left:auto">${pre ? "はじめる" : "あそぶ"} →</span></div></a>`).join("") + `</div></section>`;
   }).join('<div style="height:16px"></div>');
 }
-const JUKEN = list.filter((g) => g.course !== "chuko" && g.course !== "career"), CHUKO = list.filter((g) => g.course === "chuko"), CAREER = list.filter((g) => g.course === "career");
+const JUKEN = list.filter((g) => g.course !== "chuko" && g.course !== "career" && g.course !== "teigaku"), TEIGAKU = list.filter((g) => g.course === "teigaku"), CHUKO = list.filter((g) => g.course === "chuko"), CAREER = list.filter((g) => g.course === "career");
 index = index.replace('<main id="list"><p class="empty">ゲームを読みこんでいます…</p></main>', () => `<main id="list">${staticList(JUKEN)}</main>`);
 if (CHUKO.length) index = index.replace('id="chukoentry" href="chuko/index.html" hidden', 'id="chukoentry" href="chuko/index.html"');
 if (CAREER.length) index = index.replace('id="careerentry" href="career/index.html" hidden', 'id="careerentry" href="career/index.html"');
+if (TEIGAKU.length) index = index.replace('id="teigakuentry" href="teigaku/index.html" hidden', 'id="teigakuentry" href="teigaku/index.html"');
 const verify = (site.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">` : "") + (site.bingSiteVerification ? `<meta name="msvalidate.01" content="${esc(site.bingSiteVerification)}">` : "");
 fs.writeFileSync(path.join(OUT, "index.html"), sitePage(index.replace("{{GA}}", GA), "index.html", { extraHead: verify,
   jsonld: { "@context": "https://schema.org", "@type": "WebSite", name: site.name, url: SITE_URL + "/", description: site.description, inLanguage: "ja" } }));
@@ -254,6 +255,15 @@ if (fs.existsSync(path.join(ROOT, "chuko"))) {
       .replace('<main id="list"></main>', () => `<main id="list">${staticList(CHUKO, "../")}</main>`)
       .replace("/*WORDS*/[]", () => words.replace(/</g, "\\u003c"));
     fs.writeFileSync(path.join(OUT, "chuko", name), sitePage(ch.replace('id="careerentry" href="../career/index.html" hidden', () => CAREER.length ? 'id="careerentry" href="../career/index.html"' : 'id="careerentry" href="../career/index.html" hidden'), "chuko/" + name));
+  }
+}
+// 低学年コースのページ（teigaku/ の中の .html）
+if (fs.existsSync(path.join(ROOT, "teigaku"))) {
+  fs.mkdirSync(path.join(OUT, "teigaku"), { recursive: true });
+  for (const name of fs.readdirSync(path.join(ROOT, "teigaku")).filter((f) => f.endsWith(".html"))) {
+    const ch = fs.readFileSync(path.join(ROOT, "teigaku", name), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", name === "index.html" ? GA : GA + HISTORY)
+      .replace('<main id="list"></main>', () => `<main id="list">${staticList(TEIGAKU, "../")}</main>`);
+    fs.writeFileSync(path.join(OUT, "teigaku", name), sitePage(ch, "teigaku/" + name));
   }
 }
 // 就活・資格コースのページ（career/ の中の .html）
@@ -292,7 +302,7 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
   const GEO_OK = new Set(["poly", "circ", "sect", "arc", "path", "seg", "dot", "lab", "ra", "ang", "par", "eq", "dim", "ell"]);
   const pool = [];
   for (const g of list) {
-    if (g.paid || g.course === "chuko" || g.course === "career") continue;   // 今日の1問は中学受験のゲームから
+    if (g.paid || g.course === "chuko" || g.course === "career" || g.course === "teigaku") continue;   // 今日の1問は中学受験のゲームから
     const src = fs.readFileSync(path.join(GAMES, ...decodeURIComponent(g.url).split("/").slice(1)), "utf8");
     const m = src.match(/let QS=(\[.*?\]);\n/s); if (!m) continue;
     let qs; try { qs = JSON.parse(m[1]); } catch (e) { continue; }
