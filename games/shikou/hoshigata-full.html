@@ -1,0 +1,326 @@
+<title>星の形づくり 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="星の形づくりの有料版。点をタップしてつなぐ・どの形になるか・もどるまでの線の本数・いくつの形に分かれるか・星の種類まで、5つのレベルに20問ずつ、全100問。最大公約数のひみつが見えてきます。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.ob svg{display:block}
+.views figure svg{display:block}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>星の形づくり 100問</h1>
+    <p class="lead">円の上の点を「○こ先」ずつ線でつなぐと、どんな形ができる？　星になったり、いくつかの形に分かれたり。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='hoshigata';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>星の形づくり 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 星の形づくり：p={kind, n:点の数, k:何こ先, s:はじめの点, ans, ds}
+   draw=点をタップしてつなぐ / pick=絵をえらぶ / lines=もどるまでの線の数 / shapes=形の数 / name=どんな形が何こ / stars=星の種類 / whichk / needk */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'となり・2こ先を、タップでつなぐ',2:'3こ先・4こ先・5こ先をつなぐ',3:'どんな形？ 線は何本？',4:'形はいくつに分かれる？',5:'星は何種類？ 何こ先？'};
+const RULES=`<ol class="rules">
+  <li>円の上に、点が同じ間かくでならんでいます。</li>
+  <li>点を<b>時計回りに「○こ先」</b>ずつ、線でつないでいきます。はじめの点にもどったら、形が1つ完成！</li>
+  <li>まだ使っていない点があれば、その点からまた同じようにつなぎます。<b>全部の点を使ったら</b>完成です。</li>
+  <li>レベル1・2は<b>点をタップ</b>してつなごう。レベル3からは、できる形を予想して4つの中からえらぼう。</li></ol>`;
+const HS_COL=['#7c3aed','#e0342f','#2563eb','#16a34a','#f59e0b','#db2777','#0d9488','#8b5a2b'];
+const hsGcd=(x,y)=>{while(y){[x,y]=[y,x%y];}return x;};
+const HS_D='〇一二三四五六七八九';
+const hsKan=m=>m<10?HS_D[m]:(m<20?'':HS_D[Math.floor(m/10)])+'十'+(m%10?HS_D[m%10]:'');
+function hsName(n,k){const g=hsGcd(n,k),m=n/g,j=Math.min(k/g,m-k/g);
+  const nm=m===2?'直線':j===1?({3:'正三角形',4:'正方形'}[m]||'正'+hsKan(m)+'角形'):`とがりが${m}この星`;return {nm,g,m};}
+const kword=k=>k===1?'となり（1こ先）':k===2?'2こ先（1つとばし）':`${k}こ先`;
+function hsInit(p,h){S={hints:h||0,done:false,msg:'',msgc:'',hint:false,wrong:[],
+  lines:[],shape:[],shapes:[],used:new Set(),dir:0,cur:null};
+  if(p.kind==='draw'){S.cur=p.s;S.shape=[p.s];S.used.add(p.s);}
+  else S.opts=shuffle([p.ans,...p.ds]);}
+function startStage(p){P=p;hsInit(p,0);begin(p);draw();}
+const hsXY=(n,i,r)=>{const t=2*Math.PI*i/n;return [r*Math.sin(t),-r*Math.cos(t)];};
+/* 全部の点を使い切るまでの線 */
+function hsEdges(n,k){const used=new Set(),E=[];for(let s=0;s<n;s++){if(used.has(s))continue;let c=s,si=E.length;do{used.add(c);const d=(c+k)%n;E.push([c,d,si]);c=d;}while(c!==s);}return E;}
+function hsPic(n,k,px,opt){
+  opt=opt||{};const r=96;let s=`<circle r="${r}" fill="none" stroke="#e5ddcc" stroke-width="1.5"/>`;
+  hsEdges(n,k).forEach(([a,b])=>{const A=hsXY(n,a,r),B=hsXY(n,b,r);s+=`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round"/>`;});
+  for(let i=0;i<n;i++){const A=hsXY(n,i,r);s+=`<circle cx="${A[0].toFixed(1)}" cy="${A[1].toFixed(1)}" r="${n>16?3:4.5}" fill="#2a2520"/>`;}
+  return `<svg viewBox="-108 -108 216 216" style="width:100%;max-width:${px}px" role="img" aria-label="${n}この点を${k}こ先ずつつないだ形">${s}</svg>`;
+}
+/* 点だけの図（予想の問題）。1番の点と、1→(1+k) の矢印 */
+function hsDots(n,k,showArrow){
+  const r=118;let s=`<circle r="${r}" fill="none" stroke="#e5ddcc" stroke-width="1.5"/>`;
+  if(showArrow&&k){const A=hsXY(n,0,r),B=hsXY(n,k,r);s+=`<defs><marker id="hsAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#e0342f"/></marker></defs><line x1="${A[0]}" y1="${A[1]}" x2="${(B[0]*0.94+A[0]*0.06).toFixed(1)}" y2="${(B[1]*0.94+A[1]*0.06).toFixed(1)}" stroke="#e0342f" stroke-width="3" marker-end="url(#hsAr)"/>`;}
+  for(let i=0;i<n;i++){const A=hsXY(n,i,r),T=hsXY(n,i,r+19);
+    s+=`<circle cx="${A[0].toFixed(1)}" cy="${A[1].toFixed(1)}" r="${n>20?3.5:5}" fill="${i===0?'#e0342f':'#2a2520'}"/>`;
+    if(n<=16||i===0||(i+1)%5===0)s+=`<text x="${T[0].toFixed(1)}" y="${(T[1]+5).toFixed(1)}" text-anchor="middle" font-size="${n>16?11:14}" fill="#6a625a" font-family="sans-serif">${i+1}</text>`;}
+  return `<svg viewBox="-150 -150 300 300" style="width:100%;max-width:300px" role="img" aria-label="円の上の${n}この点">${s}</svg>`;
+}
+/* タップでつなぐ盤 */
+function hsBoard(){
+  const n=P.n,r=122;let s=`<circle r="${r}" fill="none" stroke="#e5ddcc" stroke-width="1.5"/>`;
+  S.lines.forEach(([a,b,c])=>{const A=hsXY(n,a,r),B=hsXY(n,b,r);s+=`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="${HS_COL[c%8]}" stroke-width="4" stroke-linecap="round"/>`;});
+  const nx=S.done?[]:hsNext();
+  for(let i=0;i<n;i++){const A=hsXY(n,i,r),T=hsXY(n,i,r+24),u=S.used.has(i),cur=i===S.cur;
+    s+=`<g class="hs-pt" data-i="${i}" style="cursor:pointer"><circle cx="${A[0].toFixed(1)}" cy="${A[1].toFixed(1)}" r="24" fill="transparent"/>`;
+    if(S.hint&&(S.cur===null?nx.includes(i):i===(S.cur+(S.dir||1)*P.k+n*P.k)%n))s+=`<circle cx="${A[0].toFixed(1)}" cy="${A[1].toFixed(1)}" r="17" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="5 4"/>`;
+    s+=`<circle cx="${A[0].toFixed(1)}" cy="${A[1].toFixed(1)}" r="${cur?13:10}" fill="${cur?'#e0342f':u?'#3b2f6b':'#fff'}" stroke="${cur?'#fff':'#3b2f6b'}" stroke-width="${cur?3:2.5}"/>`;
+    s+=`<text x="${T[0].toFixed(1)}" y="${(T[1]+6).toFixed(1)}" text-anchor="middle" font-size="17" font-weight="700" fill="#6a625a" font-family="sans-serif">${i+1}</text></g>`;}
+  return `<svg id="hsB" viewBox="-158 -158 316 316" style="width:100%;max-width:360px" role="img" aria-label="円の上の${n}この点">${s}</svg>`;
+}
+/* 次にタップしてよい点 */
+function hsNext(){
+  const n=P.n,k=P.k;
+  if(S.cur===null)return [...Array(n).keys()].filter(i=>!S.used.has(i));
+  const opt=S.dir?[(S.cur+S.dir*k+n)%n]:[(S.cur+k)%n,(S.cur-k+n)%n];
+  return [...new Set(opt)];
+}
+function tap(i){
+  if(S.done)return;const n=P.n,k=P.k;
+  if(S.cur===null){ /* 新しい形のはじめの点 */
+    if(S.used.has(i)){S.msg='その点はもう使いました。まだ使っていない（白い）点をタップしよう。';S.msgc='ng';S.hints++;return draw();}
+    S.cur=i;S.shape=[i];S.used.add(i);S.dir=0;S.msg='';S.msgc='';return draw();}
+  const ok=hsNext();
+  if(!ok.includes(i)){S.hints++;S.msg=`${kword(k)}の点をさがそう。いまの赤い点から、時計回りに1つずつ数えてみよう。`;S.msgc='ng';return draw();}
+  if(!S.dir)S.dir=(S.cur+k)%n===i?1:-1;
+  S.lines.push([S.cur,i,S.shapes.length]);S.msg='';S.msgc='';S.hint=false;
+  if(i===S.shape[0]){S.shapes.push(S.shape);S.cur=null;S.dir=0;
+    if(S.used.size===n){S.done=true;}
+    else{S.msg=`形が1つできた！　まだ使っていない白い点が${n-S.used.size}こあります。どれか1つをタップして、また${kword(k)}ずつつなごう。`;S.msgc='ok';}
+  }else{S.cur=i;S.shape.push(i);S.used.add(i);}
+  draw();
+}
+function qtext(){
+  const {n,k}=P;
+  if(P.kind==='draw')return `${S.lines.length||S.shapes.length?'':`<b>${P.s+1}番</b>の赤い点からスタート。`}時計回りに<b>${kword(k)}</b>の点へ、つぎつぎに線を引こう。`;
+  if(P.kind==='pick')return `${n}この点を、<b>${kword(k)}</b>ずつ全部の点を使うまでつなぐと、どの形になる？`;
+  if(P.kind==='lines')return `${n}この点を、1番から<b>${k}こ先</b>ずつつなぎます。1番にもどってくるまでに、線を<b>何本</b>引く？`;
+  if(P.kind==='shapes')return `${n}この点を<b>${k}こ先</b>ずつ、全部の点を使うまでつなぎます。別々の形が<b>いくつ</b>できる？`;
+  if(P.kind==='name')return `${n}この点を<b>${k}こ先</b>ずつ、全部の点を使うまでつなぎます。<b>どんな形が何こ</b>できる？`;
+  if(P.kind==='stars')return `${n}この点で、何こ先ずつつなぐかを変えると、<b>1つの形で全部の点を通る星</b>（とがった形。多角形はのぞく）は<b>何種類</b>できる？　（「2こ先」と「${n-2}こ先」のように、反対回りにつないで同じ形になるものは1種類と数えます）`;
+  if(P.kind==='whichk')return `${n}この点を「○こ先」ずつつなぎます。<b>1つの星の形で全部の点を通る</b>のは、何こ先のとき？`;
+  return `${n}この点を「○こ先」ずつ、全部の点を使うまでつなぎます。<b>${P.target}</b>できるのは、次のうちどれ？`;
+}
+function hintText(){
+  const {n,k}=P;
+  if(P.kind==='draw')return '光っている点が、次につなぐ点です。';
+  if(P.kind==='pick')return `1番の点から${k}こ先ずつ、指でたどってみよう。1番にもどるまでに、どの点を通るかな？`;
+  if(P.kind==='lines')return `1番から${k}こ先ずつ進むと、${n}こで1周します。何周かして、はじめて1番にもどるのは、進んだ点の数が${n}と${k}の両方でわりきれる、いちばん小さい数（最小公倍数）になったときです。`;
+  if(P.kind==='shapes'||P.kind==='name'||P.kind==='needk')return `${n}と${k}を、両方わりきれるいちばん大きい数でわってみよう（最大公約数）。その数が、別々の形の数です。わった答えが、1つの形の点の数です。`;
+  if(P.kind==='stars')return `1こ先から順に、${Math.floor((n-1)/2)}こ先までためしてみよう（それより先は、反対回りにつないだだけの同じ形）。${n}と○の両方をわりきれる数が1だけのとき、1つの形で全部の点を通ります。1こ先は多角形なのでのぞきます。`;
+  return `${n}と「○こ先」の両方をわりきれる数が1だけのとき、1つの形で全部の点を通ります。`;
+}
+function explain(){
+  const {n,k}=P;
+  if(P.kind==='stars')return `2こ先から、${n}の半分より小さい「○こ先」までで、${n}と○を両方わりきれる数が1だけのものを数えると<b>${P.ans}種類</b>です。`;
+  if(P.kind==='whichk')return `${n}と${P.ans}を両方わりきれる数は1だけなので、1つの形で全部の点を通る星になります。ほかは、別々の形に分かれます。`;
+  const {nm,g,m}=hsName(n,k);
+  if(g===1)return `${n}と${k}を両方わりきれる数は1だけ。だから、<b>1つの形</b>で全部の点を通ります。線は<b>${n}本</b>、できた形は<b>${nm}</b>です。`;
+  return `${n}と${k}は、どちらも<b>${g}</b>でわりきれます。だから、形は<b>${g}こ</b>に分かれます。1つの形は ${n}÷${g}＝<b>${m}本</b>の線の<b>${nm}</b>です。`;
+}
+function hsAll(){const n=P.n,ks=[];for(let k=2;2*k<n;k++)if(hsGcd(n,k)===1)ks.push(k);
+  return `<div class="views">${ks.map(k=>`<figure style="width:130px">${hsPic(n,k,130)}<figcaption>${k}こ先</figcaption></figure>`).join('')}</div>`;}
+function optHTML(o){
+  if(P.kind==='pick')return hsPic(P.n,o,140);
+  if(P.kind==='name')return `<b style="font-size:16px">${o}</b>`;
+  const u={lines:'本',shapes:'こ',stars:'種類',whichk:'こ先',needk:'こ先'}[P.kind];
+  return `<b style="font-size:20px">${o}${u}</b>`;
+}
+function draw(){
+  if(P.kind==='draw')return drawTap();
+  const showFig=P.kind!=='stars'&&P.kind!=='pick';
+  app.innerHTML=`${topBar()}
+    ${S.done?(P.kind==='stars'?hsAll():`<div class="boardw">${hsPic(P.n,P.kind==='whichk'||P.kind==='needk'?P.ans:P.k,280)}</div>`):(showFig?`<div class="boardw">${hsDots(P.n,P.kind==='whichk'||P.kind==='needk'?0:P.k,true)}</div>`:(P.kind==='stars'?`<div class="boardw">${hsDots(P.n,0,false)}</div>`:''))}
+    ${S.done?'':`<p class="qq">${qtext()}</p>`}
+    <div class="opts4 ${P.kind==='pick'?'':'txt'}">${S.opts.map((o,i)=>`<button class="ob ${S.done&&o===P.ans?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${optHTML(o)}</button>`).join('')}</div>
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">${explain()}</p>`);return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.opts[i]===P.ans){S.done=true;draw();}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。もう一度考えてみよう。';S.msgc='ng';draw();}});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+function drawTap(){
+  const n=P.n,k=P.k;
+  app.innerHTML=`${topBar()}
+    ${S.done?'':`<p class="qq">${qtext()}</p>`}
+    <div class="boardw">${hsBoard()}</div>
+    <p class="note" style="text-align:center"><span style="white-space:nowrap">引いた線：<b>${S.lines.length}本</b></span>　<span style="white-space:nowrap">できた形：<b>${S.shapes.length}こ</b></span>　<span style="white-space:nowrap">使った点：<b>${S.used.size}/${n}</b></span></p>
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||(S.lines.length?'':'赤い点からスタート。'+kword(k)+'の点をタップしよう。')}</p>
+    <div class="row"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">${explain()}</p>`);return;}
+  app.querySelectorAll('.hs-pt').forEach(g=>g.addEventListener('click',()=>tap(+g.dataset.i)));
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='光っている点をタップしよう。';S.msgc='';draw();};
+  document.getElementById('reset').onclick=()=>{hsInit(P,S.hints);draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

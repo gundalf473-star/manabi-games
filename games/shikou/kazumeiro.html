@@ -1,0 +1,301 @@
+<title>数の迷路</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="数のパズル">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="数の書かれたマスを、スタートからゴールまでなぞって進み、通ったマスの数の合計を目標の数にする迷路パズル。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.tkgoal{display:flex;align-items:baseline;justify-content:center;gap:10px;background:var(--sealsoft);border-radius:10px;padding:6px 12px;font-weight:700}
+.tkgoal b{font-family:var(--display);font-weight:400;font-size:40px;line-height:1.1;color:var(--seal);font-variant-numeric:tabular-nums}
+.kzst{margin:0;text-align:center;font-size:17px;font-variant-numeric:tabular-nums}
+.kzst b{font-size:22px}
+.kzst .kzp b{color:#1d4ed8}.kzst .kzm b{color:#b91c1c}.kzst small{font-size:13px;color:var(--muted)}
+.kzmsg{min-height:3.4em}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>数の迷路</h1>
+    <p class="lead">スタートからゴールまで、通ったマスの数で目標の数をつくろう。5つのレベルから1問ずつ。ヒントなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"lv":1,"mode":"sum","g":[[4,4,1],[1,4,4],[1,2,4]],"s":[0,0],"e":[2,2],"target":17,"sol":[[0,0],[1,0],[1,1],[1,2],[2,2]],"n":2,"id":"1-01"},{"lv":2,"mode":"sum","g":[[6,5,2,2],[1,1,5,5],[5,5,3,6],[2,4,6,1]],"s":[0,0],"e":[3,3],"target":25,"sol":[[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[3,3]],"n":2,"id":"2-01"},{"lv":3,"mode":"sum","g":[[9,6,2,5,4],[9,8,8,3,8],[5,5,6,6,2],[4,9,9,1,4],[4,9,6,4,5]],"s":[0,0],"e":[4,4],"target":49,"sol":[[0,0],[0,1],[0,2],[0,3],[1,3],[1,4],[2,4],[3,4],[3,3],[4,3],[4,4]],"n":1,"id":"3-01"},{"lv":4,"mode":"alt","g":[[2,3,6,6],[1,7,9,3],[2,1,9,9],[7,2,4,1]],"s":[0,0],"e":[3,3],"target":7,"sol":[[0,0],[0,1],[1,1],[1,0],[2,0],[3,0],[3,1],[2,1],[2,2],[3,2],[3,3]],"n":2,"id":"4-01"},{"lv":5,"mode":"mul","g":[[5,2,1,3],[2,3,2,5],[2,1,2,2],[3,3,2,3]],"s":[0,0],"e":[3,3],"target":600,"sol":[[0,0],[0,1],[0,2],[1,2],[1,3],[2,3],[3,3]],"n":1,"id":"5-01"}];
+const ID='kazumeiro';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>数の迷路 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 数の迷路：p={mode:'sum'|'alt'|'mul', g:[[数]], s:[r,c], e:[r,c], target, sol:[[r,c]…], n:答えの道の本数} */
+const HINTWORD='ヒント';
+const LVD={1:'3×3 ・ たし算',2:'4×4 ・ たし算',3:'5×5 ・ たし算',4:'＋マスと－マス',5:'かけ算の迷路'};
+const RULES=`<ol class="rules">
+  <li><b>スタート</b>から<b>ゴール</b>まで、となり（上下左右）のマスを指でなぞって進もう。タップでも進めます。</li>
+  <li>同じマスは<b>2回通れません</b>。</li>
+  <li>通ったマスの数（スタートとゴールもふくむ）を<b>たした答え</b>が、目標の数になればクリア（レベル1〜3）。</li>
+  <li>レベル4：青い<b>＋マスの数はたし</b>、赤い<b>－マスの数はひきます</b>（スタートは＋マス）。＋マスと－マスは1マスおきにならんでいるので、たす・ひくが<b>こうごうに</b>来ます。答えは「＋マスの合計 － －マスの合計」です。</li>
+  <li>レベル5：通ったマスの数を<b>かけ算</b>します。</li></ol>`;
+const KU=60, KM=4;
+const MODEW={sum:'合計',alt:'計算の答え',mul:'かけ算の答え'};
+function startStage(p){P=p;S={path:[p.s.slice()],hints:0,done:false,msg:'',msgc:''};begin(p);draw();}
+const kH=()=>P.g.length, kW=()=>P.g[0].length;
+const isS=(r,c)=>r===P.s[0]&&c===P.s[1], isE=(r,c)=>r===P.e[0]&&c===P.e[1];
+const plus=(r,c)=>P.mode!=='alt'||(r+c)%2===(P.s[0]+P.s[1])%2;
+function val(pa){
+  if(P.mode==='mul')return pa.reduce((a,[r,c])=>a*P.g[r][c],1);
+  return pa.reduce((a,[r,c])=>a+(plus(r,c)?1:-1)*P.g[r][c],0);
+}
+/* ＋マスの合計と－マスの合計（とちゅうでマイナスの数が出ないように、別々に合計する） */
+function sumsK(pa){let a=0,b=0;pa.forEach(([r,c])=>{if(plus(r,c))a+=P.g[r][c];else b+=P.g[r][c];});return [a,b];}
+function exprOf(pa){
+  if(P.mode==='mul')return pa.map(([r,c])=>P.g[r][c]).join(' × ');
+  if(P.mode==='alt'){const [a,b]=sumsK(pa),pl=pa.filter(([r,c])=>plus(r,c)).map(([r,c])=>P.g[r][c]),mi=pa.filter(([r,c])=>!plus(r,c)).map(([r,c])=>P.g[r][c]);
+    return `＋マス：${pl.join('＋')} ＝ ${a}<br>－マス：${mi.join('＋')} ＝ ${b}<br>${a} － ${b}`;}
+  return pa.map(([r,c],i)=>(i===0?'':plus(r,c)?' ＋ ':' － ')+P.g[r][c]).join('');
+}
+const atEnd=()=>{const l=S.path[S.path.length-1];return isE(l[0],l[1]);};
+function boardInner(){
+  const h=kH(),w=kW();let s='',lab='';const inP={};S.path.forEach(([r,c],i)=>{inP[r+','+c]=i;});
+  for(let r=0;r<h;r++)for(let c=0;c<w;c++){const x=KM+c*KU,y=KM+r*KU,on=inP[r+','+c]!=null,pl=plus(r,c);
+    const base=P.mode==='alt'?(pl?'#e6f0ff':'#ffe9e6'):'#f6efdd';
+    s+=`<rect x="${x+2}" y="${y+2}" width="${KU-4}" height="${KU-4}" rx="8" fill="${on?(S.done?'#c9ecd6':'#e3d7fd'):base}" stroke="${isS(r,c)||isE(r,c)?'#3b2f6b':'#d9cfb8'}" stroke-width="${isS(r,c)||isE(r,c)?3:1.5}"/>`;
+    if(isS(r,c)||isE(r,c))lab+=`<text x="${x+KU/2}" y="${y+14}" text-anchor="middle" font-size="11" font-weight="700" fill="#3b2f6b" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="sans-serif">${isS(r,c)?'スタート':'ゴール'}</text>`;
+    const sg=P.mode==='alt'&&!isS(r,c)?(pl?'＋':'－'):P.mode==='mul'&&!isS(r,c)?'×':'';
+    s+=`<text x="${x+KU/2}" y="${y+KU*0.7+(isS(r,c)||isE(r,c)?3:0)}" text-anchor="middle" font-size="${sg?24:27}" font-weight="700" fill="${P.mode==='alt'?(pl?'#1d4ed8':'#b91c1c'):'#2a2520'}" font-family="sans-serif">${sg?`<tspan font-size="18">${sg}</tspan>`:''}${P.g[r][c]}</text>`;}
+  if(S.path.length>1){const pts=S.path.map(([r,c])=>`${KM+c*KU+KU/2},${KM+r*KU+KU/2}`).join(' ');
+    s+=`<polyline points="${pts}" fill="none" stroke="${S.done?'#1d7a4c':'#7c3aed'}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>`;}
+  const l=S.path[S.path.length-1];s+=`<circle cx="${KM+l[1]*KU+KU/2}" cy="${KM+l[0]*KU+KU/2}" r="${KU/2-7}" fill="none" stroke="${S.done?'#1d7a4c':'#7c3aed'}" stroke-width="3" opacity=".9"/>`;
+  return s+lab;
+}
+function statText(){
+  if(P.mode==='alt'){const [a,b]=sumsK(S.path);return `<span class="kzp">＋の合計 <b>${a}</b></span>　<span class="kzm">－の合計 <b>${b}</b></span><br>答え　<b>${a>=b?a-b:'？'}</b>　／　目標　<b>${P.target}</b>`;}
+  const v=val(S.path);return `${MODEW[P.mode]}　<b>${v}</b>　／　目標　<b>${P.target}</b>`;}
+function draw(){
+  const VW=kW()*KU+2*KM, VH=kH()*KU+2*KM;
+  app.innerHTML=`${topBar()}
+    <div class="tkgoal"><span>目標の数</span><b>${P.target}</b></div>
+    <div class="boardw"><svg id="bd" viewBox="0 0 ${VW} ${VH}" style="max-width:${Math.min(VW*1.15,440)}px" role="img" aria-label="数の迷路">${boardInner()}</svg></div>
+    <p class="kzst" id="stat">${statText()}</p>
+    ${S.done?'':`<p class="msg kzmsg ${S.msgc}" id="msg">${S.msg||KDEF}</p>
+    <div class="row"><button class="btn" id="undo">↶ 1マスもどす</button><button class="btn" id="reset">やりなおす</button><button class="btn" id="hint">ヒント</button></div>
+    <p class="note">ヒントを使うと、答えの道のはじめのほうをかきます（星がへります）。答えの道が2本以上ある問題もあります。</p>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">${exprOf(S.path)} ＝ <b>${P.target}</b></p>`);return;}
+  document.getElementById('undo').onclick=()=>{if(S.path.length>1)S.path.pop();S.msg='';S.msgc='';draw();};
+  document.getElementById('reset').onclick=()=>{S.path=[P.s.slice()];S.msg='';S.msgc='';draw();};
+  document.getElementById('hint').onclick=hint;
+  bindK();
+}
+function cellOfK(e,svg){
+  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  const c=Math.floor((q.x-KM)/KU), r=Math.floor((q.y-KM)/KU);
+  if(r<0||c<0||r>=kH()||c>=kW())return null;return [r,c];
+}
+/* 1マス進む（すぐ前のマスなら1マスもどる）。動けたら true */
+function stepK(r,c){
+  const pa=S.path,l=pa[pa.length-1];
+  if(Math.abs(l[0]-r)+Math.abs(l[1]-c)!==1)return false;
+  if(pa.length>=2&&pa[pa.length-2][0]===r&&pa[pa.length-2][1]===c){pa.pop();return true;}
+  if(atEnd())return false;
+  if(pa.some(x=>x[0]===r&&x[1]===c)){sayK('同じマスは2回通れません。');return false;}
+  pa.push([r,c]);return true;
+}
+const KDEF='スタートから、となりのマスへなぞって進もう。';
+/* なぞっている間に文の長さで高さが変わると、ページがずれて指の下のマスが変わるので、文は空にしない（高さも css で確保） */
+function sayK(m,c){S.msg=m;S.msgc=c||'';const el=document.getElementById('msg');if(el){el.textContent=m||KDEF;el.className='msg kzmsg '+S.msgc;}}
+function refreshK(){const bd=document.getElementById('bd');if(bd)bd.innerHTML=boardInner();const st=document.getElementById('stat');if(st)st.innerHTML=statText();}
+function bindK(){
+  const svg=document.getElementById('bd');let drag=false;
+  svg.addEventListener('pointerdown',e=>{
+    const cl=cellOfK(e,svg);if(!cl)return;const [r,c]=cl;
+    const i=S.path.findIndex(x=>x[0]===r&&x[1]===c);
+    if(i>=0){S.path=S.path.slice(0,i+1);}
+    else if(!stepK(r,c)){if(!S.msg)sayK('いまいるマスのとなりから進もう。');return;}
+    drag=true;try{svg.setPointerCapture(e.pointerId);}catch(_){}
+    sayK('');refreshK();
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!drag)return;const cl=cellOfK(e,svg);if(!cl)return;let ch=false;
+    for(let g=0;g<30;g++){const l=S.path[S.path.length-1],dr=cl[0]-l[0],dc=cl[1]-l[1];if(!dr&&!dc)break;
+      const nx=Math.abs(dr)>=Math.abs(dc)?[l[0]+Math.sign(dr),l[1]]:[l[0],l[1]+Math.sign(dc)];
+      if(!stepK(nx[0],nx[1]))break;ch=true;}
+    if(ch)refreshK();
+  });
+  const up=()=>{if(!drag)return;drag=false;check();};
+  svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
+}
+function check(){
+  if(atEnd()){const v=val(S.path);
+    if(v===P.target){S.done=true;draw();return;}
+    S.msg=P.mode==='alt'&&v<0?`ゴールに着いたけれど、－の合計のほうが大きくて、ひき算ができません。目標は ${P.target}。もどって、ちがう道をさがそう。`
+      :`ゴールに着いたけれど、${MODEW[P.mode]}は ${v}。目標は ${P.target}。もどって、ちがう道をさがそう。`;S.msgc='ng';draw();return;}
+  draw();
+}
+function hint(){
+  S.hints++;const k=Math.min(P.sol.length-1,Math.max(2,Math.ceil((P.sol.length-1)*S.hints/3)));
+  S.path=P.sol.slice(0,k).map(x=>x.slice());
+  S.msg=`ヒント：答えの道のはじめの${k}マスをかきました（ヒント ${S.hints}回）。つづきを考えよう。`;S.msgc='';draw();
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
