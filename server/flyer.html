@@ -10,7 +10,7 @@
 /* 販促チラシ（A4たて）。画面では操作パネル＋プレビュー、印刷ではチラシだけ（1コード＝1枚） */
 :root{
   --ink:#1f3a6e; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --accent:#d4432a; --paper:#ffffff; --tint:#f2f5f9; --cream:#fff8ec;
-  --s1:#2667d6; --s2:#d4432a; --s3:#1d8150; --s4:#8a5bc7; --s5:#c98a12;
+  --s1:#2667d6; --s2:#d4432a; --s3:#1d8150; --s4:#8a5bc7; --s5:#c98a12; --s6:#0f7c8c; --s7:#6b5a3a;
   --display:"Kiwi Maru","Hiragino Maru Gothic ProN","BIZ UDPGothic",serif;
   --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
   --mono:"BIZ UDGothic","Consolas","Menlo",monospace;
@@ -33,6 +33,7 @@ body{margin:0;background:#e6eaf0;color:var(--fg);font-family:var(--body)}
 .panel .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .panel button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:10px 20px;cursor:pointer;background:var(--fg);color:#fff}
 .panel button.sub{background:#e9eef5;color:var(--fg)}
+.panel #courses button{background:#e9eef5;color:var(--fg)} .panel #courses button.on{background:var(--ink);color:#fff}
 .panel .msg{font-weight:700;font-size:14px}
 .panel .msg.ng{color:var(--accent)} .panel .msg.ok{color:#1d8150}
 .panel details summary{cursor:pointer;font-weight:700;font-size:14px}
@@ -107,6 +108,12 @@ body{margin:0;background:#e6eaf0;color:var(--fg);font-family:var(--body)}
     <p>Excel（.xlsx）またはCSVを選びます。1行に1つの利用コードを書いてください。見出しの行に「利用コード」「教科」「期間」「宛名」「使い始め期限」があれば、チラシに印字します（「利用コード」以外はなくてもかまいません）。</p>
     <div class="row"><input type="file" id="file" accept=".xlsx,.csv,.txt"><button class="sub" id="clear">読み込みを消す</button></div>
     <p class="msg" id="msg" role="status"></p>
+  </section>
+
+  <section class="box">
+    <div class="label">0. コースを選ぶ</div>
+    <div class="row" id="courses"></div>
+    <p class="note">コースごとに、見出し・教科・特長・問題の例・二次元コードの行き先が変わります。下の文字はコースごとに覚えます。</p>
   </section>
 
   <section class="box">
@@ -1391,15 +1398,58 @@ return {QRCode:M["index"],L:M["QRErrorCorrectLevel"]};})();
 (function(){
 const SITE='https://manabigamebako.com';
 const SITE_LABEL='manabigamebako.com';
-const DEF={
-  catch:'中学受験の勉強を、<em>ゲームで楽しく</em>。',
-  lead:'算数・国語・理科・社会・思考力。小4〜小6の入試範囲を、4択クイズとパズルで楽しく身につけられる学習サイトです。スマホ・タブレット・パソコンから、登録なしですぐ遊べます。',
-  stats:'ゲーム 127本｜有料版 62本｜5教科',
-  plan:'全教科・1ヵ月',
-  deadline:'',
-  gift:'有料版プレゼント',
-  org:'まなびゲーム箱　お問い合わせ：manabigamebako.com/contact.html'
+const ORG='まなびゲーム箱　お問い合わせ：manabigamebako.com/contact.html';
+const OP=(t,ok)=>[t,!!ok];
+const COURSES={
+ juken:{name:'中学受験',path:'/',kicker:'中学受験のための学習ゲームサイト',
+  def:{catch:'中学受験の勉強を、<em>ゲームで楽しく</em>。',
+   lead:'算数・国語・理科・社会・思考力。小4〜小6の入試範囲を、4択クイズとパズル、人物や生き物になりきるゲームで楽しく身につけられる学習サイトです。スマホ・タブレット・パソコンから、登録なしですぐ遊べます。',
+   stats:'無料ゲーム 220本以上｜有料版 210本以上｜5教科',plan:'全教科・1ヵ月'},
+  subj:[['算数','--s1'],['国語','--s2'],['理科','--s3'],['社会','--s4'],['思考力','--s5']],
+  feats:[['1回10問、答えたらすぐ解説','まちがえた問題は、その場で解説を読んで、最後にまとめて復習できます。'],
+   ['覚えた問題・にがてを記録','有料版では「にがて」だけを集めて練習。覚えた数が増えていくのが見えます。'],
+   ['なりきり・すごろくで深く学ぶ','歴史の人物、作家、科学者、生き物になりきるゲームや、日本一周・世界一周の地理すごろくも。'],
+   ['おうちの人も見守れる','保護者ページで、今週どの単元をどれだけ練習したかがわかります。']],
+  samples:[{tg:'社会・日本の地形',c:'--s4',q:'日本でいちばん長い川はどれですか。',ops:[OP('ア 利根川'),OP('イ 信濃川',1),OP('ウ 石狩川'),OP('エ 最上川')],ex:'信濃川は長さ367km。長野県では千曲川とよばれ、新潟県で日本海に注ぎます。'},
+   {tg:'算数・計算のくふう',c:'--s1',q:'36＋19＋64＋81 を、くふうして計算すると？',ops:[OP('ア 180'),OP('イ 200',1),OP('ウ 190'),OP('エ 210')],ex:'36＋64＝100、19＋81＝100 のように、たして100になる組を先に作ります。'}]},
+ teigaku:{name:'低学年',path:'/teigaku/',kicker:'小学1〜3年生のための学習ゲーム',
+  def:{catch:'はじめての勉強を、<em>ゲームで楽しく</em>。',
+   lead:'かず・計算・時計、ひらがなと漢字、考える力のパズル、生き物や地図のちしき。小学1〜3年生が、ふりがなと読み上げつきのクイズで楽しく練習できます。登録なしで、すぐ遊べます。',
+   stats:'ゲーム 25本｜4分野｜小1〜小3',plan:'低学年 全教科・1ヵ月'},
+  subj:[['算数','--s1'],['国語','--s2'],['思考力','--s5'],['ちしき','--s3']],
+  feats:[['ふりがな・読み上げつき','ひとりで読めない字があっても大丈夫。問題を声で読み上げます。'],
+   ['すぐに答え合わせ','答えるとすぐに○×と、やさしい解説が出ます。'],
+   ['おはなしの主人公になれる','お話の主人公になって選んでいくゲームで、読む力と考える力を育てます。'],
+   ['おうちの人も見守れる','保護者ページで、どれだけ練習したかがわかります。']],
+  samples:[{tg:'さんすう・たしざん',c:'--s1',q:'8＋7 は いくつ？',ops:[OP('ア 14'),OP('イ 15',1),OP('ウ 16'),OP('エ 13')],ex:'8に あと2で 10。のこりの 5を たして 15に なります。'},
+   {tg:'こくご・かん字の読み',c:'--s2',q:'「月よう日」の「月」の 読み方は？',ops:[OP('ア つき'),OP('イ げつ',1),OP('ウ がつ'),OP('エ にち')],ex:'曜日のときは「げつ」と読みます。「一月」は「いちがつ」、「お月見」は「つき」です。'}]},
+ chuko:{name:'中高一貫',path:'/chuko/',kicker:'中高一貫校の学習ゲーム',
+  def:{catch:'中学の勉強を、<em>ゲームで先取り</em>。',
+   lead:'中高一貫校に進んだ人のための、入学準備と中学の学習。数学・英語・国語・理科・社会・情報を、4択クイズと世界史の人物になりきるゲームで。中学受験で身につけた力を、中学・高校の学習へつなげます。',
+   stats:'ゲーム 160本以上｜6教科｜中1〜高校入り口',plan:'中高一貫 全教科・1ヵ月'},
+  subj:[['数学','--s1'],['英語','--s6'],['国語','--s2'],['理科','--s3'],['社会','--s4'],['情報','--s5']],
+  feats:[['1回10問、答えたらすぐ解説','まちがえた問題は、その場で解説を読んで、最後にまとめて復習できます。'],
+   ['英語は文法から英検形式まで','中学英語の文法、英単語、英検の形式に近い問題で練習できます。'],
+   ['世界史の人物になりきる','古代から現代まで、歴史の人物になって選んでいくゲームで、流れごと身につきます。'],
+   ['にがてだけを集めて練習','有料版では、まちがえた問題を集めてくり返し練習できます。']],
+  samples:[{tg:'数学・1次方程式',c:'--s1',q:'2x＋3＝11 のとき、x の値は？',ops:[OP('ア 3'),OP('イ 4',1),OP('ウ 7'),OP('エ 8')],ex:'3を右へ移して 2x＝8。両辺を2でわって x＝4 です。'},
+   {tg:'英語・3人称単数',c:'--s6',q:'She (　　) tennis every Sunday.',ops:[OP('ア play'),OP('イ plays',1),OP('ウ playing'),OP('エ is play')],ex:'主語が she（3人称単数）で現在の習慣なので、動詞に s をつけて plays です。'}]},
+ career:{name:'就活・資格',path:'/career/',kicker:'大学生・社会人のための就活・資格コース',
+  def:{catch:'就活・資格の対策を、<em>スキマ時間にゲームで</em>。',
+   lead:'SPI形式の非言語・言語、ITパスポート、基本情報技術者、統計学、簿記3級、TOEIC形式の英語。通学・通勤のスキマ時間に、スマホのクイズでくり返し練習できます。',
+   stats:'7分野｜ゲーム 24本｜スマホで1回数分',plan:'就活・資格 全科目・1ヵ月'},
+  subj:[['SPI非言語','--s1'],['SPI言語','--s2'],['ITパスポート','--s3'],['基本情報','--s6'],['統計学','--s4'],['簿記3級','--s5'],['TOEIC形式','--s7']],
+  feats:[['1回10問、答えたらすぐ解説','計算の手順や考え方を、その場で確かめられます。'],
+   ['スキマ時間にくり返し','登録なしで、スマホからすぐ。1回数分で終わります。'],
+   ['にがてだけを集めて練習','有料版では、まちがえた問題を集めて、できるまでくり返せます。'],
+   ['覚えた数が見える','覚えた問題の数が増えていくので、続けやすくなります。']],
+  samples:[{tg:'SPI非言語・損益算',c:'--s1',q:'原価800円の品物に、原価の2割5分の利益を見込んで定価をつけた。定価はいくら？',ops:[OP('ア 960円'),OP('イ 1,000円',1),OP('ウ 1,025円'),OP('エ 1,200円')],ex:'800×(1＋0.25)＝1,000円。2割5分は0.25です。'},
+   {tg:'ITパスポート・2進数',c:'--s3',q:'2進数の 1011 を10進数で表すと？',ops:[OP('ア 9'),OP('イ 10'),OP('ウ 11',1),OP('エ 13')],ex:'8×1＋4×0＋2×1＋1×1＝11 です。'}]}
 };
+let COURSE='juken'; try{COURSE=localStorage.getItem('flyer-course')||'juken';}catch(e){} if(!COURSES[COURSE])COURSE='juken';
+const C=()=>COURSES[COURSE];
+const DEF0={deadline:'',gift:'有料版プレゼント',org:ORG};
+const defOf=k=>k in C().def?C().def[k]:DEF0[k];
 const KEYS=['catch','lead','stats','plan','deadline','gift','org'];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1407,10 +1457,13 @@ const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
 let ROWS=[]; // {code,plan,deadline,to}
 
 // ---- 文字の欄 ----
-function loadTexts(){ KEYS.forEach(k=>{const v=store.get('flyer-'+k); $('t-'+k).value=v!=null?v:DEF[k];}); }
-KEYS.forEach(k=>$('t-'+k).addEventListener('input',()=>{store.set('flyer-'+k,$('t-'+k).value);render();}));
+const sk=k=>'flyer2-'+COURSE+'-'+k;
+function loadTexts(){ KEYS.forEach(k=>{const v=store.get(sk(k)); $('t-'+k).value=v!=null?v:defOf(k);}); }
+function drawCourses(){ $('courses').innerHTML=Object.entries(COURSES).map(([id,c])=>`<button type="button" data-c="${id}" class="${id===COURSE?'on':''}">${c.name}</button>`).join(''); }
+$('courses').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;COURSE=b.dataset.c;store.set('flyer-course',COURSE);drawCourses();loadTexts();render();});
+KEYS.forEach(k=>$('t-'+k).addEventListener('input',()=>{store.set(sk(k),$('t-'+k).value);render();}));
 $('o-codeqr').addEventListener('change',render);
-$('reset').onclick=()=>{KEYS.forEach(k=>{$('t-'+k).value=DEF[k];store.set('flyer-'+k,DEF[k]);});render();};
+$('reset').onclick=()=>{KEYS.forEach(k=>{$('t-'+k).value=defOf(k);store.set(sk(k),defOf(k));});render();};
 const T=k=>$('t-'+k).value.trim();
 const rich=s=>esc(s).replace(/&lt;em&gt;/g,'<em>').replace(/&lt;\/em&gt;/g,'</em>');
 
@@ -1425,43 +1478,33 @@ function qrSVG(text){
 // ---- チラシ1枚 ----
 function sheet(r){
   const withCode=!!(r&&r.code);
-  const qrText=withCode&&$('o-codeqr').checked?`${SITE}/plan.html#c=${r.code}`:`${SITE}/`;
+  const qrText=withCode&&$('o-codeqr').checked?`${SITE}/plan.html#c=${r.code}`:SITE+C().path;
   const stats=T('stats').split(/[｜|]/).map(s=>s.trim()).filter(Boolean).map(s=>{const m=s.match(/^(.*?)\s*([0-9０-９,，]+)\s*(.*)$/);return m?`<span>${esc(m[1])}<b>${esc(m[2])}</b>${esc(m[3])}</span>`:`<span>${esc(s)}</span>`;}).join('');
   const plan=(r&&r.plan)||T('plan'), deadline=(r&&r.deadline)||T('deadline');
-  const subj=[['算数','--s1','割合・速さ・図形'],['国語','--s2','四字熟語・ことわざ'],['理科','--s3','全分野'],['社会','--s4','歴史・地理・公民'],['思考力','--s5','パズル']];
+  const cc=C(), subj=cc.subj;
   const steps=withCode
     ? ($('o-codeqr').checked
        ? `<li>スマホのカメラで左の二次元コードを読み取ります。</li><li>利用コードが入った画面が開くので、<b>「使う」</b>を押します。</li><li>トップページから、有料版のゲームを選んで遊べます。</li>`
        : `<li>二次元コードを読み取るか、上のアドレスを開きます。</li><li>「利用コードを入れる」に、下の利用コードを入れて<b>「使う」</b>を押します。</li><li>トップページから、有料版のゲームを選んで遊べます。</li>`)
-    : `<li>スマホのカメラで左の二次元コードを読み取ります。</li><li>教科と単元を選んで、すぐに遊べます（無料版は登録なし・無料）。</li><li>もっと練習したいときは、有料版のプランをどうぞ。</li>`;
+    : `<li>スマホのカメラで左の二次元コードを読み取ります。</li><li>${cc.name==='就活・資格'?'科目':'教科'}と単元を選んで、すぐに遊べます（無料版は登録なし・無料）。</li><li>もっと練習したいときは、有料版のプランをどうぞ。</li>`;
   return `<div class="sheet">
     ${withCode&&T('gift')?`<div class="gift">${esc(T('gift'))}</div>`:''}
-    <div class="top"><div><div class="kicker">中学受験のための学習ゲームサイト</div><div class="mark">まなびゲーム箱</div></div>
+    <div class="top"><div><div class="kicker">${esc(cc.kicker)}</div><div class="mark">まなびゲーム箱</div></div>
       ${r&&r.to?`<div class="to">${esc(r.to)}　さま</div>`:''}</div>
     <p class="catch">${rich(T('catch'))}</p>
     <p class="lead">${esc(T('lead'))}</p>
-    <div class="subjects">${subj.map(([n,c,s])=>`<span class="subj" style="--c:var(${c})">${n}</span>`).join('')}</div>
-    <div class="feats">
-      <div class="feat"><span class="n">1</span><div><b>1回10問、答えたらすぐ解説</b><span>まちがえた問題は、その場で解説を読んで、最後にまとめて復習できます。</span></div></div>
-      <div class="feat"><span class="n">2</span><div><b>覚えた問題・にがてを記録</b><span>有料版では「にがて」だけを集めて練習。覚えた数が増えていくのが見えます。</span></div></div>
-      <div class="feat"><span class="n">3</span><div><b>入試によく出る単元をカバー</b><span>割合・速さ・図形、歴史・地理・公民、理科の全分野、四字熟語・ことわざまで。</span></div></div>
-      <div class="feat"><span class="n">4</span><div><b>おうちの人も見守れる</b><span>保護者ページで、今週どの単元をどれだけ練習したかがわかります。</span></div></div>
-    </div>
+    <div class="subjects">${subj.map(([n,c])=>`<span class="subj" style="--c:var(${c})">${n}</span>`).join('')}</div>
+    <div class="feats">${cc.feats.map(([b,t],i)=>`<div class="feat"><span class="n">${i+1}</span><div><b>${esc(b)}</b><span>${esc(t)}</span></div></div>`).join('')}</div>
     ${stats?`<div class="stats">${stats}</div>`:''}
     <div class="samples-h">たとえば、こんな問題</div>
-    <div class="samples">
-      <div class="sq" style="--c:var(--s4)"><span class="tg">社会・日本の地形</span><div class="qq">日本でいちばん長い川はどれですか。</div>
-        <div class="ops"><span class="op">ア 利根川</span><span class="op ok">イ 信濃川 ○</span><span class="op">ウ 石狩川</span><span class="op">エ 最上川</span></div>
-        <div class="ex">信濃川は長さ367km。長野県では千曲川とよばれ、新潟県で日本海に注ぎます。</div></div>
-      <div class="sq" style="--c:var(--s1)"><span class="tg">算数・計算のくふう</span><div class="qq">36＋19＋64＋81 を、くふうして計算すると？</div>
-        <div class="ops"><span class="op">ア 180</span><span class="op ok">イ 200 ○</span><span class="op">ウ 190</span><span class="op">エ 210</span></div>
-        <div class="ex">36＋64＝100、19＋81＝100 のように、たして100になる組を先に作ります。</div></div>
-    </div>
+    <div class="samples">${cc.samples.map(x=>`<div class="sq" style="--c:var(${x.c})"><span class="tg">${esc(x.tg)}</span><div class="qq">${esc(x.q)}</div>
+        <div class="ops">${x.ops.map(([t,ok])=>`<span class="op${ok?' ok':''}">${esc(t)}${ok?' ○':''}</span>`).join('')}</div>
+        <div class="ex">${esc(x.ex)}</div></div>`).join('')}</div>
     <div class="access">
       <div class="qr">${qrSVG(qrText)}<span>スマホのカメラで<br>読み取ってください</span></div>
       <div class="acc">
         <div class="h">${withCode?'有料版の始め方':'遊び方'}</div>
-        <div class="url">${SITE_LABEL}</div>
+        <div class="url">${SITE_LABEL}${withCode?'':esc(cc.path.replace(/\/$/,'')? cc.path:'')}</div>
         <ol class="steps">${steps}</ol>
         ${withCode?`<div class="ticket">
           <div class="t"><b>あなたの利用コード</b><span class="plan">${esc(plan)}</span></div>
@@ -1548,7 +1591,7 @@ async function parseXLSX(buf){
 // ---- 行の読み取り ----
 const CODE_RE=/^\s*M\s*N\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*$/i;
 const normCode=s=>{const t=String(s||'').normalize('NFKC'); const m=t.match(CODE_RE); return m?`MN-${m[1]}-${m[2]}-${m[3]}`.toUpperCase():null;};
-const SUBJ={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科'};
+const SUBJ={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',teigaku:'低学年 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき',chuko:'中高一貫 全教科',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',ckokugo:'中高一貫 国語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',career:'就活・資格 全科目',kspin:'SPI非言語',kspig:'SPI言語',kitp:'ITパスポート',kfe:'基本情報技術者',kstat:'統計学',kboki:'簿記3級',ktoeic:'TOEIC形式英語'};
 const PER={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
 function rowsToCodes(rows){
   rows=rows.filter(r=>r.some(c=>String(c).trim()!==''));
@@ -1587,7 +1630,7 @@ $('file').onchange=async()=>{
   }catch(e){ m.className='msg ng'; m.textContent='ファイルを読み込めませんでした。Excelの場合は「.xlsx」で保存したもの、またはCSVを選んでください。'; }
 };
 $('clear').onclick=()=>{ROWS=[];$('file').value='';$('msg').textContent='';render();};
-loadTexts(); render();
+drawCourses(); loadTexts(); render();
 })();
 </script>
 </body>
