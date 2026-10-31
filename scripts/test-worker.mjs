@@ -35,7 +35,7 @@ ok(games.length > 300, `ゲームの登録数 ${games.length}`);
 
 ok((await admin("pack/nariki", "PUT", '{"t":"test"}')).status === 200, "管理：パックを入れる");
 ok((await admin("pack/no-such-game-xyz", "PUT", "{}")).status >= 400, "登録していないゲームのパックは入れられない");
-{ const inf = await (await admin("info", "GET")).json(); ok(inf.packs.nariki === true && inf.packs["keisan-kufu"] === false, "管理：入れたパックだけが「入っている」と出る"); }
+{ const inf = (await admin("info", "GET")).body || { packs: {} }; ok(inf.packs.nariki === true && inf.packs["keisan-kufu"] === false, "管理：入れたパックだけが「入っている」と出る"); }
 
 const iss = await admin("issue", "POST", { subject: "shakai", period: "m1" });
 ok(iss.status === 200 && /^MN-/.test((iss.body || {}).code || ""), "管理：利用コードを作る");
