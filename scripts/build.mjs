@@ -320,6 +320,9 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
   fs.writeFileSync(path.join(OUT, "daily.html"), sitePage(daily, "daily.html"));
   const drill = fs.readFileSync(path.join(ROOT, "drill.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
   fs.writeFileSync(path.join(OUT, "drill.html"), sitePage(drill, "drill.html"));
+  // おまかせミックス（無料ゲームを次々に。?c=juken|teigaku|chuko|career）
+  const mix = fs.readFileSync(path.join(ROOT, "mix.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA);
+  fs.writeFileSync(path.join(OUT, "mix.html"), sitePage(mix, "mix.html"));
   const ichibun = fs.readFileSync(path.join(ROOT, "ichibun.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
   fs.writeFileSync(path.join(OUT, "ichibun.html"), sitePage(ichibun, "ichibun.html"));
   console.log(`今日の1問：${pool.length}問`);

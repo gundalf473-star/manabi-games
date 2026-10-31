@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>おまかせミックス | {{SITE_NAME}}</title>
+<meta name="description" content="無料ゲームをおまかせで次々に遊べるページ。「つぎのゲーム」を押すだけで、ちがう単元のゲームに切りかわります。教科をしぼることもできます。">
+{{GA}}
+<style>
+/* Layout: 上に細い操作バー（もどる・教科・いまのゲーム・つぎへ）、その下いっぱいにゲームを表示 */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e; --accent:#d4432a; --pick:#e9eef5;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0; --accent:#f07a62; --pick:#222c3a; color-scheme:dark}}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;display:flex;flex-direction:column;height:100dvh}
+.bar{background:var(--surface);border-bottom:1px solid var(--rule);padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:6px}
+.row{display:flex;align-items:center;gap:8px;min-width:0}
+.back{color:var(--ink);text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+.ttl{font-weight:700;color:var(--ink);font-size:16px;white-space:nowrap}
+.cnt{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--rule);background:var(--surface);color:var(--fg);border-radius:99px;padding:4px 12px;font:inherit;font-size:13px;white-space:nowrap;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface);font-weight:700}
+.now{flex:1;min-width:0}
+.now .u{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.now .g{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap}
+.open{color:var(--ink);font-size:12px;white-space:nowrap}
+:focus-visible{outline:3px solid #c98a12;outline-offset:2px}
+iframe{flex:1;width:100%;border:0;background:var(--bg);display:block}
+.msg{padding:24px 16px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="row"><a class="back" id="back" href="index.html">← もどる</a><span class="ttl">おまかせミックス</span><span class="cnt" id="cnt"></span></div>
+  <div class="chips" id="chips" role="group" aria-label="教科をしぼる"></div>
+  <div class="row"><div class="now"><div class="u" id="nu">　</div><div class="g" id="ng">読みこみ中…</div></div><a class="open" id="open" href="#" target="_top">このゲームを開く</a><button class="next" id="next" type="button">つぎ ▶</button></div>
+</header>
+<iframe id="fr" title="ゲーム"></iframe>
+<script>
+(function(){
+  const COURSES={juken:{name:'中学受験',home:'index.html'},teigaku:{name:'低学年',home:'teigaku/index.html'},chuko:{name:'中高一貫',home:'chuko/index.html'},career:{name:'就活・資格',home:'career/index.html'}};
+  const q=new URLSearchParams(location.search);
+  const C=COURSES[q.get('c')]?q.get('c'):'juken';
+  const $=id=>document.getElementById(id);
+  $('back').href=COURSES[C].home;
+  document.title=COURSES[C].name+'のおまかせミックス | '+document.title.split('| ').pop();
+  const ss={get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+  let all=[],subj=ss.get('mn-mix-s-'+C,''),count=ss.get('mn-mix-n-'+C,0),cur=null;
+  function pool(){return all.filter(g=>!subj||g.subject===subj);}
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  /* 同じゲームが続かないよう、しぼりこみごとに順番（山札）を作って上から出す */
+  function draw(){
+    const key='mn-mix-q-'+C+'-'+(subj||'all'); let deck=ss.get(key,[]);
+    const p=pool(), urls=new Set(p.map(g=>g.url));
+    deck=deck.filter(u=>urls.has(u));
+    if(!deck.length){deck=shuffle(p.map(g=>g.url)); if(cur&&deck.length>1&&deck[0]===cur.url)deck.push(deck.shift());}
+    const u=deck.shift(); ss.set(key,deck);
+    return p.find(g=>g.url===u);
+  }
+  function show(g){
+    cur=g; if(!g){$('ng').textContent='この教科の無料ゲームはありません';$('nu').textContent='　';$('fr').removeAttribute('src');return;}
+    count++; ss.set('mn-mix-n-'+C,count);
+    $('cnt').textContent=count+'本目';
+    $('nu').textContent=g.subject+'・'+g.unit;
+    $('ng').textContent=g.title;
+    $('open').href=g.url;
+    $('fr').src=g.url;
+  }
+  /* ゲームの中の「← ゲーム一覧」「わたしの単元」ボタンはここではかくす（上の「もどる」を使う） */
+  $('fr').addEventListener('load',()=>{try{const d=$('fr').contentDocument;if(!d)return;const s=d.createElement('style');
+    s.textContent='#mn-star,a[style*="position:fixed"][href$="index.html"]{display:none!important}';d.head.appendChild(s);}catch(e){}});
+  function chips(){
+    const subs=[...new Set(all.map(g=>g.subject))];
+    $('chips').innerHTML=['',...subs].map(s=>`<button class="chip" type="button" data-s="${s}" aria-pressed="${s===subj}">${s||'すべて'}</button>`).join('');
+    $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{subj=b.dataset.s;ss.set('mn-mix-s-'+C,subj);chips();show(draw());});
+  }
+  $('next').onclick=()=>show(draw());
+  fetch('games.json').then(r=>r.json()).then(d=>{
+    all=(d.games||[]).filter(g=>!g.paid&&(g.course||'juken')===C&&/^1/.test(g.players||'1'));
+    if(subj&&!all.some(g=>g.subject===subj))subj='';
+    chips(); show(draw());
+  }).catch(()=>{$('ng').textContent='ゲームの一覧を読みこめませんでした';});
+})();
+</script>
+</body>
+</html>
