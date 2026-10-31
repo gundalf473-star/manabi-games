@@ -1,0 +1,274 @@
+<title>作家・歌人になりきろう 全20章</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="作家・歌人になりきろう（文学史）">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="作家・歌人になりきろうの有料版。万葉集から太宰治まで全20章。作者と作品・ジャンル・冒頭文・季語や切れ字・表現技法を、なりきって選びながら確かめます。作家カード集めつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。章の一覧 → なりきる人の交代カード → 場面（年・絵・文・選択肢）→ ゲームオーバー（実際には…）／章のまとめ（作品ノート・年表・言葉）。藍と朱の文学帳の色 */
+:root{
+  --bg:#f4f3ef; --surface:#ffffff; --fg:#26241f; --muted:#67625a; --rule:#dcd7cc;
+  --ink:#3a3f7a; --seal:#a8433a; --sealsoft:#f5e3de; --ok:#2f7a52; --oksoft:#e2f0e7; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#eeebe3;
+  --card:#fbf7ec; --cardedge:#c9b98f;
+  --display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --kanji:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141413; --surface:#1d1c1a; --fg:#ebe7df; --muted:#a29c92; --rule:#33302b;
+  --ink:#aeb4f0; --seal:#ec7d6e; --sealsoft:#3a2420; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28261f;
+  --card:#26231b; --cardedge:#6b5f42; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141413; --surface:#1d1c1a; --fg:#ebe7df; --muted:#a29c92; --rule:#33302b;
+  --ink:#aeb4f0; --seal:#ec7d6e; --sealsoft:#3a2420; --ok:#5cc28c; --oksoft:#1d3328; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28261f;
+  --card:#26231b; --cardedge:#6b5f42; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(27px,7.2vw,38px);line-height:1.2;margin:0;color:var(--ink);letter-spacing:.04em}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal);transition:width .3s}
+.whochip{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.yr{align-self:flex-start;font-family:var(--mincho);font-weight:700;font-size:17px;color:var(--seal);border:2px solid var(--seal);border-radius:6px;padding:0 10px;line-height:1.6;font-variant-numeric:tabular-nums}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.txt{margin:0;white-space:pre-line;font-size:17px;line-height:2.05}
+.ask{margin:0;font-size:18px;font-weight:700;color:var(--ink);line-height:1.9}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.85;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:56px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op .ic{flex:none;width:48px;height:48px}.op .ic svg{width:48px;height:48px;display:block}
+.op:active{transform:scale(.98)}
+.sw{border:3px solid var(--ink);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:var(--card)}
+.sw .swl{font-size:13px;font-weight:700;color:var(--seal);letter-spacing:.12em}
+.sw .got{margin:0;font-size:14px;font-weight:700;color:var(--ok);background:var(--surface);border-radius:99px;padding:2px 14px}
+.sw .swp{width:100%;max-width:340px;border-radius:10px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.sw .swp svg{display:block;width:100%;height:auto}
+.sw .swt{margin:0;font-size:17px;font-weight:700}
+.sw .swn{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(28px,8.5vw,38px);line-height:1.6;color:var(--ink)}
+.sw .swn rt{font-family:var(--body);font-size:.36em;letter-spacing:.05em}
+.sw .swr{margin:0;font-size:15px;color:var(--muted)}
+.over{border:3px dashed var(--gold);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.over h2,.endh{margin:0;font-family:var(--display);font-weight:700;font-size:21px;color:var(--gold);line-height:1.5}
+.endh{color:var(--ok)}
+.pick{margin:0;font-size:14px;color:var(--muted)}
+.pick b{color:var(--fg)}
+.hint{font-size:15px;line-height:1.95;background:var(--pick);border-radius:8px;padding:8px 12px;margin:0}
+.hint b{color:var(--seal);display:block;font-size:12px;letter-spacing:.1em}
+.lesson{font-size:16px;line-height:1.95;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:13px}
+.stars{font-size:26px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.works{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.works li{background:var(--card);border:1px solid var(--cardedge);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.works .wt{font-family:var(--mincho);font-weight:700;font-size:18px;line-height:1.6}
+.works .wg{display:inline-block;font-family:var(--body);font-size:12px;font-weight:700;color:var(--seal);border:1px solid var(--seal);border-radius:99px;padding:0 8px;margin-left:8px;vertical-align:3px}
+.works .wa{font-size:13px;color:var(--muted)}
+.works .wq{margin:2px 0 0;font-family:var(--kanji);font-weight:600;font-size:16px;line-height:2.1;border-left:3px solid var(--cardedge);padding-left:10px}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.timeline dd{margin:0}
+.words{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.words li{border:1px solid var(--rule);border-radius:8px;padding:6px 12px;font-size:14px;line-height:1.8;background:var(--surface)}
+.words li b{font-size:16px;color:var(--ink);margin-right:8px}
+.figrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.fc{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--surface);font-size:12px;line-height:1.5;display:flex;flex-direction:column}
+.fc .fp{line-height:0;background:#fff}.fc .fp svg{display:block;width:100%;height:auto}
+.fc .fn{padding:4px 8px;font-weight:700;font-size:14px}
+.fc .fr{padding:0 8px 6px;color:var(--muted)}
+.fc.no .fp{display:grid;place-items:center;aspect-ratio:3/2;background:var(--pick);font-size:28px;line-height:1;color:var(--muted)}
+.list{display:grid;gap:8px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:17px;display:block;line-height:1.45}
+.st .ds{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.st .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}
+.st .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.78}
+.st.lockd .th,.st.soon .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:24px;line-height:1}
+.st.soon{opacity:.55;cursor:default}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.cnt{font-family:var(--display);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:13px;color:var(--muted);font-family:var(--body)}
+details.cards summary{cursor:pointer;font-weight:700;font-size:14px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}.op:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>文学史ゲーム</small>作家・歌人になりきろう 全20章</h1>
+    <p class="lead">万葉集から太宰治まで、全20章。作家・歌人になりきって、作品が生まれるまでを進もう。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let ST=[];
+const TITLES=[["manyo",1,"万葉集の歌人たち","飛鳥〜奈良時代","690年代〜759年",["柿本人麻呂","山上憶良","大伴家持"],true],["taketori",2,"竹取物語","平安時代（はじめごろ）","9〜10世紀ごろ",["竹取物語の語り手","竹取の翁","かぐや姫"],true],["seishonagon",3,"清少納言と枕草子","平安時代（中ごろ）","993〜1000年ごろ",["清少納言","中宮定子"],true],["murasaki",4,"紫式部と源氏物語","平安時代（中ごろ）","1001〜1010年ごろ",["紫式部","中宮彰子"],true],["tsurayuki",5,"紀貫之と土佐日記","平安時代（前期）","905〜935年",["紀貫之","紀友則","土佐日記の書き手"],true],["hojoki",6,"鴨長明と方丈記","平安時代末〜鎌倉時代","1155〜1216年",["鴨長明","後鳥羽上皇"],true],["heike",7,"平家物語","鎌倉時代","1167〜1240年ごろ",["琵琶法師","那須与一"],true],["tsurezure",8,"吉田兼好と徒然草","鎌倉時代（終わりごろ）","1283〜1352年ごろ",["吉田兼好","仁和寺の法師","木登りの名人"],true],["basho",9,"松尾芭蕉とおくのほそ道","江戸時代（前期）","1644〜1702年",["松尾芭蕉","河合曾良"],true],["buson_issa",10,"蕪村と一茶","江戸時代（中ごろ〜後半）","1716〜1827年",["与謝蕪村","小林一茶","やせ蛙"],true],["yakumo",11,"小泉八雲と怪談","明治時代","1850〜1904年",["小泉八雲","小泉セツ","耳なし芳一"],true],["ichiyo_ogai",12,"樋口一葉と森鷗外","明治〜大正時代","1862〜1922年",["森鷗外","樋口一葉","羽田庄兵衛"],true],["soseki",13,"夏目漱石","明治〜大正時代","1867〜1916年",["夏目漱石","正岡子規","吾輩（ねこ）"],true],["shiki",14,"正岡子規","明治時代","1867〜1905年",["正岡子規","夏目漱石","高浜虚子"],true],["akiko_takuboku",15,"与謝野晶子と石川啄木","明治時代","1878〜1942年",["与謝野晶子","石川啄木"],true],["toson_hakushu",16,"島崎藤村と北原白秋","明治〜昭和時代","1872〜1943年",["島崎藤村","北原白秋"],true],["akutagawa",17,"芥川龍之介","大正時代","1892〜1935年",["芥川龍之介","下人","犍陀多"],true],["kenji_nankichi",18,"宮沢賢治と新美南吉","大正〜昭和時代","1896〜1943年",["宮沢賢治","新美南吉","ごん"],true],["misuzu_chuya",19,"金子みすゞと中原中也","大正〜昭和時代","1903〜1938年",["金子みすゞ","中原中也"],true],["dazai",20,"太宰治","昭和時代","1909〜1948年",["太宰治","メロス","セリヌンティウス"],true]];
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const PAIDLINK="<a class=\"paid\" href=\"bungo-full.html\" id=\"paid-link\"><span class=\"pt\">ほかの作家にもなりきりたい人へ　<b>作家・歌人になりきろう 全20章</b>（有料版）</span><span class=\"pd\">無料版の第3章もふくむ全20章。万葉集・竹取物語・源氏物語・平家物語・おくのほそ道・漱石・子規・晶子・賢治・太宰まで。作家カード集めつき。</span></a>";
+
+/* ST=章 [{id,no,title,era,years,sub,start,len,figs:[[名前,よみ,説明,絵]],works:[[作品名,ジャンル,冒頭,作者]],nen:[[年,表示,できごと]],words:[[言葉,説明]],
+         sc:{場面id:{k:n/q/x/e,t:文,p:絵,nx:次,a:問い,c:[[ことば,行き先,icon?]],h:覚えておこう,l:まとめ,n:何番目,w:人,y:年}}}]
+   TITLES=[[id,第何章,題名,時代,年,[人の名前],できているか]] */
+const REC='bungo-p-rec', CARDK='bungo-cards';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={}; const saveRec=()=>store.set(REC,rec);
+let cards=store.get(CARDK,{}); if(!cards||typeof cards!=='object'||Array.isArray(cards))cards={};
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+const ckey=(id,nm)=>id+':'+nm;
+const collect=(id,nm)=>{const k=ckey(id,nm);const isNew=!cards[k];if(isNew){cards[k]=Date.now();store.set(CARDK,cards);}return isNew;};
+const ALLFIG=TITLES.flatMap(t=>t[5].map(nm=>ckey(t[0],nm)));
+const nCards=()=>ALLFIG.filter(k=>cards[k]).length;
+const fy=y=>y<0?'紀元前'+(-y)+'年':y+'年';
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const figOf=(s,nm)=>s.figs.find(f=>f[0]===nm)||[nm,'','',''];
+const figCard=(s,f)=>{const got=!!cards[ckey(s.id,f[0])];
+  return got?`<div class="fc"><span class="fp">${f[3]}</span><span class="fn"><ruby>${esc(f[0])}<rt>${esc(f[1])}</rt></ruby></span><span class="fr">${rb(f[2])}</span></div>`
+            :`<div class="fc no"><span class="fp">？</span><span class="fn">？？？</span><span class="fr">第${s.no}章「${rb(s.title)}」</span></div>`;};
+function home(){
+  G=null;
+  const row=([id,no,title,era,years,figs,ok])=>{const s=ST.find(c=>c.id===id);
+    if(s){const r=rec[id]||[0,0];
+      return `<button class="st" data-id="${id}"><span class="th">${s.sc[s.start].p}</span><span><span class="no">第${no}章　${rb(era)}</span><span class="nm">${rb(title)}</span>
+        <span class="ds">${s.figs.map(f=>esc(f[0])).join(' → ')}</span>
+        ${r[0]?`<span class="bd ok">✓ クリア${r[0]>1?'（'+r[0]+'回）':''}</span>`:'<span class="bd new">まだ</span>'}${r[1]?` <span class="note" style="display:inline">ゲームオーバー ${r[1]}回</span>`:''}</span></button>`;}
+    if(!PAID)return `<a class="st lockd" href="bungo-full.html"><span class="th">🔒</span><span><span class="no">第${no}章　${rb(era)}</span><span class="nm">${rb(title)}</span><span class="ds">利用コードで遊べます</span></span></a>`;
+    return `<div class="st soon"><span class="th">⏳</span><span><span class="no">第${no}章　${rb(era)}</span><span class="nm">${rb(title)}</span><span class="ds">じゅんび中</span></span></div>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">利用コードで遊べる章</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const total=ALLFIG.length, got=nCards();
+  const gal=ST.map(s=>s.figs.map(f=>figCard(s,f)).join('')).join('');
+  const done=ST.filter(s=>(rec[s.id]||[0])[0]>0).length;
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">章をえらぶと、作家・歌人になりきって、作品が生まれるまでを進みます。場面ごとに「次にどうするか」「どの言葉か」を選ぼう。本当のとおりに選ぶと話が続き、ちがうと「実際には…」で本当のことがわかります。とちゅうで、なりきる人が交代します。</p>
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">作家カード</span><span class="cnt">${got}<small> / ${total}まい</small></span></div>
+    <details class="cards"><summary>作家カードを見る</summary><div class="figrow" style="margin-top:8px">${gal}</div></details>
+    <div class="row" style="justify-content:space-between"><span class="label">章をえらぶ</span><span class="note">クリアした章 ${done} / ${ST.length}</span></div>
+    ${PAID?'':`<p class="free">第${ST.map(s=>s.no).join('・')}章は無料。🔒の章は<b>利用コードで全${TITLES.length}章</b>遊べます。</p>`}
+    <div class="list">${rows}</div>${PAID?`<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？（作家カードも消えます） <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();cards={};store.set(CARDK,cards);home();};document.getElementById('no').onclick=home;};
+}
+function play(s){ G={s:s,who:null,from:null,pick:'',overs:0}; track('level_start',{level_name:'bungo-'+s.id}); show(s.start); }
+function head(o){ const n=(o&&o.n)||0; return `<div class="top"><button class="linkbtn" id="back">← 章をえらぶ</button><div class="prog" aria-hidden="true"><i style="width:${Math.round(n/G.s.len*100)}%"></i></div>${G.who?`<span class="whochip">${esc(G.who)}</span>`:''}</div>`; }
+function show(id){
+  const s=G.s, o=s.sc[id];
+  if(o.k==='x')return over(o);
+  if(o.w&&o.w!==G.who)return switchCard(id);
+  if(o.k==='e')return ending(o);
+  render(id);
+}
+function switchCard(id){
+  const s=G.s, o=s.sc[id], prev=G.who, f=figOf(s,o.w);
+  const isNew=prev?collect(s.id,prev):false;
+  G.who=o.w;
+  const nth=s.figs.findIndex(x=>x[0]===o.w)+1;
+  app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="なりきる人の交代">
+    <div class="swl">第${s.no}章　${rb(s.title)}</div>
+    ${prev&&isNew?`<p class="got">✓「${esc(prev)}」の作家カードを手に入れた！</p>`:''}
+    <div class="swp">${f[3]}</div>
+    <p class="swt">${prev?'ここからは、あなたは':'あなたは'}</p>
+    <p class="swn"><ruby>${esc(f[0])}<rt>${esc(f[1])}</rt></ruby>。</p>
+    <p class="swr">${rb(f[2])}</p>
+    <button class="btn go" id="nx">${esc(f[0])}になって進む ▶</button></div>`;
+  document.getElementById('back').onclick=home;
+  const nx=document.getElementById('nx'); nx.onclick=()=>o.k==='e'?ending(o):render(id);
+  top0(); nx.focus({preventScroll:true});
+}
+function render(id){
+  const s=G.s, o=s.sc[id];
+  const ch=o.k==='q'?shuffle(o.c):null;
+  app.innerHTML=`${head(o)}${o.y!=null?`<span class="yr">${fy(o.y)}</span>`:''}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>
+    ${o.k==='q'?`<p class="ask">${rb(o.a)}</p><div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${'アイウ'[i]}</span>${c[2]?`<span class="ic">${c[2]}</span>`:''}<span>${rb(c[0])}</span></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="nx">次へ ▶</button></div>`}`;
+  document.getElementById('back').onclick=home;
+  if(ch)app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const c=ch[+b.dataset.i];const ok=s.sc[c[1]].k!=='x';
+    track('answer_question',{category:'bungo-'+s.id,question:id,correct:ok});
+    if(!ok){G.from=id;G.pick=c[0];G.overs++;bump(s.id,1);} show(c[1]);});
+  else document.getElementById('nx').onclick=()=>show(o.nx);
+  top0();
+}
+function over(o){
+  const s=G.s;
+  app.innerHTML=`${head(s.sc[G.from]||{})}<div class="over"><h2>おっと、本当とはちがうみたい！</h2>
+    <p class="pick">あなたが選んだのは：<b>${rb(G.pick)}</b></p>
+    <div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${o.h?`<p class="hint"><b>覚えておこう</b>${rb(o.h)}</p>`:''}
+    <div class="row"><button class="btn go" id="retry">この場面からやりなおす</button><button class="btn" id="first">最初から</button></div>
+    <div><button class="linkbtn" id="list">章をえらぶ</button></div></div>`;
+  document.getElementById('back').onclick=home;
+  const rt=document.getElementById('retry');rt.onclick=()=>render(G.from);
+  document.getElementById('first').onclick=()=>{G.who=null;show(s.start);};
+  document.getElementById('list').onclick=home;
+  top0(); rt.focus({preventScroll:true});
+}
+function ending(o){
+  const s=G.s, stars=G.overs===0?3:G.overs<=2?2:1;
+  if(G.who)collect(s.id,G.who);
+  bump(s.id,0);
+  track('level_end',{level_name:'bungo-'+s.id,success:true,score:stars});
+  const ix=ST.indexOf(s), nx=ST[ix+1];
+  app.innerHTML=`${head(o)}<p class="endh">🎉 第${s.no}章「${rb(s.title)}」クリア！</p>${o.y!=null?`<span class="yr">${fy(o.y)}</span>`:''}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>
+    <p class="lesson"><b>この章のまとめ</b>${rb(o.l)}</p>
+    <div class="row"><span class="stars" aria-label="星 ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span><span class="note">${G.overs?'ゲームオーバー '+G.overs+'回。次はノーミスをめざそう！':'ノーミスで最後まで進めた！'}</span></div>
+    <div class="label">作品ノート</div>
+    <ul class="works">${s.works.map(w=>`<li><span class="wt">${rb(w[0])}<span class="wg">${esc(w[1])}</span></span>${w[3]?`<span class="wa">作者：${rb(w[3])}</span>`:''}${w[2]?`<p class="wq">${rb(w[2])}</p>`:''}</li>`).join('')}</ul>
+    <div class="label">年表　${rb(s.era)}（${rb(s.years)}）</div>
+    <dl class="timeline">${s.nen.map(e=>`<dt>${esc(e[1])}</dt><dd>${rb(e[2])}</dd>`).join('')}</dl>
+    <div class="label">覚えておきたい言葉</div>
+    <ul class="words">${s.words.map(w=>`<li><b>${rb(w[0])}</b>${rb(w[1])}</li>`).join('')}</ul>
+    <div class="label">作家カード（${nCards()} / ${ALLFIG.length}まい）</div><div class="figrow">${s.figs.map(f=>figCard(s,f)).join('')}</div>
+    <div class="row">${nx?`<button class="btn go" id="next">次の章「${rb(nx.title)}」</button>`:''}<button class="btn${nx?'':' go'}" id="list">章をえらぶ</button><button class="linkbtn" id="again">もう一度この章を</button></div>${PAID?'':PAIDLINK}`;
+  document.getElementById('back').onclick=home;
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(s);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('bungo'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'bungo',err:err,free:'bungo.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
