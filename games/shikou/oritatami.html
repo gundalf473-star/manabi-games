@@ -1,0 +1,303 @@
+<title>おりたたみ・切りぬき</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="正方形の紙を1〜3回折って、穴をあけたり形を切りぬいたりしたあと、開いた形を考える図形パズル。開いた紙の穴の場所をタップする問題から、開いた形から切った場所を当てるぎゃくの問題まで。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.orstrip{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 4px}
+.orstrip figure{margin:0;display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);line-height:1.3}
+.orstrip figcaption{white-space:nowrap}
+.orarw{color:var(--muted);font-size:16px}
+#ortap .orcell{cursor:pointer}
+#ortap{touch-action:manipulation!important}
+@media (max-width:420px){#app.box{padding:12px}.boardw{padding:4px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>おりたたみ・切りぬき</h1>
+    <p class="lead">紙を折って穴をあけたら、開くとどうなる？ 頭の中で紙を開いてみよう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"id":"1-01","lv":1,"kind":"tap","steps":[{"n":"U","poly":[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,4.0],"b":[8.0,4.0],"m":[[8.0,4.0],[8.0,8.0],[0.0,8.0],[0.0,4.0]],"f":[4.0,6.0],"t":[4.0,2.0]}],"fin":[[0.0,0.0],[8.0,0.0],[8.0,4.0],[0.0,4.0]],"holes":[{"t":"c","x":7.0,"y":1.0,"r":0.6}],"open":[{"t":"c","x":7.0,"y":1.0,"r":0.6},{"t":"c","x":7.0,"y":7.0,"r":0.6}],"cells":[[0,3],[3,3]],"stg":[[[[0.0,0.0],[8.0,0.0],[8.0,4.0],[0.0,4.0]],[{"t":"c","x":7.0,"y":1.0,"r":0.6}]],[[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"c","x":7.0,"y":1.0,"r":0.6},{"t":"c","x":7.0,"y":7.0,"r":0.6}]]]},{"id":"2-01","lv":2,"nt":1,"kind":"open","steps":[{"n":"d2","poly":[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,0.0],"b":[8.0,8.0],"m":[[0.0,0.0],[8.0,8.0],[0.0,8.0]],"f":[2.6667,5.3333],"t":[5.3333,2.6667]}],"fin":[[0.0,0.0],[8.0,0.0],[8.0,8.0]],"holes":[{"t":"c","x":4.0,"y":1.5,"r":0.5}],"a":[{"t":"c","x":4.0,"y":1.5,"r":0.5},{"t":"c","x":1.5,"y":4.0,"r":0.5}],"ds":[[{"t":"c","x":4.0,"y":1.5,"r":0.5}],[{"t":"c","x":4.0,"y":6.5,"r":0.5},{"t":"c","x":6.5,"y":4.0,"r":0.5}],[{"t":"c","x":4.0,"y":1.5,"r":0.5},{"t":"c","x":4.0,"y":6.5,"r":0.5}]],"stg":[[[[0.0,0.0],[8.0,0.0],[8.0,8.0]],[{"t":"c","x":4.0,"y":1.5,"r":0.5}]],[[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"c","x":4.0,"y":1.5,"r":0.5},{"t":"c","x":1.5,"y":4.0,"r":0.5}]]]},{"id":"3-01","lv":3,"nt":0,"kind":"open","steps":[{"n":"d1","poly":[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,0.0],"b":[8.0,8.0],"m":[[0.0,0.0],[8.0,0.0],[8.0,8.0]],"f":[5.3333,2.6667],"t":[2.6667,5.3333]},{"n":"t2","poly":[[0.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,8.0],"b":[4.0,4.0],"m":[[4.0,4.0],[8.0,8.0],[0.0,8.0]],"f":[4.0,6.6667],"t":[1.3333,4.0]}],"fin":[[0.0,0.0],[4.0,4.0],[0.0,8.0]],"holes":[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]}],"a":[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]},{"t":"p","p":[[4.0,5.7],[3.5,6.0],[4.0,5.0],[4.5,6.0]]},{"t":"p","p":[[4.0,2.3],[4.5,2.0],[4.0,3.0],[3.5,2.0]]},{"t":"p","p":[[6.0,4.5],[5.0,4.0],[6.0,3.5],[5.7,4.0]]}],"ds":[[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]},{"t":"p","p":[[4.0,5.7],[3.5,6.0],[4.0,5.0],[4.5,6.0]]}],[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]},{"t":"p","p":[[4.0,2.3],[4.5,2.0],[4.0,3.0],[3.5,2.0]]}],[{"t":"p","p":[[1.82,4.24],[2.4,4.3],[1.4,4.8],[1.6,3.7]]},{"t":"p","p":[[4.3,6.4],[3.2,6.6],[3.7,5.6],[3.76,6.18]]},{"t":"p","p":[[3.7,1.6],[4.8,1.4],[4.3,2.4],[4.24,1.82]]},{"t":"p","p":[[6.18,3.76],[5.6,3.7],[6.6,3.2],[6.4,4.3]]}]],"stg":[[[[0.0,0.0],[4.0,4.0],[0.0,8.0]],[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]}]],[[[0.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]},{"t":"p","p":[[4.0,5.7],[3.5,6.0],[4.0,5.0],[4.5,6.0]]}]],[[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[2.0,3.5],[3.0,4.0],[2.0,4.5],[2.3,4.0]]},{"t":"p","p":[[4.0,5.7],[3.5,6.0],[4.0,5.0],[4.5,6.0]]},{"t":"p","p":[[4.0,2.3],[4.5,2.0],[4.0,3.0],[3.5,2.0]]},{"t":"p","p":[[6.0,4.5],[5.0,4.0],[6.0,3.5],[5.7,4.0]]}]]]},{"id":"4-01","lv":4,"nt":1,"kind":"open","steps":[{"n":"R","poly":[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[4.0,0.0],"b":[4.0,8.0],"m":[[0.0,0.0],[4.0,0.0],[4.0,8.0],[0.0,8.0]],"f":[2.0,4.0],"t":[6.0,4.0]},{"n":"L","poly":[[4.0,0.0],[8.0,0.0],[8.0,8.0],[4.0,8.0]],"a":[6.0,0.0],"b":[6.0,8.0],"m":[[6.0,0.0],[8.0,0.0],[8.0,8.0],[6.0,8.0]],"f":[7.0,4.0],"t":[5.0,4.0]},{"n":"U","poly":[[4.0,0.0],[6.0,0.0],[6.0,8.0],[4.0,8.0]],"a":[4.0,4.0],"b":[6.0,4.0],"m":[[6.0,4.0],[6.0,8.0],[4.0,8.0],[4.0,4.0]],"f":[5.0,6.0],"t":[5.0,2.0]}],"fin":[[4.0,0.0],[6.0,0.0],[6.0,4.0],[4.0,4.0]],"holes":[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4}],"a":[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4},{"t":"p","p":[[6.5,2.6667],[6.0,3.1667],[6.0,2.1667]]},{"t":"c","x":7.0,"y":0.75,"r":0.4},{"t":"p","p":[[6.0,5.8333],[6.0,4.8333],[6.5,5.3333]]},{"t":"c","x":7.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.5,2.6667],[2.0,3.1667],[2.0,2.1667]]},{"t":"c","x":3.0,"y":0.75,"r":0.4},{"t":"p","p":[[2.0,5.8333],[2.0,4.8333],[2.5,5.3333]]},{"t":"c","x":3.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.0,2.1667],[2.0,3.1667],[1.5,2.6667]]},{"t":"c","x":1.0,"y":0.75,"r":0.4},{"t":"p","p":[[1.5,5.3333],[2.0,4.8333],[2.0,5.8333]]},{"t":"c","x":1.0,"y":7.25,"r":0.4}],"ds":[[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.5,2.6667],[2.0,3.1667],[2.0,2.1667]]},{"t":"c","x":3.0,"y":0.75,"r":0.4},{"t":"p","p":[[2.0,5.8333],[2.0,4.8333],[2.5,5.3333]]},{"t":"c","x":3.0,"y":7.25,"r":0.4}],[{"t":"p","p":[[5.5,1.3333],[6.0,0.8333],[6.0,1.8333]]},{"t":"c","x":5.0,"y":3.25,"r":0.4},{"t":"p","p":[[6.0,6.1667],[6.0,7.1667],[5.5,6.6667]]},{"t":"c","x":5.0,"y":4.75,"r":0.4},{"t":"p","p":[[6.0,1.8333],[6.0,0.8333],[6.5,1.3333]]},{"t":"c","x":7.0,"y":3.25,"r":0.4},{"t":"p","p":[[6.5,6.6667],[6.0,7.1667],[6.0,6.1667]]},{"t":"c","x":7.0,"y":4.75,"r":0.4},{"t":"p","p":[[2.0,1.8333],[2.0,0.8333],[2.5,1.3333]]},{"t":"c","x":3.0,"y":3.25,"r":0.4},{"t":"p","p":[[2.5,6.6667],[2.0,7.1667],[2.0,6.1667]]},{"t":"c","x":3.0,"y":4.75,"r":0.4},{"t":"p","p":[[1.5,1.3333],[2.0,0.8333],[2.0,1.8333]]},{"t":"c","x":1.0,"y":3.25,"r":0.4},{"t":"p","p":[[2.0,6.1667],[2.0,7.1667],[1.5,6.6667]]},{"t":"c","x":1.0,"y":4.75,"r":0.4}],[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4},{"t":"p","p":[[6.5,2.6667],[6.0,3.1667],[6.0,2.1667]]},{"t":"c","x":7.0,"y":0.75,"r":0.4},{"t":"p","p":[[6.0,5.8333],[6.0,4.8333],[6.5,5.3333]]},{"t":"c","x":7.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.5,2.6667],[2.0,3.1667],[2.0,2.1667]]},{"t":"c","x":3.0,"y":0.75,"r":0.4},{"t":"p","p":[[2.0,5.8333],[2.0,4.8333],[2.5,5.3333]]},{"t":"c","x":3.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.0,2.1667],[2.0,3.1667],[1.5,2.6667]]},{"t":"c","x":1.0,"y":0.75,"r":0.4},{"t":"p","p":[[1.5,5.3333],[2.0,4.8333],[2.0,5.8333]]}]],"stg":[[[[4.0,0.0],[6.0,0.0],[6.0,4.0],[4.0,4.0]],[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4}]],[[[4.0,0.0],[6.0,0.0],[6.0,8.0],[4.0,8.0]],[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4}]],[[[4.0,0.0],[8.0,0.0],[8.0,8.0],[4.0,8.0]],[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4},{"t":"p","p":[[6.5,2.6667],[6.0,3.1667],[6.0,2.1667]]},{"t":"c","x":7.0,"y":0.75,"r":0.4},{"t":"p","p":[[6.0,5.8333],[6.0,4.8333],[6.5,5.3333]]},{"t":"c","x":7.0,"y":7.25,"r":0.4}]],[[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[6.0,2.1667],[6.0,3.1667],[5.5,2.6667]]},{"t":"c","x":5.0,"y":0.75,"r":0.4},{"t":"p","p":[[5.5,5.3333],[6.0,4.8333],[6.0,5.8333]]},{"t":"c","x":5.0,"y":7.25,"r":0.4},{"t":"p","p":[[6.5,2.6667],[6.0,3.1667],[6.0,2.1667]]},{"t":"c","x":7.0,"y":0.75,"r":0.4},{"t":"p","p":[[6.0,5.8333],[6.0,4.8333],[6.5,5.3333]]},{"t":"c","x":7.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.5,2.6667],[2.0,3.1667],[2.0,2.1667]]},{"t":"c","x":3.0,"y":0.75,"r":0.4},{"t":"p","p":[[2.0,5.8333],[2.0,4.8333],[2.5,5.3333]]},{"t":"c","x":3.0,"y":7.25,"r":0.4},{"t":"p","p":[[2.0,2.1667],[2.0,3.1667],[1.5,2.6667]]},{"t":"c","x":1.0,"y":0.75,"r":0.4},{"t":"p","p":[[1.5,5.3333],[2.0,4.8333],[2.0,5.8333]]},{"t":"c","x":1.0,"y":7.25,"r":0.4}]]]},{"id":"5-01","lv":5,"nt":0,"kind":"open","steps":[{"n":"d1","poly":[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,0.0],"b":[8.0,8.0],"m":[[0.0,0.0],[8.0,0.0],[8.0,8.0]],"f":[5.3333,2.6667],"t":[2.6667,5.3333]},{"n":"t1","poly":[[0.0,0.0],[8.0,8.0],[0.0,8.0]],"a":[0.0,8.0],"b":[4.0,4.0],"m":[[0.0,0.0],[4.0,4.0],[0.0,8.0]],"f":[1.3333,4.0],"t":[4.0,6.6667]},{"n":"t2","poly":[[4.0,4.0],[8.0,8.0],[0.0,8.0]],"a":[4.0,4.0],"b":[4.0,8.0],"m":[[4.0,4.0],[4.0,8.0],[0.0,8.0]],"f":[2.6667,6.6667],"t":[5.3333,6.6667]}],"fin":[[4.0,4.0],[8.0,8.0],[4.0,8.0]],"holes":[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]}],"a":[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]},{"t":"p","p":[[1.5,3.75],[0.5,2.75],[0.5,3.75]]},{"t":"p","p":[[0.5,4.25],[0.5,5.25],[1.5,4.25]]},{"t":"p","p":[[6.5,4.25],[7.5,5.25],[7.5,4.25]]},{"t":"p","p":[[7.5,3.75],[7.5,2.75],[6.5,3.75]]},{"t":"p","p":[[3.75,0.5],[2.75,0.5],[3.75,1.5]]},{"t":"p","p":[[4.25,1.5],[5.25,0.5],[4.25,0.5]]}],"ds":[[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]},{"t":"p","p":[[1.5,3.75],[0.5,2.75],[0.5,3.75]]},{"t":"p","p":[[0.5,4.25],[0.5,5.25],[1.5,4.25]]}],[{"t":"p","p":[[5.5,7.75],[4.5,6.75],[4.5,7.75]]},{"t":"p","p":[[3.5,7.75],[3.5,6.75],[2.5,7.75]]},{"t":"p","p":[[0.25,3.5],[1.25,3.5],[0.25,2.5]]},{"t":"p","p":[[0.25,5.5],[1.25,4.5],[0.25,4.5]]},{"t":"p","p":[[7.75,4.5],[6.75,4.5],[7.75,5.5]]},{"t":"p","p":[[7.75,2.5],[6.75,3.5],[7.75,3.5]]},{"t":"p","p":[[2.5,0.25],[3.5,1.25],[3.5,0.25]]},{"t":"p","p":[[4.5,0.25],[4.5,1.25],[5.5,0.25]]}],[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]},{"t":"p","p":[[6.5,4.25],[7.5,5.25],[7.5,4.25]]},{"t":"p","p":[[7.5,3.75],[7.5,2.75],[6.5,3.75]]}]],"stg":[[[[4.0,4.0],[8.0,8.0],[4.0,8.0]],[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]}]],[[[4.0,4.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]}]],[[[0.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]},{"t":"p","p":[[1.5,3.75],[0.5,2.75],[0.5,3.75]]},{"t":"p","p":[[0.5,4.25],[0.5,5.25],[1.5,4.25]]}]],[[[0.0,0.0],[8.0,0.0],[8.0,8.0],[0.0,8.0]],[{"t":"p","p":[[4.25,7.5],[5.25,7.5],[4.25,6.5]]},{"t":"p","p":[[3.75,6.5],[2.75,7.5],[3.75,7.5]]},{"t":"p","p":[[1.5,3.75],[0.5,2.75],[0.5,3.75]]},{"t":"p","p":[[0.5,4.25],[0.5,5.25],[1.5,4.25]]},{"t":"p","p":[[6.5,4.25],[7.5,5.25],[7.5,4.25]]},{"t":"p","p":[[7.5,3.75],[7.5,2.75],[6.5,3.75]]},{"t":"p","p":[[3.75,0.5],[2.75,0.5],[3.75,1.5]]},{"t":"p","p":[[4.25,1.5],[5.25,0.5],[4.25,0.5]]}]]]}];
+const ID='oritatami';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>おりたたみ・切りぬき 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* おりたたみ・切りぬき：p={kind:'tap'|'open'|'rev', steps:[{n,poly,a,b,m,f,t}], fin:最後の紙, holes:あけた穴, open/a:開いた形, ds, cells(tap), stg:[[紙,穴]…]（最後の紙→全部開く）}
+   紙は 0〜8 の正方形。穴は {t:'c',x,y,r}（丸）か {t:'p',p:[[x,y]…]}（形）。開いた形は生成時に折り目で反転して計算ずみ */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'1回折る・穴の場所をタップ',2:'2回折る・ななめ折り',3:'形の切りぬき・ぎゃくの問題',4:'3回折る・折り目の切りこみ',5:'三角に3回折る'};
+const RULES=`<ol class="rules">
+  <li>正方形の紙を、図のように<b>半分に折ります</b>（点線が折り目、矢印が折る向き）。</li>
+  <li>折った紙の<b>黒いところ</b>を、重なった紙ぜんぶいっしょに切りぬきます。</li>
+  <li>紙を<b>ぜんぶ開くと</b>どうなるかな？　穴は折り目について<b>鏡にうつしたように</b>（線対称に）ふえます。</li>
+  <li>レベル1は、開いた紙の<b>穴があくマスをタップ</b>。レベル2からは4つの中からえらびます。「ぎゃくの問題」は、開いた形から、折った紙のどこを切ったかを当てます。</li></ol>`;
+const OR_PAPER='#fde68a',OR_EDGE='#b45309',OR_HOLE='#2a2520',OR_SEAL='#7c3aed';
+const FNAME={L:'右を左へ',R:'左を右へ',U:'下を上へ',D:'上を下へ'};
+const fname=n=>FNAME[n]||(n[0]==='d'?'ななめに三角':'三角を半分');
+function startStage(p){P=p;S={hints:0,done:false,msg:'',msgc:'',wrong:[],hint:false,mark:{},opts:p.kind==='tap'?null:shuffle([0,1,2,3])};begin(p);draw();}
+const pts=a=>a.map(([x,y])=>`${x},${y}`).join(' ');
+function holeSVG(h,fill){
+  if(h.t==='c')return `<circle cx="${h.x}" cy="${h.y}" r="${h.r}" fill="${fill||OR_HOLE}"/>`;
+  return `<polygon points="${pts(h.p)}" fill="${fill||OR_HOLE}" stroke="${fill||OR_HOLE}" stroke-width=".03" stroke-linejoin="round"/>`;
+}
+/* 8×8 のわくの中に、紙と穴をかく */
+function sheet(poly,holes,o){o=o||{};let s='';
+  if(o.ghost)s+=`<rect x="0" y="0" width="8" height="8" fill="none" stroke="#cbbfa8" stroke-width=".08" stroke-dasharray=".25 .2"/>`;
+  s+=`<polygon points="${pts(poly)}" fill="${OR_PAPER}" stroke="${OR_EDGE}" stroke-width=".1" stroke-linejoin="round"/>`;
+  if(o.grid)for(let i=1;i<4;i++)s+=`<line x1="${2*i}" y1="0" x2="${2*i}" y2="8" stroke="#e3c470" stroke-width=".05"/><line x1="0" y1="${2*i}" x2="8" y2="${2*i}" stroke="#e3c470" stroke-width=".05"/>`;
+  (holes||[]).forEach(h=>s+=holeSVG(h));
+  return s;}
+function arrowPath(f,t){const mx=(f[0]+t[0])/2,my=(f[1]+t[1])/2,dx=t[0]-f[0],dy=t[1]-f[1],L=Math.hypot(dx,dy)||1;
+  const cx=mx-dy/L*L*0.35,cy=my+dx/L*L*0.35;
+  return `<path d="M${f[0]},${f[1]} Q${cx},${cy} ${t[0]},${t[1]}" fill="none" stroke="${OR_SEAL}" stroke-width=".22" marker-end="url(#orar)"/>`;}
+const DEFS=`<defs><marker id="orar" markerWidth="4" markerHeight="4" refX="2.2" refY="2" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L4,2 L0,4 z" fill="${OR_SEAL}"/></marker></defs>`;
+const SW=n=>Math.min(84,Math.floor((284-(n-1)*16)/n));
+function stepSVG(st,w){
+  let s=sheet(st.poly,[],{ghost:true});
+  s+=`<polygon points="${pts(st.m)}" fill="#f5c04f" stroke="none"/>`;
+  s+=`<line x1="${st.a[0]}" y1="${st.a[1]}" x2="${st.b[0]}" y2="${st.b[1]}" stroke="${OR_SEAL}" stroke-width=".16" stroke-dasharray=".4 .25"/>`;
+  s+=arrowPath(st.f,st.t);
+  return `<svg viewBox="-.4 -.4 8.8 8.8" width="${w}" height="${w}" aria-label="${fname(st.n)}折る">${DEFS}${s}</svg>`;}
+function strip(){
+  const w=SW(P.steps.length+1);const it=P.steps.map((st,i)=>`<figure><figcaption>${i+1}回目</figcaption>${stepSVG(st,w)}<figcaption>${fname(st.n)}</figcaption></figure>`);
+  const last=P.kind==='rev'?`<svg viewBox="-.4 -.4 8.8 8.8" width="${w}" height="${w}">${sheet(P.fin,[],{ghost:true})}<text x="4" y="4.6" text-anchor="middle" font-size="2.2" fill="${OR_SEAL}" font-weight="700">？</text></svg>`
+    :`<svg viewBox="-.4 -.4 8.8 8.8" width="${w}" height="${w}" aria-label="切りぬく">${sheet(P.fin,P.holes,{ghost:true})}</svg>`;
+  it.push(`<figure><figcaption>${P.kind==='rev'?'どこ？':'切りぬく'}</figcaption>${last}<figcaption>${P.kind==='rev'?'':'黒いところ'}</figcaption></figure>`);
+  return `<div class="orstrip">${it.join('<span class="orarw">→</span>')}</div>`;}
+/* 最後の紙を大きく（まわりの切れはしもかく） */
+function foldedBig(holes,max){
+  const xs=P.fin.map(p=>p[0]),ys=P.fin.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const w=x1-x0,h=y1-y0,sc=max/Math.max(w,h);
+  return `<svg viewBox="${x0-.3} ${y0-.3} ${w+.6} ${h+.6}" style="width:${(w+.6)*sc}px;max-width:100%">${sheet(P.fin,holes)}</svg>`;}
+const openSVG=(holes,px,extra)=>`<svg viewBox="-.2 -.2 8.4 8.4" style="width:100%;max-width:${px}px">${sheet([[0,0],[8,0],[8,8],[0,8]],holes)}${extra||''}</svg>`;
+const OPT=()=>P.kind==='tap'?[]:[P.a,...P.ds];
+function creases(){return P.steps.map(st=>`<line x1="${st.a[0]}" y1="${st.a[1]}" x2="${st.b[0]}" y2="${st.b[1]}" stroke="${OR_SEAL}" stroke-width=".1" stroke-dasharray=".35 .25"/>`).join('');}
+/* レベル1：開いた紙の4×4のマスをタップ */
+function tapBoard(){
+  let s=sheet([[0,0],[8,0],[8,8],[0,8]],[],{grid:true})+creases();
+  if(S.hint)s+=`<polygon points="${pts(P.fin)}" fill="${OR_SEAL}" fill-opacity=".12" stroke="${OR_SEAL}" stroke-width=".12"/>`+P.holes.map(h=>`<circle cx="${h.x}" cy="${h.y}" r="${h.r}" fill="none" stroke="${OR_HOLE}" stroke-width=".12" stroke-dasharray=".25 .15"/>`).join('');
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++){const on=S.mark[r+','+c];
+    if(on)s+=`<circle cx="${2*c+1}" cy="${2*r+1}" r=".6" fill="${OR_HOLE}"/>`;
+    s+=`<rect class="orcell" data-r="${r}" data-c="${c}" x="${2*c}" y="${2*r}" width="2" height="2" fill="transparent"/>`;}
+  return `<svg id="ortap" viewBox="-.2 -.2 8.4 8.4" style="width:100%;max-width:280px" role="img" aria-label="開いた紙">${s}</svg>`;}
+function hintHTML(){
+  if(P.kind==='tap')return `<p class="hintbox">ヒント：むらさきのところが、折った紙です。そこには、切りぬいた穴がそのままあきます。折り目の点線について、<b>反対がわの同じきょり</b>のところにも穴があくよ。</p>`;
+  if(P.kind==='open'){const [pl,hs]=P.stg[1];return `<p class="hintbox">ヒント：1回だけ開くと、こうなります。のこりも同じように、折り目について反対がわにうつそう。</p><div class="boardw"><svg viewBox="-.4 -.4 8.8 8.8" style="width:100%;max-width:180px">${sheet(pl,hs,{ghost:true})}</svg></div>`;}
+  return `<p class="hintbox">ヒント：開いた形の上の、むらさきのわくが<b>折った紙のところ</b>です。わくの中にある穴（形）を、折った紙で切りぬいています。</p>`;
+}
+function draw(){
+  const tap=P.kind==='tap',rev=P.kind==='rev',O=OPT();
+  let body='';
+  if(tap){
+    body=`<p class="qq">紙を開くと、穴はどこにあく？　<b>穴があくマスを全部タップ</b>しよう。</p>
+      <div class="boardw">${tapBoard()}</div>
+      ${S.done?'':`<div class="row" style="justify-content:center"><button class="btn go" id="chk">これでOK</button><button class="btn" id="clr">全部消す</button></div>`}`;
+  }else if(!rev){
+    body=`<div class="label">折った紙（黒いところを切りぬく）</div><div class="boardw">${foldedBig(P.holes,170)}</div>
+      <p class="qq">紙をぜんぶ開くと、どうなる？</p>
+      <div class="opts4">${S.opts.map((k,i)=>`<button class="ob ${S.done&&k===0?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${openSVG(O[k],150)}</button>`).join('')}</div>`;
+  }else{
+    const ex=S.hint&&!S.done?`<polygon points="${pts(P.fin)}" fill="${OR_SEAL}" fill-opacity=".15" stroke="${OR_SEAL}" stroke-width=".14"/>`:'';
+    body=`<div class="label">開いたら、こうなった</div><div class="boardw">${openSVG(P.open,190,ex)}</div>
+      <p class="qq">折った紙の<b>どこを切りぬいた</b>のかな？</p>
+      <div class="opts4">${S.opts.map((k,i)=>`<button class="ob ${S.done&&k===0?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${foldedBig(O[k],110)}</button>`).join('')}</div>`;
+  }
+  app.innerHTML=`${topBar()}
+    <div class="label">折り方</div><div class="boardw">${strip()}</div>
+    ${body}
+    ${S.hint&&!S.done?hintHTML():''}
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  if(tap){
+    app.querySelectorAll('.orcell').forEach(c=>c.addEventListener('click',()=>{const k=c.dataset.r+','+c.dataset.c;if(S.mark[k])delete S.mark[k];else S.mark[k]=1;S.msg='';draw();}));
+    document.getElementById('chk').onclick=check;
+    document.getElementById('clr').onclick=()=>{S.mark={};S.msg='';draw();};
+  }else app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+    if(S.opts[i]===0){S.done=true;draw();}
+    else{S.wrong.push(i);S.hints++;S.msg=rev?'ちがいます。その紙を開くと、形の向きや場所がずれます。':'ちがいます。折り目について、どちらに穴がうつるか考えよう。';S.msgc='ng';draw();}});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+function check(){
+  const want=new Set(P.cells.map(([r,c])=>r+','+c)),got=Object.keys(S.mark);
+  if(got.length===want.size&&got.every(k=>want.has(k))){S.done=true;draw();return;}
+  if(!got.length){S.msg='穴があくマスをタップしてね。';S.msgc='';draw();return;}
+  S.hints++;
+  const miss=[...want].filter(k=>!S.mark[k]).length,extra=got.filter(k=>!want.has(k)).length;
+  S.msg=got.length===0?'穴があくマスをタップしてね。':`ざんねん。${extra?'穴があかないマスに印があります。':''}${miss?`穴があくマスが、あと${miss}つあります。`:''}`;
+  S.msgc='ng';draw();
+}
+function explain(){
+  const st=P.stg.map(([pl,hs],i)=>`<figure><figcaption>${i===0?'折った紙':i===P.stg.length-1?'全部開く':i+'回開く'}</figcaption><svg viewBox="-.4 -.4 8.8 8.8" width="${SW(P.stg.length)-4}" height="${SW(P.stg.length)-4}">${sheet(pl,hs,{ghost:true})}</svg></figure>`).join('<span class="orarw">→</span>');
+  const n=P.stg[P.stg.length-1][1].length;
+  return `<p style="margin:0">紙を1回開くたびに、穴は折り目について<b>線対称に</b>うつり、数が2倍になります。${P.nt?'折り目に切りこみを入れると、開いたとき折り目の両がわがつながった形になります。':`${P.steps.length}回折ったので、穴（形）は ${P.stg[0][1].length}×${2**P.steps.length}＝<b>${n}こ</b>。`}</p>
+    <div class="label" style="color:var(--ok)">開いていくようす</div><div class="orstrip">${st}</div>`;
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

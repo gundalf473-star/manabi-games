@@ -1,0 +1,305 @@
+<title>絵でわかる推理</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="論理・推理">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="「ゆいは いぬを かっていません」のような絵つきの手がかりから、だれがどのペット・くだもの・ぼうしかを、表に○と✕をつけて当てる推理パズル。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.eclues{display:flex;flex-direction:column;gap:6px}
+.eclue{display:flex;align-items:center;gap:6px;border:2px solid var(--rule);border-radius:10px;padding:4px 8px;background:var(--surface);flex-wrap:wrap}
+.eclue.bad{border-color:var(--ng);background:var(--ngsoft)}
+.eclue svg{flex:none}
+.eno2{flex:none;width:22px;height:22px;border-radius:50%;background:var(--seal);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.etx{flex:1 1 150px;font-size:15px;line-height:1.5}
+.etx .eno{color:var(--ng)}
+.epen .btn{padding:8px 14px}
+.ecell{touch-action:manipulation}
+@media (max-width:420px){#app.box{padding:12px}.boardw{padding:4px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>絵でわかる推理</h1>
+    <p class="lead">だれが どのペットを かっているのかな？ 絵の手がかりを読んで、表に○と✕をつけて当てよう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"id":"1-01","lv":1,"n":2,"names":["そら","めい"],"th":["pet"],"items":{"a":["いぬ","ねこ"]},"clues":[["not",1,"a",1]],"sol":{"a":[1,0]},"steps":[["a",1,0,"row"],["a",0,1,"row"]]},{"id":"2-01","lv":2,"n":3,"names":["あお","かい","はる"],"th":["fruit"],"items":{"a":["ぶどう","みかん","バナナ"]},"clues":[["not",2,"a",1],["not",0,"a",1],["not",0,"a",0]],"sol":{"a":[2,1,0]},"steps":[["a",0,2,"row"],["a",2,0,"row"],["a",1,1,"row"]]},{"id":"3-01","lv":3,"n":4,"names":["そら","かい","ひな","ゆい"],"th":["pet"],"items":{"a":["さかな","いぬ","うさぎ","ねこ"]},"clues":[["not",2,"a",3],["is",0,"a",0],["not",2,"a",1],["not",3,"a",3]],"sol":{"a":[0,3,2,1]},"steps":[["a",0,0,"is"],["a",2,2,"row"],["a",3,1,"row"],["a",1,3,"row"]]},{"id":"4-01","lv":4,"n":4,"names":["はる","ゆい","そら","りく"],"th":["hat"],"items":{"a":["青","黄色","緑","赤"]},"clues":[["or",2,"a",1,2],["or",0,"a",2,3],["or",3,"a",0,1],["not",0,"a",3]],"sol":{"a":[2,3,1,0]},"steps":[["a",0,2,"row"],["a",2,1,"row"],["a",3,0,"row"],["a",1,3,"row"]]},{"id":"5-01","lv":5,"n":3,"names":["めい","ひな","はる"],"th":["pet","hat"],"items":{"a":["ことり","うさぎ","ねこ"],"b":["赤","青","黄色"]},"clues":[["same",0,2],["or",0,"b",0,2],["not",2,"b",0],["not",2,"b",1],["same",1,0]],"sol":{"a":[1,2,0],"b":[0,1,2]},"steps":[["b",2,2,"row"],["b",0,0,"row"],["b",1,1,"row"],["a",0,1,"link"],["a",1,2,"link"],["a",2,0,"row"]]}];
+const ID='enosuiri';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>絵でわかる推理 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 絵でわかる推理：p={n, names, th:['pet'|'fruit'|'hat', ('hat')], items:{a:[…],b?:[…]}, clues, sol:{a:[人ごとの番号],b?}, steps}
+   手がかり ['is',人,c,j] ['not',人,c,j] ['or',人,c,j,k] ['same',aのj,bのk] ['diff',aのj,bのk]
+   gen_enosuiri.py で、答えが1つだけ・○✕の表だけで解ける・むだな手がかりがない ことを確かめてある */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'2人・3人（手がかり1〜2つ）',2:'3人（✕の手がかり）',3:'4人（○と✕）',4:'4人（「AかB」の手がかり）',5:'ペットとぼうし（2つの表）'};
+const RULES=`<ol class="rules">
+  <li>1人に1つずつ、みんな<b>ちがうもの</b>です。手がかりを読んで、だれがどれかを当てよう。</li>
+  <li>表のマスをタップして印をつけよう。「<b>○をかく</b>」「<b>✕をかく</b>」でペンを切りかえます。同じ印をもう一度タップすると消えます。</li>
+  <li>○をつけると、同じ<b>たて・横</b>のマスにうすい✕が自動でつきます。</li>
+  <li>全員に○がつくと答え合わせ。全部合っていればクリア！</li>
+  <li>レベル5は、ペットとぼうしの<b>2つの表</b>をうめます。</li></ol>`;
+const ESK='#f6d7b8',EHAIR=['#3a2a20','#8a5a32','#22223a','#b0602d','#5a3a2a','#2a2a2a','#6b4226','#40302a'];
+const EHAT={'赤':'#e23b3b','青':'#2f6fdf','黄色':'#f2c21b','緑':'#2e9e4f'};
+/* 人の顔（名前ごとに髪型を変える）。(x,y)が中心、s が大きさ */
+function eFace(i,x,y,s){const k=['ゆい','そら','はる','りく','めい','かい','あお','ひな'].indexOf(P.names[i]),h=EHAIR[k<0?i:k],r=s/2;
+  let hair='';
+  if(k%4===0)hair=`<path d="M${x-r},${y} A${r},${r} 0 0 1 ${x+r},${y} L${x+r},${y+r*.5} Q${x+r*.9},${y-r*.35} ${x},${y-r*.45} Q${x-r*.9},${y-r*.35} ${x-r},${y+r*.5}Z" fill="${h}"/><circle cx="${x+r*.85}" cy="${y-r*.55}" r="${r*.3}" fill="${h}"/><circle cx="${x-r*.85}" cy="${y-r*.55}" r="${r*.3}" fill="${h}"/>`;
+  else if(k%4===1)hair=`<path d="M${x-r*1.02},${y+r*.1} A${r*1.02},${r*1.02} 0 0 1 ${x+r*1.02},${y+r*.1} Q${x+r*.3},${y-r*.6} ${x-r*.2},${y-r*.35} Q${x-r*.6},${y-r*.1} ${x-r*1.02},${y+r*.1}Z" fill="${h}"/>`;
+  else if(k%4===2)hair=`<path d="M${x-r*1.05},${y+r*.9} L${x-r*1.05},${y} A${r*1.05},${r*1.05} 0 0 1 ${x+r*1.05},${y} L${x+r*1.05},${y+r*.9} L${x+r*.8},${y+r*.9} L${x+r*.8},${y-r*.2} Q${x},${y-r*.55} ${x-r*.8},${y-r*.2} L${x-r*.8},${y+r*.9}Z" fill="${h}"/>`;
+  else hair=`<path d="M${x-r},${y-r*.05} A${r},${r} 0 0 1 ${x+r},${y-r*.05} L${x+r*.6},${y-r*.4} L${x+r*.3},${y-r*.15} L${x},${y-r*.45} L${x-r*.3},${y-r*.15} L${x-r*.6},${y-r*.4}Z" fill="${h}"/><circle cx="${x}" cy="${y-r*1.05}" r="${r*.18}" fill="${h}"/>`;
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${ESK}" stroke="#6a4a30" stroke-width="1.2"/>${k%4===2?'':''}${hair}<circle cx="${x-r*.35}" cy="${y+r*.12}" r="${r*.1}" fill="#2a2520"/><circle cx="${x+r*.35}" cy="${y+r*.12}" r="${r*.1}" fill="#2a2520"/><path d="M${x-r*.3},${y+r*.45} Q${x},${y+r*.7} ${x+r*.3},${y+r*.45}" fill="none" stroke="#a0442a" stroke-width="${Math.max(1.2,s*.05)}" stroke-linecap="round"/>`;}
+/* もの（ペット・くだもの・ぼうし）の絵 */
+function eItem(th,name,x,y,s){const r=s/2,L=`stroke="#2a2520" stroke-width="${Math.max(1,s*.035)}"`;
+  if(th==='hat'){const c=EHAT[name];return `<path d="M${x-r*.75},${y+r*.25} A${r*.75},${r*.8} 0 0 1 ${x+r*.75},${y+r*.25}Z" fill="${c}" ${L}/><path d="M${x-r*.95},${y+r*.25} L${x+r*.95},${y+r*.25} Q${x+r*1.0},${y+r*.5} ${x+r*.6},${y+r*.5} L${x-r*.95},${y+r*.5}Z" fill="${c}" ${L}/><circle cx="${x}" cy="${y-r*.58}" r="${r*.12}" fill="${c}" ${L}/>`;}
+  if(name==='いぬ')return `<ellipse cx="${x}" cy="${y+r*.1}" rx="${r*.62}" ry="${r*.58}" fill="#d9a066" ${L}/><ellipse cx="${x-r*.62}" cy="${y+r*.05}" rx="${r*.22}" ry="${r*.45}" fill="#7a4a24" ${L} transform="rotate(15 ${x-r*.62} ${y})"/><ellipse cx="${x+r*.62}" cy="${y+r*.05}" rx="${r*.22}" ry="${r*.45}" fill="#7a4a24" ${L} transform="rotate(-15 ${x+r*.62} ${y})"/><circle cx="${x-r*.22}" cy="${y}" r="${r*.08}" fill="#2a2520"/><circle cx="${x+r*.22}" cy="${y}" r="${r*.08}" fill="#2a2520"/><ellipse cx="${x}" cy="${y+r*.3}" rx="${r*.14}" ry="${r*.1}" fill="#2a2520"/>`;
+  if(name==='ねこ')return `<polygon points="${x-r*.6},${y-r*.1} ${x-r*.5},${y-r*.75} ${x-r*.1},${y-r*.4}" fill="#9aa0a8" ${L}/><polygon points="${x+r*.6},${y-r*.1} ${x+r*.5},${y-r*.75} ${x+r*.1},${y-r*.4}" fill="#9aa0a8" ${L}/><ellipse cx="${x}" cy="${y+r*.12}" rx="${r*.62}" ry="${r*.55}" fill="#9aa0a8" ${L}/><circle cx="${x-r*.22}" cy="${y+r*.02}" r="${r*.08}" fill="#2a2520"/><circle cx="${x+r*.22}" cy="${y+r*.02}" r="${r*.08}" fill="#2a2520"/><path d="M${x-r*.9},${y+r*.22} L${x-r*.35},${y+r*.3} M${x-r*.9},${y+r*.45} L${x-r*.35},${y+r*.38} M${x+r*.9},${y+r*.22} L${x+r*.35},${y+r*.3} M${x+r*.9},${y+r*.45} L${x+r*.35},${y+r*.38}" stroke="#2a2520" stroke-width="${Math.max(.8,s*.025)}"/><polygon points="${x-r*.07},${y+r*.24} ${x+r*.07},${y+r*.24} ${x},${y+r*.33}" fill="#e88"/>`;
+  if(name==='うさぎ')return `<ellipse cx="${x-r*.25}" cy="${y-r*.5}" rx="${r*.15}" ry="${r*.45}" fill="#fff" ${L}/><ellipse cx="${x+r*.25}" cy="${y-r*.5}" rx="${r*.15}" ry="${r*.45}" fill="#fff" ${L}/><ellipse cx="${x-r*.25}" cy="${y-r*.5}" rx="${r*.06}" ry="${r*.32}" fill="#f4b6c2"/><ellipse cx="${x+r*.25}" cy="${y-r*.5}" rx="${r*.06}" ry="${r*.32}" fill="#f4b6c2"/><ellipse cx="${x}" cy="${y+r*.32}" rx="${r*.55}" ry="${r*.48}" fill="#fff" ${L}/><circle cx="${x-r*.2}" cy="${y+r*.25}" r="${r*.08}" fill="#c8352d"/><circle cx="${x+r*.2}" cy="${y+r*.25}" r="${r*.08}" fill="#c8352d"/><ellipse cx="${x}" cy="${y+r*.45}" rx="${r*.07}" ry="${r*.05}" fill="#e88"/>`;
+  if(name==='ことり')return `<ellipse cx="${x}" cy="${y+r*.1}" rx="${r*.6}" ry="${r*.52}" fill="#f6d33c" ${L}/><path d="M${x-r*.15},${y+r*.15} Q${x+r*.25},${y+r*.05} ${x+r*.3},${y+r*.45} Q${x},${y+r*.45} ${x-r*.15},${y+r*.15}Z" fill="#e0b020" ${L}/><polygon points="${x-r*.58},${y-r*.02} ${x-r*.95},${y+r*.1} ${x-r*.58},${y+r*.2}" fill="#f08a24" ${L}/><circle cx="${x-r*.28}" cy="${y-r*.08}" r="${r*.08}" fill="#2a2520"/><path d="M${x+r*.5},${y-r*.05} L${x+r*.9},${y-r*.25} L${x+r*.85},${y+r*.15}Z" fill="#f6d33c" ${L}/>`;
+  if(name==='さかな')return `<ellipse cx="${x-r*.1}" cy="${y}" rx="${r*.62}" ry="${r*.4}" fill="#5aa9e6" ${L}/><polygon points="${x+r*.45},${y} ${x+r*.95},${y-r*.38} ${x+r*.95},${y+r*.38}" fill="#5aa9e6" ${L}/><circle cx="${x-r*.4}" cy="${y-r*.08}" r="${r*.09}" fill="#2a2520"/><path d="M${x-r*.05},${y-r*.3} Q${x+r*.1},${y} ${x-r*.05},${y+r*.3}" fill="none" stroke="#2a6aa0" stroke-width="${Math.max(1,s*.03)}"/>`;
+  if(name==='りんご')return `<path d="M${x},${y-r*.35} C${x-r*.2},${y-r*.55} ${x-r*.8},${y-r*.5} ${x-r*.75},${y+r*.1} C${x-r*.7},${y+r*.6} ${x-r*.3},${y+r*.8} ${x},${y+r*.65} C${x+r*.3},${y+r*.8} ${x+r*.7},${y+r*.6} ${x+r*.75},${y+r*.1} C${x+r*.8},${y-r*.5} ${x+r*.2},${y-r*.55} ${x},${y-r*.35}Z" fill="#e0392f" ${L}/><path d="M${x},${y-r*.35} L${x+r*.05},${y-r*.75}" stroke="#6b4226" stroke-width="${Math.max(1.5,s*.06)}"/><path d="M${x+r*.07},${y-r*.6} Q${x+r*.45},${y-r*.85} ${x+r*.55},${y-r*.55} Q${x+r*.3},${y-r*.45} ${x+r*.07},${y-r*.6}Z" fill="#3e9e3e"/>`;
+  if(name==='バナナ')return `<path d="M${x-r*.75},${y-r*.35} Q${x-r*.6},${y+r*.75} ${x+r*.8},${y+r*.25} Q${x+r*.85},${y+r*.05} ${x+r*.65},${y+r*.08} Q${x-r*.3},${y+r*.35} ${x-r*.5},${y-r*.45}Z" fill="#f5d342" ${L}/><path d="M${x-r*.75},${y-r*.35} L${x-r*.68},${y-r*.6} L${x-r*.5},${y-r*.45}" fill="#6b4226" ${L}/>`;
+  if(name==='ぶどう'){let o='';[[0,-.25],[-.3,-.25],[.3,-.25],[-.15,.05],[.15,.05],[0,.35],[-.42,.05],[.42,.05]].slice(0,7).forEach(([u,v])=>{o+=`<circle cx="${x+u*r}" cy="${y+v*r+r*.1}" r="${r*.2}" fill="#8e44ad" ${L}/>`;});
+    return o+`<path d="M${x},${y-r*.42} L${x+r*.05},${y-r*.75}" stroke="#6b4226" stroke-width="${Math.max(1.5,s*.06)}"/><path d="M${x+r*.05},${y-r*.6} Q${x+r*.45},${y-r*.85} ${x+r*.6},${y-r*.55} Q${x+r*.3},${y-r*.42} ${x+r*.05},${y-r*.6}Z" fill="#3e9e3e"/>`;}
+  if(name==='みかん')return `<ellipse cx="${x}" cy="${y+r*.12}" rx="${r*.72}" ry="${r*.6}" fill="#f39a1e" ${L}/><path d="M${x},${y-r*.48} Q${x+r*.35},${y-r*.75} ${x+r*.5},${y-r*.48} Q${x+r*.25},${y-r*.35} ${x},${y-r*.48}Z" fill="#3e9e3e"/><circle cx="${x}" cy="${y-r*.45}" r="${r*.07}" fill="#6b4226"/>`;
+  return '';}
+const eCat=c=>P.th[c==='a'?0:1];
+const eName=(c,j)=>{const t=eCat(c),w=P.items[c][j];return t==='hat'?w+'のぼうし':w;};
+function eText(cl){const N=i=>`<b>${P.names[i]}</b>`;const t=cl[0];
+  if(t==='same'||t==='diff')return `<b>${P.items.a[cl[1]]}</b>をかっている人は、<b>${P.items.b[cl[2]]}のぼうし</b>${t==='same'?'です':'では<b class="eno">ありません</b>'}。`;
+  const c=cl[2],th=eCat(c),X=`<b>${P.items[c][cl[3]]}</b>`,Y=t==='or'?`<b>${P.items[c][cl[4]]}</b>`:'';
+  if(th==='pet')return t==='is'?`${N(cl[1])}は ${X}をかっています。`:t==='not'?`${N(cl[1])}は ${X}を<b class="eno">かっていません</b>。`:`${N(cl[1])}がかっているのは、${X}か ${Y}です。`;
+  if(th==='fruit')return t==='is'?`${N(cl[1])}は ${X}がすきです。`:t==='not'?`${N(cl[1])}は ${X}が<b class="eno">すきではありません</b>。`:`${N(cl[1])}がすきなのは、${X}か ${Y}です。`;
+  return t==='is'?`${N(cl[1])}のぼうしは ${X}です。`:t==='not'?`${N(cl[1])}のぼうしは ${X}では<b class="eno">ありません</b>。`:`${N(cl[1])}のぼうしは、${X}か ${Y}です。`;}
+function mark(x,y,ok){return ok?`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#1d7a4c" stroke-width="3.5"/>`:`<path d="M${x-8},${y-8} L${x+8},${y+8} M${x+8},${y-8} L${x-8},${y+8}" stroke="#c8352d" stroke-width="3.5" stroke-linecap="round"/>`;}
+function eClueSVG(cl){const t=cl[0];let s='',w;
+  if(t==='same'||t==='diff'){s=eItem('pet',P.items.a[cl[1]],22,22,38)+`<text x="56" y="31" text-anchor="middle" font-size="24" font-weight="700" fill="${t==='same'?'#1d7a4c':'#c8352d'}" font-family="sans-serif">${t==='same'?'＝':'≠'}</text>`+eItem('hat',P.items.b[cl[2]],90,22,38);w=112;}
+  else{const c=cl[2],th=eCat(c);s=eFace(cl[1],20,24,32);
+    if(t==='or'){s+=eItem(th,P.items[c][cl[3]],62,22,36)+`<text x="92" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#3b2f6b" font-family="sans-serif">か</text>`+eItem(th,P.items[c][cl[4]],122,22,36);w=144;}
+    else{s+=mark(52,24,t==='is')+eItem(th,P.items[c][cl[3]],86,22,38);w=108;}}
+  return `<svg viewBox="0 0 ${w} 44" width="${w*0.8}" height="${44*0.8}" aria-hidden="true">${s}</svg>`;}
+/* 表 */
+const EC=50,ELW=88,ETH=60;
+function gridSVG(c){const n=P.n,th=eCat(c),m=S.m[c];let s='';
+  const W=ELW+n*EC,H=ETH+n*EC;
+  for(let j=0;j<n;j++){const x=ELW+j*EC+EC/2;s+=eItem(th,P.items[c][j],x,ETH/2-6,34)+`<text x="${x}" y="${ETH-6}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3b2f6b" font-family="sans-serif">${esc(P.items[c][j])}</text>`;}
+  for(let i=0;i<n;i++){const y=ETH+i*EC+EC/2;s+=eFace(i,20,y,30)+`<text x="40" y="${y+6}" font-size="16" font-weight="700" fill="#2a2520" font-family="sans-serif">${esc(P.names[i])}</text>`;}
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const x=ELW+j*EC,y=ETH+i*EC,v=m[i][j];
+    let auto=false;if(!v){for(let k=0;k<n;k++){if(m[i][k]==='o'||m[k][j]==='o')auto=true;}}
+    const fin=S.done&&P.sol[c][i]===j;
+    s+=`<g class="ecell" data-c="${c}" data-i="${i}" data-j="${j}" style="cursor:${S.done?'default':'pointer'}"><rect x="${x+1}" y="${y+1}" width="${EC-2}" height="${EC-2}" rx="5" fill="${fin?'#e0f0e6':'#fff'}" stroke="#cdbf9f" stroke-width="1.2"/>`;
+    if(v==='o'||fin)s+=`<circle cx="${x+EC/2}" cy="${y+EC/2}" r="15" fill="none" stroke="#1d7a4c" stroke-width="4"/>`;
+    else if(v==='x')s+=`<path d="M${x+15},${y+15} L${x+EC-15},${y+EC-15} M${x+EC-15},${y+15} L${x+15},${y+EC-15}" stroke="#c8352d" stroke-width="4" stroke-linecap="round"/>`;
+    else if(auto)s+=`<path d="M${x+17},${y+17} L${x+EC-17},${y+EC-17} M${x+EC-17},${y+17} L${x+17},${y+EC-17}" stroke="#d6cdbd" stroke-width="3" stroke-linecap="round"/>`;
+    s+='</g>';}
+  s+=`<rect x="${ELW}" y="${ETH}" width="${n*EC}" height="${n*EC}" fill="none" stroke="#6a625a" stroke-width="2" rx="4"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="max-width:${Math.round(W*1.12)}px" role="img" aria-label="${th==='pet'?'ペット':th==='fruit'?'くだもの':'ぼうし'}の表">${s}</svg>`;}
+function startStage(p){P=p;const z=()=>Array.from({length:p.n},()=>Array(p.n).fill(''));
+  S={hints:0,done:false,msg:'',msgc:'',pen:'o',m:{a:z()},bad:[],hint:false};if(p.sol.b)S.m.b=z();begin(p);draw();}
+const eCats=()=>P.sol.b?['a','b']:['a'];
+function holdsU(cl,u){const t=cl[0];
+  if(t==='is')return u[cl[2]][cl[1]]===cl[3];if(t==='not')return u[cl[2]][cl[1]]!==cl[3];if(t==='or')return u[cl[2]][cl[1]]===cl[3]||u[cl[2]][cl[1]]===cl[4];
+  const p=u.a.indexOf(cl[1]);return t==='same'?u.b[p]===cl[2]:u.b[p]!==cl[2];}
+function check(){
+  const u={};for(const c of eCats()){const m=S.m[c];const r=m.map(row=>{const k=row.indexOf('o');return row.filter(v=>v==='o').length===1?k:-1;});
+    if(r.includes(-1)||new Set(r).size!==P.n)return;u[c]=r;}
+  if(eCats().every(c=>u[c].every((v,i)=>v===P.sol[c][i]))){S.done=true;return;}
+  S.bad=P.clues.map((cl,k)=>holdsU(cl,u)?-1:k).filter(k=>k>=0);
+  const sig=JSON.stringify(u);if(sig!==S.lastWrong){S.hints++;S.lastWrong=sig;}  /* 同じまちがいの答えは1回だけ数える */
+  S.msg=S.bad.length?'合わない手がかりがあります（赤いわく）。もう一度考えてみよう。':'ちがうところがあります。もう一度考えてみよう。';S.msgc='ng';}
+const reasonTxt=(st)=>{const [c,i,v,r]=st,N=P.names[i],X=eName(c,v);
+  if(r==='is')return `${N}は ${X}（手がかりのとおり）`;
+  if(r==='row')return `${N}は ${X}（${N}にのこっているのは、これだけ）`;
+  if(r==='col')return `${X}は ${N}（${X}になれるのは、${N}だけ）`;
+  return `${N}は ${X}（ペットとぼうしの手がかりから）`;};
+function draw(){
+  const two=!!P.sol.b;
+  app.innerHTML=`${topBar()}
+    <div class="label">手がかり</div>
+    <div class="eclues">${P.clues.map((cl,k)=>`<div class="eclue ${S.bad.includes(k)&&!S.done?'bad':''}"><span class="eno2">${k+1}</span>${eClueSVG(cl)}<span class="etx">${eText(cl)}</span></div>`).join('')}</div>
+    ${eCats().map(c=>`<div class="boardw">${gridSVG(c)}</div>`).join('')}
+    ${S.done?'':`<div class="row epen"><span class="note">ペン：</span><button class="btn ${S.pen==='o'?'on':''}" id="pen-o">○をかく</button><button class="btn ${S.pen==='x'?'on':''}" id="pen-x">✕をかく</button><button class="btn" id="clr">全部消す</button></div>
+    <p class="msg ${S.msgc}" id="msg">${S.msg||'マスをタップして印をつけよう。'}</p>
+    <div class="row"><button class="btn" id="hint">ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){
+    const ans=P.names.map((nm,i)=>`<b>${nm}</b>：${eCats().map(c=>eName(c,P.sol[c][i])).join('・')}`).join('<br>');
+    showClear(`<p style="margin:0">${ans}</p><div><b style="font-size:14px">考え方の一例</b><ol class="rules" style="font-size:14px">${P.steps.map(st=>`<li>${reasonTxt(st)}</li>`).join('')}</ol></div>`);return;}
+  app.querySelectorAll('.ecell').forEach(g=>g.addEventListener('click',()=>{const c=g.dataset.c,i=+g.dataset.i,j=+g.dataset.j,m=S.m[c];
+    m[i][j]=m[i][j]===S.pen?'':S.pen;S.msg='';S.msgc='';S.bad=[];check();draw();}));
+  document.getElementById('pen-o').onclick=()=>{S.pen='o';draw();};
+  document.getElementById('pen-x').onclick=()=>{S.pen='x';draw();};
+  document.getElementById('clr').onclick=()=>{for(const c of eCats())S.m[c]=S.m[c].map(r=>r.map(()=>''));S.msg='';S.bad=[];draw();};
+  document.getElementById('hint').onclick=()=>{S.hints++;S.bad=[];
+    /* まちがっている印があれば1つ消す。なければ正しい○を1つかく */
+    for(const c of eCats())for(let i=0;i<P.n;i++)for(let j=0;j<P.n;j++){const v=S.m[c][i][j],ok=P.sol[c][i]===j;
+      if((v==='o'&&!ok)||(v==='x'&&ok)){S.m[c][i][j]='';S.msg=`ヒント：${P.names[i]}の「${eName(c,j)}」の${v==='o'?'○':'✕'}はまちがいなので消しました。`;S.msgc='';draw();return;}}
+    const st=P.steps.find(([c,i,v])=>S.m[c][i][v]!=='o');
+    if(st){const [c,i,v]=st;S.m[c][i][v]='o';S.msg=`ヒント：${reasonTxt(st)}。○をかきました。`;S.msgc='';check();}
+    draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

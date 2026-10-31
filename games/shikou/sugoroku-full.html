@@ -1,0 +1,319 @@
+<title>すごろく作戦 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="対戦・作戦">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="すごろく作戦の有料版。近道に止まるやさしい問題から、落とし穴とはね返り、2回の目で作戦、次にゴールできる目を数える問題、平均の回数で考える問題、よわい・つよいコンピューターとの対戦まで、5つのレベルに20問ずつ、全100問。どの問題も、いちばんよい手は計算で1つに決まります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.sg-ctl{gap:12px}.sg-d{display:inline-flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);opacity:.55}.sg-d.cur{opacity:1;color:var(--seal);font-weight:700}.sg-q{width:46px;height:46px;border:2px dashed var(--rule);border-radius:9px;display:grid;place-items:center;font-size:22px;color:var(--muted)}.sg-pb{display:inline-flex;align-items:center;gap:6px;background:var(--surface)}.sg-dot{width:14px;height:14px;border-radius:50%;display:inline-block}.sg-ex{margin:0;padding-left:1.2em;font-size:14px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>すごろく作戦 100問</h1>
+    <p class="lead">サイコロの目を見て、どのコマを動かすのがいちばん得か考えよう。近道・落とし穴・ぴったりゴールに注意。コンピューターとの対戦もあります。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='sugoroku';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>すごろく作戦 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* すごろく作戦：マス0（スタート）〜G（ゴール）、sp={マス:行き先}（行き先が大きい＝近道、小さい＝落とし穴）。ゴールはぴったり、多すぎた分はもどる。
+   kind='p1'（d の目でいちばん多く進むコマ）| 'p2'（ds=[1回目,2回目] で合計いちばん多く進む）| 'p3'（次の1回でゴールに入れる目がいちばん多くなる）
+   | 'ev'（2つとも入るまでの回数の平均がいちばん少なくなる）| 'play'（コンピューターと競争、cpulv weak|strong） */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'近道に止まろう',2:'落とし穴とゴールのはね返り',3:'2回の目で作戦・対戦',4:'次にゴールできる目をふやす',5:'平均の回数で考える・強い相手'};
+const RULES=`<ol class="rules">
+  <li>サイコロの目の数だけ、<b>コマを1つえらんで</b>進めます。</li>
+  <li><b style="color:#15803d">緑のマス（近道）</b>に止まると、矢印の先までワープ。<b style="color:#b91c1c">赤のマス（落とし穴）</b>に止まると、矢印の先までもどります。通りすぎるだけなら何もおきません。</li>
+  <li>ゴールには<b>ぴったり</b>止まらないと入れません。目が多すぎたら、ゴールでおり返して、多い分だけもどります（もどったマスが近道や落とし穴なら、それも使います）。</li>
+  <li>問題ごとに「いちばんよいコマ」が1つだけあります。コマのボタンをおして答えよう。</li>
+  <li><b>対戦</b>のステージは、コンピューターより先に<b>2つのコマを両方ゴールに入れたら勝ち</b>でクリア。サイコロの運もあるので、負けたら何回でもちょうせんできます（星はへりません）。</li></ol>`;
+const PC=[['赤','#ef4444'],['青','#3b82f6'],['黄','#eab308']];
+const CPC='#57534e';
+const SPM=()=>{const m={};for(const k in P.sp)m[+k]=P.sp[k];return m;};
+function stepF(p,d){const G=P.G,sp=SPM();let t=p+d,bounce=false;if(t>G){t=G-(t-G);bounce=true;}const mid=t;if(sp[t]!==undefined)t=sp[t];return {to:t,mid,bounce,jump:mid!==t};}
+let EVT=null;
+function evTable(){const G=P.G,n=G+1,E=new Float64Array(n*n);const nx=[];for(let p=0;p<=G;p++){nx[p]=[];for(let d=1;d<=6;d++)nx[p][d]=stepF(p,d).to;}
+  for(let it=0;it<3000;it++){let dl=0;for(let a=0;a<=G;a++)for(let b=0;b<=G;b++){if(a===G&&b===G)continue;let tot=0;
+    for(let d=1;d<=6;d++){let m=1e9;if(a!==G)m=Math.min(m,E[nx[a][d]*n+b]);if(b!==G)m=Math.min(m,E[a*n+nx[b][d]]);tot+=m;}
+    const v=1+tot/6;dl=Math.max(dl,Math.abs(v-E[a*n+b]));E[a*n+b]=v;}if(dl<1e-9)break;}
+  return (a,b)=>E[a*n+b];}
+function startStage(p){P=p;EVT=(p.kind==='ev'||p.kind==='play')?evTable():null;S={hints:0,done:false,hint:false};reset();begin(p);draw();}
+function reset(){S.pcs=(P.pcs||P.you).slice();S.cpu=P.cpu?P.cpu.slice():null;S.k=0;S.wrong=null;S.msg='';S.msgc='';S.hl=null;S.trail=[];S.roll=null;S.turn='you';S.busy=false;S.over=null;S.orig=null;S.chosen=[];}
+const COLS=6,U=56,M=4;
+function cellXY(i){const r=Math.floor(i/COLS),c=r%2===0?i%COLS:COLS-1-i%COLS;return [M+c*U+U/2,M+r*U+U/2];}
+function dieSVG(n,size){const s=size||46,q=s/4,pos={1:[[2,2]],2:[[1,1],[3,3]],3:[[1,1],[2,2],[3,3]],4:[[1,1],[3,1],[1,3],[3,3]],5:[[1,1],[3,1],[2,2],[1,3],[3,3]],6:[[1,1],[3,1],[1,2],[3,2],[1,3],[3,3]]}[n]||[];
+  return `<svg viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-label="サイコロ ${n}"><rect x="2" y="2" width="${s-4}" height="${s-4}" rx="9" fill="#fff" stroke="#2a2520" stroke-width="2"/>${pos.map(([x,y])=>`<circle cx="${x*q}" cy="${y*q}" r="${s*0.08}" fill="${n===1?'#dc2626':'#2a2520'}"/>`).join('')}</svg>`;}
+function boardSVG(){
+  const G=P.G,rows=Math.ceil((G+1)/COLS),W=COLS*U+2*M,H=rows*U+2*M,sp=SPM();let s='';
+  for(let i=0;i<G;i++){const [a,b]=cellXY(i),[c,d]=cellXY(i+1);s+=`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#d6ccb6" stroke-width="10"/>`;}
+  for(let i=0;i<=G;i++){const [x,y]=cellXY(i),t=sp[i],hl=S.hl&&S.hl.includes(i);
+    const fill=i===0?'#e0e7ff':i===G?'#fde68a':t!==undefined?(t>i?'#bbf7d0':'#fecaca'):'#fffdf7';
+    s+=`<rect x="${x-U/2+3}" y="${y-U/2+3}" width="${U-6}" height="${U-6}" rx="8" fill="${fill}" stroke="${hl?'#7c3aed':'#c9bfae'}" stroke-width="${hl?4:1.5}"/>`;
+    s+=`<text x="${x-U/2+8}" y="${y-U/2+17}" font-size="12" fill="#6a625a" font-weight="700">${i}</text>`;
+    if(i===0)s+=`<text x="${x}" y="${y+U*0.32}" text-anchor="middle" font-size="11" fill="#3b2f6b" font-weight="700">スタート</text>`;
+    if(i===G)s+=`<text x="${x}" y="${y+U*0.32}" text-anchor="middle" font-size="12" fill="#92400e" font-weight="700">ゴール</text>`;
+    if(t!==undefined)s+=`<text x="${x+U/2-6}" y="${y-U/2+17}" text-anchor="end" font-size="12" fill="${t>i?'#15803d':'#b91c1c'}" font-weight="700">${t>i?'→':'←'}${t}</text>`;}
+  for(const k in sp){const a=+k,b=sp[k],[x1,y1]=cellXY(a),[x2,y2]=cellXY(b),mx=(x1+x2)/2+(y1===y2?0:22),my=(y1+y2)/2-(y1===y2?26:0),col=b>a?'#16a34a':'#dc2626';
+    const ang=Math.atan2(y2-my,x2-mx),hx=x2-Math.cos(ang)*12,hy=y2-Math.sin(ang)*12;
+    s+=`<path d="M${x1},${y1} Q${mx},${my} ${hx},${hy}" fill="none" stroke="${col}" stroke-width="4" opacity=".55" stroke-dasharray="${b>a?'0':'7 5'}"/><polygon points="${x2},${y2} ${hx-Math.sin(ang)*7},${hy+Math.cos(ang)*7} ${hx+Math.sin(ang)*7},${hy-Math.cos(ang)*7}" fill="${col}" opacity=".7"/>`;}
+  const at={};const put=(p,col,lab,cpu)=>{(at[p]=at[p]||[]).push([col,lab,cpu]);};
+  S.pcs.forEach((p,i)=>put(p,PC[i][1],PC[i][0],false));if(S.cpu)S.cpu.forEach((p,i)=>put(p,CPC,'',true));
+  /* 同じマスに何こあっても重ならないように：2こまでは横にならべ、3こ以上は2×2にならべる */
+  for(const p in at){const [x,y]=cellXY(+p),L=at[p],n=L.length,big=n<=2,r=big?11:8.5;L.forEach(([col,lab,cpu],j)=>{
+    const cx=x+(big?(j-(n-1)/2)*23:(j%2-0.5)*21),cy=y+(big?5:(Math.floor(j/2)-0.5)*19+6),h=r*0.82;
+    s+=cpu?`<rect x="${cx-h}" y="${cy-h}" width="${2*h}" height="${2*h}" rx="3" fill="${col}" stroke="#1c1917" stroke-width="2" transform="rotate(45 ${cx} ${cy})"/>`
+      :`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}" stroke="#1f2937" stroke-width="2"/><text x="${cx}" y="${cy+r*0.37}" text-anchor="middle" font-size="${big?12:10}" fill="#fff" font-weight="700">${lab}</text>`;});}
+  return `<svg id="bd" viewBox="0 0 ${W} ${H}" style="max-width:420px" role="img" aria-label="すごろくの盤">${s}</svg>`;}
+function curD(){return P.kind==='p2'?P.ds[S.k]:P.kind==='play'?S.roll:P.d;}
+function qline(){
+  if(P.kind==='p1')return `サイコロの目は <b>${P.d}</b>。<b>いちばんたくさん進める</b>のは、どのコマ？${P.lv===1?'（<b style="color:#15803d">緑のマス</b>に止まると、矢印の先までワープ！）':'（近道・落とし穴・はね返りも考えよう）'}`;
+  if(P.kind==='p2')return `サイコロは <b>1回目 ${P.ds[0]}</b>、<b>2回目 ${P.ds[1]}</b> と出ます。1回ごとにどちらかのコマを動かして、<b>2回の合計でいちばんたくさん</b>進もう。いまは<b>${S.k+1}回目（${P.ds[S.k]}）</b>。`;
+  if(P.kind==='p3')return `サイコロの目は <b>${P.d}</b>。どちらかを動かしたあと、<b>次の1回でゴールにぴったり入れる目</b>がいちばん多くなるのは、どちらを動かしたとき？`;
+  if(P.kind==='ev')return `2つのコマを<b>両方ゴールに入れるまでの回数</b>を、できるだけ少なくしたい。サイコロの目は <b>${P.d}</b>。どちらを動かすと、<b>平均の回数が少なくなる</b>？（落とし穴・近道・ぴったりゴールに注意）`;
+  return `<b>対戦</b>：あなた（赤・青）とコンピューター（灰色の◆）。先に<b>2つともゴール</b>に入れたら勝ち。相手は<b>${P.cpulv==='weak'?'よわい':'つよい'}</b>コンピューター${P.you[0]>0?'（あなたは少し先からスタート）':''}。`;}
+function draw(){
+  const d=curD();const play=P.kind==='play';
+  const btns=S.pcs.map((p,i)=>`<button class="btn sg-pb" data-i="${i}" style="border:3px solid ${PC[i][1]}" ${p===P.G||S.done||S.wrong||S.busy||(play&&(!S.roll||S.turn!=='you'||S.over))?'disabled':''}><span class="sg-dot" style="background:${PC[i][1]}"></span>${PC[i][0]}を動かす</button>`).join('');
+  app.innerHTML=`${topBar()}
+    <p class="qq" style="font-size:15px">${qline()}</p>
+    <div class="boardw">${boardSVG()}</div>
+    <div class="row sg-ctl">${play?(S.roll?dieSVG(S.roll):`<span class="sg-q">？</span>`):(P.kind==='p2'?P.ds.map((x,i)=>`<span class="sg-d ${i===S.k&&!S.done?'cur':''}">${dieSVG(x,40)}<small>${i+1}回目</small></span>`).join(''):dieSVG(d))}
+      ${play?`<span class="note">${S.over?'':S.turn==='you'?'<b style="color:#7c3aed">あなたの番</b>':'<b style="color:#57534e">コンピューターの番…</b>'}</span>`:''}</div>
+    ${S.done?'':`${play&&!S.roll&&S.turn==='you'&&!S.over?`<div class="row"><button class="btn go" id="roll">サイコロをふる</button></div>`:''}
+      <div class="row">${btns}</div>
+      ${S.hint?`<p class="hintbox">${hintText()}</p>`:''}
+      <p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p>
+      <div class="row">${S.wrong?`<button class="btn go" id="undo">もとにもどす</button>`:''}${S.over?`<button class="btn go" id="again1">もう一度たたかう</button>`:''}<button class="btn" id="hint" ${S.busy?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  app.querySelectorAll('.sg-pb').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  const r=document.getElementById('roll');if(r)r.onclick=rollDie;
+  const u=document.getElementById('undo');if(u)u.onclick=()=>{S.pcs=S.orig.slice();S.k=0;S.chosen=[];S.wrong=null;S.hl=null;S.msg='';S.msgc='';draw();};
+  const a=document.getElementById('again1');if(a)a.onclick=()=>{reset();draw();};
+  document.getElementById('hint').onclick=()=>{if(play&&!S.roll){S.msg='サイコロをふってから、ヒントを見られます。';S.msgc='';draw();return;}if(!S.hint||play){S.hints++;}S.hint=true;if(play)S.hl=bestPlay();draw();};
+}
+const posName=p=>p===P.G?'ゴール':p+'マス目';
+function moveText(i,p,d){const r=stepF(p,d);let t=`${PC[i][0]}：${p}→${r.bounce?`ゴールではね返って${r.mid}`:posName(r.mid)}`;if(r.jump)t+=`→${r.to>r.mid?'近道で':'落とし穴で'}${posName(r.to)}`;return [t,r.to-p];}
+function judgeSingle(i){
+  if(P.kind==='p1'){const g=S.orig.map(p=>stepF(p,P.d).to-p);return g[i]===Math.max(...g);}
+  if(P.kind==='p3'){const c=[0,1].map(j=>faces(j).length);return c[i]===Math.max(...c);}
+  if(P.kind==='ev'){const v=[0,1].map(j=>evAfter(j));return v[i]<=Math.min(...v)+1e-9;}}
+function faces(j){const p=P.pcs.slice();p[j]=stepF(p[j],P.d).to;const out=[];for(let f=1;f<=6;f++)if(p.some(x=>x!==P.G&&stepF(x,f).to===P.G))out.push(f);return out;}
+function afterTxt(j){const p=P.pcs.slice(),r=stepF(p[j],P.d);p[j]=r.to;return `（${r.bounce?'はね返って':''}${PC[j][0]}が${posName(r.to)}へ。赤 ${posName(p[0])}・青 ${posName(p[1])}）`;}
+function whyText(){const b=P.best,o=1-b,rb=stepF(P.pcs[b],P.d),ro=stepF(P.pcs[o],P.d),B=PC[b][0],O=PC[o][0];
+  if(P.why==='trap')return `${O}を動かすと、${ro.mid}マス目の落とし穴で <b>${ro.to}マス目までもどって</b>しまいます。`;
+  if(P.why==='goal')return `${B}は今の目で<b>ぴったりゴールに入れます</b>。ぴったりの目はなかなか出ないので、入れられるときに入れておくほうが早く終わります。`;
+  if(P.why==='short')return `${B}を動かすと、近道で <b>${rb.to}マス目までワープ</b>できます。`;
+  return `${B}を動かすと、次にゴールに入れる目が <b>${faces(b).length}通り</b>になります（${O}を動かすと ${faces(o).length}通り）。入れるチャンスが多いほうが早く終わります。`;}
+function evAfter(j){const p=P.pcs.slice();p[j]=stepF(p[j],P.d).to;return EVT(p[0],p[1]);}
+function choose(i){
+  if(P.kind==='play')return playMove(i);
+  const d=curD(),from=S.pcs[i];if(!S.orig)S.orig=S.pcs.slice();
+  const r=stepF(from,d);S.pcs[i]=r.to;S.hl=[from,r.mid,r.to];S.chosen.push(i);
+  if(P.kind==='p2'){
+    if(S.k===0){S.k=1;S.msg=`${PC[i][0]}が ${posName(r.to)}へ。つぎは2回目（${P.ds[1]}）です。`;S.msgc='';draw();return;}
+    const tot=S.pcs.reduce((a,b)=>a+b,0)-S.orig.reduce((a,b)=>a+b,0);
+    if(tot===P.gain){S.done=true;draw();return;}
+    S.wrong=true;S.hints++;S.msg=`2回で合計 ${tot}マス進みました。もっとたくさん進める動かし方があります。`;S.msgc='ng';draw();return;}
+  if(judgeSingle(i)){S.done=true;draw();return;}
+  S.wrong=true;S.hints++;
+  S.msg=P.kind==='p1'?`${PC[i][0]}は ${r.to-from}マス進みました（${r.to-from<0?'もどってしまいました':'もっと進めるコマがあります'}）。`:P.kind==='p3'?`それだと、次にゴールに入れる目は ${faces(i).length}通り。もっと多くなる動かし方があります。`:`それだと、平均の回数が多くなります。動かしたあと、落とし穴に止まらないか、ゴールに入れられないかを考えよう。`;
+  S.msgc='ng';draw();}
+function hintText(){
+  if(P.kind==='p1')return 'それぞれのコマが止まるマスを、指で数えてみよう。止まったマスが緑なら前へ、赤ならもどります。ゴールをこえる目は、はね返ります。';
+  if(P.kind==='p2')return '1回目にいちばん進むコマを動かすのが、いつも正しいとはかぎりません。4通り（赤→赤、赤→青、青→赤、青→青）を全部ためしてくらべよう。';
+  if(P.kind==='p3')return 'ゴールまで「あと1〜6マス」のコマは、その目が出ればぴったり入れます。近道の先がゴールのマスにも注意。動かしたあとの2つのコマで、入れる目を数えよう。';
+  if(P.kind==='ev')return 'それぞれのコマを動かしたら、どのマスに止まるか数えよう。落とし穴でもどってしまわないか？ 今ぴったりゴールに入れられないか？ 近道は使えるか？ 次にゴールに入れる目は何通りか？';
+  return '光っているコマが、平均でいちばん早くゴールできる動かし方です。';}
+function explain(){
+  if(P.kind==='p1'){const L=S.orig.map((p,i)=>moveText(i,p,P.d));return `<p style="margin:0">正解は<b>${PC[S.chosen[0]][0]}</b>！</p><ul class="sg-ex">${L.map(([t,g])=>`<li>${t}　<b>${g>=0?'＋'+g:'−'+(-g)}マス</b></li>`).join('')}</ul>`;}
+  if(P.kind==='p2'){const n=x=>PC[x][0];return `<p style="margin:0">${n(P.plan[0])}→${n(P.plan[1])}の順で、2回で合計<b>${P.gain}マス</b>。</p><ul class="sg-ex">${Object.entries(P.gains).map(([k,v])=>`<li>1回目 ${n(+k[0])}・2回目 ${n(+k[1])}：${v}マス</li>`).join('')}</ul><p class="note">1回目だけを見て決めると、2回目で損をすることがあります。先まで読むのが作戦です。</p>`;}
+  if(P.kind==='p3')return `<p style="margin:0">正解は<b>${PC[S.chosen[0]][0]}</b>を動かす！</p><ul class="sg-ex">${[0,1].map(j=>{const f=faces(j);return `<li>${PC[j][0]}を動かす${afterTxt(j)}：ゴールに入れる目 ${f.length?f.join('・'):'なし'}（${f.length}通り）</li>`;}).join('')}</ul><p class="note">6通りのうち何通りで入れるかが「入れるチャンス」の大きさです。</p>`;
+  if(P.kind==='ev')return `<p style="margin:0">正解は<b>${PC[P.best][0]}</b>を動かす！</p><p style="margin:6px 0 0">${whyText()}</p><ul class="sg-ex">${[0,1].map(j=>`<li>${PC[j][0]}を動かす${afterTxt(j)}：2つとも入るまで、このあと平均 <b>約${evAfter(j).toFixed(1)}回</b></li>`).join('')}</ul><p class="note">「平均」は、同じ場面を何回もくり返したときの回数のならし（期待値）です。全部の目の出方と、その先のいちばんよい動かし方まで、コンピューターで計算しました。</p>`;
+  return `<p style="margin:0">2つともゴール！ あなたの勝ち！</p><p class="note">コツ：近道に止まれる目、落とし穴に止まる目を、コマごとに数えてからえらぼう。ゴールの近くでは、ぴったり入れる目が多いほうを残しておくと有利です。</p>`;}
+/* ---- 対戦 ---- */
+function rollDie(){if(S.roll||S.turn!=='you')return;S.roll=1+Math.floor(Math.random()*6);S.hl=null;S.msg='';
+  const mv=S.pcs.map((p,i)=>p===P.G?-1:i).filter(i=>i>=0);
+  if(mv.length===1){S.msg=`${PC[mv[0]][0]}だけが動けます。`;}
+  draw();}
+function bestPlay(){if(!S.roll)return null;const v=[0,1].map(j=>{if(S.pcs[j]===P.G)return 1e9;const p=S.pcs.slice();p[j]=stepF(p[j],S.roll).to;return EVT(p[0],p[1]);});const j=v[0]<=v[1]?0:1;return [S.pcs[j]];}
+function playMove(i){if(!S.roll||S.turn!=='you'||S.pcs[i]===P.G)return;const from=S.pcs[i],r=stepF(from,S.roll);S.pcs[i]=r.to;S.hl=[from,r.to];
+  S.msg=moveText(i,from,S.roll)[0];S.msgc='';S.roll=null;
+  if(S.pcs.every(p=>p===P.G)){S.done=true;draw();return;}
+  S.turn='cpu';S.busy=true;draw();setTimeout(cpuTurn,800);}
+function cpuTurn(){if(!S||!P||P.kind!=='play'||S.turn!=='cpu')return;const d=1+Math.floor(Math.random()*6);
+  const mv=[0,1].filter(j=>S.cpu[j]!==P.G);let j=mv[0];
+  if(mv.length===2){if(P.cpulv==='weak')j=mv[Math.floor(Math.random()*2)];else{const v=mv.map(k=>{const c=S.cpu.slice();c[k]=stepF(c[k],d).to;return EVT(c[0],c[1]);});j=v[0]<=v[1]?0:1;}}
+  const from=S.cpu[j],r=stepF(from,d);S.cpu[j]=r.to;S.busy=false;S.turn='you';S.hl=[from,r.to];
+  S.msg=`コンピューターは ${d} を出して、${from}→${posName(r.to)}${r.jump?(r.to>r.mid?'（近道）':'（落とし穴）'):''}。あなたの番です。`;S.msgc='';
+  if(S.cpu.every(p=>p===P.G)){S.over='cpu';S.msg='コンピューターが先に2つともゴールしました。もう一度ちょうせんしよう！';S.msgc='ng';}
+  draw();}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

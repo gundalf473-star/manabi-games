@@ -66,3 +66,4 @@
 | 社会（地理）「世界一周 地理すごろく」（無料版はアジアコース、有料版267問） | 必要（GAMES に "sekai-sugoroku": "shakai" を追加・自動反映） | sekai-sugoroku のパックを入れる | ― |
 | 国語「作家・歌人になりきろう（文学史）」全20章（無料版は清少納言の1章） | 必要（GAMES に bungo: "kokugo" を追加・自動反映） | bungo のパックを入れる | ― |
 | 理科「物理学者になりきろう」「化学者になりきろう」各6章（無料版はアルキメデス／ラボアジエ） | 必要（GAMES に hakase-b・hakase-k を "rika" で追加・自動反映） | hakase-b と hakase-k のパックを入れる | ― |
+| 思考力・入り口ゲーム第5弾 19本：数のことば・カタカナへんしん・かくれた文字さがし・漢字めいろ・形の組み合わせ・おりたたみ・切りぬき・サイコロの目の合計・何曜日？・絵でわかる推理・ドアとかぎ・年れいパズル・ならび順推理・ナイトの旅・しょうぎのこまパズル・すごろく作戦・ならべかえの手順・ドット絵プログラム・わかれ道のプログラム・ブラックボックス（無料版5問・有料版100問） | 必要（GAMES に kazukotoba・katakanahenshin・mojikakure・kanjimeiro・kumiawase・oritatami・saikorogoukei・youbi・enosuiri・doorkagi・nenrei・narabijun・knight・shogikoma・sugoroku・sort・pixel・wakaremichi・kansuu を "shikou" で追加） | 19本のパックを入れる | ― |
