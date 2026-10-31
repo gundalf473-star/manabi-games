@@ -337,8 +337,11 @@ export default {
         if (!env.ADMIN_KEY || !safeEq(key, env.ADMIN_KEY)) return fail(env, req, 401, "admin");
         const ap = p.slice("/api/admin/".length);
         if (ap === "info" && req.method === "GET") {     // 接続の確認と、問題データが入っているか
+          // 1回の一覧取得でまとめて調べる（ゲームが増えても処理時間の上限をこえないように）
+          const have = new Set(); let cur;
+          do { const l = await env.MN.list({ prefix: "pack:", cursor: cur }); l.keys.forEach(k => have.add(k.name.slice(5))); cur = l.list_complete ? null : l.cursor; } while (cur);
           const packs = {};
-          for (const g of Object.keys(GAMES)) packs[g] = !!(await env.MN.get("pack:" + g));
+          for (const g of Object.keys(GAMES)) packs[g] = have.has(g);
           return json(env, req, { ok: true, test: String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test"), site: env.SITE_URL || "", packs });
         }
         const gm = ap.match(/^pack\/([a-z0-9-]+)$/);
