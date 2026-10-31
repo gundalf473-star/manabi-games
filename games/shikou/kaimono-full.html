@@ -1,0 +1,434 @@
+<title>買い物クエスト 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="論理・推理">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="買い物クエストの有料版。店2つの言われた数だけ買うおつかいから、かけ算とおつり、予算と時こく、100gあたり・まとめ買い・店の順番のきまり、わり引きと「冷たいうちに」の時間の場合分けまで、5つのレベルに20問ずつ、全100問。どの道順も最短時間を、どの買い物も答えが1つだけになることを、全部の組み合わせを調べて確かめてあります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.km-memo{border:1px solid var(--rule);border-radius:10px;padding:10px 12px;background:#fffdf5;display:flex;flex-direction:column;gap:4px;color:#2a2520}
+.km-memo .label{color:#7c3aed}
+.km-route{margin:0;font-weight:700;font-size:16px;line-height:1.9}
+.km-line{margin:0;font-size:14px;line-height:1.6}
+.km-rule{color:#9a2a22}
+.km-wal{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.km-coins{display:inline-flex;gap:2px}
+.km-chip{display:inline-block;border:2px solid var(--c);color:var(--c);border-radius:999px;padding:0 9px;font-size:14px;font-weight:700;line-height:1.6;background:#fff;white-space:nowrap}
+.km-chip.on{background:var(--c);color:#fff}
+.km-mapw{padding:6px}
+.km-stat{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.km-time{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.km-time small{font-size:13px;color:var(--muted);font-weight:400}
+.km-time.over{color:var(--ng)}
+.km-vis{display:flex;gap:4px;flex-wrap:wrap}
+.km-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.km-head>div{display:flex;flex-direction:column;line-height:1.3}
+.km-head>div b{font-family:var(--display);font-weight:400;font-size:22px}
+.km-head>div small{font-size:12px;color:var(--muted)}
+.km-head .km-wal{margin-left:auto;font-size:15px}
+.km-list{margin:0;padding-left:1.1em;font-size:16px;font-weight:700;line-height:1.7}
+.km-list li.ok{color:var(--ok);list-style:none;margin-left:-1.1em}
+.km-list li.ng{color:var(--ng);list-style:none;margin-left:-1.1em}
+.km-items{display:flex;flex-direction:column;gap:8px}
+.km-it{display:flex;align-items:center;gap:8px;border:2px solid var(--rule);border-radius:10px;padding:6px 8px 6px 12px;background:var(--surface)}
+.km-in{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.km-in b{font-size:16px}
+.km-in small{font-size:13px;color:var(--muted)}
+.km-qty{display:flex;align-items:center;gap:4px}
+.km-qty output{min-width:58px;text-align:center;font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+.km-pm{width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);background:var(--surface);color:var(--ink);font-size:24px;font-weight:700;line-height:1;cursor:pointer;touch-action:manipulation;padding:0}
+.km-pm:disabled{opacity:.3;cursor:default}
+.km-cart{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;justify-content:flex-end;border-top:2px dashed var(--rule);padding-top:8px}
+.km-tot{font-size:16px}.km-tot b{font-size:24px;font-variant-numeric:tabular-nums}
+.km-cart small{font-size:13px;color:var(--muted)}
+.km-got{border:2px solid var(--ok);background:var(--oksoft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.km-got b{color:var(--ok);font-size:18px}
+.km-got p{margin:0;font-size:15px}
+.km-quiz{display:flex;flex-direction:column;gap:8px}
+.km-res{border:2px solid var(--seal);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--sealsoft)}
+.km-res-t{font-family:var(--display);font-size:22px;color:var(--ink)}
+.km-res-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.km-res-g>div{display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:10px;padding:8px}
+.km-res-g span{display:flex;flex-direction:column;line-height:1.3;font-size:12px;color:var(--muted)}
+.km-res-g b{font-size:20px;color:var(--fg)}
+.km-res .km-list{font-size:14px}
+@media (max-width:420px){#app.box{padding:12px}.km-res-g{grid-template-columns:1fr}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .km-memo{background:#26221d;color:var(--fg)}:root:not([data-theme="light"]) .km-rule{color:#f07468}:root:not([data-theme="light"]) .km-chip{background:var(--surface)}:root:not([data-theme="light"]) .km-chip.on{background:var(--c)}:root:not([data-theme="light"]) .km-memo .label{color:var(--seal)}}
+:root[data-theme="dark"] .km-memo{background:#26221d;color:var(--fg)}
+:root[data-theme="dark"] .km-rule{color:#f07468}
+:root[data-theme="dark"] .km-chip{background:var(--surface)}
+:root[data-theme="dark"] .km-chip.on{background:var(--c)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>買い物クエスト 100問</h1>
+    <p class="lead">お母さんにたのまれて、おつかいに出発！ 町の地図で早い道順を決めて、店ではメモに合うように買い物しよう。5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='kaimono';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>買い物クエスト 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 買い物クエスト：p={Rn,Cn,E:[[a,b,分]],home,shops:[{k,n,it,cs,mx,disc?,chg?,hide?,ans,ex,hint}],rule,lim,dep?,W,memo,sol,tours}
+   道順は「となりの地点だけ・全部の店・家で終わる・時間・きまり」で判定、買い物はメモの条件を全部しらべて判定するので、
+   条件に合う道順・買い方ならどれでも正解（買い方は生成時に1つだけと確かめてある） */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'店2つ・言われた数だけ買う',2:'店3つ・かけ算とおつり',3:'店3つ・予算と時こく',4:'店4つ・100gあたり・順番',5:'店4つ・わり引き・時間'};
+const RULES=`<ol class="rules">
+  <li><b>地図の道をタップして、家からメモの店を全部回り、家に帰ろう。</b></li>
+  <li>道の数字は、歩いてかかる時間（分）です。時間内に帰れる道順をさがそう。</li>
+  <li>店では、品物の <b>＋</b>・<b>−</b> で数を決めて「レジで買う」。お母さんのメモに合えばOK。メモにない物は買いません。</li>
+  <li>「いちばん安く」「おつりがいちばん少なく」は、ほかの買い方とくらべて考えよう。答えは1つです。</li>
+  <li>店では、はじめて通ったときに買い物をします。レベル4・5は、店の順番のきまりにも気をつけよう。</li></ol>`;
+const KM_SH={yaoya:['八百屋','#3f8f3a'],niku:['肉屋','#c8352d'],sakana:['魚屋','#2563eb'],pan:['パン屋','#b8650a'],cake:['ケーキ屋','#c93a78']};
+const KM_DX=102,KM_DY=90,KM_M=34;
+const kmX=n=>KM_M+(n%P.Cn)*KM_DX, kmY=n=>KM_M+Math.floor(n/P.Cn)*KM_DY;
+function kmW(a,b){for(const [x,y,w] of P.E)if((x===a&&y===b)||(x===b&&y===a))return w;return null;}
+function kmShopAt(n){return P.shops.findIndex(s=>s.n===n);}
+function kmInfo(w){ /* 時間・はじめて行った時刻・順番 */
+  let t=0;const first={},order=[];
+  for(let i=1;i<w.length;i++){t+=kmW(w[i-1],w[i]);const j=kmShopAt(w[i]);if(j>=0&&!(j in first)){first[j]=t;order.push(j);}}
+  return {t,first,order,all:order.length===P.shops.length,home:w.length>1&&w[w.length-1]===P.home};
+}
+const kmDone=w=>{const f=kmInfo(w);return f.all&&f.home;};
+function kmClock(h,m){h+=Math.floor(m/60);m%=60;return `${h<12?'午前':'午後'}${h<=12?h:h-12}時${m?m+'分':''}`;}
+function kmCn(n,c){if(c==='ひき')return n+({1:'ぴき',3:'びき',6:'ぴき',8:'ぴき',10:'ぴき'}[n]||'ひき');if(c==='g')return n+'g';return n+c;}
+const kmName=k=>KM_SH[k][0];
+function kmRuleCheck(f){
+  const r=P.rule;if(!r)return '';
+  const ks=P.shops.map(s=>s.k),ord=f.order.map(j=>ks[j]);
+  if(r.t==='last'&&ord[ord.length-1]!==r.k)return `${kmName(r.k)}が最後の店になっていません。`;
+  if(r.t==='first'&&ord[0]!==r.k)return `${kmName(r.k)}がはじめの店になっていません。`;
+  if(r.t==='cold')for(const k of r.k){const j=ks.indexOf(k),d=f.t-f.first[j];if(d>r.m)return `${kmName(k)}に着いてから家まで${d}分かかりました（${r.m}分以内のきまり）。`;}
+  return '';
+}
+function startStage(p){P=p;S={hints:0,ph:'route',w:[p.home],msg:'',msgc:'',si:0,order:[],q:null,bought:false,chg:null,spent:[],lines:null,sh:0,done:false};begin(p);draw();}
+
+/* ---------- 絵 ---------- */
+function kmShopIcon(k,x,y,sc){sc=sc||1;const [nm,col]=KM_SH[k],w=56*sc,h=42*sc,x0=x-w/2,y0=y-h/2;let s=`<rect x="${x0}" y="${y0+10*sc}" width="${w}" height="${h-10*sc}" rx="${4*sc}" fill="#fffdf8" stroke="${col}" stroke-width="${2*sc}"/>`;
+  for(let i=0;i<5;i++)s+=`<path d="M${x0+i*w/5},${y0} h${w/5} v${10*sc} a${w/10},${5*sc} 0 0 1 -${w/5},0 z" fill="${i%2?'#fff':col}" stroke="${col}" stroke-width="${1.2*sc}"/>`;
+  s+=`<text x="${x}" y="${y0+h-8*sc}" text-anchor="middle" font-size="${(nm.length>3?12.5:14.5)*sc}" font-weight="700" fill="${col}" font-family="sans-serif">${nm}</text>`;return s;}
+function kmHome(x,y){return `<polygon points="${x-26},${y-4} ${x},${y-24} ${x+26},${y-4}" fill="#3b2f6b"/><rect x="${x-20}" y="${y-5}" width="40" height="26" rx="3" fill="#fffdf8" stroke="#3b2f6b" stroke-width="2"/><text x="${x}" y="${y+15}" text-anchor="middle" font-size="16" font-weight="700" fill="#3b2f6b" font-family="sans-serif">家</text>`;}
+function mapSVG(){
+  const W=2*KM_M+(P.Cn-1)*KM_DX,H=2*KM_M+(P.Rn-1)*KM_DY,w=S.w,f=kmInfo(w),fin=kmDone(w),end=w[w.length-1];
+  let s=`<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#eef3e6"/>`;
+  P.E.forEach(([a,b])=>{s+=`<line x1="${kmX(a)}" y1="${kmY(a)}" x2="${kmX(b)}" y2="${kmY(b)}" stroke="#d3cbbd" stroke-width="16" stroke-linecap="round"/><line x1="${kmX(a)}" y1="${kmY(a)}" x2="${kmX(b)}" y2="${kmY(b)}" stroke="#fff" stroke-width="2" stroke-dasharray="6 6" opacity=".8"/>`;});
+  for(let i=1;i<w.length;i++)s+=`<line x1="${kmX(w[i-1])}" y1="${kmY(w[i-1])}" x2="${kmX(w[i])}" y2="${kmY(w[i])}" stroke="#7c3aed" stroke-width="7" stroke-linecap="round" opacity=".75"/>`;
+  P.E.forEach(([a,b,m])=>{const x=(kmX(a)+kmX(b))/2,y=(kmY(a)+kmY(b))/2;s+=`<rect x="${x-18}" y="${y-12}" width="36" height="24" rx="12" fill="#fff" stroke="#8a8174" stroke-width="1.2"/><text x="${x}" y="${y+5.5}" text-anchor="middle" font-size="15.5" font-weight="700" fill="#2a2520" font-family="sans-serif">${m}分</text>`;});
+  const can=new Set();if(S.ph==='route'&&!fin)P.E.forEach(([a,b])=>{if(a===end)can.add(b);if(b===end)can.add(a);});
+  for(let n=0;n<P.Rn*P.Cn;n++){const x=kmX(n),y=kmY(n),j=kmShopAt(n),big=j>=0||n===P.home;
+    if(can.has(n))s+=big?`<rect x="${x-33}" y="${y-28}" width="66" height="56" rx="10" fill="#ede4fd" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="6 4"/>`:`<circle cx="${x}" cy="${y}" r="15" fill="#ede4fd" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="5 4"/>`;
+    if(n===P.home)s+=kmHome(x,y);else if(j>=0)s+=kmShopIcon(P.shops[j].k,x,y);else s+=`<circle cx="${x}" cy="${y}" r="6" fill="#a59c90"/>`;
+    if(j>=0&&f.order.includes(j))s+=`<circle cx="${x+26}" cy="${y-22}" r="11" fill="#1d7a4c" stroke="#fff" stroke-width="2"/><text x="${x+26}" y="${y-17}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">${f.order.indexOf(j)+1}</text>`;
+    if(n===end&&S.ph==='route')s+=big?`<rect x="${x-32}" y="${y-27}" width="64" height="54" rx="10" fill="none" stroke="#7c3aed" stroke-width="4"/>`:`<circle cx="${x}" cy="${y}" r="12" fill="#7c3aed" stroke="#fff" stroke-width="3"/>`;
+    s+=`<rect class="km-hit" data-n="${n}" x="${x-KM_DX/2+2}" y="${y-KM_DY/2+8}" width="${KM_DX-4}" height="${KM_DY-16}" fill="transparent" style="cursor:${can.has(n)?'pointer':'default'}"/>`;}
+  return `<svg id="kmmap" viewBox="0 0 ${W} ${H}" style="max-width:${Math.min(W*1.15,520)}px" role="img" aria-label="町の地図">${s}</svg>`;
+}
+function clockSVG(t){
+  if(!P.dep){const r=Math.min(1,t/P.lim),over=t>P.lim,a=2*Math.PI*Math.min(r,0.9999);
+    const x=22+18*Math.sin(a),y=22-18*Math.cos(a);
+    return `<svg viewBox="0 0 44 44" width="46" height="46" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="#fff" stroke="#d3cbbd" stroke-width="5"/>${t?`<path d="M22,4 A18,18 0 ${r>0.5?1:0} 1 ${x},${y}" fill="none" stroke="${over?'#c8352d':'#7c3aed'}" stroke-width="5"/>`:''}<circle cx="22" cy="22" r="3" fill="#3b2f6b"/></svg>`;}
+  const tot=P.dep[0]*60+P.dep[1]+t,h=(tot/60)%12,m=tot%60,ha=(h*30+m*0.5)*Math.PI/180,ma=m*6*Math.PI/180;
+  let tk='';for(let i=0;i<12;i++){const a=i*Math.PI/6;tk+=`<line x1="${22+15*Math.sin(a)}" y1="${22-15*Math.cos(a)}" x2="${22+17.5*Math.sin(a)}" y2="${22-17.5*Math.cos(a)}" stroke="#6a625a" stroke-width="${i%3?1:2}"/>`;}
+  return `<svg viewBox="0 0 44 44" width="50" height="50" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="#fff" stroke="${t>P.lim?'#c8352d':'#3b2f6b'}" stroke-width="2.5"/>${tk}<line x1="22" y1="22" x2="${22+9*Math.sin(ha)}" y2="${22-9*Math.cos(ha)}" stroke="#2a2520" stroke-width="3" stroke-linecap="round"/><line x1="22" y1="22" x2="${22+14*Math.sin(ma)}" y2="${22-14*Math.cos(ma)}" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="22" r="2" fill="#2a2520"/></svg>`;
+}
+const coinSVG=`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f0c95c" stroke="#a97c12" stroke-width="2"/><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="700" fill="#6b4e05" font-family="sans-serif">円</text></svg>`;
+const kmLeft=()=>P.W-S.spent.reduce((a,b)=>a+b,0);
+function walletHTML(){
+  if(P.lv===1&&S.ph==='route'){const n=P.W/100;return `<span class="km-coins">${Array.from({length:n},()=>`<svg viewBox="0 0 30 30" width="28" height="28" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#d5d9df" stroke="#6b7280" stroke-width="2"/><text x="15" y="19.5" text-anchor="middle" font-size="11" font-weight="700" fill="#2a2520" font-family="sans-serif">100</text></svg>`).join('')}</span><span>100円玉 ${n}まい（${P.W}円）</span>`;}
+  return `${coinSVG}<span>さいふ <b>${kmLeft()}</b>円</span>`;
+}
+function memoHTML(){
+  const ks=P.memo.map(j=>P.shops[j].k);
+  return `<div class="km-memo"><div class="label">お母さんのおつかいメモ</div>
+    <p class="km-route">家 → ${ks.map(k=>`<span class="km-chip" style="--c:${KM_SH[k][1]}">${kmName(k)}</span>`).join('・')} → 家</p>
+    <p class="km-line"><b>時間：</b>${P.limx}</p>${P.rule?`<p class="km-line km-rule"><b>きまり：</b>${P.rule.x}</p>`:''}
+    <p class="km-line km-wal">${walletHTML()}</p></div>`;
+}
+/* ---------- 道順 ---------- */
+function drawRoute(){
+  const f=kmInfo(S.w),fin=kmDone(S.w),t=f.t;
+  const tl=P.dep?`${kmClock(P.dep[0],P.dep[1]+t)}<small>（${t}分 歩いた）</small>`:`${t}分<small> / ${P.lim}分まで</small>`;
+  app.innerHTML=`${topBar()}${memoHTML()}
+    <div class="boardw km-mapw">${mapSVG()}</div>
+    <div class="km-stat">${clockSVG(t)}<span class="km-time ${t>P.lim?'over':''}">${tl}</span><span class="km-vis">${P.shops.map((s,j)=>`<span class="km-chip ${f.order.includes(j)?'on':''}" style="--c:${KM_SH[s.k][1]}">${f.order.includes(j)?'✓':''}${kmName(s.k)}</span>`).join('')}</span></div>
+    <p class="msg ${S.msgc}" id="msg">${S.msg||(S.w.length===1?'光っている所をタップして、道を進もう。':fin?'家まで帰る道順ができました。「出発する」をおそう。':'つぎの所をタップ。')}</p>
+    <div class="row"><button class="btn ${fin?'go':''}" id="go" ${fin?'':'disabled'}>出発する</button><button class="btn" id="undo" ${S.w.length>1?'':'disabled'}>1つもどす</button><button class="btn" id="clr" ${S.w.length>1?'':'disabled'}>やりなおす</button><button class="btn" id="hint">ヒント</button></div>
+    <p class="note">ヒントを使うと、早い道順のはじめのほうを地図にかきます（星がへります）。</p><div id="after"></div>`;
+  bindBack();
+  document.getElementById('kmmap').addEventListener('click',e=>{const h=e.target.closest('.km-hit');if(!h||kmDone(S.w))return;const n=+h.dataset.n,end=S.w[S.w.length-1];
+    if(kmW(end,n)==null){S.msg='となりの所（光っている所）だけ進めます。';S.msgc='';draw();return;}S.w.push(n);S.msg='';S.msgc='';draw();});
+  document.getElementById('undo').onclick=()=>{S.w.pop();S.msg='';S.msgc='';draw();};
+  document.getElementById('clr').onclick=()=>{S.w=[P.home];S.msg='';S.msgc='';draw();};
+  document.getElementById('hint').onclick=()=>{S.hints++;S.sh++;const k=Math.min(P.sol.length,1+Math.ceil((P.sol.length-1)*S.sh/3));S.w=P.sol.slice(0,k);
+    S.msg=k>=P.sol.length?`ヒント：早い道順を全部かきました。「出発する」をおそう。`:`ヒント：早い道順のはじめをかきました（ヒント ${S.hints}回）。つづきを考えよう。`;S.msgc='';draw();};
+  document.getElementById('go').onclick=()=>{const g=kmInfo(S.w);let why='';
+    if(g.t>P.lim)why=`${g.t}分かかりました。${P.lim}分以内に帰れる、もっと早い道順があります。`;
+    else why=kmRuleCheck(g);
+    if(why){S.hints++;S.msg=why;S.msgc='ng';draw();return;}
+    S.order=g.order;S.time=g.t;S.ph='shop';S.si=0;kmEnter();draw();};
+}
+/* ---------- 買い物 ---------- */
+const kmCur=()=>P.shops[S.order[S.si]];
+function kmEnter(){const s=kmCur();S.q=s.it.map(()=>0);S.bought=false;S.chg=null;S.lines=null;S.sh=0;S.msg='';S.msgc='';S.hintText='';}
+function kmCost(s,q){let t=0;s.it.forEach((it,i)=>t+=it.p*q[i]);if(s.disc&&t>=s.disc[0])t=t*(10-s.disc[1])/10;return t;}
+const kmRaw=(s,q)=>s.it.reduce((a,it,i)=>a+it.p*q[i],0);
+const kmAmt=(s,q,sc)=>sc.reduce((a,i)=>a+s.it[i].a*q[i],0);
+function kmAllowed(s){const a=new Set();s.cs.forEach(c=>(c.s||[]).forEach(i=>a.add(i)));return a;}
+function kmOk(s,q,c){
+  if(c.t==='amt'){const v=kmAmt(s,q,c.s);return c.op==='=='?v===c.v:v>=c.v;}
+  if(c.t==='kinds'){const ch=c.s.filter(i=>q[i]>0);return ch.length===c.v&&(!c.e||ch.every(i=>q[i]===c.e));}
+  if(c.t==='le')return kmCost(s,q)<=c.v;
+  if(c.t==='eqc')return kmCost(s,q)===c.v;
+  return true;
+}
+function kmObj(s,q,c){if(c.o==='minc')return kmCost(s,q);if(c.o==='maxc')return -kmCost(s,q);if(c.o==='maxamt')return -kmAmt(s,q,c.s);return kmCost(s,q)/kmAmt(s,q,c.s);}
+function kmBest(s,c){ /* メモのほかの条件に合う買い方を全部しらべて、いちばんよい値を出す */
+  const al=[...kmAllowed(s)],q=s.it.map(()=>0);let best=Infinity;
+  const rec=k=>{if(k===al.length){if(s.cs.every(x=>x.t==='opt'||kmOk(s,q,x))&&(c.o!=='minu'||kmAmt(s,q,c.s)>0))best=Math.min(best,kmObj(s,q,c));return;}
+    for(let v=0;v<=s.mx;v++){q[al[k]]=v;rec(k+1);}q[al[k]]=0;};
+  rec(0);return best;
+}
+function kmItemRow(s,it,i){
+  const v=S.q[i],shown=it.c==='g'?(v*100)+'g':it.c==='パック'?v+'パック':kmCn(v,it.c);
+  return `<div class="km-it"><div class="km-in"><b>${it.n}</b><small>${it.l}</small></div>
+    <div class="km-qty"><button class="km-pm" data-i="${i}" data-d="-1" ${S.bought||v<=0?'disabled':''} aria-label="${it.n}をへらす">−</button><output>${shown}</output><button class="km-pm" data-i="${i}" data-d="1" ${S.bought||v>=s.mx?'disabled':''} aria-label="${it.n}をふやす">＋</button></div></div>`;
+}
+function drawShop(){
+  const s=kmCur(),tot=kmCost(s,S.q),raw=kmRaw(s,S.q),[nm,col]=KM_SH[s.k];
+  const lines=s.cs.map((c,ci)=>{const st=S.lines?S.lines[ci]:null;return `<li class="${st===true?'ok':st===false?'ng':''}">${st===true?'✓ ':st===false?'✗ ':''}${c.x}</li>`;}).join('');
+  const cart=s.hide&&!S.bought?`<span class="km-tot">かごの合計 <b>？</b>円</span><small>合計は自分で計算しよう</small>`:
+    `<span class="km-tot">かごの合計 <b>${tot}</b>円</span>${s.disc&&raw>=s.disc[0]?`<small>${raw}円の${s.disc[1]}わり引き</small>`:''}`;
+  let after='';
+  if(S.bought){
+    if(s.chg&&!S.chg?.ok){const opts=S.chg.opts;
+      after=`<div class="km-quiz"><p class="qq">${s.chg.x}ではらいました。おつりはいくら？</p><div class="opts4 txt">${opts.map((o,i)=>`<button class="ob ${S.chg.wrong.includes(i)?'wrong':''}" data-o="${i}" ${S.chg.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span><b style="font-size:20px">${o}円</b></button>`).join('')}</div></div>`;}
+    else after=`<div class="km-got"><b>買えた！</b><p>${s.ex}</p>${s.chg?`<p>${s.chg.x}ではらって、おつりは${s.chg.a}円。</p>`:''}<button class="btn go" id="nxs">${S.si+1<S.order.length?'つぎの店へ':'家に帰る'}</button></div>`;
+  }
+  app.innerHTML=`${topBar()}
+    <div class="km-head"><svg viewBox="0 0 64 50" width="64" height="50" aria-hidden="true">${kmShopIcon(s.k,32,25,1.05)}</svg><div><b style="color:${col}">${nm}</b><small>${S.si+1}けんめ／${S.order.length}けん</small></div><span class="km-wal">${walletHTML()}</span></div>
+    <div class="km-memo"><div class="label">メモ（${nm}）</div><ul class="km-list">${lines}</ul>${s.disc?`<p class="km-line km-rule">お店のお知らせ：全部で${s.disc[0]}円以上買うと、${s.disc[1]}わり引き。</p>`:''}</div>
+    <div class="km-items">${s.it.map((it,i)=>kmItemRow(s,it,i)).join('')}</div>
+    <div class="km-cart">${cart}</div>
+    ${S.hintText&&!S.bought?`<p class="hintbox">${S.hintText}</p>`:''}
+    ${S.bought?'':`<p class="msg ${S.msgc}" id="msg">${S.msg||'＋と−で数を決めて、「レジで買う」をおそう。'}</p>
+    <div class="row"><button class="btn go" id="buy">レジで買う</button><button class="btn" id="zero">0にもどす</button><button class="btn" id="hint">ヒント</button></div>`}
+    ${after}<div id="after"></div>`;
+  bindBack();
+  app.querySelectorAll('.km-pm').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;S.q[i]=Math.max(0,Math.min(s.mx,S.q[i]+ +b.dataset.d));S.lines=null;S.msg='';S.msgc='';draw();});
+  if(!S.bought){
+    document.getElementById('zero').onclick=()=>{S.q=s.it.map(()=>0);S.lines=null;S.msg='';draw();};
+    document.getElementById('buy').onclick=()=>kmBuy(s);
+    document.getElementById('hint').onclick=()=>{S.hints++;S.sh++;
+      if(S.sh===1){S.hintText='ヒント：'+s.hint;}
+      else{const i=s.ans.findIndex((v,k)=>v!==S.q[k]);if(i>=0){S.q[i]=s.ans[i];const it=s.it[i];S.hintText=`ヒント：${it.n}${it.pk?'（'+it.l.split(' ')[0]+'）':''}の数を、答えに合わせました。`;}else S.hintText='ヒント：いまの買い方で合っています。「レジで買う」をおそう。';}
+      S.lines=null;draw();};
+  }
+  app.querySelectorAll('.km-quiz .ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.o;if(S.chg.opts[i]===s.chg.a){S.chg.ok=true;}else{S.chg.wrong.push(i);S.hints++;}draw();});
+  const nx=document.getElementById('nxs');if(nx)nx.onclick=()=>{S.si++;if(S.si>=S.order.length){S.ph='home';S.done=true;}else kmEnter();draw();window.scrollTo({top:0,behavior:'smooth'});};
+}
+function kmBuy(s){
+  const q=S.q,al=kmAllowed(s),tot=kmCost(s,q);
+  const extra=s.it.filter((it,i)=>q[i]>0&&!al.has(i)).map(it=>it.n);
+  S.lines=s.cs.map(c=>c.t==='opt'?null:kmOk(s,q,c));
+  let why='';
+  if(!q.some(v=>v>0))why='まだ何も入っていません。';
+  else if(extra.length)why=`メモにない物（${extra.join('・')}）が入っています。`;
+  else if(S.lines.includes(false))why='メモに合っていない所があります（✗の所）。';
+  else{const oc=s.cs.find(c=>c.t==='opt');
+    if(oc){const ci=s.cs.indexOf(oc),b=kmBest(s,oc),mine=kmObj(s,q,oc);S.lines[ci]=Math.abs(mine-b)<1e-9;
+      if(!S.lines[ci])why={minc:'メモには合っているけれど、もっと安い買い方があります。',maxc:'メモには合っているけれど、もっとおつりが少なくなる買い方があります。',maxamt:'もっとたくさん買えます。',minu:'100gあたりがもっと安いものがあります。'}[oc.o];}
+    /* 「いちばん〜」をさきに調べる（答えの買い方なら、さいふのお金は必ず足りる） */
+    if(!why&&tot>kmLeft())why='さいふのお金が足りません。';}
+  if(why){S.hints++;S.msg=why+(s.hide&&q.some(v=>v>0)?`（レジの合計は${tot}円でした）`:'');S.msgc='ng';draw();return;}
+  S.bought=true;S.spent.push(tot);S.lines=s.cs.map(()=>true);
+  if(s.chg)S.chg={opts:shuffle([s.chg.a,...s.chg.ds]),wrong:[],ok:false};
+  draw();
+}
+/* ---------- 家に着いた ---------- */
+function drawHome(){
+  const ks=P.shops.map(s=>s.k),spent=S.spent.reduce((a,b)=>a+b,0);
+  const best=P.tours[0],free=P.tours.filter(t=>!t[2]).sort((a,b)=>a[1]-b[1])[0];
+  const ordTxt=o=>'家→'+o.map(kmName).join('→')+'→家';
+  let ex=`<p style="margin:0"><b>道順：</b>いちばん早いのは「${ordTxt(best[0])}」で${best[1]}分。${P.rev?'（店を反対の順に回っても同じ時間です）':''}</p>`;
+  const others=P.tours.filter(t=>t[2]).slice(1,3);
+  if(others.length)ex+=`<p class="note" style="margin:0">ほかの順番：${others.map(t=>`${ordTxt(t[0])} ${t[1]}分`).join('、')}</p>`;
+  if(P.rule&&free&&free[1]<best[1])ex+=`<p class="note" style="margin:0">きまりがなければ「${ordTxt(free[0])}」の${free[1]}分が早いけれど、きまりに合いません。</p>`;
+  app.innerHTML=`${topBar()}
+    <div class="km-res"><div class="km-res-t">ただいま！ おつかい成功</div>
+      <div class="km-res-g"><div>${clockSVG(S.time)}<span>時間<b>${S.time}分</b><small>${P.lim}分以内</small></span></div>
+      <div>${coinSVG}<span>のこったお金<b>${P.W-spent}円</b><small>${P.W}円 − 使った${spent}円</small></span></div></div>
+      <ul class="km-list">${S.order.map((j,i)=>{const s=P.shops[j];return `<li class="ok">✓ ${i+1}. ${kmName(s.k)}：${s.ex.split('。')[0]}（${S.spent[i]}円）</li>`;}).join('')}
+      ${P.rule?`<li class="ok">✓ きまり：${P.rule.x}</li>`:''}</ul></div>
+    <div class="boardw km-mapw">${mapSVG()}</div>
+    <div id="after"></div>`;
+  bindBack();
+  showClear(ex);
+}
+function draw(){if(S.ph==='route')drawRoute();else if(S.ph==='shop')drawShop();else drawHome();}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
