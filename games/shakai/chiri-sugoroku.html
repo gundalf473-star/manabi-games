@@ -282,7 +282,7 @@ function camAll(){const xs=G.c.sq.map(s=>s.x), ys=G.c.sq.map(s=>s.y);
   const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
   const W=Math.max((x1-x0)*1.18,(y1-y0)*1.22/ASP,60); return {x:(x0+x1)/2,y:(y0+y1)/2,W,s:.62};}
 const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-function tween(ms,fn){ if(RM)ms=1; return new Promise(res=>{const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/ms);fn(k);if(k<1)requestAnimationFrame(f);else res();};requestAnimationFrame(f);}); }
+function tween(ms,fn){ if(RM)ms=1; return new Promise(res=>{const t0=performance.now();const f=t=>{const k=Math.max(0,Math.min(1,(t-t0)/ms));fn(k);if(k<1)requestAnimationFrame(f);else res();};requestAnimationFrame(f);}); }
 async function camTo(c2,ms){ const c1=Object.assign({},cam); await tween(ms||500,k=>{const e=ease(k);setCam({x:c1.x+(c2.x-c1.x)*e,y:c1.y+(c2.y-c1.y)*e,W:c1.W+(c2.W-c1.W)*e,s:c1.s+(c2.s-c1.s)*e});}); }
 async function hop(i,to){
   const P=G.pl[i], a=G.c.sq[P.pos], b=G.c.sq[to], d=Math.hypot(b.x-a.x,b.y-a.y);
