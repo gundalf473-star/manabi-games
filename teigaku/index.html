@@ -172,7 +172,7 @@ footer a{color:inherit}
         <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${favIdx(u.k)>=0}" title="一覧のいちばん上の「わたしの単元」に入れる">${favIdx(u.k)>=0?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
         <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
   /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
-  const PRI=['かずとかぞえかた','たし算・ひき算','かけ算九九','わり算のはじめ','時計と時こく','長さ・かさ・重さ','形あそび','文章題のはじめ','ひらがな・カタカナ','1年の漢字','2年の漢字','3年の漢字','ことばのなかま','主語と述語・文のきまり','みじかい文の読みとり','図形のセンス','点つなぎ・もよう','じゅんばんとルール','めいろ・道すじ','推理パズル','プログラミングのはじめ','生き物と季節','身のまわりのふしぎ','日本の地図'];
+  const PRI=['かずとかぞえかた','たし算・ひき算','かけ算九九','わり算のはじめ','時計と時こく','長さ・かさ・重さ','形あそび','文章題のはじめ','ひらがな・カタカナ','1年の漢字','2年の漢字','3年の漢字','ことばのなかま','主語と述語・文のきまり','みじかい文の読みとり','図形のセンス','点つなぎ・もよう','じゅんばんとルール','めいろ・道すじ','推理パズル','プログラミングのはじめ','おはなしの主人公','生き物と季節','身のまわりのふしぎ','日本の地図'];
   const fo=x=>{const i=PRI.indexOf(x.f);return i<0?1000+x.g:i;};
   function render(){
     const S=document.getElementById('subjects'); document.getElementById('subjbox').hidden=false;

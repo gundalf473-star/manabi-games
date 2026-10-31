@@ -1,0 +1,204 @@
+<title>おはなしの主人公 全20話</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:course" content="teigaku"><meta name="game:subject" content="思考力">
+<meta name="game:unit" content="おはなしの主人公">
+<meta name="game:grade" content="小1〜小3">
+<meta name="game:players" content="1人">
+<meta name="description" content="おはなしの主人公の有料版。ももたろう・うらしまたろう・きんたろう・いっすんぼうし・かぐやひめ・かさじぞう・はなさかじいさん・おむすびころりん・さるかにがっせん・したきりすずめ・こぶとりじいさん・わらしべちょうじゃ・つるのおんがえし・うさぎとかめ・ありときりぎりす・きたかぜとたいよう・三びきのこぶた・おおかみと七ひきのこやぎ・ブレーメンのおんがくたい・ヘンゼルとグレーテルなど、全20話。えらんだ理由を考えながら、むかしばなしを最後まで読みます。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。おはなしの一覧 → ばめん（大きな絵・文・せんたくし）→ ゲームオーバー／おわり。朱色を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.3;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+h1 rt{font-family:var(--body);font-size:.32em;letter-spacing:0}
+.lead{margin:4px 0 0;color:var(--muted);font-size:15px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:13px 24px;font-size:17px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.say{padding:6px 14px;font-size:15px;background:var(--surface);border:2px solid var(--rule)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px;padding:0}
+.stampbox,.stampget{align-self:flex-start;font-weight:700;font-size:15px;background:var(--sealsoft);color:var(--seal);border-radius:99px;padding:4px 14px}
+.stampget{font-size:16px}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:8px;background:var(--rule);border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal);transition:width .3s}
+.ttl{font-weight:700;font-size:14px;color:var(--ink);white-space:nowrap}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:12px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.txt{margin:0;white-space:pre-line;font-size:20px;line-height:2.05}
+.ask{margin:0;font-size:20px;font-weight:700;color:var(--ink);line-height:1.9}
+.ch{display:grid;gap:10px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:14px;padding:14px 16px;font-size:19px;line-height:1.8;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:64px}
+@media (hover:hover){.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}.st:hover{border-color:var(--ink)}}
+.op .k{flex:none;width:32px;height:32px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:16px}
+.op .ic{flex:none;width:52px;height:52px}.op .ic svg{width:52px;height:52px;display:block}
+.op:active{transform:scale(.98)}
+.over{border:3px dashed var(--gold);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.over h2,.endh{margin:0;font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold);line-height:1.5}
+.endh{color:var(--ok)}
+.hint{font-size:17px;line-height:1.95;background:var(--pick);border-radius:10px;padding:8px 12px;margin:0}
+.hint b{display:block;color:var(--seal);font-size:15px}
+.lesson{font-size:17px;line-height:1.95;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 10px 10px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:14px}
+.stars{font-size:28px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.list{display:grid;gap:10px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:14px;padding:10px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st .th{flex:none;width:96px;border-radius:8px;overflow:hidden;line-height:0;border:1px solid var(--rule)}
+.st .th svg{width:96px;height:64px;display:block}
+.st .nm{font-weight:700;font-size:19px;display:block;line-height:1.5}
+.st .ds{font-size:14px;color:var(--muted);display:block;line-height:1.7}
+.st .bd{display:inline-block;font-size:13px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}
+.st .bd.no{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.75}
+.st.lockd .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:26px;line-height:1}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}.op:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力ゲーム</small>おはなしの<ruby>主人公<rt>しゅじんこう</rt></ruby> 全20話</h1>
+    <p class="lead"><ruby>全<rt>ぜん</rt></ruby>20わの むかしばなし。<ruby>主人公<rt>しゅじんこう</rt></ruby>に なって、つぎに どうするかを えらぼう。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let ST=[];
+const TITLES=[["momotaro","ももたろう"],["urashima","うらしまたろう"],["kintaro","きんたろう"],["issunboshi","いっすんぼうし"],["kaguya","かぐやひめ"],["kasajizo","かさじぞう"],["hanasaka","はなさかじいさん"],["omusubi","おむすびころりん"],["sarukani","さるかにがっせん"],["shitakiri","したきりすずめ"],["kobutori","こぶとりじいさん"],["warashibe","わらしべちょうじゃ"],["tsuru","つるのおんがえし"],["usagikame","うさぎとかめ"],["arikiri","ありときりぎりす"],["kitakaze","きたかぜとたいよう"],["kobuta3","三《さん》びきのこぶた"],["ookami7","おおかみと七《なな》ひきのこやぎ"],["bremen","ブレーメンのおんがくたい"],["hansel","ヘンゼルとグレーテル"]];
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const yomi=s=>String(s).replace(RB,(m,a,b,r)=>r).replace(/[｜]/g,'').replace(/\n/g,'。').replace(/（/g,'、').replace(/）/g,'、').replace(/…+/g,'、');
+const sayNote=(b,m)=>{try{if(!b)return;let n=b.parentNode.querySelector('.saynote');if(!n){n=document.createElement('span');n.className='note saynote';b.parentNode.appendChild(n);}n.textContent=m;}catch(e){}};
+try{if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}}catch(e){}
+const say=(t,b)=>{try{if(!('speechSynthesis' in window)){sayNote(b,'この ブラウザでは 読み上げが つかえません。');return false;}const S=speechSynthesis;
+  const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.9;const vs=S.getVoices(),ja=vs.filter(v=>/^ja(-|_)/i.test(v.lang));
+    if(ja.length)u.voice=ja.find(v=>v.localService)||ja[0];else if(vs.length)sayNote(b,'この 端末には 日本語の 声が ないようです。せっていで 日本語の 音声を 入れてください。');
+    u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')sayNote(b,'読み上げが できませんでした（'+e.error+'）。音量や せっていを 確かめてください。');};
+    window.__mnU=u;S.resume();S.speak(u);};
+  if(S.speaking||S.pending){S.cancel();setTimeout(go,150);}else go();return true;}catch(e){return false;}};
+const hush=()=>{try{speechSynthesis.cancel();}catch(e){}};
+const STK='mn-stamp-t';const stamps=()=>{try{return +localStorage.getItem(STK)||0;}catch(e){return 0;}};
+const addStamp=()=>{const n=stamps()+1;try{localStorage.setItem(STK,String(n));}catch(e){}return n;};
+const STAMPBOX=()=>`<div class="stampbox" aria-label="あつめたスタンプ">🌸 あつめたスタンプ <b>${stamps()}</b> こ</div>`;
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const PAIDLINK="<a class=\"paid\" href=\"t-ohanashi-full.html\" id=\"paid-link\"><span class=\"pt\">もっと よみたい人へ　<b>おはなしの主人公 全20話</b>（有料版）</span><span class=\"pd\">無料版の 2話も ふくむ 全20話。きんたろう・いっすんぼうし・かぐやひめ・かさじぞう・はなさかじいさん・おむすびころりん・さるかにがっせん・したきりすずめ・こぶとりじいさん・わらしべちょうじゃ・つるのおんがえし・うさぎとかめ・ありときりぎりす・きたかぜとたいよう・三びきのこぶた・おおかみと七ひきのこやぎ・ブレーメンのおんがくたい・ヘンゼルとグレーテル など。</span></a>";
+
+/* ST=おはなし [{id,title,sub,start,len,sc:{ばめんid:{k:n/q/x/e, t:文, p:絵, nx:つぎ, a:といかけ, c:[[ことば,行き先,icon?]], h:ヒント, l:わかること, n:何ばんめ}}}] */
+const REC='t-ohanashi-p-rec';
+let rec=store.get(REC,{}); const saveRec=()=>store.set(REC,rec);
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const sayBtn=(id,txt)=>{const b=document.getElementById(id);if(!b)return;if(!('speechSynthesis' in window)){b.hidden=true;return;}b.onclick=()=>say(txt(),b);};
+function home(){
+  G=null; hush();
+  const cards=ST.map(s=>{const r=rec[s.id]||[0,0];const p=s.sc[s.start].p;
+    return `<button class="st" data-id="${s.id}"><span class="th">${p}</span><span><span class="nm">${rb(s.title)}</span><span class="ds">${rb(s.sub)}</span>
+      ${r[0]?`<span class="bd ok">✓ よんだ${r[0]>1?'（'+r[0]+'かい）':''}</span>`:'<span class="bd no">まだ よんでいない</span>'}${r[1]?` <span class="note" style="display:inline">ゲームオーバー ${r[1]}かい</span>`:''}</span></button>`;}).join('');
+  const more=PAID?'':TITLES.filter(([id])=>!ST.some(s=>s.id===id)).map(([id,t])=>`<a class="st lockd" href="t-ohanashi-full.html"><span class="th">🔒</span><span><span class="nm">${rb(t)}</span><span class="ds">有料版で よめます</span></span></a>`).join('');
+  const done=ST.filter(s=>(rec[s.id]||[0])[0]>0).length;
+  app.innerHTML=`${STAMPBOX()}<div class="label">あそびかた</div>
+    <p style="margin:0;font-size:17px;line-height:1.95">むかしばなしの 主人公《しゅじんこう》に なろう。ばめんごとに 「つぎに どうするか」を えらぶよ。おはなしの とおりに えらぶと つづきが よめます。🔊で 読《よ》みあげます。</p>`.replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>')+`
+    <div class="row" style="justify-content:space-between"><span class="label">おはなしを えらぶ</span><span class="note">よんだ おはなし ${done} / ${ST.length}</span></div>
+    <div class="list">${cards}${more}</div>${PAID?`<div><button class="linkbtn" id="reset">きろくを けす</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='ほんとうに けしますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">けす</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();home();};document.getElementById('no').onclick=home;};
+}
+function play(s){ G={s:s,cur:s.start,from:null,overs:0}; track('level_start',{level_name:'t-ohanashi-'+s.id}); show(s.start); }
+function head(o){ const n=o.n||0; return `<div class="top"><button class="linkbtn" id="back">← もどる</button><div class="prog" aria-hidden="true"><i style="width:${Math.round(n/G.s.len*100)}%"></i></div><span class="ttl">${rb(G.s.title)}</span></div>`; }
+function show(id){
+  hush(); const s=G.s, o=s.sc[id]; G.cur=id;
+  if(o.k==='x')return over(o);
+  if(o.k==='e')return ending(o);
+  const ch=o.k==='q'?shuffle(o.c):null;
+  app.innerHTML=`${head(o)}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>
+    ${o.k==='q'?`<p class="ask">${rb(o.a)}</p><div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${i+1}</span>${c[2]?`<span class="ic">${c[2]}</span>`:''}<span>${rb(c[0])}</span></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="nx">つぎへ ▶</button></div>`}
+    <div class="row"><button class="btn say" id="say">🔊 よみあげ</button></div>`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>yomi(o.t)+(ch?'。'+yomi(o.a)+'。'+ch.map((c,i)=>(i+1)+'ばん、'+yomi(c[0])).join('。'):''));
+  if(ch)app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const c=ch[+b.dataset.i];const ok=s.sc[c[1]].k!=='x';
+    track('answer_question',{category:'t-ohanashi-'+s.id,question:id,correct:ok});
+    if(!ok){G.from=id;G.overs++;bump(s.id,1);} show(c[1]);});
+  else{const nx=document.getElementById('nx');nx.onclick=()=>show(o.nx);}
+  top0();
+}
+function over(o){
+  const s=G.s;
+  app.innerHTML=`${head(s.sc[G.from]||{})}<div class="over"><h2>おや？ おはなしが かわって しまったよ</h2>
+    <div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p><p class="hint"><b>💡 ヒント</b>${rb(o.h)}</p>
+    <div class="row"><button class="btn go" id="retry">この ばめんから やりなおす</button><button class="btn" id="first">さいしょから</button></div>
+    <div class="row"><button class="btn say" id="say">🔊 よみあげ</button><button class="linkbtn" id="list">おはなしを えらぶ</button></div></div>`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>'おや？ おはなしが かわって しまったよ。'+yomi(o.t)+'。ヒント。'+yomi(o.h));
+  const rt=document.getElementById('retry');rt.onclick=()=>show(G.from);
+  document.getElementById('first').onclick=()=>show(s.start);
+  document.getElementById('list').onclick=home;
+  top0(); rt.focus({preventScroll:true});
+}
+function ending(o){
+  const s=G.s, stars=G.overs===0?3:G.overs<=2?2:1;
+  bump(s.id,0); const got=addStamp();
+  track('level_end',{level_name:'t-ohanashi-'+s.id,success:true,score:stars});
+  const ix=ST.indexOf(s), nx=ST[ix+1];
+  app.innerHTML=`${head(o)}<p class="endh">🎉 おはなしの おわり</p><div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>
+    ${o.l?`<p class="lesson"><b>このおはなしから わかること</b>${rb(o.l)}</p>`:''}
+    <div class="row"><span class="stars" aria-label="ほし ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span><span class="note">${G.overs?'ゲームオーバー '+G.overs+'かい。つぎは ノーミスを めざそう！':'ノーミスで さいごまで よめたね！'}</span></div>
+    <div class="stampget">🌸 スタンプ ゲット！ これまで <b>${got}</b> こ</div>
+    <div class="row">${nx?`<button class="btn go" id="next">つぎの おはなし「${rb(nx.title)}」</button>`:''}<button class="btn${nx?'':' go'}" id="list">おはなしを えらぶ</button></div>
+    <div class="row"><button class="btn say" id="say">🔊 よみあげ</button><button class="linkbtn" id="again">もう いちど よむ</button></div>${PAID?'':PAIDLINK}`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>'おはなしの おわり。'+yomi(o.t)+(o.l?'。このおはなしから わかること。'+yomi(o.l):''));
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(s);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('t-ohanashi'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'t-ohanashi',err:err,free:'t-ohanashi.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
