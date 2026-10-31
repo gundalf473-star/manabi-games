@@ -1,0 +1,386 @@
+<title>しきつめもよう</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="正三角形・正方形・正六角形などの正多角形をすきまなくならべる「しきつめ」の図形パズル。タップでもようのつづきをぬる問題と、しきつめられる形・1つの点に集まる角（合計360°）を考える問題。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.ts-pal{gap:8px}
+.ts-c{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;min-height:46px;touch-action:manipulation}
+.ts-c span{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+.ts-c.on{border-color:var(--seal);box-shadow:0 0 0 3px var(--sealsoft)}
+.ob svg{display:block}
+.boardw{color:#2a2520}
+@media (max-width:420px){#app.box{padding:12px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>しきつめもよう</h1>
+    <p class="lead">同じ形をすきまなくならべる「しきつめ」のもようで遊ぼう。もようのつづきに色をぬったり、1つの点のまわりに集まる角を考えたりします。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"paint","grid":"sq","w":5,"h":4,"cells":[[0.0,4.0,1.0,4.0,1.0,3.0,0.0,3.0],[0.0,3.0,1.0,3.0,1.0,2.0,0.0,2.0],[0.0,2.0,1.0,2.0,1.0,1.0,0.0,1.0],[0.0,1.0,1.0,1.0,1.0,0.0,0.0,0.0],[1.0,4.0,2.0,4.0,2.0,3.0,1.0,3.0],[1.0,3.0,2.0,3.0,2.0,2.0,1.0,2.0],[1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0],[1.0,1.0,2.0,1.0,2.0,0.0,1.0,0.0],[2.0,4.0,3.0,4.0,3.0,3.0,2.0,3.0],[2.0,3.0,3.0,3.0,3.0,2.0,2.0,2.0],[2.0,2.0,3.0,2.0,3.0,1.0,2.0,1.0],[2.0,1.0,3.0,1.0,3.0,0.0,2.0,0.0],[3.0,4.0,4.0,4.0,4.0,3.0,3.0,3.0],[3.0,3.0,4.0,3.0,4.0,2.0,3.0,2.0],[3.0,2.0,4.0,2.0,4.0,1.0,3.0,1.0],[3.0,1.0,4.0,1.0,4.0,0.0,3.0,0.0],[4.0,4.0,5.0,4.0,5.0,3.0,4.0,3.0],[4.0,3.0,5.0,3.0,5.0,2.0,4.0,2.0],[4.0,2.0,5.0,2.0,5.0,1.0,4.0,1.0],[4.0,1.0,5.0,1.0,5.0,0.0,4.0,0.0]],"col":[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],"hide":[4,10],"nc":2,"per":[1,0,2],"lv":1,"id":"1-01"},{"kind":"paint","grid":"tri","w":5,"h":2.598076212353316,"cells":[[0.5,1.73,1.0,0.87,0.0,0.87],[0.0,0.87,1.0,0.87,0.5,0.0],[1.0,0.87,1.5,0.0,0.5,0.0],[0.0,2.6,1.0,2.6,0.5,1.73],[1.0,2.6,1.5,1.73,0.5,1.73],[0.5,1.73,1.5,1.73,1.0,0.87],[1.5,1.73,2.0,0.87,1.0,0.87],[1.0,0.87,2.0,0.87,1.5,0.0],[2.0,0.87,2.5,0.0,1.5,0.0],[1.0,2.6,2.0,2.6,1.5,1.73],[2.0,2.6,2.5,1.73,1.5,1.73],[1.5,1.73,2.5,1.73,2.0,0.87],[2.5,1.73,3.0,0.87,2.0,0.87],[2.0,0.87,3.0,0.87,2.5,0.0],[3.0,0.87,3.5,0.0,2.5,0.0],[2.0,2.6,3.0,2.6,2.5,1.73],[3.0,2.6,3.5,1.73,2.5,1.73],[2.5,1.73,3.5,1.73,3.0,0.87],[3.5,1.73,4.0,0.87,3.0,0.87],[3.0,0.87,4.0,0.87,3.5,0.0],[4.0,0.87,4.5,0.0,3.5,0.0],[3.0,2.6,4.0,2.6,3.5,1.73],[4.0,2.6,4.5,1.73,3.5,1.73],[3.5,1.73,4.5,1.73,4.0,0.87],[4.5,1.73,5.0,0.87,4.0,0.87],[4.0,0.87,5.0,0.87,4.5,0.0],[4.0,2.6,5.0,2.6,4.5,1.73]],"col":[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],"hide":[9,19,26],"nc":2,"per":[2,1,1],"lv":2,"id":"2-01"},{"kind":"paint","grid":"hex","w":6.5,"h":4.5,"cells":[[1.04,1.5,0.52,1.2,0.0,1.5,0.0,2.1,0.52,2.4,1.04,2.1],[1.56,0.6,1.04,0.3,0.52,0.6,0.52,1.2,1.04,1.5,1.56,1.2],[1.04,3.3,0.52,3.0,0.0,3.3,0.0,3.9,0.52,4.2,1.04,3.9],[1.56,2.4,1.04,2.1,0.52,2.4,0.52,3.0,1.04,3.3,1.56,3.0],[2.08,1.5,1.56,1.2,1.04,1.5,1.04,2.1,1.56,2.4,2.08,2.1],[2.6,0.6,2.08,0.3,1.56,0.6,1.56,1.2,2.08,1.5,2.6,1.2],[2.08,3.3,1.56,3.0,1.04,3.3,1.04,3.9,1.56,4.2,2.08,3.9],[2.6,2.4,2.08,2.1,1.56,2.4,1.56,3.0,2.08,3.3,2.6,3.0],[3.12,1.5,2.6,1.2,2.08,1.5,2.08,2.1,2.6,2.4,3.12,2.1],[3.64,0.6,3.12,0.3,2.6,0.6,2.6,1.2,3.12,1.5,3.64,1.2],[3.12,3.3,2.6,3.0,2.08,3.3,2.08,3.9,2.6,4.2,3.12,3.9],[3.64,2.4,3.12,2.1,2.6,2.4,2.6,3.0,3.12,3.3,3.64,3.0],[4.16,1.5,3.64,1.2,3.12,1.5,3.12,2.1,3.64,2.4,4.16,2.1],[4.68,0.6,4.16,0.3,3.64,0.6,3.64,1.2,4.16,1.5,4.68,1.2],[4.16,3.3,3.64,3.0,3.12,3.3,3.12,3.9,3.64,4.2,4.16,3.9],[4.68,2.4,4.16,2.1,3.64,2.4,3.64,3.0,4.16,3.3,4.68,3.0],[5.2,1.5,4.68,1.2,4.16,1.5,4.16,2.1,4.68,2.4,5.2,2.1],[5.72,0.6,5.2,0.3,4.68,0.6,4.68,1.2,5.2,1.5,5.72,1.2],[5.2,3.3,4.68,3.0,4.16,3.3,4.16,3.9,4.68,4.2,5.2,3.9],[5.72,2.4,5.2,2.1,4.68,2.4,4.68,3.0,5.2,3.3,5.72,3.0],[6.24,1.5,5.72,1.2,5.2,1.5,5.2,2.1,5.72,2.4,6.24,2.1],[6.24,3.3,5.72,3.0,5.2,3.3,5.2,3.9,5.72,4.2,6.24,3.9]],"col":[0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0],"hide":[1,2,4,17],"nc":2,"per":[2,1,1],"lv":3,"id":"3-01"},{"kind":"gap","polys":[[12,[0.0,0.0,-0.5,-0.87,-1.37,-1.37,-2.37,-1.37,-3.23,-0.87,-3.73,0.0,-3.73,1.0,-3.23,1.87,-2.37,2.37,-1.37,2.37,-0.5,1.87,0.0,1.0]],[12,[0.0,0.0,0.0,1.0,0.5,1.87,1.37,2.37,2.37,2.37,3.23,1.87,3.73,1.0,3.73,0.0,3.23,-0.87,2.37,-1.37,1.37,-1.37,0.5,-0.87]]],"gap":[60.0,120.0],"have":[12,12],"a":3,"ds":[8,4,6],"lv":4,"id":"4-01"},{"kind":"paint","grid":"hex","w":6.5,"h":4.5,"cells":[[1.04,1.5,0.52,1.2,0.0,1.5,0.0,2.1,0.52,2.4,1.04,2.1],[1.56,0.6,1.04,0.3,0.52,0.6,0.52,1.2,1.04,1.5,1.56,1.2],[1.04,3.3,0.52,3.0,0.0,3.3,0.0,3.9,0.52,4.2,1.04,3.9],[1.56,2.4,1.04,2.1,0.52,2.4,0.52,3.0,1.04,3.3,1.56,3.0],[2.08,1.5,1.56,1.2,1.04,1.5,1.04,2.1,1.56,2.4,2.08,2.1],[2.6,0.6,2.08,0.3,1.56,0.6,1.56,1.2,2.08,1.5,2.6,1.2],[2.08,3.3,1.56,3.0,1.04,3.3,1.04,3.9,1.56,4.2,2.08,3.9],[2.6,2.4,2.08,2.1,1.56,2.4,1.56,3.0,2.08,3.3,2.6,3.0],[3.12,1.5,2.6,1.2,2.08,1.5,2.08,2.1,2.6,2.4,3.12,2.1],[3.64,0.6,3.12,0.3,2.6,0.6,2.6,1.2,3.12,1.5,3.64,1.2],[3.12,3.3,2.6,3.0,2.08,3.3,2.08,3.9,2.6,4.2,3.12,3.9],[3.64,2.4,3.12,2.1,2.6,2.4,2.6,3.0,3.12,3.3,3.64,3.0],[4.16,1.5,3.64,1.2,3.12,1.5,3.12,2.1,3.64,2.4,4.16,2.1],[4.68,0.6,4.16,0.3,3.64,0.6,3.64,1.2,4.16,1.5,4.68,1.2],[4.16,3.3,3.64,3.0,3.12,3.3,3.12,3.9,3.64,4.2,4.16,3.9],[4.68,2.4,4.16,2.1,3.64,2.4,3.64,3.0,4.16,3.3,4.68,3.0],[5.2,1.5,4.68,1.2,4.16,1.5,4.16,2.1,4.68,2.4,5.2,2.1],[5.72,0.6,5.2,0.3,4.68,0.6,4.68,1.2,5.2,1.5,5.72,1.2],[5.2,3.3,4.68,3.0,4.16,3.3,4.16,3.9,4.68,4.2,5.2,3.9],[5.72,2.4,5.2,2.1,4.68,2.4,4.68,3.0,5.2,3.3,5.72,3.0],[6.24,1.5,5.72,1.2,5.2,1.5,5.2,2.1,5.72,2.4,6.24,2.1],[6.24,3.3,5.72,3.0,5.2,3.3,5.2,3.9,5.72,4.2,6.24,3.9]],"col":[1,1,2,2,2,2,0,0,0,0,1,1,1,1,2,2,2,2,0,0,0,1],"hide":[3,7,10,11,15,17,20],"nc":3,"per":[3,0,1],"lv":5,"id":"5-01"}];
+const ID='tiling';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>しきつめもよう 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* しきつめもよう：p.kind='paint'（もようのつづきをぬる）,'alone','meet','angle','gap','combo','around','vconf','howmany','third'
+   図のしきつめはすべて gen_tiling.py で格子から作り、重なり・すきま・1点の角の合計360°を確かめてある。 */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'四角のもよう・しきつめられる形',2:'三角のもよう・何まい集まる？',3:'六角形のもよう・1つの角の大きさ',4:'すきまにはまる形・組み合わせ',5:'角の計算・3色のもよう'};
+const RULES=`<ol class="rules">
+  <li>同じ形を、<b>すきまも重なりもなく</b>ならべることを「しきつめ」といいます。</li>
+  <li>「もようのつづき」では、色を1つえらんで、<b>？のマス</b>をタップしてぬります。同じもようが<b>くり返す</b>ように完成させよう。</li>
+  <li>そのほかの問題は、4つの中から答えをえらびます。</li>
+  <li><b>1つの点のまわりは360°</b>。集まった角の合計がぴったり360°になると、すきまなくうまります。</li>
+  <li>ヒントを使ったり、まちがえたりすると、星がへります。</li></ol>`;
+const TN={0:'円',3:'正三角形',4:'正方形',5:'正五角形',6:'正六角形',7:'正七角形',8:'正八角形',9:'正九角形',10:'正十角形',12:'正十二角形'};
+const TF={3:'#fcd34d',4:'#93c5fd',5:'#fdba74',6:'#fca5a5',7:'#a5f3fc',8:'#86efac',9:'#fde68a',10:'#f9a8d4',12:'#d9f99d',0:'#e5e7eb'};
+const PC=['#3b82f6','#f59e0b','#ef4444','#22c55e'], PCN=['あお','きいろ','あか','みどり'];
+const tA=n=>180*(n-2)/n;
+const tDeg=n=>{const a=tA(n);return Number.isInteger(a)?a+'°':'約'+(Math.round(a*10)/10)+'°';};
+const tPts=a=>{let s='';for(let i=0;i<a.length;i+=2)s+=a[i]+','+a[i+1]+' ';return s;};
+const tPtsF=a=>{let s='';for(let i=0;i<a.length;i+=2)s+=a[i]+','+(-a[i+1])+' ';return s;};
+function tIcon(n,px){
+  px=px||54;
+  if(n===0)return `<svg viewBox="-1.2 -1.2 2.4 2.4" width="${px}" height="${px}" style="width:${px}px;height:${px}px;flex:none" aria-hidden="true"><circle r="1" fill="${TF[0]}" stroke="#2a2520" stroke-width="0.05"/></svg>`;
+  const R=1,pts=[];for(let k=0;k<n;k++){const t=-Math.PI/2+Math.PI/n*(n%2?0:1)+2*Math.PI*k/n;pts.push((R*Math.cos(t)).toFixed(3)+','+(R*Math.sin(t)).toFixed(3));}
+  return `<svg viewBox="-1.2 -1.2 2.4 2.4" width="${px}" height="${px}" style="width:${px}px;height:${px}px;flex:none" aria-hidden="true"><polygon points="${pts.join(' ')}" fill="${TF[n]}" stroke="#2a2520" stroke-width="0.05"/></svg>`;
+}
+function tPatch(f,o){
+  o=o||{};let s='';
+  f.t.forEach((t,i)=>{s+=`<polygon points="${tPtsF(t[1])}" fill="${o.hl===i?'#7c3aed':TF[t[0]]}" stroke="#2a2520" stroke-width="0.05" stroke-linejoin="round"/>`;});
+  if(o.dot)s+=`<circle cx="${o.dot[0]}" cy="${o.dot[1]}" r="0.16" fill="#c8352d" stroke="#fff" stroke-width="0.05"/>`;
+  const w=f.w,h=f.h;
+  return `<svg viewBox="${-w/2} ${-h/2} ${w} ${h}" style="width:100%;max-width:${o.px||420}px;display:block" role="img" aria-label="しきつめもよう"><defs><clipPath id="tc${o.id||0}"><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="0.2"/></clipPath></defs><g clip-path="url(#tc${o.id||0})">${s}</g></svg>`;
+}
+function tAngleFig(n){
+  /* 正n角形と1つの角のしるし（いちばん上の左の頂点） */
+  const R=1.3,pts=[];for(let k=0;k<n;k++){const t=-Math.PI/2-Math.PI/n+2*Math.PI*k/n;pts.push([R*Math.cos(t),R*Math.sin(t)]);}
+  const v=pts[0],a=pts[1],b=pts[n-1];
+  const ua=Math.atan2(a[1]-v[1],a[0]-v[0]),ub=Math.atan2(b[1]-v[1],b[0]-v[0]),r=n>6?0.36:0.3;
+  const p1=[v[0]+r*Math.cos(ua),v[1]+r*Math.sin(ua)],p2=[v[0]+r*Math.cos(ub),v[1]+r*Math.sin(ub)];
+  let d=ub-ua;while(d>Math.PI)d-=2*Math.PI;while(d<=-Math.PI)d+=2*Math.PI;const sw=d>0?1:0;
+  const f=x=>x.toFixed(3);
+  let s=`<polygon points="${pts.map(p=>f(p[0])+','+f(p[1])).join(' ')}" fill="${TF[n]}" stroke="#2a2520" stroke-width="0.04" stroke-linejoin="round"/>`;
+  s+=`<path d="M${f(v[0])},${f(v[1])} L${f(p1[0])},${f(p1[1])} A${r},${r} 0 0 ${sw} ${f(p2[0])},${f(p2[1])} Z" fill="#c8352d" opacity=".8"/>`;
+  const L=Math.hypot(v[0],v[1]),lx=v[0]-v[0]/L*0.72,ly=v[1]-v[1]/L*0.72;
+  s+=`<text x="${f(lx)}" y="${f(ly+0.1)}" text-anchor="middle" font-size="0.3" font-weight="700" fill="#c8352d">？°</text>`;
+  return `<svg viewBox="-1.5 -1.5 3 3" style="width:100%;max-width:220px;display:block" role="img" aria-label="${TN[n]}">${s}</svg>`;
+}
+function tGapFig(p){
+  let s='';
+  p.polys.forEach(t=>{s+=`<polygon points="${tPts(t[1])}" fill="${TF[t[0]]}" stroke="#2a2520" stroke-width="0.04" stroke-linejoin="round"/>`;});
+  const [a0,a1]=p.gap,R=1.25,rad=x=>x*Math.PI/180;
+  const P0=[R*Math.cos(rad(a0)),-R*Math.sin(rad(a0))],P1=[R*Math.cos(rad(a1)),-R*Math.sin(rad(a1))];
+  s+=`<path d="M0,0 L${P0[0]},${P0[1]} A${R},${R} 0 ${a1-a0>180?1:0} 0 ${P1[0]},${P1[1]} Z" fill="#ffffff" stroke="#7c3aed" stroke-width="0.04" stroke-dasharray="0.08 0.06"/>`;
+  const am=rad((a0+a1)/2);
+  s+=`<text x="${0.75*Math.cos(am)}" y="${-0.75*Math.sin(am)+0.14}" text-anchor="middle" font-size="0.42" font-weight="700" fill="#7c3aed">？</text>`;
+  s+=`<circle cx="0" cy="0" r="0.07" fill="#c8352d"/>`;
+  /* 範囲 */
+  let xs=[-1.3,1.3],ys=[-1.3,1.3];p.polys.forEach(t=>{for(let i=0;i<t[1].length;i+=2){xs.push(t[1][i]);ys.push(t[1][i+1]);}});
+  const x0=Math.min(...xs)-0.15,x1=Math.max(...xs)+0.15,y0=Math.min(...ys)-0.15,y1=Math.max(...ys)+0.15;
+  return `<svg viewBox="${x0} ${y0} ${x1-x0} ${y1-y0}" style="width:100%;max-width:300px;max-height:300px;display:block" role="img" aria-label="1つの点のまわり">${s}</svg>`;
+}
+function tPaintFig(){
+  const p=P;let s='';
+  p.cells.forEach((c,i)=>{
+    const hid=p.hide.includes(i),v=hid?S.g[i]:p.col[i];
+    const fill=v==null?'#ffffff':PC[v];
+    s+=`<polygon data-i="${i}" points="${tPts(c)}" fill="${fill}" stroke="${hid?'#7c3aed':'#2a2520'}" stroke-width="${hid?0.06:0.03}" ${hid?'style="cursor:pointer"':''} stroke-linejoin="round"/>`;
+    if(hid&&v==null){let cx=0,cy=0;for(let k=0;k<c.length;k+=2){cx+=c[k];cy+=c[k+1];}cx/=c.length/2;cy/=c.length/2;
+      s+=`<text x="${cx}" y="${cy+0.13}" text-anchor="middle" font-size="${p.grid==='sq'?0.42:0.34}" font-weight="700" fill="#7c3aed" pointer-events="none">？</text>`;}
+  });
+  p.hide.forEach(i=>{s+=`<polygon points="${tPts(p.cells[i])}" fill="none" stroke="#7c3aed" stroke-width="0.07" pointer-events="none" stroke-linejoin="round"/>`;});
+  if(S.hl!=null){const c=p.cells[S.hl];s+=`<polygon points="${tPts(c)}" fill="none" stroke="#a97c12" stroke-width="0.12" pointer-events="none"/>`;}
+  const m=0.12;
+  return `<svg id="bd" viewBox="${-m} ${-m} ${p.w+2*m} ${p.h+2*m}" style="max-width:440px" role="img" aria-label="もよう">${s}</svg>`;
+}
+const tCombo=c=>{const m={};c.forEach(n=>m[n]=(m[n]||0)+1);return Object.keys(m).map(Number).sort((a,b)=>a-b).map(n=>`${TN[n]}${m[n]}まい`).join('・');};
+const tComboIcons=c=>{const m={};c.forEach(n=>m[n]=(m[n]||0)+1);return Object.keys(m).map(Number).sort((a,b)=>a-b).map(n=>`<span style="display:inline-flex;align-items:center;gap:1px">${tIcon(n,30)}<b>×${m[n]}</b></span>`).join(' ');};
+const tSum=c=>c.map(n=>tDeg(n).replace('約','')).join('＋');
+
+function startStage(p){
+  P=p;S={hints:0,done:false,msg:'',msgc:'',wrong:[],hint:false,hl:null};
+  if(p.kind==='paint'){S.g={};p.hide.forEach(i=>S.g[i]=null);S.col=0;}
+  else S.opts=shuffle([p.a,...p.ds]);
+  begin(p);draw();
+}
+function qText(){
+  const p=P;
+  switch(p.kind){
+    case 'paint':return 'もようの<b>つづき</b>をかこう。同じもようがくり返すように、<b>？のマス</b>に色をぬってね。';
+    case 'alone':return p.mode==='can'?'同じ形を何まいもならべて、<b>すきまも重なりもなく</b>しきつめられるのは どれ？':'同じ形だけをならべて、すきまなく<b>しきつめられない</b>のは どれ？';
+    case 'meet':return `${TN[p.n]}をしきつめました。<b style="color:#c8352d">赤い点</b>のまわりには、${TN[p.n]}が<b>何まい</b>集まっている？`;
+    case 'angle':return `${TN[p.n]}の<b>1つの角</b>は何度？`;
+    case 'gap':return '1つの点のまわりに、正多角形をすきまなくならべます。<b>？</b>にぴったり入るのは どれ？';
+    case 'combo':return '1つの点のまわりに、<b>すきまも重なりもなく、ぴったり</b>集まるのは どれ？';
+    case 'around':return `このしきつめもようで、<b style="color:#7c3aed">むらさきの${TN[p.x]}</b>1まいに、<b>辺でくっついている</b>${TN[p.y]}は何まい？`;
+    case 'vconf':return 'このしきつめもようで、<b>1つの点のまわり</b>に集まっている形は どれ？';
+    case 'howmany':return `${tCombo(p.given)}と、${TN[p.f]}を何まいか使って、1つの点のまわりをすきまなくうめます。${TN[p.f]}は<b>何まい</b>？`;
+    case 'third':return `${tCombo(p.given)}と、<b>もう1まいの正多角形</b>で、1つの点のまわりがぴったりうまります。もう1まいは どれ？`;
+  }
+}
+function fig(){
+  const p=P;
+  switch(p.kind){
+    case 'paint':return tPaintFig();
+    case 'meet':return tPatch(p.fig,{dot:p.dot,px:380});
+    case 'angle':return tAngleFig(p.n);
+    case 'gap':return tGapFig(p);
+    case 'around':return tPatch(p.fig,{hl:p.hl,px:420});
+    case 'vconf':return tPatch(p.fig,{px:420});
+    case 'howmany':case 'third':return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">${p.given.map(n=>tIcon(n,58)).join('')}${p.kind==='howmany'?`<b style="font-size:20px">＋</b>${tIcon(p.f,46)}<b style="font-size:20px">×？</b>`:`<b style="font-size:20px">＋</b><span style="font-size:34px;font-weight:700;color:#7c3aed">？</span>`}</div>`;
+  }
+  return '';
+}
+const shapeKinds={alone:1,gap:1,third:1};
+function optHTML(o,i){
+  const p=P,right=S.done&&JSON.stringify(o)===JSON.stringify(p.a),wr=S.wrong.includes(i);
+  let inner;
+  if(shapeKinds[p.kind])inner=`${tIcon(o,50)}<b style="font-size:16px">${TN[o]}</b>`;
+  else if(p.kind==='combo'||p.kind==='vconf')inner=`<span style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:17px" aria-label="${tCombo(o)}">${tComboIcons(o)}</span>`;
+  else if(p.kind==='angle')inner=`<b style="font-size:20px">${o}°</b>`;
+  else inner=`<b style="font-size:20px">${o}まい</b>`;
+  return `<button class="ob ${right?'right':''} ${wr?'wrong':''}" data-i="${i}" ${S.done||wr?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${inner}</button>`;
+}
+function hintText(){
+  const p=P;
+  switch(p.kind){
+    case 'alone':return '1つの点のまわりは360°。形の1つの角を何こか合わせて、ちょうど360°になるかな？　正方形の角は90°、正三角形は60°、正六角形は120°です。';
+    case 'meet':return '赤い点にさわっている形を、1まいずつ指でさして数えよう。';
+    case 'angle':return `${TN[p.n]}は、1つの点から線を引くと、三角形${p.n-2}こに分けられます。三角形の角の合計は180°。全部の角の合計を${p.n}こで分けよう。`;
+    case 'gap':return `1つの点のまわりは360°。いまある角の合計は ${tSum(p.have)}＝${p.have.reduce((s,n)=>s+tA(n),0)}°。のこりは何度かな？`;
+    case 'combo':return '角の大きさ：正三角形60°、正方形90°、正五角形108°、正六角形120°、正八角形135°、正十角形144°、正十二角形150°。合計が360°になるのはどれ？';
+    case 'around':return `むらさきの${TN[p.x]}の辺を1本ずつたどって、となりが${TN[p.y]}かどうか数えよう。`;
+    case 'vconf':return '形の角がたくさん集まっている点を1つえらんで、まわりの形を数えよう。';
+    case 'howmany':case 'third':return `${tCombo(p.given)}の角の合計は ${p.given.reduce((s,n)=>s+tA(n),0)}°。360°まで、あと何度？`;
+  }
+  return '';
+}
+function explain(){
+  const p=P;
+  switch(p.kind){
+    case 'paint':return `もようは、横やななめに同じならびが<b>くり返し</b>ています。くり返しを見つけると、見えないところの色もわかります。`;
+    case 'alone':{
+      if(p.mode==='can'){const k=360/tA(p.a);return `${TN[p.a]}の1つの角は${tDeg(p.a)}。${tDeg(p.a)}×${k}＝360°なので、1つの点のまわりに${k}まいでぴったりうまります。${p.figs[p.a]?tPatch(p.figs[p.a],{px:300,id:9}):''}`;}
+      const a=tA(p.a);return `${TN[p.a]}の1つの角は${tDeg(p.a)}。何まい集めても360°ちょうどにはならず、すきまや重なりができます。1つの形だけでしきつめられる正多角形は、<b>正三角形・正方形・正六角形</b>の3つだけです。`;}
+    case 'meet':return `${TN[p.n]}の1つの角は${tDeg(p.n)}。360÷${tA(p.n)}＝${p.a}で、${p.a}まい集まります。`;
+    case 'angle':return `三角形${p.n-2}こ分で 180×${p.n-2}＝${180*(p.n-2)}°。それを${p.n}こに分けて、${180*(p.n-2)}÷${p.n}＝<b>${p.a}°</b>です。`;
+    case 'gap':{const s=p.have.reduce((t,n)=>t+tA(n),0);return `${tSum(p.have)}＝${s}°。のこりは 360−${s}＝${360-s}°。1つの角が${360-s}°なのは<b>${TN[p.a]}</b>です。`;}
+    case 'combo':return `${tSum(p.a)}＝360°で、ぴったりです。ほかは、合計が360°になりません（${p.ds.map(d=>tSum(d)+'＝'+d.reduce((t,n)=>t+tA(n),0)+'°').join('、')}）。`;
+    case 'around':return `${TN[p.x]}1まいのまわりには、${TN[p.y]}が<b>${p.a}まい</b>くっついています。`;
+    case 'vconf':return `どの点のまわりも、${tCombo(p.a)}。${tSum(p.a)}＝360°で、ぴったりです。`;
+    case 'howmany':{const s=p.given.reduce((t,n)=>t+tA(n),0);return `のこりは 360−${s}＝${360-s}°。${TN[p.f]}の角は${tA(p.f)}°なので、${360-s}÷${tA(p.f)}＝<b>${p.a}まい</b>です。`;}
+    case 'third':{const s=p.given.reduce((t,n)=>t+tA(n),0);return `のこりは 360−${s}＝${360-s}°。1つの角が${360-s}°の正多角形は<b>${TN[p.a]}</b>です。`;}
+  }
+  return '';
+}
+function draw(){
+  const p=P,paint=p.kind==='paint',f=fig();
+  app.innerHTML=`${topBar()}
+    <p class="qq">${qText()}</p>
+    ${f?`<div class="boardw">${f}</div>`:''}
+    ${paint?paintCtl():`<div class="opts4 ${shapeKinds[p.kind]?'':'txt'}">${S.opts.map(optHTML).join('')}</div>
+      ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+      ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg||'4つの中からえらぼう。'}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<div style="margin:0">${explain()}</div>`);return;}
+  if(paint){bindPaint();return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,o=S.opts[i];
+    if(JSON.stringify(o)===JSON.stringify(p.a)){S.done=true;}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。もう一度考えてみよう。';S.msgc='ng';}draw();});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';S.msgc='';draw();};
+}
+function paintCtl(){
+  if(S.done)return '';
+  return `<div class="row ts-pal" style="justify-content:center">${PC.slice(0,P.nc).map((c,k)=>`<button class="ts-c ${S.col===k?'on':''}" data-k="${k}"><span style="background:${c}"></span>${PCN[k]}</button>`).join('')}<button class="ts-c ${S.col===-1?'on':''}" data-k="-1"><span style="background:#fff"></span>けす</button></div>
+    <p class="msg ${S.msgc}" id="msg">${S.msg||'色をえらんで、？のマスをタップしよう。'}</p>
+    <div class="row" style="justify-content:center"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">やりなおす</button></div>
+    <p class="note">ヒントを使うと、？のマスを1つ正しい色にします（星がへります）。</p>`;
+}
+function bindPaint(){
+  const p=P;
+  app.querySelectorAll('.ts-c').forEach(b=>b.onclick=()=>{S.col=+b.dataset.k;draw();});
+  document.getElementById('bd').addEventListener('click',e=>{
+    const t=e.target.closest('[data-i]');if(!t)return;const i=+t.dataset.i;if(!p.hide.includes(i))return;
+    S.g[i]=S.col<0?null:(S.g[i]===S.col?null:S.col);S.hl=null;check();});
+  document.getElementById('reset').onclick=()=>{p.hide.forEach(i=>S.g[i]=null);S.msg='';S.msgc='';S.hl=null;draw();};
+  document.getElementById('hint').onclick=()=>{
+    S.hints++;const bad=p.hide.find(i=>S.g[i]!=null&&S.g[i]!==p.col[i]),emp=p.hide.find(i=>S.g[i]==null),i=bad!=null?bad:emp;
+    if(i!=null){S.g[i]=p.col[i];S.hl=i;S.msg=`ヒント：わくのマスは ${PCN[p.col[i]]} です（ヒント ${S.hints}回）。`;S.msgc='';}
+    check(true);};
+}
+function check(fromHint){
+  const p=P,full=p.hide.every(i=>S.g[i]!=null);
+  if(full){
+    if(p.hide.every(i=>S.g[i]===p.col[i])){S.done=true;}
+    else if(!fromHint){S.hints++;S.msg='ちがうマスがあります。くり返しのもようを、もう一度よく見よう。';S.msgc='ng';}
+  }else if(!fromHint){S.msg='';S.msgc='';}
+  draw();
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

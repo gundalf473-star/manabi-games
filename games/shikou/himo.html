@@ -1,0 +1,321 @@
+<title>ひものからまり</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="重なりのあるひもの絵を見て、両はしを引っぱるとほどけるか、むすび目がのこるかを考える図形パズル。重なりをタップして上下を入れかえる問題もあります。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.hm-pick{grid-template-columns:1fr 1fr}
+.hm-o{padding:4px 4px 6px;position:relative;background:#fbfaf6}
+.hm-o .k{position:absolute;bottom:4px;left:4px}
+.hm-o svg{display:block}
+.hm-yn .ob{padding:10px 6px}
+.ob.hm-o.right,.ob.hm-o.wrong{background:#fbfaf6}
+#bd circle[data-c]{touch-action:manipulation}
+@media (max-width:420px){#app.box{padding:12px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>ひものからまり</h1>
+    <p class="lead">からまったひもの両はしを引っぱると、まっすぐになる？　それとも むすび目がのこる？　重なりの上・下をよく見て考えよう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"yn","r":{"pts":[80,22,85,22,90,22,95,22,100,22,105,22,110,22,115,22,120,22,125,22,130,22,135,22,140,22,145,22,150,22,155,22,160,22,165,22,170,22,174,23,178,27,179,31,180,36,179,41,178,46,176,51,173,54,169,57,164,60,160,62,156,65,152,68,148,72,145,75,142,79,139,83,136,87,134,92,131,96,129,101,127,105,126,110,125,115,123,120,123,125,122,130,122,135,122,140,123,145,123,150,124,155,126,159,128,164,130,168,133,173,136,176,140,180,144,183,148,185,153,186,158,187,163,187,168,185,172,183,176,180,180,176,183,172,185,168,187,163,188,158,189,154,190,149,190,144,190,139,190,134,189,129,188,124,187,119,185,114,183,110,181,105,179,101,176,96,173,92,170,88,167,84,164,81,160,77,156,74,152,71,148,68,144,66,139,63,135,62,130,60,125,59,120,58,115,58,110,58,105,58,100,60,96,62,92,65,88,68,86,72,84,77,83,82,84,87,85,92,87,96,90,101,93,105,96,108,100,111,104,114,109,117,113,119,118,121,122,122,127,124,132,125,137,125,142,126,147,126,152,126,157,125,162,124,167,123,172,122,177,121,181,119,186,117,190,114,194,111,198,108,202,105,206,102,209,98,211,94,214,89,215,84,216,79,217,74,216,70,214,65,211,61,208,57,204,53,201,49,200,45,199,40,199,35,199,30,201,25,205,23,210,22,215,22,220,22,225,22,230,22,235,22,240,22,245,22,250,22,255,22,257,22],"cr":[{"x":150.5,"y":69.9,"a":[28,35],"b":[86,93],"s1":31.45,"s2":89.43,"top":0,"n":1},{"x":123.1,"y":122.6,"a":[40,47],"b":[115,122],"s1":43.56,"s2":118.11,"top":1,"n":2},{"x":185.8,"y":116.6,"a":[74,81],"b":[128,135],"s1":77.51,"s2":131.01,"top":0,"n":3}],"k":true,"seq":"OUOUOU","mv":[]},"a":"K","lv":1,"id":"1-01"},{"kind":"pick","rs":[{"pts":[10,22,15,22,20,22,25,22,30,22,35,22,40,22,45,22,50,22,55,22,60,22,65,22,70,22,75,22,80,22,85,22,90,22,95,22,100,23,104,25,106,30,106,35,106,40,106,45,104,50,101,53,97,57,93,60,90,63,86,67,84,71,82,76,80,81,80,86,79,91,80,96,81,100,83,105,85,110,88,114,92,117,95,121,99,124,104,126,108,128,113,130,118,131,123,132,128,133,133,133,138,133,143,133,148,133,153,133,158,134,163,134,168,134,173,133,178,133,183,132,187,131,192,129,197,127,201,125,205,122,209,118,212,115,215,111,217,106,219,101,220,97,221,92,220,87,219,82,218,77,215,73,212,69,209,65,205,62,200,60,195,58,191,57,186,57,181,57,176,58,171,59,166,61,162,63,157,66,153,69,150,72,146,75,143,79,140,83,137,87,134,92,132,96,129,100,126,104,124,108,121,113,118,117,116,121,113,126,111,130,110,135,109,140,108,145,108,150,108,155,109,160,111,164,113,169,115,173,119,177,123,180,127,183,131,185,136,186,141,187,146,187,151,186,156,185,160,182,164,180,168,176,172,173,175,169,177,164,179,160,181,155,182,150,182,145,182,140,182,135,181,130,180,125,178,121,176,116,174,111,172,107,170,102,168,98,165,94,163,89,161,85,159,80,156,76,153,72,150,68,147,64,143,61,139,58,135,55,131,52,128,48,127,43,127,38,127,33,128,28,131,24,135,23,140,22,145,22,150,22,155,22,160,22,165,22,170,22,175,22,180,22,185,22],"cr":[{"x":111.7,"y":129.5,"a":[41,48],"b":[100,107],"s1":44.74,"s2":103.86,"top":0,"n":1},{"x":181.3,"y":132.3,"a":[55,62],"b":[131,138],"s1":58.75,"s2":134.59,"top":1,"n":2},{"x":151.8,"y":70.0,"a":[86,93],"b":[145,152],"s1":89.43,"s2":148.46,"top":0,"n":3}],"k":true,"seq":"OUOUOU","mv":[]},{"pts":[102,22,107,22,112,22,117,22,122,22,127,22,132,22,137,22,142,22,147,22,152,23,157,24,160,28,160,33,160,38,160,43,158,48,155,52,151,55,147,58,143,60,138,63,135,66,131,70,128,73,125,78,123,82,122,87,121,92,122,97,123,102,126,106,130,109,135,110,140,110,144,108,148,104,150,100,150,95,148,90,144,86,140,84,135,82,130,81,125,81,120,81,116,82,111,83,106,85,102,87,97,90,94,93,90,96,87,100,84,104,82,109,80,113,79,118,78,123,78,128,78,133,79,138,80,143,81,148,84,152,86,157,89,161,92,165,95,168,99,172,103,175,107,178,112,180,116,182,121,184,126,185,130,186,135,187,140,187,145,187,150,186,155,184,160,182,164,180,168,177,171,173,174,169,177,165,178,160,179,155,180,150,179,145,178,141,176,136,173,132,169,129,164,127,159,128,156,132,154,136,155,141,156,146,159,150,162,154,166,157,171,159,176,161,181,161,185,161,190,160,195,158,199,155,203,153,207,149,210,145,213,141,216,137,218,132,219,128,221,123,222,118,222,113,222,108,222,103,222,98,221,93,219,88,217,84,215,79,213,75,210,71,206,67,203,64,199,61,195,58,190,55,187,52,184,48,183,43,182,38,182,33,183,28,186,24,191,23,196,22,201,22,206,22,211,22,216,22,221,22,226,22,231,22,236,22,240,22],"cr":[{"x":124.0,"y":80.6,"a":[22,29],"b":[41,48],"s1":25.64,"s2":44.3,"top":0,"n":1},{"x":178.2,"y":160.9,"a":[84,91],"b":[103,110],"s1":87.86,"s2":106.54,"top":1,"n":2}],"k":false,"seq":"OUUO","mv":["R1","R1"]},{"pts":[83,22,88,22,93,22,98,22,103,22,108,22,113,22,118,22,123,22,128,22,133,23,138,24,140,28,141,33,141,38,140,43,139,48,136,52,132,55,127,57,122,59,118,61,113,63,109,66,105,69,101,72,98,76,95,79,92,83,89,87,86,92,84,96,82,101,80,106,79,110,78,115,78,120,77,125,78,130,78,135,79,140,80,145,82,150,84,154,86,159,89,163,92,167,95,171,99,174,103,177,107,180,112,182,116,184,121,185,126,186,131,187,136,187,141,186,146,185,151,184,155,182,159,179,163,176,167,172,170,168,172,164,174,159,175,154,175,149,174,145,171,140,168,137,163,135,158,135,155,139,153,143,154,148,156,153,159,157,163,160,167,162,172,164,177,164,182,164,187,164,192,162,196,160,201,158,205,155,208,152,212,148,215,144,217,140,219,135,221,130,222,125,222,120,223,115,222,110,222,105,220,101,219,96,217,91,215,87,212,82,209,78,206,75,202,71,199,68,195,65,190,62,186,60,182,58,177,56,172,54,168,51,166,47,164,42,164,37,164,32,165,27,169,24,174,22,179,22,184,22,189,22,194,22,199,22,204,22,209,22,214,22,219,22,222,22],"cr":[{"x":172.2,"y":163.6,"a":[62,69],"b":[78,85],"s1":65.08,"s2":81.05,"top":1,"n":1}],"k":false,"seq":"UO","mv":["R1"]}],"ask":"K","a":0,"lv":2,"id":"2-01"},{"kind":"flip","r":{"pts":[81,22,86,22,91,22,96,22,101,22,106,22,111,22,116,22,121,22,126,22,131,23,136,24,138,28,139,33,139,38,138,43,137,48,135,52,131,56,127,58,122,60,117,62,113,65,109,67,104,70,100,72,96,75,92,78,88,82,85,85,82,89,81,94,82,99,85,103,89,107,92,110,97,113,101,116,105,118,110,120,114,123,118,125,123,127,128,129,132,131,137,133,141,135,146,137,151,138,156,140,160,141,165,143,170,144,175,145,180,145,185,145,190,145,195,143,199,141,203,138,206,134,209,130,211,125,213,121,214,116,215,111,216,106,217,101,218,96,218,91,219,86,219,81,219,76,218,71,217,66,216,62,212,58,208,56,203,57,198,58,193,60,189,62,185,65,180,67,176,70,172,73,168,76,164,79,160,81,156,84,152,87,147,90,144,93,140,96,136,100,132,103,128,106,124,109,121,113,117,116,114,120,111,124,108,128,105,132,104,137,103,142,104,147,106,152,108,156,112,160,115,163,119,167,123,170,127,173,131,175,135,178,140,180,144,182,149,184,154,186,159,187,164,187,168,185,172,182,175,178,177,174,178,169,179,164,179,159,180,154,180,149,180,144,180,139,180,134,180,129,179,124,179,119,179,114,178,109,178,104,177,99,177,94,176,89,175,84,174,79,173,74,172,70,170,65,167,61,163,57,160,53,158,49,157,44,156,39,156,34,156,29,159,25,163,23,168,22,173,22,178,22,183,22,188,22,193,22,198,22,203,22,208,22,213,22],"cr":[{"x":112.1,"y":121.7,"a":[36,43],"b":[97,104],"s1":39.59,"s2":100.48,"top":0,"n":1},{"x":179.9,"y":145.1,"a":[50,57],"b":[127,134],"s1":53.99,"s2":130.75,"top":1,"n":2},{"x":172.5,"y":72.5,"a":[81,88],"b":[142,149],"s1":84.87,"s2":145.38,"top":0,"n":3}],"k":true,"seq":"OUOUOU","mv":[]},"goal":"U","ok":[0,1,2],"after":{"0":{"mv":["R2","R1"],"seq":"UUOOOU"},"1":{"mv":["R2","R1"],"seq":"OOOUUU"},"2":{"mv":["R2","R1"],"seq":"OUUUOO"}},"lv":3,"id":"3-01"},{"kind":"flip","r":{"pts":[53,22,58,22,63,22,68,22,73,22,78,22,83,22,88,22,93,22,98,22,103,23,108,24,111,28,111,33,111,38,110,43,109,48,106,52,102,55,98,58,94,61,91,65,87,68,85,73,83,77,82,82,82,87,82,92,83,97,85,102,88,106,91,110,95,113,98,117,101,121,104,125,108,129,111,132,115,135,119,138,124,140,128,143,133,144,138,146,142,147,147,148,152,149,157,149,162,148,167,148,172,147,177,146,182,144,186,142,191,140,195,137,199,134,203,131,206,127,209,123,212,119,214,115,216,110,218,105,218,100,218,95,218,90,216,86,214,81,212,77,208,73,204,71,199,68,195,67,190,67,185,67,180,68,175,69,170,69,165,70,160,71,155,72,150,73,145,74,141,76,136,78,132,80,127,83,123,86,120,89,116,93,113,97,110,101,108,105,105,109,104,114,102,119,101,124,100,129,100,134,100,139,101,144,102,149,103,153,105,158,107,163,109,167,112,171,116,175,119,178,123,181,128,183,132,185,137,186,142,187,147,187,152,186,156,184,161,181,164,177,167,173,169,168,170,163,171,159,173,154,174,149,176,144,177,140,179,135,180,130,180,125,180,120,180,115,180,110,179,105,178,100,177,95,175,91,173,86,171,82,168,77,165,73,161,70,158,66,154,63,150,60,145,58,141,55,137,52,135,48,133,43,133,38,133,33,133,28,136,24,141,23,146,22,151,22,156,22,161,22,166,22,171,22,176,22,181,22,186,22,191,22],"cr":[{"x":101.5,"y":121.8,"a":[31,38],"b":[93,100],"s1":34.18,"s2":96.6,"top":1,"n":1},{"x":175.4,"y":146.1,"a":[47,54],"b":[122,129],"s1":50.66,"s2":125.62,"top":0,"n":2},{"x":162.2,"y":70.6,"a":[76,83],"b":[138,145],"s1":79.56,"s2":141.77,"top":0,"n":3}],"k":false,"seq":"UOOOUU","mv":["R2","R1"]},"goal":"K","ok":[2],"after":{"2":{"mv":[],"seq":"UOUOUO"}},"lv":4,"id":"4-01"},{"kind":"flip","r":{"pts":[51,22,56,22,61,22,66,22,71,22,76,22,81,22,86,22,91,22,96,22,101,22,106,22,111,22,116,22,121,22,126,22,131,22,136,22,141,22,146,24,150,27,151,31,151,36,150,41,149,46,146,50,142,53,137,54,132,55,127,56,122,58,118,61,115,64,113,69,113,74,113,79,115,84,116,88,118,93,120,98,122,102,124,107,127,111,129,116,131,120,134,124,136,129,139,133,141,138,143,142,146,146,148,151,151,155,154,159,156,163,159,168,162,172,165,176,168,180,172,183,176,186,181,187,185,186,190,183,193,179,196,175,199,172,204,169,208,167,212,165,217,163,222,163,227,163,232,164,237,166,241,169,244,173,245,177,244,182,240,185,235,186,230,185,226,182,222,179,219,175,217,170,215,166,214,161,214,156,214,151,215,146,216,141,218,136,220,132,222,127,223,122,223,117,222,112,220,108,216,105,212,102,207,100,202,99,197,98,192,97,187,97,182,96,177,96,172,95,167,95,162,95,158,94,153,94,148,94,143,94,138,94,133,94,128,93,123,93,118,93,113,94,108,94,103,94,98,95,93,95,88,97,83,99,80,102,78,106,77,111,78,116,79,121,81,126,83,130,86,135,88,139,90,144,93,148,96,152,98,156,101,160,104,164,108,168,111,171,116,174,120,176,125,176,130,174,134,172,138,168,141,165,145,161,148,157,151,153,154,149,156,145,159,141,162,136,165,132,167,128,170,124,173,120,175,115,178,111,181,107,183,103,186,98,188,94,191,90,193,85,195,81,197,76,198,71,199,66,198,61,194,58,190,55,185,53,181,51,178,48,175,43,175,38,175,33,175,28,178,24,183,23,188,22,193,22,198,22,203,22,208,22,213,22,218,22,223,22,228,22,233,22,238,22,243,22,248,22,253,22,258,22,263,22,268,22,273,22,274,22],"cr":[{"x":118.4,"y":93.5,"a":[35,42],"b":[115,122],"s1":38.08,"s2":118.83,"top":0,"n":1},{"x":150.2,"y":153.6,"a":[48,55],"b":[149,156],"s1":51.7,"s2":152.83,"top":1,"n":2},{"x":214.7,"y":164.1,"a":[66,73],"b":[83,90],"s1":69.45,"s2":86.32,"top":1,"n":3},{"x":186.8,"y":96.5,"a":[102,109],"b":[163,170],"s1":105.13,"s2":166.4,"top":0,"n":4}],"k":true,"seq":"OUUOOUOU","mv":[]},"goal":"U","ok":[0,1,3],"after":{"0":{"mv":["R1","R2","R1"],"seq":"UUUOOOOU"},"1":{"mv":["R1","R2","R1"],"seq":"OOUOOUUU"},"3":{"mv":["R1","R2","R1"],"seq":"OUUOUUOO"}},"lv":5,"id":"5-01"}];
+const ID='himo';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>ひものからまり 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* ひものからまり：p.kind='yn'（引っぱるとどうなる？）,'pick'（どのひも？）,'flip'（1か所だけ上下を入れかえる）
+   ひも r={pts:[x,y,…], cr:[{x,y,a,b,top,n,s1,s2}], k:むすび目か, mv:ほどける手順(R1/R2)}
+   答えは gen_himo.py でジョーンズ多項式（カウフマンのかっこ）とライデマイスター移動・3色ぬり分けで確かめてある。 */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'重なりが少ないひも',2:'3本から むすび目をさがす',3:'1か所入れかえてほどく',4:'1か所入れかえて むすぶ',5:'重なり4つの からまり'};
+const RULES=`<ol class="rules">
+  <li>ひもが重なっているところでは、<b>上を通るひもがつながって</b>見え、<b>下を通るひもは切れて</b>見えます。</li>
+  <li>ひもの<b>両はしを持って引っぱる</b>と、まっすぐになる（ほどける）か、<b>むすび目</b>がのこるかを考えよう。</li>
+  <li>「入れかえ」の問題では、重なりを<b>タップ</b>すると、そこの上と下が入れかわります。</li>
+  <li>ひもを、はしから指でたどってみよう。<b>上・下・上・下…</b>と交互になっているかがポイントです。</li>
+  <li>1つの重なりだけでできた小さな<b>ねじれのわっか</b>は、引っぱると消えます。</li>
+  <li>ヒントを使ったり、まちがえたりすると、星がへります。</li></ol>`;
+const HB='#fbfaf6';
+function hSeq(r){
+  const ev=[];r.cr.forEach((c,i)=>{ev.push([c.s1,i,0]);ev.push([c.s2,i,1]);});ev.sort((a,b)=>a[0]-b[0]);
+  return ev.map(([s,i,k])=>r.cr[i].top===k?'上':'下');
+}
+/* ねじれのわっか：はしからたどって、同じ重なりを続けて2回通るところ */
+function hKinks(r){
+  const ev=[];r.cr.forEach((c,i)=>{ev.push([c.s1,i]);ev.push([c.s2,i]);});ev.sort((a,b)=>a[0]-b[0]);
+  const k=[];for(let j=0;j+1<ev.length;j++)if(ev[j][1]===ev[j+1][1])k.push(ev[j][1]);return k;
+}
+/* ねじれのわっかをのぞいてたどった上・下 */
+function hSeqCore(r){
+  const K=hKinks(r),ev=[];r.cr.forEach((c,i)=>{if(K.includes(i))return;ev.push([c.s1,i,0]);ev.push([c.s2,i,1]);});ev.sort((a,b)=>a[0]-b[0]);
+  return ev.map(([s,i,k])=>r.cr[i].top===k?'上':'下');
+}
+const hKinkText=r=>{const K=hKinks(r);return K.length?`<b>${K.map(i=>r.cr[i].n+'番').join('・')}</b>の重なりは、小さな<b>ねじれのわっか</b>です（引っぱると消えます）。それをのぞいてたどると「${hSeqCore(r).join('・')||'重なりなし'}」。`:'';};
+function hPiece(r,c,k){
+  /* 上を通るほうのひもを、交わりの前後だけかき直す（となりの交わりの手前まで） */
+  const s=k===0?c.s1:c.s2,all=[];r.cr.forEach(d=>{all.push(d.s1,d.s2);});all.sort((a,b)=>a-b);
+  const j=all.indexOf(s),prev=j>0?all[j-1]:-1e9,next=j<all.length-1?all[j+1]:1e9,n=r.pts.length/2;
+  const i0=Math.max(0,Math.ceil(Math.max(s-4,(s+prev)/2))),i1=Math.min(n-1,Math.floor(Math.min(s+4,(s+next)/2)));
+  const fl=Math.floor(s),fr=s-fl;
+  /* 交わりの点そのものを入れて、ちょうど真ん中で切れないように */
+  const pts=[];for(let i=i0;i<=i1;i++){pts.push(r.pts[2*i]+','+r.pts[2*i+1]);if(i===fl&&fr>0&&i<n-1){pts.push(c.x+','+c.y);}}
+  return pts.join(' ');
+}
+function hRope(r,o){
+  o=o||{};const pl=[];for(let i=0;i<r.pts.length;i+=2)pl.push(r.pts[i]+','+r.pts[i+1]);
+  const P=pl.join(' '),n=r.pts.length;
+  let s=`<polyline points="${P}" fill="none" stroke="#6b3f1d" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${P}" fill="none" stroke="#e3ad70" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
+  r.cr.forEach((c,i)=>{const pc=hPiece(r,c,c.top);
+    s+=`<polyline points="${pc}" fill="none" stroke="${HB}" stroke-width="24" stroke-linecap="butt" stroke-linejoin="round"/><polyline points="${pc}" fill="none" stroke="#6b3f1d" stroke-width="12" stroke-linecap="butt" stroke-linejoin="round"/><polyline points="${pc}" fill="none" stroke="#e3ad70" stroke-width="7" stroke-linecap="butt" stroke-linejoin="round"/>`;});
+  /* はし（持つところ）と引っぱる矢印 */
+  const ex=[[r.pts[0],r.pts[1],r.pts[2],r.pts[3]],[r.pts[n-2],r.pts[n-1],r.pts[n-4],r.pts[n-3]]];
+  ex.forEach(([x,y,x2,y2])=>{const dx=x-x2,dy=y-y2,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
+    s+=`<circle cx="${x}" cy="${y}" r="6.5" fill="#7c3aed" stroke="#3b2f6b" stroke-width="1.5"/>`;
+    if(o.arrows!==false){const ax=x+ux*12,ay=y+uy*12,bx=x+ux*26,by=y+uy*26;
+      s+=`<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#c8352d" stroke-width="3" stroke-linecap="round"/><polygon points="${bx+ux*6},${by+uy*6} ${bx-uy*5},${by+ux*5} ${bx+uy*5},${by-ux*5}" fill="#c8352d"/>`;}});
+  if(o.nums)r.cr.forEach(c=>{s+=`<circle cx="${c.x+14}" cy="${c.y-14}" r="8" fill="#a97c12"/><text x="${c.x+14}" y="${c.y-10.5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${c.n}</text>`;});
+  if(o.tap)r.cr.forEach((c,i)=>{const hl=S.flash===i;s+=`<circle data-c="${i}" cx="${c.x}" cy="${c.y}" r="17" fill="${hl?'rgba(124,58,237,.25)':'rgba(124,58,237,.08)'}" stroke="#7c3aed" stroke-width="${hl?2.5:1.2}" stroke-dasharray="${hl?'':'4 3'}" style="cursor:pointer"/>`;});
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(let i=0;i<n;i+=2){x0=Math.min(x0,r.pts[i]);x1=Math.max(x1,r.pts[i]);y0=Math.min(y0,r.pts[i+1]);y1=Math.max(y1,r.pts[i+1]);}
+  const m=o.arrows===false?10:12,mx=o.arrows===false?10:36;x0-=mx;x1+=mx;y0-=m;y1+=m;
+  return `<svg ${o.id?`id="${o.id}"`:''} viewBox="${x0} ${y0} ${x1-x0} ${y1-y0}" style="width:100%;max-width:${o.px||440}px;display:block" role="img" aria-label="ひも">${s}</svg>`;
+}
+function startStage(p){
+  P=p;S={hints:0,done:false,msg:'',msgc:'',wrong:[],hint:false,flash:null,busy:false};
+  if(p.kind==='flip'){S.r=JSON.parse(JSON.stringify(p.r));S.flip=null;}
+  if(p.kind==='yn')S.opts=['U','K'];
+  if(p.kind==='pick')S.opts=p.rs.map((_,i)=>i);
+  begin(p);draw();
+}
+function qText(){
+  const p=P;
+  if(p.kind==='yn')return 'ひもの<b>両はし</b>を持って、矢印のほうへ引っぱると、どうなる？';
+  if(p.kind==='pick')return p.ask==='K'?'両はしを引っぱったとき、<b>むすび目がのこる</b>ひもは どれ？（1本だけ）':'両はしを引っぱったとき、<b>まっすぐになる（ほどける）</b>ひもは どれ？（1本だけ）';
+  return p.goal==='U'?'このひもは、引っぱるとむすび目がのこります。重なりを<b>1か所だけ</b>タップして上下を入れかえ、<b>ほどける</b>ひもにしよう。':'このひもは、引っぱるとほどけます。重なりを<b>1か所だけ</b>タップして上下を入れかえ、<b>むすび目ができる</b>ひもにしよう。';
+}
+const mvText=mv=>{
+  if(!mv.length)return '重なりがないので、そのまままっすぐです。';
+  const t=mv.map(m=>m==='R1'?'<b>ねじれのわっか</b>がくるっともどる（重なり1つ消える）':'<b>重なった2本</b>がすべってはずれる（重なり2つ消える）');
+  return '引っぱると、'+t.join(' → ')+' → <b>まっすぐ</b>になります。';
+};
+const knotText=r=>`${hKinks(r).length?hKinkText(r)+'のこりの':`はしからたどると「${hSeq(r).join('・')}」。`}3つの重なりが上・下交互にからみ合った「<b>ひとつ結び</b>」の形なので、引っぱるとむすび目がきゅっとしまって<b>のこります</b>。`;
+const ropeExplain=r=>r.k?knotText(r):`はしからたどると「${hSeq(r).join('・')||'重なりなし'}」。${mvText(r.mv)}`;
+function hintText(){
+  const p=P;
+  if(p.kind==='pick')return 'それぞれのひもを左のはしから指でたどり、重なりで「上」か「下」かを言ってみよう。重なりが3つあって、<b>上・下・上・下・上・下</b>と交互になっていると、ひとつ結びのむすび目です。ねじれのわっか1つだけは、引っぱると消えます。';
+  const r=p.kind==='flip'?S.r:p.r,K=hKinks(r);
+  let t=`黄色い番号は、左のはしから進んだときに はじめて通る順番です。たどると「${hSeq(r).join('・')}」。`;
+  if(K.length)t+=hKinkText(r);
+  if(p.kind==='flip')t+=p.goal==='U'?(K.length?'のこりの3つの交互をくずしてみよう。ねじれのわっかを入れかえても、むすび目はのこるよ。':'交互になっているところをくずしてみよう。'):'上・下が<b>交互</b>になるようにしてみよう。';
+  else if(r.cr.length<3)t+='むすび目ができるには、重なりが<b>少なくとも3つ</b>いります。';
+  else t+='3つの重なりが交互にからむと、ひとつ結びです。';
+  return t;
+}
+function optHTML(o,i){
+  const p=P,right=S.done&&o===p.a,wr=S.wrong.includes(i),dis=S.done||wr?'disabled':'';
+  if(p.kind==='yn'){
+    const ic=o==='U'?`<svg viewBox="0 0 120 30" style="width:110px;height:28px"><line x1="8" y1="15" x2="112" y2="15" stroke="#6b3f1d" stroke-width="8" stroke-linecap="round"/><line x1="8" y1="15" x2="112" y2="15" stroke="#e3ad70" stroke-width="4" stroke-linecap="round"/></svg>`
+      :`<svg viewBox="0 0 120 30" style="width:110px;height:28px"><path d="M8,18 C40,18 50,26 60,15 C66,6 52,4 54,15 C56,26 80,18 112,18" fill="none" stroke="#6b3f1d" stroke-width="8" stroke-linecap="round"/><path d="M8,18 C40,18 50,26 60,15 C66,6 52,4 54,15 C56,26 80,18 112,18" fill="none" stroke="#e3ad70" stroke-width="4" stroke-linecap="round"/></svg>`;
+    return `<button class="ob ${right?'right':''} ${wr?'wrong':''}" data-i="${i}" ${dis}><span class="k">${'アイ'[i]}</span>${ic}<b style="font-size:16px">${o==='U'?'まっすぐになる（ほどける）':'むすび目がのこる'}</b></button>`;
+  }
+  return `<button class="ob hm-o ${right?'right':''} ${wr?'wrong':''}" data-i="${i}" ${dis}><span class="k">${'アイウエ'[i]}</span>${hRope(p.rs[o],{px:260,arrows:false,nums:S.hint})}</button>`;
+}
+function draw(){
+  const p=P;
+  let body='';
+  if(p.kind==='yn')body=`<div class="boardw">${hRope(p.r,{nums:S.hint})}</div><div class="opts4 txt hm-yn">${S.opts.map(optHTML).join('')}</div>`;
+  else if(p.kind==='pick')body=`<div class="opts4 txt hm-pick">${S.opts.map(optHTML).join('')}</div>`;
+  else body=`<div class="boardw">${hRope(S.r,{tap:!S.done&&!S.busy,nums:S.hint,id:'bd'})}</div>`;
+  app.innerHTML=`${topBar()}
+    <p class="qq">${qText()}</p>
+    ${body}
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc}" id="msg">${S.msg||(p.kind==='flip'?'むらさきの丸（重なり）をタップしよう。':p.kind==='yn'?'2つの中からえらぼう。':'えらんでタップしよう。')}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){
+    let ex='';
+    if(p.kind==='yn')ex=ropeExplain(p.r);
+    else if(p.kind==='pick')ex=p.rs.map((r,i)=>`<li><b>${'アイウエ'[i]}</b>：${r.k?'むすび目がのこる。':'ほどける。'}${i===p.a?ropeExplain(r):''}</li>`).join('');
+    else {const af=p.after[S.flip];ex=p.goal==='U'?`入れかえると「${hSeq(S.r).join('・')}」。${mvText(af.mv)}${p.ok.length<p.r.cr.length?`<br>（ほかに正しい場所：${p.ok.length>1?p.ok.filter(c=>c!==S.flip).map(c=>p.r.cr[c].n+'番').join('・'):'なし'}。ねじれのわっかを入れかえても、むすび目はのこります）`:''}`:knotText(S.r);}
+    showClear(p.kind==='pick'?`<ul style="margin:0;padding-left:1.2em">${ex}</ul>`:`<p style="margin:0">${ex}</p>`);return;
+  }
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';S.msgc='';draw();};
+  if(p.kind==='flip'){
+    const bd=document.getElementById('bd');
+    bd.addEventListener('click',e=>{const t=e.target.closest('[data-c]');if(!t||S.busy)return;const c=+t.dataset.c;
+      S.r.cr[c].top^=1;S.flash=c;
+      if(p.ok.includes(c)){S.flip=c;S.done=true;S.flash=null;draw();return;}
+      S.busy=true;S.hints++;S.msg=p.goal==='U'?'そこを入れかえても、まだむすび目がのこります。もとにもどすね。':'そこを入れかえても、まだほどけてしまいます。もとにもどすね。';S.msgc='ng';draw();
+      const s0=S;setTimeout(()=>{if(S!==s0||P!==p)return;S.r.cr[c].top^=1;S.flash=null;S.busy=false;S.msg='';S.msgc='';draw();},1300);});
+    return;
+  }
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,o=S.opts[i];
+    if(o===p.a){S.done=true;}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。ひもを はしからたどってみよう。';S.msgc='ng';}draw();});
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

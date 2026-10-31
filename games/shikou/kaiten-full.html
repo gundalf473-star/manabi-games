@@ -1,0 +1,346 @@
+<title>くるっと回すと？ 100問</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="図形・もよう">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="くるっと回すと？の有料版。回して見本に合わせる・6と9・さかさまにしても同じ数・回した絵はどれ？・何回も回す・数える問題まで、5つのレベルに20問ずつ、全100問。どの形も座標で回して計算し、答えをたしかめてあります。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.kt-o{padding:6px}.kt-o svg{display:block}
+.kt-main{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.kt-op{display:inline-block;font-size:14px;font-weight:700;color:#fff;background:var(--seal);border-radius:12px;padding:1px 12px;text-align:center}
+.kt-turn{gap:18px;flex-wrap:wrap;align-items:flex-end}
+.kt-turn figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;font-weight:700;color:#6a625a}
+.kt-me{display:inline-block}
+.kt-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.kt-mv{display:inline-flex;align-items:center;gap:6px;min-height:52px;font-size:16px;padding:8px 16px;touch-action:manipulation}
+.kt-mv span{font-size:26px;line-height:1}
+.kt-hl{box-shadow:0 0 0 3px var(--gold);background:var(--sealsoft)}
+.kt-ex{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:#fbfaf6;border-radius:8px;padding:12px}
+.kt-arr{font-size:24px;color:#6a625a}
+.kt-stage{display:inline-block;padding:4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>くるっと回すと？ 100問</h1>
+    <p class="lead">絵やデジタル数字、文字をくるっと回したり、うら返したりすると、どう見える？　5つのレベルに20問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let QS=[];
+const ID='kaiten';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>くるっと回すと？ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* くるっと回すと？：p.kind='turn'（ボタンで回して見本と同じ向きに）| 'pick'（4択）。
+   形は gen_kaiten.py で座標の集合として回し・うら返しを計算ずみ。fig={k:'seg',w,h,s:[[x1,y1,x2,y2]…]}（デジタル数字・文字の線）| {k:'pix',g:[行…]}（色マスの絵）| {k:'txt',s} */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'回して同じ向きに・6と9',2:'右と左に90°・数字に見える？',3:'2けたの数・回したのはどれ？・文字',4:'3けたの数・2つの動き・数える',5:'何回も回す・もようの見分け・数える'};
+const RULES=`<ol class="rules">
+  <li>形を<b>くるっと回したり、うら返したり</b>すると、どう見えるかを考えよう。</li>
+  <li><b>右に90°</b>は時計の針と同じ向きに4分の1回り、<b>180°</b>は半回転（さかさま）です。<b>うら返す</b>は、鏡にうつしたような形です。</li>
+  <li>数字は、電卓や時計の<b>デジタル数字</b>（7本の線でできた数字）です。アルファベットの<b>大文字</b>も出てきます。</li>
+  <li>「見本と同じ向きにしよう」では、<b>回すボタン</b>をおして、絵を見本とぴったり同じにします。そのほかは4つの中から答えをえらびます。</li></ol>`;
+const KTC={r:'#ef4444',b:'#3b82f6',y:'#f5b301',g:'#22a35a',k:'#4b3f36',o:'#f97316'};
+const KTOP={r90:['右に90°回す','右に90°回して','↻','右に90°'],r270:['左に90°回す','左に90°回して','↺','左に90°'],r180:['180°回す','180°回して','↻','180°'],mlr:['左右にうら返す','左右にうら返して','⇆','左右うら返し'],mud:['上下にうら返す','上下にうら返して','⇅','上下うら返し']};
+const ktOps=ops=>ops.map((o,i)=>i<ops.length-1?KTOP[o][1]:KTOP[o][0]).join('、');
+/* 図をかく */
+function ktFig(f,px){
+  if(f.k==='txt')return `<b style="font-size:22px">${esc(f.s)}</b>`;
+  if(f.k==='pix'){const g=f.g,n=g.length,U=10;let s=`<rect x="-3" y="-3" width="${n*U+6}" height="${n*U+6}" rx="4" fill="#fbfaf6"/>`;
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){const ch=g[r][c];
+      s+=`<rect x="${c*U}" y="${r*U}" width="${U}" height="${U}" fill="${ch==='.'?'#f1ede4':KTC[ch]}" stroke="${ch==='.'?'#ddd3c2':'#2a2520'}" stroke-width="${ch==='.'?.5:.8}"/>`;}
+    s+=`<rect x="0" y="0" width="${n*U}" height="${n*U}" fill="none" stroke="#6a625a" stroke-width="1.2"/>`;
+    return `<svg viewBox="-4 -4 ${n*U+8} ${n*U+8}" style="width:${px||100}px;max-width:100%" role="img" aria-label="マスの絵">${s}</svg>`;}
+  /* 線の形 */
+  const isL=!!f.let,sw=isL?.62:.55,cut=isL?0:.2,pad=1;
+  let s=`<rect x="${-pad}" y="${-pad}" width="${f.w+2*pad}" height="${f.h+2*pad}" rx=".6" fill="#fbfaf6"/>`;
+  for(const [x1,y1,x2,y2] of f.s){const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L*cut,uy=(y2-y1)/L*cut;
+    s+=`<line x1="${x1+ux}" y1="${y1+uy}" x2="${x2-ux}" y2="${y2-uy}" stroke="${isL?'#3b2f6b':'#c8352d'}" stroke-width="${sw}" stroke-linecap="round"/>`;}
+  const h=px||70, w=h*(f.w+2*pad)/(f.h+2*pad);
+  return `<svg viewBox="${-pad} ${-pad} ${f.w+2*pad} ${f.h+2*pad}" style="width:${Math.round(w)}px;max-width:100%" role="img" aria-label="線の形">${s}</svg>`;
+}
+/* 表示用の計算（答えの判定には使わない） */
+const ktPix={r90:g=>{const n=g.length;return g.map((_,r)=>g.map((__,c)=>g[n-1-c][r]).join(''));},
+  mlr:g=>g.map(r=>[...r].reverse().join('')),mud:g=>g.slice().reverse()};
+ktPix.r180=g=>ktPix.r90(ktPix.r90(g)); ktPix.r270=g=>ktPix.r90(ktPix.r180(g));
+const ktSeg=(op,f)=>({...f,s:f.s.map(([a,b,c,d])=>op==='r180'?[f.w-a,f.h-b,f.w-c,f.h-d]:op==='mlr'?[f.w-a,b,f.w-c,d]:[a,f.h-b,c,f.h-d])});
+const ktSame=(a,b)=>a.join('|')===b.join('|');
+const KTCSS={r90:'rotate(90deg)',r270:'rotate(-90deg)',r180:'rotate(180deg)',mlr:'scaleX(-1)',mud:'scaleY(-1)'};
+/* 入れ子の箱で、1つずつ動かす */
+function ktAnimBox(inner,ops){let h=inner;ops.forEach((o,i)=>{h=`<div class="kt-a" data-k="${i}" style="display:inline-block">${h}</div>`;});return `<div class="kt-stage">${h}</div>`;}
+function ktPlay(el,ops){
+  if(!el)return; const boxes=[...el.querySelectorAll('.kt-a')].sort((a,b)=>a.dataset.k-b.dataset.k);
+  boxes.forEach(b=>{b.style.transition='none';b.style.transform='none';}); void el.offsetWidth;
+  let i=0;const next=()=>{if(i>=ops.length||!el.isConnected)return;const b=boxes[i];b.style.transition='transform .9s ease';b.style.transform=KTCSS[ops[i]];i++;setTimeout(next,1050);};
+  setTimeout(next,200);
+}
+
+function startStage(p){P=p;
+  S={hints:0,done:false,msg:'',wrong:[],hint:false,g:p.g?p.g.slice():null,moves:0,busy:false,
+     opts:p.kind==='pick'?shuffle([p.a,...p.ds].map((f,i)=>({f,ok:i===0}))):null};
+  begin(p);draw();}
+
+function qtext(){
+  const a=P.ask;
+  if(a==='pic')return `この絵を<b>${ktOps(P.ops)}</b>と、どうなる？`;
+  if(a==='times')return `この絵を<b>${P.dir==='R'?'右':'左'}に90°ずつ、${P.k}回</b>回すと、どうなる？`;
+  if(a==='match')return `見本の絵を<b>回したもの</b>はどれ？（うら返したものは、だめです）`;
+  if(a==='digit')return `デジタル数字の<b>「${P.src}」</b>を<b>${KTOP[P.ops[0]][0]}</b>と、どの数字に見える？`;
+  if(a==='num')return `この数を<b>180°回す</b>（さかさまにする）と、いくつに見える？`;
+  if(a==='same')return `180°回しても、<b>同じ数</b>に見えるのはどれ？`;
+  if(a==='letturn')return `この文字を<b>${KTOP[P.ops[0]][0]}</b>と、どの文字に見える？`;
+  return P.txt;
+}
+function hintText(){
+  const a=P.ask;
+  if(a==='pic'||a==='times')return `${a==='times'?'4回回すと、もとの向きにもどります。だから、'+P.k+'回は'+(P.k%4)+'回と同じです。':''}目じるしのマス（色のついた角など）を1つ決めて、それがどこへ動くか追いかけよう。右に90°なら、上にあったものが右へ動きます。`;
+  if(a==='match')return 'うら返した絵は、どう回しても見本とは重なりません。色のならびが、時計回りか反時計回りかをくらべてみよう。';
+  if(a==='digit')return '7本の線のどこが光っているかを見て、上と下（左と右）を入れかえてみよう。';
+  if(a==='num'||a==='same'||a==='diff')return '180°回すと、1つ1つの数字がさかさまになるだけでなく、<b>ならぶ順番も逆</b>になります（左はしの数字が右はしへ）。さかさまにして数字に見えるのは 0・1・2・5・6・8・9 で、6と9は入れかわります。';
+  if(a==='count')return 'さかさまにして同じに見える数字は 0・1・2・5・8。6と9は入れかわって組になります。左はしと右はしを組にして、何通りあるか数えよう。';
+  if(a==='which')return P.mode==='mirror'?'鏡にうつすと、左と右が入れかわります。左右が同じ形の数字はどれかな。':'さかさまにすると、上と下、左と右が入れかわります。紙に書いて回してみてもいいよ。';
+  if(a==='letter'||a==='letturn')return '頭の中で回すのがむずかしければ、紙に大きく書いて、回したりすかしたりしてみよう。';
+  return '';
+}
+function explain(){
+  const a=P.ask, ok=P.a;
+  if(a==='pic'||a==='times')return `<p style="margin:0">「見る」をおすと、見本の絵が動きます。</p><div class="kt-ex" id="kx">${ktAnimBox(ktFig(P.fig,96),a==='times'?Array(P.k).fill(P.dir==='R'?'r90':'r270'):P.ops)}<span class="kt-arr">→</span>${ktFig(ok,96)}</div><button class="btn" id="kplay">▶ 見る</button>`;
+  if(a==='match'){let k=0,g=P.fig.g;while(!ktSame(g,ok.g)&&k<4){g=ktPix.r90(g);k++;}
+    return `<p style="margin:0">正解は、見本を<b>右に${k*90}°</b>回したものです。ほかの3つは、うら返しになっているので、どう回しても重なりません。</p><div class="kt-ex" id="kx">${ktAnimBox(ktFig(P.fig,96),Array(k).fill('r90'))}<span class="kt-arr">→</span>${ktFig(ok,96)}</div><button class="btn" id="kplay">▶ 見る</button>`;}
+  if(a==='digit'||a==='num'||a==='letturn'){const rf=P.fig.k==='seg'?ktSeg(P.ops[0],P.fig):P.fig;
+    return `<p style="margin:0">${KTOP[P.ops[0]][0]}と、こう見えます${a==='num'?'（数字の順番も逆になります）':''}。</p><div class="kt-ex" id="kx">${ktAnimBox(ktFig(P.fig,64),P.ops)}<span class="kt-arr">→</span>${ktFig(rf,64)}</div><button class="btn" id="kplay">▶ 見る</button>`;}
+  if(a==='which'||a==='same'||a==='letter'){const op=a==='which'?(P.mode==='mirror'?'mlr':'r180'):a==='same'?'r180':(P.mode==='mlr'?'mlr':P.mode==='mud'?'mud':'r180');
+    return `<p style="margin:0">正解の形を${KTOP[op][0]}と、${P.mode==='notdigit'?'数字に見えなくなります':P.mode==='notsame'?'同じ文字になりません':P.mode==='other'?'べつの数字に見えます':'同じに見えます'}。</p><div class="kt-ex" id="kx">${ktAnimBox(ktFig(ok,64),[op])}<span class="kt-arr">→</span>${ktFig(ktSeg(op,ok),64)}</div><button class="btn" id="kplay">▶ 見る</button>`;}
+  if(a==='count')return `<p style="margin:0">答えは${P.n}こ。${P.why}<br><span class="note">${P.ex.join('、')}</span></p>`;
+  if(a==='diff')return `<p style="margin:0">${P.ans}を180°回すと${P.t}に見えます。${P.t}−${P.ans}＝${P.d}です。</p>`;
+  return '';
+}
+function animOps(){const a=P.ask;if(a==='times')return Array(P.k).fill(P.dir==='R'?'r90':'r270');
+  if(a==='match'){let k=0,g=P.fig.g;while(!ktSame(g,P.a.g)&&k<4){g=ktPix.r90(g);k++;}return Array(k).fill('r90');}
+  if(a==='which'||a==='same'||a==='letter')return [a==='which'?(P.mode==='mirror'?'mlr':'r180'):a==='same'?'r180':(P.mode==='mlr'?'mlr':P.mode==='mud'?'mud':'r180')];
+  return P.ops||[];}
+const REF10={k:'seg',w:29,h:4,s:[]};
+function ktRef(){ /* 0〜9のデジタル数字（見本） */
+  const SG={a:[0,0,2,0],b:[2,0,2,2],c:[2,2,2,4],d:[0,4,2,4],e:[0,2,0,4],f:[0,0,0,2],g:[0,2,2,2]},D=['abcdef','bc','abged','abgcd','fgbc','afgcd','afgedc','abc','abcdefg','abcdfg'];
+  const s=[];D.forEach((d,i)=>[...d].forEach(k=>{const [a,b,c,e]=SG[k];s.push([a+i*3,b,c+i*3,e]);}));
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><span class="note">デジタル数字（0〜9）</span>${ktFig({k:'seg',w:29,h:4,s},44)}</div>`;
+}
+function figArea(){
+  const a=P.ask;
+  if(a==='count'||a==='diff')return ktRef();
+  if(a==='which'||a==='same'||a==='letter')return '';
+  const lab=a==='match'?'見本':(a==='times'?`${P.dir==='R'?'↻ 右':'↺ 左'}に90°ずつ ${P.k}回`:P.ops.map(o=>KTOP[o][2]+' '+KTOP[o][3]).join(' → '));
+  return `<figure class="kt-main">${ktFig(P.fig,P.fig.k==='pix'?120:(P.fig.w>3?80:96))}<figcaption><span class="kt-op">${lab}</span></figcaption></figure>`;
+}
+function optHTML(o,i){
+  const right=S.done&&o.ok, dis=S.done||S.wrong.includes(i);
+  const px=o.f.k==='pix'?104:o.f.k==='seg'&&o.f.let?66:o.f.w>3?52:70;
+  return `<button class="ob kt-o ${right?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${dis?'disabled':''}><span class="k">${'アイウエ'[i]}</span>${ktFig(o.f,px)}</button>`;
+}
+function drawPick(){
+  const fa=figArea();
+  app.innerHTML=`${topBar()}
+    ${fa?`<div class="boardw kt-bw">${fa}</div>`:''}
+    <p class="qq">${qtext()}</p>
+    <div class="opts4">${S.opts.map(optHTML).join('')}</div>
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());const b=document.getElementById('kplay');if(b){b.onclick=()=>ktPlay(document.getElementById('kx'),animOps());ktPlay(document.getElementById('kx'),animOps());}return;}
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+    if(S.opts[i].ok){S.done=true;draw();}else{S.wrong.push(i);S.hints++;S.msg='ちがいます。もう一度考えてみよう。';S.msgc='ng';draw();}});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';draw();};
+}
+/* ---- 回して同じ向きに ---- */
+const KTM={r:['↻','右に回す','r90'],l:['↺','左に回す','r270'],f:['⇆','うら返す','mlr']};
+function ktBest(){ /* いまの向きから見本までの最少の手（幅優先） */
+  const key=g=>g.join('|'),T=key(P.t),seen=new Map([[key(S.g),null]]);let fr=[S.g];
+  while(fr.length){const nf=[];for(const g of fr){if(key(g)===T){let k=T,first=null;while(seen.get(k)){first=seen.get(k);k=first.from;}return first?first.m:null;}
+    for(const m of P.ops){const x=ktPix[KTM[m][2]](g),kx=key(x);if(!seen.has(kx)){seen.set(kx,{from:key(g),m});nf.push(x);}}}fr=nf;}
+  return null;}
+function drawTurn(){
+  const ok=ktSame(S.g,P.t);
+  app.innerHTML=`${topBar()}
+    <p class="qq">ボタンで絵を回して、<b>見本と同じ向き</b>にしよう。</p>
+    <div class="boardw kt-turn"><figure><figcaption>見本</figcaption>${ktFig({k:'pix',g:P.t},118)}</figure>
+      <figure><figcaption>あなたの絵</figcaption><div id="kme" class="kt-me">${ktFig({k:'pix',g:S.g},118)}</div></figure></div>
+    ${S.done?'':`<div class="kt-btns">${[...P.ops].map(m=>`<button class="btn kt-mv ${S.hl===m?'kt-hl':''}" data-m="${m}"><span>${KTM[m][0]}</span>${KTM[m][1]}</button>`).join('')}</div>
+    <p class="msg ${S.msgc||''}" id="msg">${S.msg||`回した回数：${S.moves}回`}</p>
+    <div class="row"><button class="btn" id="hint">ヒント</button><button class="btn" id="reset">はじめから</button></div>
+    ${P.ops.includes('f')?'<p class="note">「うら返す」は、絵を左右に裏返します（鏡にうつしたような形）。</p>':''}`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(`<p style="margin:0">${S.moves}回で同じ向きになりました。いちばん少ない回数は<b>${P.mn}回</b>です。${S.moves>P.mn?'もっと少ない回数でもできるよ。':'さいたん！'}</p>`);return;}
+  app.querySelectorAll('.kt-mv').forEach(b=>b.onclick=()=>{if(S.busy)return;const m=b.dataset.m,el=document.querySelector('#kme');S.busy=true;S.hl=null;
+    el.style.transition='transform .35s ease';el.style.transform=KTCSS[KTM[m][2]];
+    setTimeout(()=>{S.g=ktPix[KTM[m][2]](S.g);S.moves++;S.busy=false;S.msg='';if(ktSame(S.g,P.t))S.done=true;draw();},380);});
+  document.getElementById('hint').onclick=()=>{const m=ktBest();S.hints++;S.hl=m;S.msg=m?`ヒント：つぎは「${KTM[m][1]}」をおそう（光っているボタン）。`:'';S.msgc='';draw();};
+  document.getElementById('reset').onclick=()=>{S.g=P.g.slice();S.moves=0;S.msg='';S.hl=null;draw();};
+}
+function draw(){ if(P.kind==='turn')drawTurn(); else drawPick(); }
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

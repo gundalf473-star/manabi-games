@@ -1,0 +1,344 @@
+<title>魔法のカード</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="数のパズル">
+<meta name="game:grade" content="小2〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="数が書かれた何まいかのカードを使って、思いうかべた数を当てる数当て手品のパズル。数のあるカードをさがしたり、カードから数を当てたりして、最初の数をたすたねあかしまで学べます。5つのレベルから1問ずつ、全5問。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。上に盤、下に操作。紫を差し色に（思考力シリーズ） */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#7c3aed; --sealsoft:#ede4fd; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#b79cff; --sealsoft:#271c40; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.on{background:var(--seal);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:13px;color:var(--muted);margin:0}
+.rules{margin:0;padding-left:1.3em;font-size:15px}
+.rules li{margin:2px 0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0;margin-left:auto}
+.boardw{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:8px}
+.boardw svg{width:100%;height:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.msg{font-size:14px;min-height:1.6em;margin:0;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700} .msg.ng{color:var(--ng);font-weight:700}
+.clear{border:2px solid var(--ok);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.clear .v{font-family:var(--display);font-size:24px;color:var(--ok)}
+.stars{color:var(--gold);font-size:24px;letter-spacing:2px}
+.stars .off{opacity:.25}
+.lvtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvtabs button{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.lvtabs button b{font-size:15px}
+.lvtabs button small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lvtabs button.cur{border-color:var(--seal);background:var(--sealsoft)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stg{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.stg b{font-size:17px;font-variant-numeric:tabular-nums}
+.stg small{font-size:11px;color:var(--gold);letter-spacing:1px;min-height:1.2em}
+.stg.done{border-color:var(--ok)}
+.freelist{display:grid;gap:8px}
+.freelist .stg{flex-direction:row;justify-content:space-between;padding:10px 14px;text-align:left}
+.freelist .stg span{font-weight:700}
+.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.sum .big{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.sum .big small{font-size:14px;font-family:var(--body);color:var(--muted)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.pad{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pad button{min-width:48px;min-height:50px;border:1px solid var(--rule);background:var(--pick);border-radius:10px;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.pad button.er{font-size:15px;min-width:60px}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.7}
+.opts4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opts4.txt{grid-template-columns:1fr 1fr}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:56px;justify-content:center}
+.ob .k{align-self:flex-start;font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;background:var(--pick);display:grid;place-items:center}
+.ob:hover:not(:disabled){border-color:var(--ink)}
+.ob.right{border-color:var(--ok);background:var(--oksoft)} .ob.wrong{border-color:var(--ng);background:var(--ngsoft);opacity:.6}
+.ob:disabled{cursor:default}
+.views{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:flex-end}
+.views figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.scales{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%}
+.hintbox{margin:0;font-size:14px;background:var(--sealsoft);border-radius:8px;padding:8px 12px}
+.prog{min-height:52px;border:2px dashed var(--rule);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;background:#fbfaf6}
+.prog .ph{color:var(--muted);font-size:13px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ccard,.pcard{border:2px solid #93c5fd;background:#eff6ff;border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:#1e3a8a}
+.pcard{align-self:flex-start;padding:3px 10px}
+.ccard.loop,.pcard.loop{border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.ccard span,.pcard span{font-size:18px}
+.ccard:disabled,.pcard:disabled{opacity:.45;cursor:default}
+.mc-cards{display:grid;gap:8px}
+.mc-card{font:inherit;color:inherit;text-align:left;border:2px solid var(--c);background:var(--bg);border-radius:10px;padding:6px 8px 8px;display:flex;flex-direction:column;gap:4px;min-width:0;box-shadow:0 2px 0 var(--c)}
+button.mc-card{cursor:pointer;touch-action:manipulation}
+.mc-card.sel{outline:4px solid var(--c);outline-offset:1px;box-shadow:0 0 0 7px #fde68a}
+.mc-card.dim{opacity:.72;box-shadow:none;border-style:dashed}
+.mc-hd{display:flex;align-items:center;gap:8px}
+.mc-hd b{width:26px;height:26px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:15px}
+.mc-st{font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;margin-left:auto}
+.mc-st.on{background:var(--c);color:#fff}.mc-st.on2{background:#dc2626;color:#fff}.mc-st.off{background:#e7e5e4;color:#57534e}
+.mc-grid{display:grid;gap:2px 2px}
+.mc-grid i{font-style:normal;font-weight:700;font-size:16px;text-align:center;font-variant-numeric:tabular-nums;color:#2a2520;border-radius:6px;line-height:1.6;min-width:0}
+.mc-grid i.r{color:#dc2626;box-shadow:inset 0 0 0 2px #fca5a5;border-radius:50%}
+.mc-grid i.f{background:#fde68a;box-shadow:inset 0 0 0 2px #d97706}
+.mc-grid i.q{background:#fff;color:var(--seal);box-shadow:inset 0 0 0 2px var(--seal)}
+.mc-grid i.n{background:#7c3aed;color:#fff}
+.mc-big{font-size:26px;color:var(--ink)}
+.mc-ex{margin:0}
+.lans{display:flex;justify-content:center}
+.lans output{min-width:110px;min-height:46px;border:2px solid var(--ink);border-radius:10px;padding:2px 12px;text-align:center;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg)}
+.pad button.go2{background:var(--fg);color:var(--surface)}
+@media (max-width:420px){.mc-grid i{font-size:15px}}
+.mc-small .mc-grid i{line-height:1.45}
+.mc-intro{display:flex;flex-direction:column;gap:2px;font-size:15px;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;padding:8px 12px;line-height:1.6}
+.mc-intro b.r{color:#dc2626}
+.mc-intro1{margin:0;text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>思考力パズル</small>魔法のカード</h1>
+    <p class="lead">どのカードにあるかを聞くだけで、思いうかべた数がピタリと当たる！ 魔法のカードのひみつをさぐろう。5つのレベルから1問ずつ。ヒントやまちがいなしでクリアすると★3つ。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+let QS=[{"kind":"guess","b":2,"k":3,"d":[1,0,0],"a":1,"id":"1-01","lv":1},{"kind":"guess","b":2,"k":4,"d":[0,1,1,1],"a":14,"id":"2-01","lv":2},{"kind":"guess","b":2,"k":5,"d":[1,0,0,1,1],"a":25,"id":"3-01","lv":3},{"kind":"why","b":2,"k":5,"q":"odd","a":"奇数（2でわり切れない数）","ds":["偶数（2でわり切れる数）","3の段の数","1から順に全部の数"],"id":"4-01","lv":4},{"kind":"guess","b":3,"k":3,"d":[2,1,0],"a":5,"id":"5-01","lv":5}];
+const ID='mahocard';
+const app=document.getElementById('app');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SKEY=PAID?ID+'-p-stars':ID+'-f-stars';
+let stars=store.get(SKEY,{});
+const LVN={1:'レベル1',2:'レベル2',3:'レベル3',4:'レベル4',5:'レベル5'};
+const PAIDLINK=`<a class="paid" href="${ID}-full.html" id="paid-link"><span class="pt">もっと遊びたい人へ　<b>魔法のカード 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つのレベルに20問ずつ。クリアした問題に星がつきます。</span></a>`;
+let P=null, S=null;
+const topBar=()=>`<div class="top"><span class="tag">${LVN[P.lv]}</span><b>${PAID?'第'+(+P.id.split('-')[1])+'問':''}</b><button class="back" id="back">問題えらびへ</button></div>`;
+const bindBack=()=>{document.getElementById('back').onclick=home;};
+const begin=p=>track('level_start',{level_name:(PAID?ID+'-p-':ID+'-')+p.id});
+
+/* ======== パズルごとの部分 ======== */
+/* 魔法のカード：カード j には「2進法（b=2）または3進法（b=3）で j けた目が0でない数」を小さい順に書く。最初の数は b^j。
+   3進法では、けたが2の数を赤い字（○つき）で書く。赤い字は「最初の数を2回たす」。カードの中身はここで計算する。
+   kind='which'（N のあるカードをタップ）'guess'（あるカードから数を当てる・数字ボタン）'why'（たねあかし4択）'fill'（カードの？に入る数・4択） */
+const HINTWORD='ヒントやまちがい';
+const LVD={1:'3まい・4まいのカード',2:'4まいのカード（1〜15）',3:'5まいのカード（1〜31）',4:'たねあかし・6まいのカード',5:'3のカード（赤い字は2回分）'};
+const RULES=`<ol class="rules">
+  <li>友だちに、数を1つ心の中で思いうかべてもらいます。</li>
+  <li>カードを見せて「その数は、どのカードに書いてある？」と聞くだけで、<b>思いうかべた数がピタリと当たる</b>…それが<b>魔法のカード</b>です。</li>
+  <li>はじめは、数をさがしてカードをえらんだり、カードから数を当てたりしよう。クリアすると<b>たねあかし</b>が見られます。</li>
+  <li>数をさがす問題では、カードをタップすると、えらぶ・えらばないが切りかわります。</li>
+  <li><b>レベル5は「3のカード」</b>です。カードの最初の数（左上の数）は 1・3・9。数は<b>黒い字</b>か<b style="color:#dc2626">赤い字（○つき）</b>で書いてあります。
+    <br>・黒い字で書いてあるカード → そのカードの最初の数を<b>1回</b>たす
+    <br>・赤い字で書いてあるカード → そのカードの最初の数を<b>2回</b>たす
+    <br>れい：7 は、A（最初の数 1）に黒い字、B（最初の数 3）に赤い字で書いてあります。1＋3×2＝7 です。
+    <br>数をさがす問題では、タップするたびに「ない → 黒い字である → 赤い字である → ない」と切りかわります。</li></ol>`;
+const MC_COL=['#dc2626','#2563eb','#16a34a','#d97706','#7c3aed','#0d9488'];
+const MC_BG=['#fef2f2','#eff6ff','#f0fdf4','#fffbeb','#f5f3ff','#f0fdfa'];
+const MC_L='ABCDEF';
+const MC_COL3=['#2563eb','#16a34a','#7c3aed'],MC_BG3=['#eff6ff','#f0fdf4','#f5f3ff'];
+/* その問題で見せるカード（4択のたねあかしは、使うカードだけ見せてページを短くする） */
+function mcShow(){const k=P.k,all=[...Array(k).keys()];
+  if(P.kind==='fill')return [P.j];
+  if(P.kind!=='why')return all;
+  if(P.q==='cnt'||P.q==='red')return [P.j];
+  if(P.q==='odd')return [0];
+  if(P.q==='two')return P.xy.slice();
+  if(P.q==='mk'||P.q==='mk3')return [];
+  return all;}
+function mcIntro(){if(P.b!==3)return '';
+  if(P.id==='5-01')return `<div class="mc-intro"><b>3のカードの読み方</b>
+    <span>カードの最初の数（左上の数）は、A＝1、B＝3、C＝9。</span>
+    <span>数は<b>黒い字</b>か、<b class="r">赤い字（○つき）</b>で書いてあります。</span>
+    <span>・黒い字のカード → 最初の数を<b>1回</b>たす</span>
+    <span>・赤い字のカード → 最初の数を<b>2回</b>たす</span>
+    <span>れい：7 は A に黒い字、B に赤い字 → <span style="white-space:nowrap">1＋3×2＝<b>7</b></span></span></div>`;
+  return `<p class="note mc-intro1">3のカード：黒い字のカードは最初の数を<b>1回</b>、<b style="color:#dc2626">赤い字</b>のカードは<b>2回</b>たします。</p>`;}
+function mcCard(b,k,j){const mx=b**k-1,nums=[],red=[];for(let x=1;x<=mx;x++){const d=Math.floor(x/b**j)%b;if(d){nums.push(x);if(d===2)red.push(x);}}return {nums,red};}
+const mcDig=(N,b,k)=>{const d=[];for(let j=0;j<k;j++){d.push(N%b);N=Math.floor(N/b);}return d;};
+function startStage(p){P=p;S={hints:0,done:false,msg:'',msgc:'',sel:Array(p.k).fill(0),pad:'',hint:false,wrong:[],opts:null,hl:false};
+  if(p.kind==='why'||p.kind==='fill')S.opts=shuffle([p.a,...p.ds]);
+  if(p.kind==='guess')S.sel=p.d.slice();
+  begin(p);draw();}
+function cardsHTML(){
+  const b=P.b,k=P.k,tap=P.kind==='which'&&!S.done,show=P.kind==='guess'||P.kind==='which';
+  const vis=mcShow();if(!vis.length)return '';
+  const cnt=mcCard(b,k,0).nums.length, one=vis.length===1, ccols=!one&&(cnt===8||cnt===16||cnt===32)?2:1,
+    cols=one?Math.min(8,cnt):({4:4,8:4,16:4,32:4,18:6}[cnt]||6);
+  let h=`<div class="mc-cards ${cnt===32&&!one?'mc-small':''}" style="grid-template-columns:repeat(${ccols},1fr)">`;
+  for(let j=k-1;j>=0;j--){if(!vis.includes(j))continue;const {nums,red}=mcCard(b,k,j),st=S.sel[j],c=(b===3?MC_COL3:MC_COL)[j];
+    const tag=show?(st===2?'<span class="mc-st on2">赤い字である</span>':st===1?`<span class="mc-st on">${b===3?'黒い字である':'ある'}</span>`:P.kind==='guess'?'<span class="mc-st off">ない</span>':''):'';
+    h+=`<${tap?'button':'div'} class="mc-card ${show&&st?'sel':''} ${P.kind==='guess'&&!st?'dim':''}" ${tap?`data-j="${j}"`:''} style="--c:${c};--bg:${(b===3?MC_BG3:MC_BG)[j]}">
+      <span class="mc-hd"><b>${MC_L[j]}</b>${tag}</span>
+      <span class="mc-grid" style="grid-template-columns:repeat(${Math.min(cols,nums.length)},1fr)">${nums.map((x,t)=>{const hide=P.kind==='fill'&&P.j===j&&x===P.a&&!S.done;
+        const first=t===0&&(S.done||S.hl);return `<i class="${red.includes(x)?'r':''} ${first?'f':''} ${hide?'q':''} ${P.kind==='which'&&S.done&&x===P.N?'n':''}">${hide?'？':x}</i>`;}).join('')}</span></${tap?'button':'div'}>`;}
+  return h+'</div>';}
+function question(){const k=P.k,b=P.b,mx=b**k-1,F=[...Array(k)].map((_,j)=>b**j);
+  const cl=d=>d.map((x,j)=>x?MC_L[j]+(b===3?(x===2?'（赤い字）':'（黒い字）'):''):null).filter(Boolean).reverse();
+  if(P.kind==='which')return `数 <b class="mc-big">${P.N}</b> は、どのカードに書いてある？ 書いてあるカードを<b>全部</b>タップして、「これで決定」をおそう。${b===3?'<br><span class="note">1回タップで「黒い字である」、2回で「赤い字である」、3回で「ない」にもどります。</span>':''}`;
+  if(P.kind==='guess')return `友だちが 1〜${mx} の中から数を1つ思いうかべて、こう言いました。<br>「わたしの数は、<b>${cl(P.d).join('・')}</b> のカードに書いてあるよ。${P.d.some(x=>!x)?'ほかのカードにはないよ。':''}」<br>友だちの数を<b>当てよう！</b>`;
+  if(P.kind==='fill')return `カード ${MC_L[P.j]} の「？」に入る数は、どれ？`;
+  const q=P.q;
+  if(q==='max')return `カードが${k}まい（最初の数が ${F.join('・')}）のとき、当てられる<b>いちばん大きい数</b>は？`;
+  if(q==='next')return `今のカード${k}まい（最初の数が ${F.join('・')}）に<b>もう1まい</b>ふやして、1から<b>とちゅうの数をとばさずに</b>、もっと大きい数まで当てられるようにします。新しいカードの<b>最初の数</b>は？`;
+  if(q==='cnt')return `カード ${MC_L[P.j]} には、数がいくつ書いてある？`;
+  if(q==='all')return `<b>全部のカード</b>に書いてある数は？`;
+  if(q==='two')return `カード ${MC_L[P.xy[0]]} とカード ${MC_L[P.xy[1]]} の<b>両方</b>に書いてある数のうち、<b>いちばん小さい数</b>は？`;
+  if(q==='mk')return `カードの最初の数（${F.join('・')}）を、<b>それぞれ1回まで</b>使ったたし算で ${P.N} を作ります。正しいのは？`;
+  if(q==='odd')return `カード A（最初の数が1）に書いてある数は、どんな数？`;
+  if(q==='mk3')return `最初の数（${F.join('・')}）を、<b>それぞれ2回まで</b>使ったたし算で ${P.N} を作ります。正しいのは？`;
+  if(q==='red')return `カード ${MC_L[P.j]} に<b>赤い字</b>で書いてある数は、いくつある？`;
+  return '';}
+function hintText(){const k=P.k,b=P.b,F=[...Array(k)].map((_,j)=>b**j);
+  if(P.kind==='which')return b===2?`カードの<b>左上の数</b>（最初の数）は ${F.join('・')} です。${P.N} を、この数を1回ずつまでたして作ってみよう。<b>大きい数から</b>考えるとかんたん。`:`最初の数は 1・3・9。${P.N} を、それぞれ2回まで使ったたし算で作ろう。2回使う数のカードは「赤い字」です。`;
+  if(P.kind==='guess')return `「ある」と言われたカードの、<b>左上の数</b>（最初の数）を見てみよう。${b===3?'赤い字のときは2回分。':''}それをたすと…？`;
+  if(P.kind==='fill'){const {nums}=mcCard(b,k,P.j),f=b**P.j;return `カード ${MC_L[P.j]} の数は、${f}こ続いて、${f}ことぶ…というならび方です。となりの数を見て、とんだところと続くところをさがそう。`;}
+  const q=P.q;
+  if(q==='max')return `全部のカードに「ある」と言われたら、最初の数を全部たした数になります。`;
+  if(q==='next')return `最初の数は ${F.join('、')} と、${b===2?'2倍':'3倍'}ずつになっています。`;
+  if(q==='cnt')return `カード ${MC_L[P.j]} の数は、何こ続いて、何こ休む？ そのくり返しを使うと、かんたんに数えられます。1つずつ数えてもよい。`;
+  if(q==='all')return `全部のカードにあるなら、最初の数を全部たした数です。`;
+  if(q==='two')return `両方のカードにある数は、2まいの最初の数をどちらもふくむ数。いちばん小さいのは…？`;
+  if(q==='mk')return `使ってよいのは最初の数だけ、しかも同じ数は1回まで。合計がぴったり ${P.N} になるか、1つずつたしかめよう。`;
+  if(q==='odd')return `A のカードの数を、小さい順に見てみよう。1, 3, 5, …`;
+  if(q==='mk3')return `9を何回まで使えるか、から考えよう。それぞれ2回までです。`;
+  if(q==='red')return `赤い字は、そのけたが「2」の数。カードを見て数えてもよい。`;
+  return '';}
+function explain(){const k=P.k,b=P.b,F=[...Array(k)].map((_,j)=>b**j);
+  const parts=d=>d.map((x,j)=>x===2?`${F[j]}×2`:x?String(F[j]):null).filter(Boolean).reverse();
+  if(P.kind==='which'){const d=P.a;return `<p class="mc-ex">${P.N} は ${d.map((x,j)=>x?MC_L[j]+(b===3?(x===2?'（赤い字）':'（黒い字）'):''):null).filter(Boolean).reverse().join('・')} のカードにあります。<br><b>たねあかし</b>：${parts(d).length>1?`えらんだカードの<b>左上の数</b>をたすと、${parts(d).join('＋')}＝<b>${P.N}</b>！ 思いうかべた数にもどります。`:`えらんだカードは1まいで、その<b>左上の数</b>が <b>${P.N}</b>！ 思いうかべた数と同じです。`}</p>`;}
+  if(P.kind==='guess'){const pp=parts(P.d);return `<p class="mc-ex">友だちの数は <b>${P.a}</b>。<br><b>たねあかし</b>：「ある」カードの<b>左上の数</b>をたすだけ。${pp.length>1?pp.join('＋')+'＝'+P.a+'。':'「ある」カードは1まいなので、その左上の数 '+P.a+' が答えです。'}${b===2?`どの数も、${F.join('・')} を1回ずつまで使ったたし算で、<b>1通りだけ</b>に作れます。そして、どの数も、そのたし算で使う数が左上にあるカードにだけ書いてあるのです。`:'赤い字は、最初の数を2回たします。どの数も、1・3・9を2回まで使ったたし算で1通りに作れます。'}</p>`;}
+  if(P.kind==='fill'){return `<p class="mc-ex">？は <b>${P.a}</b>。${P.a} を${F.join('・')}のたし算で作ると ${parts(mcDig(P.a,b,k)).join('＋')} で、${F[P.j]} を使うので、カード ${MC_L[P.j]} に書いてあります。${P.ds.join('・')} は、作るときに ${F[P.j]} を使わないので書いてありません。</p>`;}
+  const q=P.q,mx=b**k-1;
+  if(q==='max')return `<p class="mc-ex">${b===3?`最初の数をどれも2回ずつたすと ${[...F].reverse().map(f=>f+'×2').join('＋')}＝${mx}。`:`最初の数を全部たすと ${F.join('＋')}＝${mx}。`}これより大きい数は、このカードでは作れません。</p>`;
+  if(q==='next')return `<p class="mc-ex">今のカードで ${mx} まで当てられます。次の ${b**k} を最初の数にすると、${b===2?'その2倍より1小さい '+(2*b**k-1):(3*b**k-1)} まで当てられるようになります。</p>`;
+  if(q==='cnt'){const f=F[P.j],rep=(mx+1)/(2*f);return `<p class="mc-ex">カード ${MC_L[P.j]} は、${f}から「${f}こ書いて、${f}こ休む」のくり返しです。${mx}までに${f}こずつ ${rep}回 書くので、${f}×${rep}＝<b>${P.a}こ</b>。</p>`;}
+  if(q==='all')return `<p class="mc-ex">全部のカードにある数は ${F.join('＋')}＝${mx}。全部の最初の数を使って作る数です。</p>`;
+  if(q==='two')return `<p class="mc-ex">${F[P.xy[0]]}と${F[P.xy[1]]}をどちらも使う、いちばん小さい数は ${F[P.xy[0]]}＋${F[P.xy[1]]}＝${P.a}。</p>`;
+  if(q==='mk')return `<p class="mc-ex">${P.a}＝${P.N}。大きい数から、入るだけ使うと決まります。だから ${P.N} は ${P.a.split('＋').map(x=>MC_L[F.indexOf(+x)]).join('・')} のカードに書いてあります。</p>`;
+  if(q==='odd')return `<p class="mc-ex">A のカードは 1 を使う数、つまり<b>奇数</b>だけです。偶数は 2・4・8… だけで作れるので、1はいりません。</p>`;
+  if(q==='mk3')return `<p class="mc-ex">${P.a}＝${P.N}。9→3→1の順に、2回まで入るだけ使います。3のカードでは、2回使う数が赤い字で書いてあります。</p>`;
+  if(q==='red')return `<p class="mc-ex">赤い字は、${F[P.j]}を2回使う数。全部で ${P.a}こ あります。</p>`;
+  return '';}
+function answer(){
+  if(S.opts)return `<div class="opts4 txt">${S.opts.map((o,i)=>`<button class="ob ${S.done&&o===P.a?'right':''} ${S.wrong.includes(i)?'wrong':''}" data-i="${i}" ${S.done||S.wrong.includes(i)?'disabled':''}><span class="k">${'アイウエ'[i]}</span><b style="font-size:${String(o).length>9?15:20}px">${o}</b></button>`).join('')}</div>`;
+  if(S.done)return '';
+  if(P.kind==='guess')return `<div class="lans mc-ans"><output id="out">${S.pad||'&nbsp;'}</output></div><div class="pad">${[1,2,3,4,5,6,7,8,9,0].map(d=>`<button data-d="${d}">${d}</button>`).join('')}<button class="er" data-d="x">消す</button><button class="er go2" data-d="ok">当てる！</button></div>`;
+  return `<div class="row" style="justify-content:center"><button class="btn go" id="ok">これで決定</button></div>`;}
+function draw(){
+  app.innerHTML=`${topBar()}
+    <p class="qq">${question()}</p>
+    ${mcIntro()}
+    ${cardsHTML()}
+    ${answer()}
+    ${S.hint&&!S.done?`<p class="hintbox">${hintText()}</p>`:''}
+    ${S.done?'':`<p class="msg ${S.msgc||''}" id="msg">${S.msg||''}</p><div class="row"><button class="btn" id="hint" ${S.hint?'disabled':''}>ヒント</button></div>`}
+    <div id="after"></div>`;
+  bindBack();
+  if(S.done){showClear(explain());return;}
+  const ng=m=>{S.hints++;S.msg=m;S.msgc='ng';draw();};
+  app.querySelectorAll('button.mc-card').forEach(c=>c.onclick=()=>{const j=+c.dataset.j;S.sel[j]=(S.sel[j]+1)%P.b;S.msg='';S.msgc='';draw();});
+  const ok=document.getElementById('ok');
+  if(ok)ok.onclick=()=>{if(S.sel.every((x,j)=>x===P.a[j])){S.done=true;draw();return;}
+    /* 合っているかを、カードの中身でたしかめて伝える */
+    const miss=[],extra=[];for(let j=0;j<P.k;j++){if(S.sel[j]!==P.a[j]){(P.a[j]?miss:extra).push(MC_L[j]);}}
+    ng(`ちがいます。${extra.length?extra.join('・')+' のカードに '+P.N+' はありますか？':''}${miss.length?'まだえらんでいないカードにも、'+P.N+' があるかもしれません。':''}${P.b===3?'赤い字かどうかも見よう。':''}`);};
+  app.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>{const d=b.dataset.d;
+    if(d==='x')S.pad=S.pad.slice(0,-1);
+    else if(d==='ok'){if(!S.pad)return;const v=+S.pad;
+      /* 当てた数が本当に正しいかは、カードの中身でたしかめる（ある・ないが全部合うか） */
+      const okv=v>=1&&v<=P.b**P.k-1&&[...Array(P.k)].every((_,j)=>{const c=mcCard(P.b,P.k,j);return (c.red.includes(v)?2:c.nums.includes(v)?1:0)===P.d[j];});
+      if(okv){S.done=true;}else{S.pad='';const inA=v>=1&&v<=P.b**P.k-1;return ng(inA?`${v} だと、カードの「ある・ない」が合いません。もう一度考えよう。`:'その数は、カードにありません。');}}
+    else if(S.pad.length<2)S.pad=(S.pad==='0'?'':S.pad)+d;draw();});
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.opts[i]===P.a){S.done=true;draw();}else{S.wrong.push(i);ng('ちがいます。もう一度考えてみよう。');}});
+  document.getElementById('hint').onclick=()=>{S.hint=true;S.hints++;S.msg='';if(P.kind==='guess'||P.kind==='which')S.hl=true;draw();};
+}
+
+/* ================================ */
+
+function showClear(extra){
+  const p=P, st=S.hints===0?3:S.hints<=2?2:1, prev=stars[p.id]||0;
+  if(!S.saved){ S.saved=true; if(st>prev){stars[p.id]=st;store.set(SKEY,stars);}
+    track('level_end',{level_name:(PAID?ID+'-p-':ID+'-')+p.id,success:true,score:st,hints:S.hints}); }
+  const idx=QS.indexOf(p), nx=QS[idx+1];
+  document.getElementById('after').innerHTML=`<div class="clear"><span class="v">クリア！</span>
+    <span class="stars" aria-label="星${st}つ">${[1,2,3].map(k=>`<span class="${k<=st?'':'off'}">★</span>`).join('')}</span>
+    <span>${S.hints?`${HINTWORD}が ${S.hints}回ありました。${HINTWORD}なしでクリアすると ★3つです。`:HINTWORD+'なしでクリア！'}</span>${extra||''}
+    <div class="row">${nx?`<button class="btn go" id="nx">次の問題へ</button>`:''}<button class="btn" id="again">もう一度</button><button class="btn" id="home2">問題えらびへ</button></div></div>
+    ${PAID?'':PAIDLINK}`;
+  if(nx)document.getElementById('nx').onclick=()=>{ if(PAID)store.set(ID+'-p-lv',nx.lv); startStage(nx); };
+  document.getElementById('again').onclick=()=>startStage(p);
+  document.getElementById('home2').onclick=home;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+const starStr=n=>n?'★'.repeat(n)+'☆'.repeat(3-n):'';
+function home(){
+  P=null; S=null;
+  if(PAID)return homePaid();
+  app.innerHTML=`<div class="label">あそびかた</div>${RULES}
+    <div class="label">問題をえらぶ</div>
+    <div class="freelist">${QS.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><span>${LVN[p.lv]}</span><span class="note">${LVD[p.lv]}</span><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+    ${PAIDLINK}`;
+  app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+}
+function homePaid(){
+  let lv=store.get(ID+'-p-lv',1);
+  const totalStars=Object.values(stars).reduce((a,b)=>a+b,0), cleared=QS.filter(p=>stars[p.id]).length;
+  const render=()=>{
+    const L=QS.filter(p=>p.lv===lv);
+    app.innerHTML=`<div class="sum"><span class="big">${cleared}<small> / ${QS.length}問クリア</small></span><span class="big" style="color:var(--gold)">★${totalStars}<small> / ${QS.length*3}</small></span></div>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:14px">あそびかた</summary><div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">${RULES}</div></details>
+      <div class="label">レベルをえらぶ</div>
+      <div class="lvtabs">${[1,2,3,4,5].map(k=>{const n=QS.filter(p=>p.lv===k&&stars[p.id]).length;return `<button class="${k===lv?'cur':''}" data-lv="${k}"><b>${k}</b><small>${n}/20</small></button>`;}).join('')}</div>
+      <p class="note" style="text-align:center">${LVN[lv]}：${LVD[lv]}</p>
+      <div class="stages">${L.map(p=>`<button class="stg ${stars[p.id]?'done':''}" data-id="${p.id}"><b>${+p.id.split('-')[1]}</b><small>${starStr(stars[p.id])}</small></button>`).join('')}</div>
+      <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
+    app.querySelectorAll('.lvtabs button').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;store.set(ID+'-p-lv',lv);render();});
+    app.querySelectorAll('.stg').forEach(b=>b.onclick=()=>startStage(QS.find(p=>p.id===b.dataset.id)));
+    document.getElementById('reset').onclick=()=>{
+      document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+      document.getElementById('yes').onclick=()=>{stars={};store.set(SKEY,stars);homePaid();};
+      document.getElementById('no').onclick=()=>{document.getElementById('resetq').textContent='';};
+    };
+  };
+  render();
+}
+async function decrypt(){ return mnAccess.load(ID); }
+function lockScreen(err){ mnAccess.lock(app,{game:ID,err:err,free:ID+'.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ QS=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
