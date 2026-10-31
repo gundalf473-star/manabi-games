@@ -63,3 +63,4 @@
 | 社会（地理）「日本一周 地理すごろく」（無料版は九州・沖縄コース、有料版318問）／都道府県クイズのパックの説明文2か所を修正 | 必要（GAMES に "chiri-sugoroku": "shakai" を追加・自動反映） | chiri-sugoroku と todofuken のパックを入れる | ― |
 | 理科「生き物になりきろう」全12章（無料版はモンシロチョウの1章） | 必要（GAMES に ikinari: "rika" を追加・自動反映） | ikinari のパックを入れる | ― |
 | 中高一貫・社会「世界史の人物になりきろう」全20章（無料版は大航海時代の1章） | 必要（GAMES に "c-sekainari": "cshakai" を追加・自動反映） | c-sekainari のパックを入れる | ― |
+| 社会（地理）「世界一周 地理すごろく」（無料版はアジアコース、有料版267問） | 必要（GAMES に "sekai-sugoroku": "shakai" を追加・自動反映） | sekai-sugoroku のパックを入れる | ― |
