@@ -59,3 +59,4 @@
 | 社会「歴史の人物になりきろう」全20章（無料版は戦国の1章） | 必要（GAMES に nariki: "shakai" を追加） | nariki のパックを入れる | ― |
 | 思考力・入り口ゲーム第4弾 20本：カード当て推理・時間割パズル・トーナメントの数・九九ビンゴ・さかさピラミッド・魔法のカード・くるっと回すと？・線でかこむパズル・数字カードの問題・しりとりならべ・画数パズル・なかまはずれさがし・石取りゲーム（囲碁入門）・フローチャートをたどろう・しきつめもよう・ひものからまり・ドミノしきつめ・あいうえお作文・反対ことばペア・ことわざ合体（無料版5問・有料版100問） | 必要（GAMES に cardate・jikanwari・tournament・kukubingo・sakasapyramid・mahocard・kaiten・senkakomi・kazucard・shiritorinarabe・kakusu・nakamahazure・igo・flowchart・tiling・himo・domino・aiueo・hantaipair・kotowazagattai を "shikou" で追加） | 20本のパックを入れる | ― |
 | 思考力「買い物クエスト」：買い物クエスト（無料版5問・有料版100問） | 必要（GAMES に kaimono を "shikou" で追加） | 1本のパックを入れる | ― |
+| 社会（公民）「しくみになりきろう」全10章（無料版は衆議院議員の1章） | 必要（GAMES に shikumi: "shakai" を追加・自動反映） | shikumi のパックを入れる | ― |
