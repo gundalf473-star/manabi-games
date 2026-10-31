@@ -1,0 +1,36 @@
+name: Deploy worker
+
+# server/worker.js（または設定）を変えて main に入れたときだけ動く。手で動かすこともできる。
+on:
+  push:
+    branches: [main]
+    paths:
+      - server/worker.js
+      - server/wrangler.toml
+      - scripts/test-worker.mjs
+  workflow_dispatch:
+
+concurrency:
+  group: worker
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # 本番に出す前の確認。1つでも NG なら、ここで止まって本番は変わらない
+      - run: node scripts/test-worker.mjs
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server
+          wranglerVersion: "4.20.0"
+          command: deploy
