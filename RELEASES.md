@@ -76,3 +76,4 @@
 | 国語「故事成語の主人公になりきろう」全12章（無料版は矛盾の1章） | 必要（GAMES に "kojinari": "kokugo" を追加・自動反映） | kojinari のパックを入れる | ― |
 | 就活・資格「新入社員になりきろう」全8章（無料版は電話応対の1章）。新しい科目「ビジネスマナー」（kbiz）を追加 | 必要（SUBJECTS・CAREER_SUBJ・PRICES に kbiz、GAMES に "k-shinnyu": "kbiz" を追加・自動反映） | k-shinnyu のパックを入れる | kbiz を選べる版 |
 | 社会「日本の産業になりきろう」全10章（無料版は米づくりの1章） | 必要（GAMES に "sangyo": "shakai" を追加・自動反映） | sangyo のパックを入れる | ― |
+| 中高一貫・英語「英語で旅になりきろう」全10章（無料版は空港の1章） | 必要（GAMES に "c-eigotabi": "ceigo" を追加・自動反映） | c-eigotabi のパックを入れる | ― |
