@@ -1489,7 +1489,7 @@ function sheet(r){
     : `<li>スマホのカメラで左の二次元コードを読み取ります。</li><li>${cc.name==='就活・資格'?'科目':'教科'}と単元を選んで、すぐに遊べます（無料版は登録なし・無料）。</li><li>もっと練習したいときは、有料版のプランをどうぞ。</li>`;
   return `<div class="sheet">
     ${withCode&&T('gift')?`<div class="gift">${esc(T('gift'))}</div>`:''}
-    <div class="top"><div><div class="kicker">${esc(cc.kicker)}</div><div class="mark">まなびゲーム箱</div></div>
+    <div class="top"><div><div class="kicker">${esc(cc.kicker)}</div><div class="mark" style="display:flex;align-items:center;gap:3.5mm"><svg style="width:17mm;height:12.5mm;flex:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 50 240 176" role="img" aria-label="まなびゲーム箱"><rect x="22" y="158" width="196" height="16" rx="6" fill="#142a52"/><polygon points="40,124 78,56 116,124" fill="#d9452f" stroke="#d9452f" stroke-width="6" stroke-linejoin="round"/><rect x="40" y="124" width="76" height="76" rx="10" fill="#2f6fd6"/><path d="M126 200 V158 a38 38 0 0 1 76 0 V200 Z" fill="#e0a11b"/><circle cx="164" cy="90" r="30" fill="#0e7c7b"/><rect x="22" y="168" width="196" height="54" rx="16" fill="#1f3a6e"/></svg>まなびゲーム箱</div></div>
       <div style="display:flex;align-items:flex-start;gap:3mm">${r&&r.to?`<div class="to">${esc(r.to)}　さま</div>`:''}<div class="hk" style="width:30mm;height:30mm;flex:none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%" role="img" aria-label="手をふるハコロン">
           <ellipse cx="100" cy="188" rx="58" ry="7" fill="#1f3a6e" opacity="0.1"/>
           <rect x="70" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/>
