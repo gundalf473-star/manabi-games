@@ -4,7 +4,7 @@
 <meta name="game:unit" content="図形の移動">
 <meta name="game:grade" content="小6〜">
 <meta name="game:players" content="1人">
-<meta name="description" content="図形の移動の有料版。基本から入試レベル（日能研偏差値50〜55程度）までの5段階、各20問の全100問。平行移動と重なり・回転移動・転がる円・転がる多角形。すべて図つき・解き方つき。">
+<meta name="description" content="図形の移動の有料版。基本から入試の標準レベルまでの5段階、各20問の全100問。平行移動と重なり・回転移動・転がる円・転がる多角形。すべて図つき・解き方つき。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -131,7 +131,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:["レベル1 基本","平行移動と重なり・回転したときの弧"],L2:["レベル2 標準","重なりと時間・回転して通過する部分・円の中心の動き"],L3:["レベル3 応用","円が通過する部分・転がる多角形・重なりのグラフ"],L4:["レベル4 発展","三角形の重なり・回転と転がりの組み合わせ"],L5:["レベル5 入試","日能研偏差値50〜55程度の入試問題"]};
+const CATS={L1:["レベル1 基本","平行移動と重なり・回転したときの弧"],L2:["レベル2 標準","重なりと時間・回転して通過する部分・円の中心の動き"],L3:["レベル3 応用","円が通過する部分・転がる多角形・重なりのグラフ"],L4:["レベル4 発展","三角形の重なり・回転と転がりの組み合わせ"],L5:["レベル5 入試","入試の標準レベルの問題"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -148,7 +148,7 @@ const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号�
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="idou-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>図形の移動 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55程度）までの5段階、各20問。平行移動・回転移動・転がる円と多角形。すべて図つき・解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="idou-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>図形の移動 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。平行移動・回転移動・転がる円と多角形。すべて図つき・解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>平行移動の重なり</dt><dd>重なりの横＝進んだ長さ－はじめの間。重なりの面積＝重なりの横×低い方の高さ</dd><dt>通過した部分（平行移動）</dt><dd>図形の移動＋動いた長さ×（動く向きに垂直なはば）</dd><dt>回転移動</dt><dd>点の動いたあと＝おうぎ形の弧。半径は回転の中心からその点までの長さ</dd><dt>回転して通過する部分</dt><dd>いちばん遠い点の半径のおうぎ形＋もとの図形（はみ出す部分）。辺だけなら「大きいおうぎ形－小さいおうぎ形」</dd><dt>円が転がる（外側）</dt><dd>中心の動いた長さ＝辺の長さの和＋（半径×2×3.14）。角ではおうぎ形をえがく</dd><dt>円が転がる（内側）</dt><dd>中心は辺から半径だけはなれた線を動く。角には円が届かない部分が残る（1辺が半径の正方形－おうぎ形）</dd><dt>円が通過する部分</dt><dd>辺にそったはば（直径）の長方形＋角のおうぎ形（半径は直径）</dd><dt>多角形を転がす</dt><dd>頂点は、回転の中心となる頂点からの長さを半径とする弧をえがく。正三角形は1回120°、正方形は1回90°</dd><dt>円の回転数</dt><dd>円の中心が動いた長さ÷円周。半径rの円が半径Rの円の外側を1周すると（R＋r）÷r回転</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('idou'); }

@@ -148,7 +148,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="hojin-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>方陣算・日暦算・N進法 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55程度）までの5段階、各20問。方陣算・日暦算・周期算・N進法・数の並び。解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="hojin-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>方陣算・日暦算・N進法 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。方陣算・日暦算・周期算・N進法・数の並び。解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>中実方陣</dt><dd>1辺n個なら全部でn×n個。いちばん外側の1周は（n－1）×4個</dd><dt>中空方陣</dt><dd>外側の1辺n個、a列なら（n－a）×a×4個。1周内側に入るごとに8個へる</dd><dt>日暦算</dt><dd>7日ごとに同じ曜日。□日後の曜日は、□÷7のあまりだけ進める</dd><dt>うるう年</dt><dd>4でわり切れる年はうるう年（2月29日がある）。ただし100でわり切れて400でわり切れない年は平年</dd><dt>周期算</dt><dd>くり返しのひとまとまり（周期）を見つけ、番号÷周期のあまりで決める。あまり0は周期の最後</dd><dt>N進法</dt><dd>2進法の位は1、2、4、8、16…。5進法の位は1、5、25、125…。10進法へは位の大きさ×数字をたす</dd><dt>等差数列</dt><dd>□番目＝はじめの数＋差×（□－1）。和＝（はじめ＋終わり）×個数÷2</dd><dt>群数列</dt><dd>区切りを入れてグループに分け、何グループ目の何番目かを考える</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('hojin'); }

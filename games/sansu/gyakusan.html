@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="gyakusan-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>計算と逆算 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="gyakusan-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>計算と逆算 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>計算の順序</dt><dd>かっこの中 → かけ算・わり算 → たし算・ひき算。同じなかまは左から順に</dd><dt>分数のたし算・ひき算</dt><dd>分母をそろえて（通分して）から、分子を計算する。答えは約分する</dd><dt>分数のかけ算</dt><dd>分母どうし・分子どうしをかける。とちゅうで約分すると楽</dd><dt>分数のわり算</dt><dd>わる数の分母と分子を入れかえて（逆数にして）かける</dd><dt>小数と分数</dt><dd>0.5＝1/2、0.25＝1/4、0.75＝3/4、0.125＝1/8 は覚えておく</dd><dt>逆算</dt><dd>□＋a＝b → □＝b－a、□×a＝b → □＝b÷a、a÷□＝b → □＝a÷b。外側から順にもどす</dd><dt>単位</dt><dd>1時間＝60分、1km＝1000m、1㎡＝10000㎠、1L＝1000mL、1㎥＝1000L、1ha＝10000㎡</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('gyakusan'); }

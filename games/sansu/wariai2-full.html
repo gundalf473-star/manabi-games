@@ -148,7 +148,7 @@ const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号�
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="wariai2-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>割合の文章題 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55程度）までの5段階、各20問。食塩水・売買損益・仕事算・ニュートン算・相当算。解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="wariai2-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>割合の文章題 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。食塩水・売買損益・仕事算・ニュートン算・相当算。解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>食塩水のこさ</dt><dd>こさ（％）＝食塩÷食塩水×100。食塩＝食塩水×こさ。食塩水＝食塩＋水</dd><dt>水を加える・蒸発</dt><dd>食塩の重さは変わらない。食塩の重さ÷新しいこさ＝新しい食塩水の重さ</dd><dt>てんびん図</dt><dd>2つの食塩水を混ぜると、こさの差（うでの長さ）の比と、重さの比は逆になる</dd><dt>売買損益</dt><dd>定価＝原価×（1＋利益の割合）。売価＝定価×（1－割引の割合）。利益＝売価－原価</dd><dt>何割引き</dt><dd>1割＝0.1＝10％。2割引き＝定価の0.8倍。2割5分＝0.25</dd><dt>仕事算</dt><dd>全体の仕事量を、かかる日数の最小公倍数にすると、1日の仕事量が整数になる</dd><dt>ニュートン算</dt><dd>へる量＝処理する量－増える量。はじめの量÷（1分に処理する量－1分に増える量）</dd><dt>相当算</dt><dd>「残りの□分の△」は、もとにする量がかわる。線分図で、わかっている量が全体の何分のいくつかを見つける</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('wariai2'); }

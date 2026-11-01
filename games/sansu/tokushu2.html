@@ -148,7 +148,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="tokushu2-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>特殊算② 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55程度）までの5段階、各20問。差集め算・年れい算・平均算・消去算・倍数算・還元算・集合算。解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="tokushu2-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>特殊算② 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。差集め算・年れい算・平均算・消去算・倍数算・還元算・集合算。解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>差集め算</dt><dd>1つあたりの差×個数＝全体の差。全体の差÷1つあたりの差＝個数</dd><dt>年れい算</dt><dd>2人の年れいの差は何年たっても変わらない。和は1年に人数分ずつふえる</dd><dt>平均算</dt><dd>合計＝平均×個数。平均のちがいは、面積図やてんびん図で考える</dd><dt>消去算</dt><dd>式をならべて、同じものの数をそろえ、ひいて1つを消す</dd><dt>倍数算</dt><dd>やりとりでは合計が、同じ数をもらう・使うときは差が変わらない。変わらない方の比をそろえる</dd><dt>還元算</dt><dd>最後の結果から、逆の計算（＋⇔－、×⇔÷）で順にもどる</dd><dt>集合算</dt><dd>AまたはB＝A＋B－両方。全体－（AまたはB）＝どちらでもない。ベン図や表に整理する</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('tokushu2'); }

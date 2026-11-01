@@ -148,7 +148,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="mizu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>水の深さとグラフ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55）までの5段階、各20問。水そうの深さ・時間、石や棒を入れた水位、段やしきりのある水そう、グラフの読み取り。すべて図つき・解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="mizu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>水の深さとグラフ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。水そうの深さ・時間、石や棒を入れた水位、段やしきりのある水そう、グラフの読み取り。すべて図つき・解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>単位</dt><dd>1L＝1000cm³、1dL＝100cm³、1m³＝1000L</dd><dt>水の深さ</dt><dd>深さ＝水の体積÷底面積。時間＝入れる水の量÷毎分の量</dd><dt>石をしずめる</dt><dd>上がった水の体積＝石の体積。上がる深さ＝石の体積÷水そうの底面積</dd><dt>棒を立てる</dt><dd>水の量は変わらず、底面積が「水そう－棒」になる。深さ＝水の体積÷（水そうの底面積－棒の底面積）</dd><dt>おもりが全部しずむか</dt><dd>おもりより水面が高くなるかどうかを、まず確かめる</dd><dt>段のある水そう</dt><dd>グラフの折れ目は、水が入る部分のはばが変わるところ。かたむきが急なほど、はばがせまい</dd><dt>しきりのある水そう</dt><dd>しきりの高さまで来ると、グラフは平らになる（反対側に水が入っている）</dd><dt>グラフの読み方</dt><dd>折れ目の時間と深さから、毎分の量や、見えない部分の長さを逆算する</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('mizu'); }

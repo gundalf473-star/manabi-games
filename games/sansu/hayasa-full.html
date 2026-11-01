@@ -4,7 +4,7 @@
 <meta name="game:unit" content="速さ">
 <meta name="game:grade" content="小5〜">
 <meta name="game:players" content="1人">
-<meta name="description" content="速さの有料版。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問の全100問。旅人算・通過算・流水算・時計算。解き方つき。">
+<meta name="description" content="速さの有料版。基本から入試の標準レベルまでの5段階、各20問の全100問。旅人算・通過算・流水算・時計算。解き方つき。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:['レベル1 基本','速さ・時間・道のり、単位のかえ方'],L2:['レベル2 標準','平均の速さ・時刻・速さの比'],L3:['レベル3 応用','旅人算・通過算の基本'],L4:['レベル4 発展','すれちがい・追いこし・流水算・時計算'],L5:['レベル5 入試','日能研偏差値50程度の入試問題']};
+const CATS={L1:['レベル1 基本','速さ・時間・道のり、単位のかえ方'],L2:['レベル2 標準','平均の速さ・時刻・速さの比'],L3:['レベル3 応用','旅人算・通過算の基本'],L4:['レベル4 発展','すれちがい・追いこし・流水算・時計算'],L5:['レベル5 入試','入試の標準レベルの問題']};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="hayasa-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>速さ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。旅人算・通過算・流水算・時計算まで。解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="hayasa-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>速さ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。旅人算・通過算・流水算・時計算まで。解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>3つの公式</dt><dd>道のり＝速さ×時間　速さ＝道のり÷時間　時間＝道のり÷速さ</dd><dt>単位</dt><dd>時速36km＝分速600m＝秒速10m（時速→分速は÷60、分速→秒速は÷60）</dd><dt>平均の速さ</dt><dd>全体の道のり÷全体の時間（速さの平均ではない）</dd><dt>速さの比</dt><dd>道のりが同じなら、時間の比は速さの逆比</dd><dt>旅人算</dt><dd>出会う：はなれた道のり÷速さの和　追いつく：差の道のり÷速さの差</dd><dt>通過算</dt><dd>鉄橋・トンネル：（橋の長さ＋電車の長さ）÷速さ　すれちがい：長さの和÷速さの和　追いこし：長さの和÷速さの差</dd><dt>流水算</dt><dd>下り＝静水＋流れ　上り＝静水－流れ　流れ＝（下り－上り）÷2</dd><dt>時計算</dt><dd>長針は1分に6度、短針は0.5度。差は1分に5.5度ずつ変わる</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('hayasa'); }

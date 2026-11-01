@@ -4,7 +4,7 @@
 <meta name="game:unit" content="立体の見方">
 <meta name="game:grade" content="小5〜">
 <meta name="game:players" content="1人">
-<meta name="description" content="展開図とサイコロの有料版。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問の全100問。すべて図つき・解き方つき。">
+<meta name="description" content="展開図とサイコロの有料版。基本から入試の標準レベルまでの5段階、各20問の全100問。すべて図つき・解き方つき。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -143,7 +143,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={"L1":["レベル1 基本","サイコロの目・立方体の展開図"],"L2":["レベル2 標準","向かい合う面・サイコロの展開図"],"L3":["レベル3 応用","サイコロを転がす・重なる頂点"],"L4":["レベル4 発展","3方向から見た図・色をぬった立方体"],"L5":["レベル5 入試","日能研偏差値50程度の入試問題"]};
+const CATS={"L1":["レベル1 基本","サイコロの目・立方体の展開図"],"L2":["レベル2 標準","向かい合う面・サイコロの展開図"],"L3":["レベル3 応用","サイコロを転がす・重なる頂点"],"L4":["レベル4 発展","3方向から見た図・色をぬった立方体"],"L5":["レベル5 入試","入試の標準レベルの問題"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

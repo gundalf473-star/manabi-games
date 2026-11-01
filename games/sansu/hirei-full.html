@@ -148,7 +148,7 @@ const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号�
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="hirei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>比と比例・反比例 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。比例・反比例のグラフ、歯車、てこ、比例配分、速さの比。解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="hirei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>比と比例・反比例 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。比例・反比例のグラフ、歯車、てこ、比例配分、速さの比。解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>比を簡単にする</dt><dd>両方の数に同じ数をかけても、同じ数でわっても比は等しい。小数・分数の比は整数になおしてから約分する</dd><dt>比例</dt><dd>xが2倍、3倍…になると、yも2倍、3倍…。式は y＝決まった数×x。グラフは原点Oを通る直線</dd><dt>反比例</dt><dd>xが2倍、3倍…になると、yは1/2倍、1/3倍…。x×yが一定で、式は y＝決まった数÷x。グラフはなめらかな曲線</dd><dt>比例配分</dt><dd>全体をa：bに分けると、小さい方＝全体×a/(a＋b)。差や一方がわかるときは、比の1にあたる量を求める</dd><dt>連比</dt><dd>A：B＝2：3、B：C＝4：5 は、Bを3と4の最小公倍数12にそろえて A：B：C＝8：12：15</dd><dt>歯車</dt><dd>かみ合う歯車は、歯数×回転数が等しい。回転数の比は歯数の比の逆。同じ軸の歯車は回転数が同じ</dd><dt>輪じく・てこ</dt><dd>重さ×（支点や中心からの）きょり が左右で等しいとつり合う。輪じくでは 重さ×半径</dd><dt>速さ・時間・道のり</dt><dd>道のりが同じ → 速さの比と時間の比は逆。時間が同じ → 速さの比＝道のりの比。速さが同じ → 時間の比＝道のりの比</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('hirei'); }

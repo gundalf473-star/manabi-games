@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="seishitsu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>数の性質 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="seishitsu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>数の性質 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>約数</dt><dd>ある数をわり切ることのできる整数。12の約数は1,2,3,4,6,12。かけて12になる組で探すと落ちがない</dd><dt>倍数</dt><dd>ある数に整数をかけてできる数。1から100までの7の倍数は100÷7＝14あまり2で14個</dd><dt>最大公約数</dt><dd>共通な約数のうち最大のもの。すだれ算（連除法）で、共通にわった数をかける</dd><dt>最小公倍数</dt><dd>共通な倍数のうち最小のもの。すだれ算で、わった数と残った数をすべてかける</dd><dt>素数</dt><dd>1とその数のほかに約数がない数（1は素数ではない）。2,3,5,7,11,13,17,19,23,29…</dd><dt>倍数の見分け方</dt><dd>2：一の位が偶数　3：各位の和が3の倍数　4：下2けたが4の倍数　5：一の位が0か5　9：各位の和が9の倍数</dd><dt>約数の個数</dt><dd>素因数分解して 2^a×3^b… なら、約数の個数は（a＋1）×（b＋1）×…</dd><dt>あまりの問題</dt><dd>「3でわると2あまり、4でわると2あまる数」は 12の倍数＋2。「たりない」数がそろうときは公倍数－たりない数</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('seishitsu'); }

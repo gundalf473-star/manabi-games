@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="baai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>場合の数 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="baai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>場合の数 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>ならべ方</dt><dd>n人を一列にならべる：n×(n－1)×…×1。n人から2人をならべる：n×(n－1)</dd><dt>えらび方</dt><dd>n人から2人をえらぶ：n×(n－1)÷2（ならべ方÷2）。3人なら ÷(3×2×1)</dd><dt>樹形図</dt><dd>もれなく、重ならないように、順に書き出す。数が少ないときは樹形図がいちばん確か</dd><dt>カード</dt><dd>0のカードは、いちばん上の位に使えない。偶数は一の位が偶数、3の倍数は各位の和が3の倍数</dd><dt>道順</dt><dd>交差点ごとに、そこまでの行き方の数を書きこみ、左と下（来た方向）の数をたしていく</dd><dt>ぬり分け</dt><dd>となりあう所はちがう色。ぬる順番を決めて、かけ算で数える</dd><dt>サイコロ</dt><dd>2個のサイコロの目の出方は6×6＝36通り。表にすると数えやすい</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('baai'); }

@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="koji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>故事成語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="koji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>故事成語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>故事成語とは</dt><dd>中国の昔の出来事や書物から生まれた言葉。もとの話（故事）を知ると意味が覚えやすい</dd><dt>矛盾</dt><dd>どんな盾もつきとおす矛と、どんな矛も防ぐ盾を売る人の話。つじつまが合わないこと</dd><dt>蛇足</dt><dd>蛇の絵をいちばん早くかいた人が、足までかいて負けた話。よけいなつけ足し</dd><dt>漁夫の利</dt><dd>鳥と貝が争っているうちに、漁師が両方をつかまえた話。争う二人のすきに、第三者が得をする</dd><dt>推敲</dt><dd>「僧は推す月下の門」の「推す」を「敲く」にするか迷った話。文章を何度も練り直すこと</dd><dt>まちがえやすい</dt><dd>他山の石（他人のよくない言動も、自分をみがく材料になる。りっぱな手本の意味ではない）、役不足（力に対して役が軽すぎる）</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('koji'); }

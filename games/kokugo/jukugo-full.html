@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="jukugo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>熟語の組み立て 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="jukugo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>熟語の組み立て 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>似た意味を重ねる</dt><dd>岩石・森林・増加・救助（どちらも同じような意味）</dd><dt>反対の意味を重ねる</dt><dd>高低・売買・勝敗・往復（反対の意味の漢字）</dd><dt>上が下を修飾する</dt><dd>青空（青い空）・深海（深い海）・急増（急に増える）</dd><dt>下が上の目的・対象</dt><dd>読書（書を読む）・登山（山に登る）・帰国（国に帰る）。下から上へ「〜を」「〜に」をつけて読める</dd><dt>主語と述語</dt><dd>日没（日が没する）・地震（地が震える）・頭痛（頭が痛い）。上が「〜が」</dd><dt>打ち消し</dt><dd>不安・無料・未来・非常（上に「不・無・未・非」がつく）</dd><dt>見分けるこつ</dt><dd>訓読みにして文にしてみる。「〜を」なら目的、「〜が」なら主語と述語</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('jukugo'); }

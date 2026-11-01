@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="keigo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>敬語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="keigo-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>敬語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>尊敬語</dt><dd>相手（目上の人）の動作を高める。先生がいらっしゃる・おっしゃる・めしあがる・ご覧になる・お〜になる・〜れる（られる）</dd><dt>謙譲語</dt><dd>自分や身内の動作をへりくだって、相手を高める。わたしがうかがう・申す・いただく・拝見する・お〜する</dd><dt>丁寧語</dt><dd>聞き手に対して、ていねいに言う。です・ます・ございます</dd><dt>見分け方</dt><dd>だれの動作かを考える。相手（先生・お客様）の動作なら尊敬語、自分（わたし・母）の動作なら謙譲語</dd><dt>よくあるまちがい</dt><dd>二重敬語（おっしゃられる）、相手に謙譲語（先生がまいる）、身内に尊敬語（母がいらっしゃいます）</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('keigo'); }

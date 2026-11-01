@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="hyogen-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>表現技法（詩・短歌・俳句） 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="hyogen-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>表現技法（詩・短歌・俳句） 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>比喩</dt><dd>直喩（〜のような・〜みたいに を使う）／隠喩（使わずにたとえる：君は太陽だ）</dd><dt>擬人法</dt><dd>人でないものを人のように表す（風がささやく）</dd><dt>倒置法</dt><dd>言葉の順番を入れかえて強める（行こう、明日も）</dd><dt>体言止め</dt><dd>文の終わりを名詞（体言）で止めて、余韻を残す（夕焼けの空）</dd><dt>反復・対句</dt><dd>同じ言葉をくり返す（反復）／形のにた言葉をならべる（対句：山は青く、海は深い）</dd><dt>俳句</dt><dd>五・七・五。季語を一つ入れる。切れ字（や・かな・けり）で感動を表す</dd><dt>短歌</dt><dd>五・七・五・七・七。季語はなくてもよい</dd><dt>季語の注意</dt><dd>旧暦なので、今の季節と少しずれる。七夕・朝顔・西瓜は秋、五月雨は夏、小春日和は冬</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('hyogen'); }

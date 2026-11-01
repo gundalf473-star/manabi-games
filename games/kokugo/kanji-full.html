@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="kanji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>漢字の読み書き 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="kanji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>漢字の読み書き 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>読み</dt><dd>熟語は音読みどうし（学校）、訓読みどうし（花火）が多い。「重箱読み（音＋訓：本屋）」「湯桶読み（訓＋音：手本）」もある</dd><dt>書き</dt><dd>意味を考えて漢字をえらぶ。「キカイ」なら、しくみなら機械、チャンスなら機会</dd><dt>同音異義語</dt><dd>同じ読みで意味がちがう熟語。前後の言葉と組み合わせて覚える（関心を持つ／感心する）</dd><dt>同訓異字</dt><dd>同じ訓読みの漢字。熟語にして考えるとわかる（会う＝面会、合う＝合計、遭う＝遭難）</dd><dt>まちがえやすい形</dt><dd>「専門」の門に口を入れない、「博」に点を打つ、「績・積・責」の部首など、形にも注意</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('kanji'); }

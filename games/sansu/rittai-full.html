@@ -4,7 +4,7 @@
 <meta name="game:unit" content="立体図形の体積と表面積">
 <meta name="game:grade" content="小5〜">
 <meta name="game:players" content="1人">
-<meta name="description" content="立体図形の体積と表面積の有料版。直方体・立方体、角柱・円柱、展開図、くりぬいた立体・組み合わせた立体、角すい・円すい、回転体まで、基本から入試レベル（日能研偏差値50〜55）までの5段階、各20問の全100問。すべて図つき・解き方つき。">
+<meta name="description" content="立体図形の体積と表面積の有料版。直方体・立方体、角柱・円柱、展開図、くりぬいた立体・組み合わせた立体、角すい・円すい、回転体まで、基本から入試の標準レベルまでの5段階、各20問の全100問。すべて図つき・解き方つき。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -148,7 +148,7 @@ const qkey=q=>q.id||q.q;  /* 同じ問題文の問題は id（問題文#番号�
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="rittai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>立体図形の体積と表面積 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55）までの5段階、各20問。直方体・角柱・円柱・展開図・くりぬいた立体・角すい・円すい・回転体。すべて図つき・解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="rittai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>立体図形の体積と表面積 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。直方体・角柱・円柱・展開図・くりぬいた立体・角すい・円すい・回転体。すべて図つき・解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>直方体・立方体</dt><dd>体積＝縦×横×高さ（1辺×1辺×1辺）。表面積＝（縦×横＋横×高さ＋縦×高さ）×2</dd><dt>角柱・円柱の体積</dt><dd>底面積×高さ。円柱は 半径×半径×3.14×高さ</dd><dt>角柱・円柱の表面積</dt><dd>底面積×2＋側面積。側面積＝底面のまわりの長さ×高さ（円柱は 直径×3.14×高さ）</dd><dt>角すい・円すいの体積</dt><dd>底面積×高さ÷3（同じ底面・高さの柱の3分の1）</dd><dt>円すいの側面積</dt><dd>母線×半径×3.14。展開図のおうぎ形の中心角＝360×半径÷母線</dd><dt>単位</dt><dd>1m³＝1000000cm³、1L＝1000cm³（1辺10cmの立方体）</dd><dt>くりぬいた立体</dt><dd>体積は引き算。表面積は、穴の口の分を引き、穴の内側の面を足す</dd><dt>回転体</dt><dd>長方形→円柱、直角三角形→円すい。軸からはなれた長方形→穴のあいた円柱</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('rittai'); }

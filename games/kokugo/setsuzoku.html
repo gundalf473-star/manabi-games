@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="setsuzoku-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>接続語・指示語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="setsuzoku-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>接続語・指示語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>順接（だから・そのため・すると）</dt><dd>前が理由・原因で、あとがその結果</dd><dt>逆接（しかし・だが・ところが・けれども）</dt><dd>前から予想されることと、反対のことがあとに来る。筆者の言いたいことは、あとに来ることが多い</dd><dt>並立・累加（また・そして・さらに・しかも）</dt><dd>前と同じようなことを並べたり、つけ加えたりする</dd><dt>対比・選択（一方・それとも・または）</dt><dd>前とあとをくらべる、どちらかをえらぶ</dd><dt>説明・言いかえ（つまり・すなわち・要するに）</dt><dd>前の内容をまとめたり、言いかえたりする。あとに筆者のまとめが来る。要約で大切</dd><dt>例示（たとえば）</dt><dd>前の内容の具体例があとに来る。要約では具体例は省くことが多い</dd><dt>理由（なぜなら・というのは）</dt><dd>あとに、前のことの理由が来る。文の終わりは「〜からだ」</dd><dt>転換（さて・ところで）</dt><dd>話題を変える</dd><dt>指示語の読み方</dt><dd>指示語より前を探す。見つけた内容を指示語に入れて、文の意味が通るか確かめる</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('setsuzoku'); }

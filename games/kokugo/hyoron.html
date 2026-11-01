@@ -139,7 +139,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="hyoron-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>説明文・論説文のことば 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50程度）までの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="hyoron-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>説明文・論説文のことば 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。解き方つき。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>主観・客観</dt><dd>主観＝自分だけの見方・感じ方／客観＝だれが見ても同じ、事実にもとづく見方</dd><dt>抽象・具体</dt><dd>抽象＝いくつものものに共通する性質をぬき出したもの（くだもの）／具体＝形があり、はっきりしているもの（りんご）</dd><dt>絶対・相対</dt><dd>絶対＝ほかとくらべなくても決まる／相対＝ほかとくらべて決まる（背が高い・低い）</dd><dt>普遍・特殊</dt><dd>普遍＝どこでもいつでもあてはまる／特殊＝ふつうとちがう、その場だけのもの</dd><dt>理想・現実</dt><dd>理想＝こうあってほしいと思う最高の状態／現実＝今、実際にあるようす</dd><dt>覚え方</dt><dd>対になる言葉をセットで覚え、自分で例文を作ってみる</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('hyoron'); }

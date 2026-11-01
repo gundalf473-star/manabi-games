@@ -148,7 +148,7 @@ const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="enshu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>円とおうぎ形 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試レベル（日能研偏差値50〜55）までの5段階、各20問。円周・円の面積・おうぎ形・葉っぱ形・色のついた部分・まわりの長さ。すべて図つき・解き方つき。</span></a>`;
+const PAIDLINK=`<a class="paid" href="enshu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>円とおうぎ形 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。基本から入試の標準レベルまでの5段階、各20問。円周・円の面積・おうぎ形・葉っぱ形・色のついた部分・まわりの長さ。すべて図つき・解き方つき。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>円周</dt><dd>直径×3.14（＝半径×2×3.14）。円周÷直径＝3.14（円周率）</dd><dt>円の面積</dt><dd>半径×半径×3.14。直径がわかっているときは、まず半分にして半径にする</dd><dt>おうぎ形の弧</dt><dd>直径×3.14×中心角/360</dd><dt>おうぎ形の面積</dt><dd>半径×半径×3.14×中心角/360。弧の長さ×半径÷2 でも求められる</dd><dt>まわりの長さ</dt><dd>曲線部分（弧）に、直線部分（半径や辺）を足すのをわすれない</dd><dt>3.14の計算のくふう</dt><dd>3.14をかける前に、半径×半径などをまとめて足したり引いたりしておく。例：5×5×3.14－3×3×3.14＝（25－9）×3.14</dd><dt>葉っぱ形（レンズ形）</dt><dd>正方形の中の2つの4分の1円の重なり。面積＝1辺×1辺×0.57、まわり＝半径×2×3.14÷2</dd><dt>半径がわからないとき</dt><dd>半径×半径を、正方形の面積などから求める（対角線×対角線÷2）</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('enshu'); }
