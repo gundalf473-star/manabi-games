@@ -69,3 +69,4 @@
 | 思考力・入り口ゲーム第5弾 19本：数のことば・カタカナへんしん・かくれた文字さがし・漢字めいろ・形の組み合わせ・おりたたみ・切りぬき・サイコロの目の合計・何曜日？・絵でわかる推理・ドアとかぎ・年れいパズル・ならび順推理・ナイトの旅・しょうぎのこまパズル・すごろく作戦・ならべかえの手順・ドット絵プログラム・わかれ道のプログラム・ブラックボックス（無料版5問・有料版100問） | 必要（GAMES に kazukotoba・katakanahenshin・mojikakure・kanjimeiro・kumiawase・oritatami・saikorogoukei・youbi・enosuiri・doorkagi・nenrei・narabijun・knight・shogikoma・sugoroku・sort・pixel・wakaremichi・kansuu を "shikou" で追加） | 19本のパックを入れる | ― |
 | 低学年・ちしき「人物になりきろう」全10章（無料版は織田信長の1章） | 必要（GAMES に "t-jinbutsu": "tchishiki" を追加・自動反映） | t-jinbutsu のパックを入れる | ― |
 | 低学年・ちしき「お仕事になりきろう」全10章（無料版は消防士の1章） | 必要（GAMES に "t-oshigoto": "tchishiki" を追加・自動反映） | t-oshigoto のパックを入れる | ― |
+| 低学年・ちしき「世界の偉人になりきろう」全10章（無料版はライト兄弟の1章） | 必要（GAMES に "t-ijin": "tchishiki" を追加・自動反映） | t-ijin のパックを入れる | ― |
