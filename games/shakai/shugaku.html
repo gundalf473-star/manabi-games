@@ -1,0 +1,433 @@
+<title>先生になって修学旅行を計画しよう</title>
+<meta name="game:subject" content="社会">
+<meta name="game:unit" content="修学旅行を計画しよう">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="小学6年の担任の先生になって修学旅行を計画する社会ゲーム。テーマに合う見学先をえらび、地図で回る順番と時間を考え、当日は生徒の質問に答えます。無料版は奈良（飛鳥・奈良時代の仏教と国づくり）。旅のしおりとスタンプつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。行き先の一覧（スタンプ帳）→ テーマ → 見学先カード → 地図と順番 → 当日の質問 → 旅のしおり。旅のしおりの朱色の印を差し色に */
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --fg:#26302a; --muted:#5f6a62; --rule:#d7ddd3;
+  --ink:#1f4e5a; --seal:#c2402a; --sealsoft:#f8e4dc; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#9a7210; --pick:#ebefe6;
+  --paper:#fffdf6; --paperline:#e7dfc9;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121614; --surface:#1b201d; --fg:#e6ece6; --muted:#9eaaa2; --rule:#313a34;
+  --ink:#8fd0dc; --seal:#f0765e; --sealsoft:#3a241e; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#252c27;
+  --paper:#201f1a; --paperline:#3a372c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121614; --surface:#1b201d; --fg:#e6ece6; --muted:#9eaaa2; --rule:#313a34;
+  --ink:#8fd0dc; --seal:#f0765e; --sealsoft:#3a241e; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#252c27;
+  --paper:#201f1a; --paperline:#3a372c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(25px,6.6vw,36px);line-height:1.25;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 20px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.top{display:flex;align-items:center;gap:10px}
+.steps{flex:1;display:flex;gap:4px}.steps i{flex:1;height:6px;border-radius:3px;background:var(--rule)}.steps i.on{background:var(--seal)}
+.chip{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.say{display:flex;gap:12px;align-items:flex-start}
+.say .fc{flex:none;width:64px;height:64px;border-radius:12px;overflow:hidden;line-height:0}.say .fc svg{width:64px;height:64px;display:block}
+.say .bub{position:relative;flex:1;min-width:0;background:var(--pick);border-radius:12px;padding:10px 14px;margin:0;white-space:pre-line;font-size:16px;line-height:1.85}
+.say .bub b.who{display:block;font-size:12px;color:var(--muted);letter-spacing:.05em}
+.say .bub:before{content:"";position:absolute;left:-7px;top:18px;border:7px solid transparent;border-left:0;border-right-color:var(--pick)}
+.conds{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:15px}
+.conds dt{font-weight:700;color:var(--ink);white-space:nowrap}.conds dd{margin:0}
+.meyasu{font-size:12px;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:4px 10px;margin:0}
+.theme{border-left:5px solid var(--seal);background:var(--sealsoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0;font-weight:700;font-size:17px}
+.theme small{display:block;font-size:12px;color:var(--seal);letter-spacing:.1em}
+.cands{display:grid;gap:8px}
+.cd{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:10px;align-items:flex-start;position:relative}
+.cd:hover{border-color:var(--ink)}
+.cd .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}.cd .th svg{width:96px;height:64px;display:block}
+.cd .nm{display:block;font-weight:700;font-size:16px;line-height:1.5}
+.cd .ds{display:block;font-size:13px;line-height:1.65;color:var(--muted)}
+.cd .tg{display:inline-block;font-size:12px;font-weight:700;background:var(--pick);border-radius:99px;padding:0 8px;margin:4px 4px 0 0}
+.cd[aria-pressed="true"]{border-color:var(--seal);background:var(--sealsoft)}
+.cd[aria-pressed="true"]:after{content:"✓";position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--seal);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px}
+.bar{position:sticky;bottom:8px;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--surface);border:2px solid var(--fg);border-radius:12px;padding:8px 10px 8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.bar .cnt{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
+.bar .cnt small{font-family:var(--body);font-size:12px;color:var(--muted)}
+.mapw{background:#f4f1e6;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.mapw svg{display:block;width:100%;height:auto}
+.ord{display:grid;gap:6px}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 12px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:48px}
+.ob:hover{border-color:var(--ink)}.ob small{font-weight:400;color:var(--muted);font-size:13px;white-space:nowrap}
+.ob.lunch{border-style:dashed}
+.seq{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seq li{background:var(--pick);border-radius:99px;padding:2px 10px;font-size:14px;font-weight:700}
+.seq li.arrow{background:none;padding:0;color:var(--muted)}
+.tt{list-style:none;margin:0;padding:0;font-size:15px;display:grid;gap:2px}
+.tt li{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:baseline;padding:3px 6px;border-radius:6px}
+.tt li .t{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.tt li.mv{color:var(--muted);font-size:13px}.tt li.mv .t{color:var(--muted);font-weight:400}
+.tt li.bad{background:var(--ngsoft);color:var(--ng)}.tt li.bad .t{color:var(--ng)}
+.fail{border:3px dashed var(--gold);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.fail h2,.good h2{margin:0;font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold);line-height:1.5}
+.good{border:3px solid var(--ok);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.good h2{color:var(--ok)}
+.probs{margin:0;padding-left:1.2em;font-size:15px}.probs li{margin:2px 0}
+.hint{font-size:15px;line-height:1.85;background:var(--pick);border-radius:8px;padding:8px 12px;margin:0}
+.hint b{color:var(--seal);display:block;font-size:12px;letter-spacing:.1em}
+.arr{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arr .tm{font-family:var(--mincho);font-weight:700;font-size:18px;color:var(--seal);border:2px solid var(--seal);border-radius:6px;padding:0 8px;line-height:1.6;font-variant-numeric:tabular-nums}
+.arr .an{font-family:var(--display);font-weight:400;font-size:22px;color:var(--ink);line-height:1.4}
+.txt{margin:0;font-size:16px;line-height:1.9}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:10px 14px;font-size:16px;line-height:1.7;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:52px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op.right{border-color:var(--ok);background:var(--oksoft)}.op.wrong{border-color:var(--ng);background:var(--ngsoft)}
+.op:disabled{cursor:default}
+.res{border-radius:10px;padding:10px 14px;margin:0;font-size:15px;line-height:1.85}
+.res.ok{background:var(--oksoft);border-left:5px solid var(--ok)}.res.ng{background:var(--ngsoft);border-left:5px solid var(--ng)}
+.res b{display:block;font-size:16px}
+.meter{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ok)}
+.meter .mb{flex:1;height:8px;background:var(--rule);border-radius:4px;overflow:hidden}.meter .mb i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.shiori{background:var(--paper);border:2px solid var(--fg);border-radius:6px;padding:18px 16px;display:flex;flex-direction:column;gap:12px;
+  background-image:repeating-linear-gradient(transparent 0 31px,var(--paperline) 31px 32px);position:relative}
+.shiori:before{content:"";position:absolute;inset:5px;border:1px dashed var(--paperline);border-radius:3px;pointer-events:none}
+.shiori h2{margin:0;font-family:var(--mincho);font-size:28px;letter-spacing:.4em;text-align:center;line-height:1.4}
+.shiori .sub{margin:0;text-align:center;font-size:14px;color:var(--muted)}
+.shiori h3{margin:6px 0 0;font-size:13px;letter-spacing:.12em;color:var(--seal)}
+.shiori .dest{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.shiori .dn{font-family:var(--display);font-weight:400;font-size:30px;line-height:1.3;color:var(--ink)}
+.shiori .dn small{display:block;font-family:var(--body);font-size:13px;color:var(--muted)}
+.stamp{flex:none;width:104px;height:104px;transform:rotate(-8deg)}.stamp svg{width:104px;height:104px;display:block}
+.kws{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.kws li{border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:1px 8px;font-size:14px;font-weight:700}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.timeline dd{margin:0}
+.words{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.words li{border:1px solid var(--rule);border-radius:8px;padding:4px 10px;font-size:14px;line-height:1.7;background:var(--surface)}
+.words li b{font-size:15px;color:var(--ink);margin-right:8px}
+.rank{border:2px solid var(--gold);border-radius:10px;padding:10px 14px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+.rank .rn{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold);line-height:1.4}
+.lesson{font-size:15px;line-height:1.9;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:13px}
+.list{display:grid;gap:8px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:18px;display:block;line-height:1.45}
+.st .ds{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.st .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}.st .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.8}.st.lockd .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:24px;line-height:1}
+.book{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.book .sl{aspect-ratio:1;border:1px dashed var(--rule);border-radius:50%;display:grid;place-items:center;font-size:11px;color:var(--muted);text-align:center;line-height:1.3;overflow:hidden}
+.book .sl svg{width:100%;height:100%;display:block}
+.book .sl.got{border:0}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.meter .mb i{transition:none}}
+@media print{body{background:#fff;color:#000;padding:0}.wrap>header,.noprint,.top{display:none!important}.box{border:0;padding:0}
+  .shiori{background:#fff;border-color:#000}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>社会ゲーム</small>先生になって修学旅行を計画しよう</h1>
+    <p class="lead">先生になって、修学旅行の計画を立てよう。見学先・順番・時間を考えて、生徒の質問に答えよう。無料版は奈良。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=false;
+const GID="shugaku";
+let ST=[{"id":"nara","no":1,"name":"奈良","yomi":"なら","pref":"奈良県","theme":"飛鳥・奈良時代の仏教と国づくり","brief":"今年の6年生の修学旅行は奈良です。テーマは「飛鳥・奈良時代の仏教と国づくり」。聖徳太子や聖武天皇が、仏教の力でどんな国をつくろうとしたのかを学べる見学先を4か所えらんでください。2日目の見学コースの計画をお願いします。","lesson":"聖徳太子は仏教を広め、天皇中心の国づくりを始めた。奈良時代、聖武天皇は大仏や国分寺で国を守ろうとし、鑑真や遣唐使が大陸の文化を伝えた。","stamp":"奈良マスター","start":"JR奈良駅","end":"JR奈良駅","t0":510,"meet":975,"lunch":50,"win":[660,840],"n":4,"rules":[],"tr":{"S":{"E":[5,"徒歩"],"horyuji":[35,"バス"],"todaiji":[20,"バス"],"toshodaiji":[20,"バス"],"heijo":[20,"バス"],"kofukuji":[10,"徒歩"],"kasuga":[25,"バス"],"shosoin":[20,"バス"],"ishibutai":[50,"バス"],"shika":[20,"バス"],"mall":[15,"バス"]},"E":{"S":[5,"徒歩"],"horyuji":[35,"バス"],"todaiji":[20,"バス"],"toshodaiji":[20,"バス"],"heijo":[20,"バス"],"kofukuji":[10,"徒歩"],"kasuga":[25,"バス"],"shosoin":[20,"バス"],"ishibutai":[50,"バス"],"shika":[20,"バス"],"mall":[15,"バス"]},"horyuji":{"S":[35,"バス"],"E":[35,"バス"],"todaiji":[40,"バス"],"toshodaiji":[25,"バス"],"heijo":[30,"バス"],"kofukuji":[35,"バス"],"kasuga":[40,"バス"],"shosoin":[40,"バス"],"ishibutai":[40,"バス"],"shika":[40,"バス"],"mall":[35,"バス"]},"todaiji":{"S":[20,"バス"],"E":[20,"バス"],"horyuji":[40,"バス"],"toshodaiji":[35,"バス"],"heijo":[30,"バス"],"kofukuji":[20,"徒歩"],"kasuga":[15,"バス"],"shosoin":[10,"徒歩"],"ishibutai":[55,"バス"],"shika":[15,"バス"],"mall":[20,"バス"]},"toshodaiji":{"S":[20,"バス"],"E":[20,"バス"],"horyuji":[25,"バス"],"todaiji":[35,"バス"],"heijo":[10,"バス"],"kofukuji":[25,"バス"],"kasuga":[40,"バス"],"shosoin":[35,"バス"],"ishibutai":[50,"バス"],"shika":[35,"バス"],"mall":[25,"バス"]},"heijo":{"S":[20,"バス"],"E":[20,"バス"],"horyuji":[30,"バス"],"todaiji":[30,"バス"],"toshodaiji":[10,"バス"],"kofukuji":[25,"バス"],"kasuga":[35,"バス"],"shosoin":[30,"バス"],"ishibutai":[55,"バス"],"shika":[35,"バス"],"mall":[15,"バス"]},"kofukuji":{"S":[10,"徒歩"],"E":[10,"徒歩"],"horyuji":[35,"バス"],"todaiji":[20,"徒歩"],"toshodaiji":[25,"バス"],"heijo":[25,"バス"],"kasuga":[20,"バス"],"shosoin":[15,"バス"],"ishibutai":[50,"バス"],"shika":[15,"バス"],"mall":[20,"バス"]},"kasuga":{"S":[25,"バス"],"E":[25,"バス"],"horyuji":[40,"バス"],"todaiji":[15,"バス"],"toshodaiji":[40,"バス"],"heijo":[35,"バス"],"kofukuji":[20,"バス"],"shosoin":[20,"バス"],"ishibutai":[55,"バス"],"shika":[20,"徒歩"],"mall":[30,"バス"]},"shosoin":{"S":[20,"バス"],"E":[20,"バス"],"horyuji":[40,"バス"],"todaiji":[10,"徒歩"],"toshodaiji":[35,"バス"],"heijo":[30,"バス"],"kofukuji":[15,"バス"],"kasuga":[20,"バス"],"ishibutai":[55,"バス"],"shika":[20,"バス"],"mall":[20,"バス"]},"ishibutai":{"S":[50,"バス"],"E":[50,"バス"],"horyuji":[40,"バス"],"todaiji":[55,"バス"],"toshodaiji":[50,"バス"],"heijo":[55,"バス"],"kofukuji":[50,"バス"],"kasuga":[55,"バス"],"shosoin":[55,"バス"],"shika":[50,"バス"],"mall":[55,"バス"]},"shika":{"S":[20,"バス"],"E":[20,"バス"],"horyuji":[40,"バス"],"todaiji":[15,"バス"],"toshodaiji":[35,"バス"],"heijo":[35,"バス"],"kofukuji":[15,"バス"],"kasuga":[20,"徒歩"],"shosoin":[20,"バス"],"ishibutai":[50,"バス"],"mall":[25,"バス"]},"mall":{"S":[15,"バス"],"E":[15,"バス"],"horyuji":[35,"バス"],"todaiji":[20,"バス"],"toshodaiji":[25,"バス"],"heijo":[15,"バス"],"kofukuji":[20,"バス"],"kasuga":[30,"バス"],"shosoin":[20,"バス"],"ishibutai":[55,"バス"],"shika":[25,"バス"]}},"map":"\u003cpath d=\"M190 40 Q260 20 320 50 L320 120 Q260 128 200 110 Z\" fill=\"#cfe4b8\"/>\u003ctext x=\"300\" y=\"116\" font-size=\"10\" fill=\"#6a8a5a\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">奈良公園\u003c/text>\u003cpath d=\"M315.6 79.6 L330 59.2 L344.4 79.6 Z\" fill=\"#b7c9a0\" stroke-linejoin=\"round\"/>\u003cpath d=\"M325.2 66.4 L330 59.2 L334.8 66.4 Z\" fill=\"#e8eee0\" stroke-linejoin=\"round\"/>\u003ctext x=\"330\" y=\"96\" font-size=\"9\" fill=\"#7a7266\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">若草山\u003c/text>\u003cpath d=\"M10 150 Q80 140 120 170 T220 175 T350 160\" fill=\"none\" stroke=\"#8ec5e2\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003ctext x=\"150\" y=\"186\" font-size=\"9\" fill=\"#5a8aa8\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">大和川\u003c/text>\u003cpath d=\"M178 96 L95 60 M178 96 L80 110 M80 110 L60 200 M178 96 L270 212\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"6\" stroke-linecap=\"round\"/>\u003cpath d=\"M178 96 L95 60 M178 96 L80 110 M80 110 L60 200 M178 96 L270 212\" fill=\"none\" stroke=\"#d9cfb8\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003ctext x=\"60\" y=\"230\" font-size=\"10\" fill=\"#7a7266\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">斑鳩\u003c/text>\u003ctext x=\"300\" y=\"236\" font-size=\"10\" fill=\"#7a7266\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">飛鳥（明日香村）\u003c/text>\u003crect x=\"70\" y=\"40\" width=\"60\" height=\"34\" fill=\"none\" stroke=\"#c9b98a\" stroke-width=\"1\"/>\u003ctext x=\"100\" y=\"34\" font-size=\"9\" fill=\"#7a7266\" text-anchor=\"middle\" font-weight=\"400\" font-family=\"sans-serif\">平城京のあと\u003c/text>","pos":{"S":[178,96],"E":[178,96],"horyuji":[60,198],"todaiji":[246,56],"toshodaiji":[78,128],"heijo":[96,58],"kofukuji":[204,90],"kasuga":[292,92],"shosoin":[238,26],"ishibutai":[282,214],"shika":[258,120],"mall":[150,30]},"nen":[[593,"593年","聖徳太子が推古天皇の政治を助ける"],[604,"604年","十七条の憲法"],[607,"607年","小野妹子を隋へ／法隆寺が建てられる（と伝わる）"],[645,"645年","大化の改新が始まる"],[710,"710年","平城京に都を移す"],[743,"743年","聖武天皇が大仏をつくる詔を出す"],[752,"752年","大仏の開眼の儀式"],[753,"753年","鑑真が日本に着く"],[759,"759年","鑑真が唐招提寺を開く"]],"words":[["仏教","6世紀に朝鮮半島の百済から正式に伝わった"],["遣唐使","唐の進んだ文化や制度を学ぶため送られた使節"],["平城京","710年からの奈良時代の都"]],"sites":[{"id":"horyuji","nm":"法隆寺","nr":"｜法隆寺《ほうりゅうじ》","sn":"法隆寺","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 140 Q60 114 130 138 T300 132 V158 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d6e6bc\"/>\u003crect x=\"65.9\" y=\"155\" width=\"52.2\" height=\"5\" fill=\"#cfc6b4\"/>\u003crect x=\"79\" y=\"146.2\" width=\"26.1\" height=\"8.8\" fill=\"#f3ead5\"/>\u003crect x=\"79\" y=\"146.2\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003crect x=\"102\" y=\"146.2\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003cpath d=\"M63 146.2 Q68.8 143.2 74.6 135.4 L109.4 135.4 Q115.2 143.2 121 146.2 Z\" fill=\"#4b4d55\"/>\u003crect x=\"80.1\" y=\"126.6\" width=\"23.8\" height=\"8.8\" fill=\"#f3ead5\"/>\u003crect x=\"80.1\" y=\"126.6\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003crect x=\"100.9\" y=\"126.6\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003cpath d=\"M65.6 126.6 Q70.9 123.6 76.2 115.8 L107.8 115.8 Q113.1 123.6 118.4 126.6 Z\" fill=\"#4b4d55\"/>\u003crect x=\"81.3\" y=\"107\" width=\"21.4\" height=\"8.8\" fill=\"#f3ead5\"/>\u003crect x=\"81.3\" y=\"107\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003crect x=\"99.7\" y=\"107\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003cpath d=\"M68.2 107 Q73 104 77.7 96.2 L106.3 96.2 Q111 104 115.8 107 Z\" fill=\"#4b4d55\"/>\u003crect x=\"82.5\" y=\"87.4\" width=\"19.1\" height=\"8.8\" fill=\"#f3ead5\"/>\u003crect x=\"82.5\" y=\"87.4\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003crect x=\"98.5\" y=\"87.4\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003cpath d=\"M70.8 87.4 Q75.1 84.4 79.3 76.6 L104.7 76.6 Q108.9 84.4 113.2 87.4 Z\" fill=\"#4b4d55\"/>\u003crect x=\"83.6\" y=\"67.8\" width=\"16.7\" height=\"8.8\" fill=\"#f3ead5\"/>\u003crect x=\"83.6\" y=\"67.8\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003crect x=\"97.4\" y=\"67.8\" width=\"3\" height=\"8.8\" fill=\"#b5452f\"/>\u003cpath d=\"M73.4 67.8 Q77.2 64.8 80.9 57 L103.1 57 Q106.8 64.8 110.6 67.8 Z\" fill=\"#4b4d55\"/>\u003crect x=\"90.5\" y=\"35\" width=\"3\" height=\"22\" fill=\"#8c7a4a\"/>\u003crect x=\"88\" y=\"51\" width=\"8\" height=\"1.6\" fill=\"#8c7a4a\"/>\u003crect x=\"88\" y=\"47.4\" width=\"8\" height=\"1.6\" fill=\"#8c7a4a\"/>\u003crect x=\"88\" y=\"43.8\" width=\"8\" height=\"1.6\" fill=\"#8c7a4a\"/>\u003crect x=\"88\" y=\"40.2\" width=\"8\" height=\"1.6\" fill=\"#8c7a4a\"/>\u003crect x=\"88\" y=\"36.6\" width=\"8\" height=\"1.6\" fill=\"#8c7a4a\"/>\u003crect x=\"139\" y=\"154\" width=\"132\" height=\"6\" fill=\"#cfc6b4\"/>\u003crect x=\"155.8\" y=\"124\" width=\"98.4\" height=\"30\" fill=\"#f3ead5\"/>\u003crect x=\"156.2\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"175.1\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"194\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"212.8\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"231.7\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"250.6\" y=\"124\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"155.8\" y=\"124\" width=\"98.4\" height=\"3\" fill=\"#b5452f\"/>\u003cpath d=\"M145 124 Q157 116.7 169 98 L241 98 Q253 116.7 265 124 Z\" fill=\"#4b4d55\"/>\u003crect x=\"175\" y=\"82\" width=\"60\" height=\"16\" fill=\"#f3ead5\"/>\u003crect x=\"175.4\" y=\"82\" width=\"3.2\" height=\"16\" fill=\"#b5452f\"/>\u003crect x=\"194.1\" y=\"82\" width=\"3.2\" height=\"16\" fill=\"#b5452f\"/>\u003crect x=\"212.7\" y=\"82\" width=\"3.2\" height=\"16\" fill=\"#b5452f\"/>\u003crect x=\"231.4\" y=\"82\" width=\"3.2\" height=\"16\" fill=\"#b5452f\"/>\u003crect x=\"175\" y=\"82\" width=\"60\" height=\"3\" fill=\"#b5452f\"/>\u003cpath d=\"M163 82 Q171.4 76.2 179.8 61.2 L230.2 61.2 Q238.6 76.2 247 82 Z\" fill=\"#4b4d55\"/>\u003crect x=\"28\" y=\"149.5\" width=\"4\" height=\"10.5\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"30\" cy=\"142\" r=\"9.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"24\" cy=\"146.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"36\" cy=\"146.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003crect x=\"270\" y=\"148.1\" width=\"4\" height=\"11.9\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"272\" cy=\"139.6\" r=\"10.9\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"265.2\" cy=\"144.7\" r=\"7.5\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"278.8\" cy=\"144.7\" r=\"7.5\" fill=\"#5f9a4e\"/>\u003cg transform=\"translate(150 30) scale(1)\">\u003cellipse cx=\"0\" cy=\"0\" rx=\"16\" ry=\"7\" fill=\"#ffffff\"/>\u003cellipse cx=\"12\" cy=\"-4\" rx=\"12\" ry=\"8\" fill=\"#ffffff\"/>\u003cellipse cx=\"-10\" cy=\"-3\" rx=\"9\" ry=\"6\" fill=\"#ffffff\"/>\u003c/g>\u003c/svg>","at":[60,198],"lab":[0,-14],"v":75,"d":"聖徳太子が建てたと伝わる寺。金堂や五重塔は、今に残る世界最古の木造建築といわれる。1993年に日本で最初の世界遺産の一つに。","f":true,"q":[[0,"法隆寺を建てたと伝えられているのは、だれですか？","聖徳太子",["中大兄皇子","聖武天皇"],"聖徳太子は推古天皇のもとで政治を進め、仏教をあつく信じて法隆寺を建てたと伝えられています。"],[1,"法隆寺が世界にほこれるのは、なぜですか？","世界最古の木造建築が残るから",["日本一大きな大仏があるから","金色のお堂があるから"],"金堂・五重塔は今に残る世界最古の木造建築といわれます。大仏は東大寺、金色のお堂は京都の金閣です。"]],"kw":["聖徳太子","世界最古の木造建築"]},{"id":"todaiji","nm":"東大寺","nr":"｜東大寺《とうだいじ》","sn":"東大寺","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#e3f0f8\"/>\u003cpath d=\"M0 140 Q60 114 130 138 T300 132 V158 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d6e6bc\"/>\u003crect x=\"29\" y=\"156\" width=\"242\" height=\"6\" fill=\"#cfc6b4\"/>\u003crect x=\"55.7\" y=\"112\" width=\"188.6\" height=\"44\" fill=\"#efe4c8\"/>\u003crect x=\"56.1\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"82.5\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"108.8\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"135.2\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"161.6\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"188\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"214.3\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"240.7\" y=\"112\" width=\"3.2\" height=\"44\" fill=\"#7a4a2a\"/>\u003crect x=\"55.7\" y=\"112\" width=\"188.6\" height=\"3\" fill=\"#7a4a2a\"/>\u003cpath d=\"M35 112 Q58 100.8 81 72 L219 72 Q242 100.8 265 112 Z\" fill=\"#4b4d55\"/>\u003cpath d=\"M81 72 q-2 -10 6 -10 q-2 6 2 10 Z\" fill=\"#d9b44a\"/>\u003cpath d=\"M219 72 q2 -10 -6 -10 q2 6 -2 10 Z\" fill=\"#d9b44a\"/>\u003crect x=\"136\" y=\"100\" width=\"28\" height=\"14\" fill=\"#efe4c8\"/>\u003cpath d=\"M132 102 Q150 88 168 102\" fill=\"none\" stroke=\"#4b4d55\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003cg transform=\"translate(40 186) scale(0.7)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003cg transform=\"translate(262 188) scale(-0.7 0.7)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003c/svg>","at":[246,56],"lab":[0,-14],"v":70,"d":"聖武天皇が建てた寺。大仏殿の大仏（盧舎那仏）は高さ約15m。行基が人々に協力をよびかけた。今の大仏殿は江戸時代の再建。","f":true,"q":[[2,"大仏をつくるよう命じた天皇は、だれですか？","聖武天皇",["推古天皇","桓武天皇"],"聖武天皇は、病気の流行や争いで世の中が不安だったため、仏教の力で国を守ろうとして大仏をつくらせました。"],[3,"大仏づくりに、人々の協力をよびかけたお坊さんは？","行基",["鑑真","空海"],"行基は橋や池をつくり、人々にしたわれた僧です。朝廷にたのまれて大仏づくりに協力しました。鑑真は唐から来た僧、空海は平安時代の僧です。"]],"kw":["聖武天皇","大仏","行基"]},{"id":"toshodaiji","nm":"唐招提寺","nr":"｜唐招提寺《とうしょうだいじ》","sn":"唐招提寺","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 140 Q60 114 130 138 T300 132 V158 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d6e6bc\"/>\u003crect x=\"39\" y=\"156\" width=\"222\" height=\"6\" fill=\"#cfc6b4\"/>\u003crect x=\"63.9\" y=\"116\" width=\"172.2\" height=\"40\" fill=\"#f3ead5\"/>\u003crect x=\"64.3\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"85.3\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"106.4\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"127.4\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"148.4\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"169.4\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"190.5\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"211.5\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"232.5\" y=\"116\" width=\"3.2\" height=\"40\" fill=\"#b5452f\"/>\u003crect x=\"63.9\" y=\"116\" width=\"172.2\" height=\"3\" fill=\"#b5452f\"/>\u003cpath d=\"M45 116 Q66 105.9 87 80 L213 80 Q234 105.9 255 116 Z\" fill=\"#55565c\"/>\u003crect x=\"26\" y=\"150.1\" width=\"4\" height=\"11.9\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"28\" cy=\"141.6\" r=\"10.9\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"21.2\" cy=\"146.7\" r=\"7.5\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"34.8\" cy=\"146.7\" r=\"7.5\" fill=\"#5f9a4e\"/>\u003crect x=\"274\" y=\"151.5\" width=\"4\" height=\"10.5\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"276\" cy=\"144\" r=\"9.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"270\" cy=\"148.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"282\" cy=\"148.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003cg transform=\"translate(60 34) scale(0.9)\">\u003cellipse cx=\"0\" cy=\"0\" rx=\"16\" ry=\"7\" fill=\"#ffffff\"/>\u003cellipse cx=\"12\" cy=\"-4\" rx=\"12\" ry=\"8\" fill=\"#ffffff\"/>\u003cellipse cx=\"-10\" cy=\"-3\" rx=\"9\" ry=\"6\" fill=\"#ffffff\"/>\u003c/g>\u003c/svg>","at":[78,128],"lab":[0,20],"v":45,"d":"唐（中国）から来た鑑真が開いた寺。鑑真は何度も海をわたるのに失敗し、目が見えなくなっても日本へ来たといわれる。","f":true,"q":[[0,"唐招提寺を開いた、唐から来たお坊さんは？","鑑真",["行基","最澄"],"鑑真は5回の失敗のあと、6回目の航海で日本にたどり着いたといわれます。最澄は平安時代に天台宗を開いた僧です。"],[1,"鑑真が日本に来たのは、何時代ですか？","奈良時代",["飛鳥時代","平安時代"],"鑑真が来たのは753年。710年に平城京に都が移ってからの奈良時代です。"]],"kw":["鑑真"]},{"id":"heijo","nm":"平城宮跡","nr":"｜平城宮跡《へいじょうきゅうせき》","sn":"平城宮跡","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 142 Q60 116 130 140 T300 134 V160 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"160\" width=\"300\" height=\"40\" fill=\"#c9dfa8\"/>\u003crect x=\"40\" y=\"150\" width=\"220\" height=\"10\" fill=\"#cfc6b4\"/>\u003crect x=\"59\" y=\"144\" width=\"182\" height=\"6\" fill=\"#cfc6b4\"/>\u003crect x=\"80.3\" y=\"114\" width=\"139.4\" height=\"30\" fill=\"#f3ead5\"/>\u003crect x=\"80.7\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"100\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"119.4\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"138.7\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"158.1\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"177.4\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"196.8\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"216.1\" y=\"114\" width=\"3.2\" height=\"30\" fill=\"#b5452f\"/>\u003crect x=\"80.3\" y=\"114\" width=\"139.4\" height=\"3\" fill=\"#b5452f\"/>\u003cpath d=\"M65 114 Q82 105.6 99 84 L201 84 Q218 105.6 235 114 Z\" fill=\"#4b4d55\"/>\u003cpath d=\"M99 84 q-2 -10 6 -10 q-2 6 2 10 Z\" fill=\"#d9b44a\"/>\u003cpath d=\"M201 84 q2 -10 -6 -10 q2 6 -2 10 Z\" fill=\"#d9b44a\"/>\u003c/svg>","at":[96,58],"lab":[0,-14],"v":60,"d":"710年に都が移された平城京で、天皇の住まいや役所があった所。広い原っぱに大極殿や朱雀門が復元されている。","f":true,"q":[[2,"平城京に都が移されたのは、何年ですか？","710年",["694年","794年"],"710年に平城京へ。694年は藤原京、794年は平安京です。"],[3,"平城京は、どこの都をお手本にしてつくられましたか？","唐の都・長安",["百済の都","隋の都・洛陽"],"平城京は、遣唐使が見てきた唐の都・長安にならって、碁盤の目のように道路を通しました。"]],"kw":["平城京"]},{"id":"kofukuji","nm":"興福寺","nr":"｜興福寺《こうふくじ》","sn":"興福寺","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 140 Q60 114 130 138 T300 132 V158 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d6e6bc\"/>\u003crect x=\"40\" y=\"46\" width=\"70\" height=\"114\" fill=\"#f2f2ee\" stroke=\"#c9c9c0\" stroke-width=\"1\"/>\u003cline x1=\"40\" y1=\"60\" x2=\"110\" y2=\"60\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"74\" x2=\"110\" y2=\"74\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"88\" x2=\"110\" y2=\"88\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"102\" x2=\"110\" y2=\"102\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"116\" x2=\"110\" y2=\"116\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"130\" x2=\"110\" y2=\"130\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003cline x1=\"40\" y1=\"144\" x2=\"110\" y2=\"144\" stroke=\"#d6d6cc\" stroke-width=\"1\" stroke-linecap=\"round\"/>\u003ctext x=\"75\" y=\"110\" font-size=\"13\" fill=\"#888\" text-anchor=\"middle\" font-weight=\"700\" font-family=\"sans-serif\">修理中\u003c/text>\u003crect x=\"134\" y=\"154\" width=\"142\" height=\"6\" fill=\"#cfc6b4\"/>\u003crect x=\"151.7\" y=\"120\" width=\"106.6\" height=\"34\" fill=\"#f3ead5\"/>\u003crect x=\"152.1\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"172.6\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"193.1\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"213.7\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"234.2\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"254.7\" y=\"120\" width=\"3.2\" height=\"34\" fill=\"#b5452f\"/>\u003crect x=\"151.7\" y=\"120\" width=\"106.6\" height=\"3\" fill=\"#b5452f\"/>\u003cpath d=\"M140 120 Q153 111.6 166 90 L244 90 Q257 111.6 270 120 Z\" fill=\"#4b4d55\"/>\u003crect x=\"138\" y=\"150.9\" width=\"4\" height=\"9.1\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"140\" cy=\"144.4\" r=\"8.3\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"134.8\" cy=\"148.3\" r=\"5.7\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"145.2\" cy=\"148.3\" r=\"5.7\" fill=\"#5f9a4e\"/>\u003cg transform=\"translate(270 190) scale(-0.6 0.6)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003c/svg>","at":[204,90],"lab":[-6,22],"v":45,"d":"藤原氏の寺。国宝館の阿修羅像が有名。奈良のシンボルの五重塔は、2026年は大修理中で、おおいの中にある。","f":true,"q":[[0,"興福寺は、どの一族の寺として栄えましたか？","藤原氏",["蘇我氏","平氏"],"興福寺は藤原氏の氏寺です。藤原氏は、大化の改新で活やくした中臣鎌足（藤原鎌足）の子孫です。"],[1,"興福寺の、3つの顔と6本の腕をもつ有名な像は？","阿修羅像",["金剛力士像","盧舎那仏"],"阿修羅像は奈良時代の像です。金剛力士像は鎌倉時代に東大寺南大門につくられ、盧舎那仏は東大寺の大仏です。"]],"kw":["藤原氏","阿修羅像"]},{"id":"kasuga","nm":"春日大社","nr":"｜春日大社《かすがたいしゃ》","sn":"春日大社","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003crect x=\"0\" y=\"140\" width=\"300\" height=\"60\" fill=\"#c9dba8\"/>\u003crect x=\"70\" y=\"100\" width=\"200\" height=\"30\" fill=\"#f6efe0\"/>\u003crect x=\"68\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"88\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"108\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"128\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"148\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"168\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"188\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"208\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"228\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"248\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"268\" y=\"100\" width=\"4\" height=\"30\" fill=\"#d2452f\"/>\u003crect x=\"70\" y=\"97\" width=\"200\" height=\"4\" fill=\"#d2452f\"/>\u003cpath d=\"M62 98 L100.9 84 L239.1 84 L278 98 Z\" fill=\"#5a5650\" stroke-linejoin=\"round\"/>\u003crect x=\"37.5\" y=\"151.5\" width=\"5\" height=\"16.5\" fill=\"#8d8a80\"/>\u003crect x=\"33\" y=\"149.4\" width=\"14\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"35\" y=\"142.5\" width=\"10\" height=\"6.9\" fill=\"#d9d2c0\" stroke=\"#8d8a80\" stroke-width=\"1.2\"/>\u003cpath d=\"M31 142.5 L40 138 L49 142.5 Z\" fill=\"#8d8a80\" stroke-linejoin=\"round\"/>\u003crect x=\"34\" y=\"165\" width=\"12\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"67.5\" y=\"156.6\" width=\"5\" height=\"15.4\" fill=\"#8d8a80\"/>\u003crect x=\"63\" y=\"154.6\" width=\"14\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"65\" y=\"148.2\" width=\"10\" height=\"6.4\" fill=\"#d9d2c0\" stroke=\"#8d8a80\" stroke-width=\"1.2\"/>\u003cpath d=\"M61 148.2 L70 144 L79 148.2 Z\" fill=\"#8d8a80\" stroke-linejoin=\"round\"/>\u003crect x=\"64\" y=\"169\" width=\"12\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"97.5\" y=\"161.7\" width=\"5\" height=\"14.3\" fill=\"#8d8a80\"/>\u003crect x=\"93\" y=\"159.9\" width=\"14\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"95\" y=\"153.9\" width=\"10\" height=\"6\" fill=\"#d9d2c0\" stroke=\"#8d8a80\" stroke-width=\"1.2\"/>\u003cpath d=\"M91 153.9 L100 150 L109 153.9 Z\" fill=\"#8d8a80\" stroke-linejoin=\"round\"/>\u003crect x=\"94\" y=\"173\" width=\"12\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"257.5\" y=\"156.6\" width=\"5\" height=\"15.4\" fill=\"#8d8a80\"/>\u003crect x=\"253\" y=\"154.6\" width=\"14\" height=\"3\" fill=\"#8d8a80\"/>\u003crect x=\"255\" y=\"148.2\" width=\"10\" height=\"6.4\" fill=\"#d9d2c0\" stroke=\"#8d8a80\" stroke-width=\"1.2\"/>\u003cpath d=\"M251 148.2 L260 144 L269 148.2 Z\" fill=\"#8d8a80\" stroke-linejoin=\"round\"/>\u003crect x=\"254\" y=\"169\" width=\"12\" height=\"3\" fill=\"#8d8a80\"/>\u003cg transform=\"translate(220 192) scale(0.6)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003c/svg>","at":[292,92],"lab":[0,22],"v":40,"d":"768年に、平城京を守る神をまつった神社。藤原氏の氏神。朱色の社殿と、約3000の灯籠で知られる。","f":true,"q":[[2,"奈良公園の鹿は、昔から何として大切にされてきましたか？","神の使い",["都を守る番人","大仏のお供"],"春日大社の神が白い鹿に乗ってきたという言い伝えから、鹿は神の使いとされてきました。今は国の天然記念物です。"],[3,"東大寺・春日大社・平城宮跡などがまとめて登録された世界遺産の名前は？","古都奈良の文化財",["古都京都の文化財","紀伊山地の霊場と参詣道"],"「古都奈良の文化財」は1998年に登録。法隆寺は、それより前の1993年に「法隆寺地域の仏教建造物」として登録されました。"]],"kw":["神の使いの鹿","古都奈良の文化財"]},{"id":"shosoin","nm":"正倉院（外観）","nr":"正倉院《しょうそういん》（外観）","sn":"正倉院","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 140 Q60 114 130 138 T300 132 V158 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d6e6bc\"/>\u003crect x=\"78\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"101\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"124\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"147\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"170\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"193\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"216\" y=\"140\" width=\"6\" height=\"26\" fill=\"#6b4a2e\"/>\u003crect x=\"75\" y=\"136\" width=\"150\" height=\"5\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"84\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"88.9\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"91.4\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"96.4\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"98.9\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"103.8\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"106.3\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"111.2\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"113.7\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"118.6\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"121.1\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"126.1\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003crect x=\"77\" y=\"128.6\" width=\"146\" height=\"6.2\" fill=\"#7a5634\"/>\u003crect x=\"77\" y=\"133.5\" width=\"146\" height=\"1.3\" fill=\"#5c3f26\"/>\u003cpath d=\"M63 84 Q80.4 76.7 97.8 58 L202.2 58 Q219.6 76.7 237 84 Z\" fill=\"#4b4d55\"/>\u003crect x=\"34\" y=\"144\" width=\"4\" height=\"22\" fill=\"#7a5a3a\"/>\u003cellipse cx=\"28\" cy=\"141.8\" rx=\"14\" ry=\"6\" fill=\"#3f7a4a\"/>\u003cellipse cx=\"43\" cy=\"133\" rx=\"12\" ry=\"5\" fill=\"#3f7a4a\"/>\u003cellipse cx=\"36\" cy=\"124.2\" rx=\"9\" ry=\"4\" fill=\"#3f7a4a\"/>\u003crect x=\"266\" y=\"146\" width=\"4\" height=\"20\" fill=\"#7a5a3a\"/>\u003cellipse cx=\"260\" cy=\"144\" rx=\"14\" ry=\"6\" fill=\"#3f7a4a\"/>\u003cellipse cx=\"275\" cy=\"136\" rx=\"12\" ry=\"5\" fill=\"#3f7a4a\"/>\u003cellipse cx=\"268\" cy=\"128\" rx=\"9\" ry=\"4\" fill=\"#3f7a4a\"/>\u003cg transform=\"translate(240 30) scale(1)\">\u003cellipse cx=\"0\" cy=\"0\" rx=\"16\" ry=\"7\" fill=\"#ffffff\"/>\u003cellipse cx=\"12\" cy=\"-4\" rx=\"12\" ry=\"8\" fill=\"#ffffff\"/>\u003cellipse cx=\"-10\" cy=\"-3\" rx=\"9\" ry=\"6\" fill=\"#ffffff\"/>\u003c/g>\u003c/svg>","at":[238,26],"lab":[36,4],"v":20,"d":"聖武天皇の愛用の品などを納めた倉。三角の木を組んだ校倉造。中には入れず外から見る（平日の昼間だけ公開）。","f":true,"q":[[0,"正倉院のように、三角形の木材を組んで建てる方法を何といいますか？","校倉造",["寝殿造","書院造"],"校倉造です。寝殿造は平安時代の貴族の屋敷、書院造は室町時代に生まれた建て方で、今の和室のもとです。"],[1,"正倉院の宝物には、遠い西アジアの品もあります。どの道を通ってきた？","シルクロード",["東海道","奥の細道"],"シルクロードは中国と西アジア・ヨーロッパを結んだ交易の道。遣唐使が唐から宝物を持ち帰りました。"]],"kw":["校倉造","シルクロード"]},{"id":"ishibutai","nm":"石舞台古墳","nr":"｜石舞台古墳《いしぶたいこふん》","sn":"石舞台古墳","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003crect x=\"0\" y=\"160\" width=\"300\" height=\"40\" fill=\"#c9dfa8\"/>\u003cg transform=\"translate(150 166) scale(1.1)\">\u003cellipse cx=\"0\" cy=\"2\" rx=\"90\" ry=\"10\" fill=\"#b9c79a\"/>\u003cpath d=\"M-62 0 L-56 -38 L-20 -44 L-14 0 Z\" fill=\"#9a958a\" stroke-linejoin=\"round\"/>\u003cpath d=\"M14 0 L18 -42 L58 -40 L64 0 Z\" fill=\"#8f8a80\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-70 -38 L-40 -74 L40 -78 L74 -42 L20 -36 L-30 -34 Z\" fill=\"#a8a398\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-14 0 L-12 -32 L12 -32 L14 0 Z\" fill=\"#3f3c38\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-40 -60 q20 -6 40 -2\" fill=\"none\" stroke=\"#8a857a\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003cpath d=\"M-50 -20 l12 4 M30 -20 l14 -3\" fill=\"none\" stroke=\"#7a756c\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003c/g>\u003crect x=\"38\" y=\"149.5\" width=\"4\" height=\"10.5\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"40\" cy=\"142\" r=\"9.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"34\" cy=\"146.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"46\" cy=\"146.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003crect x=\"260\" y=\"148.8\" width=\"4\" height=\"11.2\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"262\" cy=\"140.8\" r=\"10.2\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"255.6\" cy=\"145.6\" r=\"7\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"268.4\" cy=\"145.6\" r=\"7\" fill=\"#5f9a4e\"/>\u003cpath d=\"M160 130 L240 90 L320 130 Z\" fill=\"#a9c49a\" stroke-linejoin=\"round\"/>\u003c/svg>","at":[282,214],"lab":[-4,-14],"v":40,"d":"飛鳥（明日香村）にある、大きな石を組んだ古墳。盛り土がなくなり、石の部屋がむき出し。蘇我馬子の墓といわれる。","f":true,"q":[[2,"石舞台古墳は、だれの墓といわれていますか？","蘇我馬子",["卑弥呼","聖武天皇"],"蘇我馬子は聖徳太子とともに政治を進めた豪族です。「といわれる」で、はっきりとはわかっていません。"],[3,"聖徳太子と蘇我馬子が助けた、日本で最初の女性の天皇は？","推古天皇",["持統天皇","卑弥呼"],"推古天皇は593年に即位し、聖徳太子と蘇我馬子が政治を助けました。卑弥呼は弥生時代の邪馬台国の女王です。"]],"kw":["古墳","蘇我馬子","推古天皇"]},{"id":"shika","nm":"奈良公園で鹿とふれあう","nr":"奈良公園で鹿とふれあう","sn":"鹿の広場","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003cpath d=\"M0 132 Q60 106 130 130 T300 124 V150 H0 Z\" fill=\"#c4dbb0\" opacity=\"0.8\"/>\u003crect x=\"0\" y=\"150\" width=\"300\" height=\"50\" fill=\"#c9dba8\"/>\u003cg transform=\"translate(90 178) scale(1)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003cg transform=\"translate(190 182) scale(-0.9 0.9)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003cg transform=\"translate(250 172) scale(0.6)\">\u003cellipse cx=\"0\" cy=\"-22\" rx=\"22\" ry=\"10\" fill=\"#b88a5a\"/>\u003crect x=\"-16\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"-8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"8\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003crect x=\"15\" y=\"-16\" width=\"4\" height=\"16\" fill=\"#b88a5a\"/>\u003cpath d=\"M16 -26 L24 -44 L30 -44 L26 -24 Z\" fill=\"#b88a5a\"/>\u003cellipse cx=\"30\" cy=\"-46\" rx=\"8\" ry=\"5\" fill=\"#b88a5a\"/>\u003cellipse cx=\"36\" cy=\"-45\" rx=\"3\" ry=\"2.5\" fill=\"#5a4030\"/>\u003ccircle cx=\"29\" cy=\"-48\" r=\"1.3\" fill=\"#222\"/>\u003cellipse cx=\"24\" cy=\"-52\" rx=\"4\" ry=\"2\" fill=\"#b88a5a\"/>\u003ccircle cx=\"-6\" cy=\"-24\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"4\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003ccircle cx=\"-14\" cy=\"-20\" r=\"2\" fill=\"#f4e8d8\"/>\u003cpath d=\"M26 -50 l-2 -10 l-4 -3 M24 -58 l4 -4\" fill=\"none\" stroke=\"#8a6a40\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003c/g>\u003crect x=\"148\" y=\"136\" width=\"4\" height=\"14\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"150\" cy=\"126\" r=\"12.8\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"142\" cy=\"132\" r=\"8.8\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"158\" cy=\"132\" r=\"8.8\" fill=\"#5f9a4e\"/>\u003c/svg>","at":[258,120],"lab":[0,20],"v":30,"d":"鹿せんべいをあげたり、写真をとったり。奈良公園には、たくさんの鹿がくらしている。","f":false,"why":"鹿は春日大社の神の使いとされ、天然記念物として守られています。でも、鹿とふれあうことでは「仏教と国づくり」は学べません。鹿には、東大寺へ歩くとちゅうで会えますね。"},{"id":"mall","nm":"駅前のショッピングモール","nr":"駅前のショッピングモール","sn":"モール","p":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#dbeef8\"/>\u003crect x=\"0\" y=\"158\" width=\"300\" height=\"42\" fill=\"#d8d8d0\"/>\u003crect x=\"65\" y=\"80\" width=\"170\" height=\"86\" fill=\"#c9d3dc\"/>\u003crect x=\"65\" y=\"80\" width=\"170\" height=\"10\" fill=\"#8fa3b5\"/>\u003crect x=\"73\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"73\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"73\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"98.7\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"98.7\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"98.7\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"124.3\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"124.3\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"124.3\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"150\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"150\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"150\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"175.7\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"175.7\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"175.7\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"201.3\" y=\"98\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"201.3\" y=\"116\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"201.3\" y=\"134\" width=\"19.7\" height=\"12\" fill=\"#9cc6e4\"/>\u003crect x=\"130\" y=\"142\" width=\"40\" height=\"24\" fill=\"#6f8faa\"/>\u003crect x=\"149\" y=\"142\" width=\"2\" height=\"24\" fill=\"#c9d3dc\"/>\u003crect x=\"116\" y=\"66\" width=\"68\" height=\"14\" fill=\"#f0b94a\" rx=\"3\"/>\u003ctext x=\"150\" y=\"76.5\" font-size=\"11\" fill=\"#5a3a10\" text-anchor=\"middle\" font-weight=\"700\" font-family=\"sans-serif\">SHOP\u003c/text>\u003crect x=\"38\" y=\"155.5\" width=\"4\" height=\"10.5\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"40\" cy=\"148\" r=\"9.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"34\" cy=\"152.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"46\" cy=\"152.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003crect x=\"260\" y=\"155.5\" width=\"4\" height=\"10.5\" fill=\"#7a5a3a\"/>\u003ccircle cx=\"262\" cy=\"148\" r=\"9.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"256\" cy=\"152.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003ccircle cx=\"268\" cy=\"152.5\" r=\"6.6\" fill=\"#5f9a4e\"/>\u003c/svg>","at":[150,30],"lab":[0,-12],"v":60,"d":"新しい大きなショッピングモール。おみやげやお店がたくさん。雨の日でも楽しめる。","f":false,"why":"買い物は楽しいけれど、飛鳥・奈良時代の仏教や国づくりとは関係がありません。おみやげは、帰りに駅で買う時間をとれば十分です。"}]}];
+const TITLES=[["nara",1,"奈良","飛鳥・奈良時代の仏教と国づくり",true],["kyoto",2,"京都","平安京から江戸の終わりまで",true],["hiroshima",3,"広島・宮島","平和学習と2つの世界遺産",true],["nikko",4,"日光","江戸幕府と家康・日光の自然",true],["kamakura",5,"鎌倉","武士の政治と鎌倉の地形",true],["okinawa",6,"沖縄","琉球王国の歴史と平和学習",true],["tokyo",7,"東京","江戸から東京へ・国の政治",true],["ise",8,"伊勢・鳥羽","神宮と江戸の旅・海の産業",true]];
+const FACE={"kids":["\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#fbe9e7\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#e58a8a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M21 40 Q18 12 40 13 Q62 12 59 40 L60 56 Q56 50 56 40 Q55 24 40 24 Q25 24 24 40 Q24 50 20 56 Z\" fill=\"#3b2a20\"/>\u003ccircle cx=\"58\" cy=\"22\" r=\"3.5\" fill=\"#e0708a\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#e3eefa\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#5a8fd0\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M22 34 Q22 14 40 14 Q58 14 58 34 Q54 22 40 23 Q28 22 22 34 Z\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#eaf4e2\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#8fc07a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M21 40 Q18 12 40 13 Q62 12 59 40 L60 56 Q56 50 56 40 Q55 24 40 24 Q25 24 24 40 Q24 50 20 56 Z\" fill=\"#5a3a22\"/>\u003ccircle cx=\"58\" cy=\"22\" r=\"3.5\" fill=\"#e0708a\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#fbf2dc\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#e0b04a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M22 34 Q22 14 40 14 Q58 14 58 34 Q54 22 40 23 Q28 22 22 34 Z\" fill=\"#3a2a1a\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>"],"me":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#e8eef4\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#6a8fb0\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M21 40 Q18 12 40 13 Q62 12 59 40 L60 56 Q56 50 56 40 Q55 24 40 24 Q25 24 24 40 Q24 50 20 56 Z\" fill=\"#3a2a20\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","boss":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#efe8f6\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#3a3f4a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M23 32 Q24 20 30 19 M50 19 Q56 20 57 32\" fill=\"none\" stroke=\"#9a9a9a\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003crect x=\"26\" y=\"32\" width=\"12\" height=\"7\" fill=\"none\" rx=\"3\" stroke=\"#444\" stroke-width=\"1.5\"/>\u003crect x=\"42\" y=\"32\" width=\"12\" height=\"7\" fill=\"none\" rx=\"3\" stroke=\"#444\" stroke-width=\"1.5\"/>\u003cline x1=\"38\" y1=\"35\" x2=\"42\" y2=\"35\" stroke=\"#444\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\u003cpath d=\"M30 61 L40 70 L50 61\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003crect x=\"38\" y=\"62\" width=\"4\" height=\"14\" fill=\"#8a2c2c\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>"};
+const KIDS=["ゆい","はると","ひな","そうた"];
+const WHO="小学6年の担任の先生";
+const SCHOOL="小学校6年";
+const LUNCHPIC="\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#f6efe0\"/>\u003crect x=\"60\" y=\"60\" width=\"180\" height=\"110\" fill=\"#3a3a40\" rx=\"10\"/>\u003crect x=\"68\" y=\"68\" width=\"80\" height=\"94\" fill=\"#ffffff\" rx=\"6\"/>\u003crect x=\"152\" y=\"68\" width=\"80\" height=\"44\" fill=\"#f7d38a\" rx=\"6\"/>\u003crect x=\"152\" y=\"116\" width=\"80\" height=\"46\" fill=\"#9fd08a\" rx=\"6\"/>\u003ccircle cx=\"88\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"108\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"128\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"88\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"108\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"128\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003cpath d=\"M170 100 L192 74 L214 100 Z\" fill=\"#ffffff\" stroke-linejoin=\"round\"/>\u003crect x=\"181\" y=\"92\" width=\"22\" height=\"10\" fill=\"#2a3a2a\"/>\u003ccircle cx=\"170\" cy=\"136\" r=\"9\" fill=\"#e85a4a\"/>\u003ccircle cx=\"194\" cy=\"140\" r=\"8\" fill=\"#f0a040\"/>\u003ccircle cx=\"214\" cy=\"134\" r=\"8\" fill=\"#e85a4a\"/>\u003cline x1=\"250\" y1=\"40\" x2=\"210\" y2=\"150\" stroke=\"#b08050\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003cline x1=\"262\" y1=\"44\" x2=\"222\" y2=\"154\" stroke=\"#b08050\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003c/svg>";
+const STAMPS={"nara":"奈良マスター","kyoto":"京都マスター","hiroshima":"広島マスター","nikko":"日光マスター","kamakura":"鎌倉マスター","okinawa":"沖縄マスター","tokyo":"東京マスター","ise":"伊勢マスター"};
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const pl=s=>String(s).replace(RB,(m,a,b)=>a||b);
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const hm=t=>Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+const PAIDLINK="<a class=\"paid\" href=\"shugaku-full.html\" id=\"paid-link\"><span class=\"pt\">ほかの行き先も計画したい人へ　<b>先生になって修学旅行を計画しよう 全8か所</b>（有料版）</span><span class=\"pd\">無料版の奈良もふくむ全8か所。京都・広島と宮島・日光・鎌倉・沖縄・東京・伊勢。スタンプ帳つき。</span></a>";
+
+/* ST=行き先 [{id,no,name,yomi,pref,theme,brief,lesson,stamp,start,end,t0,meet,lunch,win:[a,b],n,rules:[[a,b,理由]],
+     tr:{点:{点:[分,手段]}},map:地図の飾り,pos:{点:[x,y]},nen:[[年,表示,できごと]],words:[[用語,説明]],
+     sites:[{id,nm,nr,sn,p,at,lab,v,d,f,cl?,q:[[生徒,質問,正解,[まちがい],説明]],kw:[用語],why}]}]
+   TITLES=[[id,何番目,名前,テーマ,できているか]] */
+const REC=GID+'-p-rec', STK=GID+'-stamps';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={};
+let stamps=store.get(STK,{}); if(!stamps||typeof stamps!=='object'||Array.isArray(stamps))stamps={};
+const saveRec=()=>store.set(REC,rec);
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const site=id=>G.d.sites.find(s=>s.id===id);
+const say=(face,who,text)=>`<div class="say"><span class="fc">${face}</span><p class="bub"><b class="who">${esc(who)}</b>${text}</p></div>`;
+const BOSS='校長先生';
+const head=k=>`<div class="top noprint"><button class="linkbtn" id="back">← 行き先をえらぶ</button><div class="steps" aria-label="${k}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=k?'on':''}"></i>`).join('')}</div><span class="chip">${esc(G.d.name)}</span></div>`;
+const bindBack=()=>{const b=document.getElementById('back');if(b)b.onclick=home;};
+function stampSvg(name,color){color=color||'#c2402a';const n=pl(name),a=n.replace(/マスター$/,'');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="${color}" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="${color}" stroke-width="1.5"/>`
+   +`<text x="50" y="${a.length>3?46:50}" font-size="${a.length>3?17:a.length>2?20:24}" fill="${color}" text-anchor="middle" font-weight="700" font-family="serif">${esc(a)}</text>`
+   +`<text x="50" y="${a.length>3?66:72}" font-size="13" fill="${color}" text-anchor="middle" font-weight="700" font-family="sans-serif">マスター</text>`
+   +`<path d="M20 30 L80 30" stroke="${color}" stroke-width="1"/><path d="M20 80 L80 80" stroke="${color}" stroke-width="1" opacity="0"/></svg>`;}
+function home(){
+  G=null;
+  const row=([id,no,name,theme,ok])=>{const d=ST.find(c=>c.id===id);
+    if(d){const thumb=d.sites.find(s=>s.f).p;const r=rec[id]||[0,0];const s=stamps[id];
+      return `<button class="st" data-id="${id}"><span class="th">${thumb}</span><span><span class="no">行き先 ${no}　${esc(d.pref)}</span><span class="nm"><ruby>${esc(d.name)}<rt>${esc(d.yomi)}</rt></ruby></span>
+        <span class="ds">${rb(d.theme)}</span>
+        ${r[0]?`<span class="bd ok">✓ ${esc(d.stamp)}${s&&s[1]!=null?'（学び度 '+s[1]+'%）':''}</span>`:'<span class="bd new">まだ</span>'}</span></button>`;}
+    return `<a class="st lockd" href="${GID}-full.html"><span class="th">🔒</span><span><span class="no">行き先 ${no}</span><span class="nm">${esc(name)}</span><span class="ds">${rb(theme)}</span><span class="ds">利用コードで遊べます</span></span></a>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">利用コードで行ける行き先</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const got=TITLES.filter(t=>stamps[t[0]]).length;
+  const book=TITLES.map(t=>stamps[t[0]]?`<span class="sl got" title="${esc(t[2])}">${stampSvg(((ST.find(c=>c.id===t[0])||{}).stamp)||STAMPS[t[0]]||t[2]+'マスター')}</span>`:`<span class="sl">${esc(t[2])}</span>`).join('');
+  app.innerHTML=say(FACE.me,'あなた（'+WHO+'）',`今年の修学旅行の計画は、わたしの担当。テーマに合う見学先をえらび、時間内に回れる順番を考え、当日は生徒の質問に答えよう。`)+
+    `<div class="label">あそびかた</div>
+    <p style="margin:0">① テーマを聞く → ② 見学先を${'えらぶ'} → ③ 地図で回る順番と昼食を決める（集合時刻に間に合うように）→ ④ 当日、生徒の質問に答えて「学び度」アップ → ⑤「旅のしおり」とスタンプ！</p>
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">スタンプ帳</span><span class="note">${got} / ${TITLES.length}</span></div>
+    <div class="book">${book}</div>
+    <div class="label">行き先をえらぶ</div>
+    ${PAID?'':`<p class="free">「${esc(ST.map(s=>s.name).join('・'))}」は無料。🔒の行き先は<b>利用コードで全${TITLES.length}か所</b>行けます。</p>`}
+    <div class="list">${rows}</div>${PAID?`<div class="noprint"><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？（スタンプも消えます） <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();stamps={};store.set(STK,stamps);home();};document.getElementById('no').onclick=home;};
+}
+function play(d){ G={d:d,pick:[],order:[],fails:0,score:0,total:0,qn:0,log:[]}; track('level_start',{level_name:GID+'-'+d.id}); brief(); }
+function brief(){
+  const d=G.d;
+  app.innerHTML=`${head(1)}<div class="pic">${d.sites.find(s=>s.f).p}</div>
+    <p class="theme"><small>この修学旅行のテーマ</small>${rb(d.theme)}</p>
+    ${say(FACE.boss,BOSS,rb(d.brief))}
+    <dl class="conds"><dt>出発</dt><dd>${hm(d.t0)}　${esc(d.start)}</dd><dt>集合</dt><dd>${hm(d.meet)}　${esc(d.end)}（時間におくれないこと）</dd>
+      <dt>見学先</dt><dd>${d.n}か所（テーマに合う所）</dd><dt>昼食</dt><dd>${d.lunch}分。${hm(d.win[0])}〜${hm(d.win[1])}の間に始める（早く着いたら${hm(d.win[0])}まで待つ）</dd>
+      ${d.sites.some(s=>s.cl!=null)?'<dt>受付</dt><dd>受付が早く終わる見学先があります（候補のカードを見よう）</dd>':''}
+      ${d.rules.length?'<dt>きまり</dt><dd>'+d.rules.map(r=>rb(r[2])).join('<br>')+'</dd>':''}</dl>
+    <p class="meyasu">見学時間・移動時間・受付の時刻はゲーム用の目安です。実際の旅行では、それぞれの公式の案内で確かめましょう。</p>
+    <div class="row"><button class="btn go" id="nx">見学先をえらぶ ▶</button></div>`;
+  bindBack(); document.getElementById('nx').onclick=choose; top0();
+}
+function choose(){
+  const d=G.d;
+  const card=s=>{const on=G.pick.includes(s.id);return `<button class="cd" data-id="${s.id}" aria-pressed="${on}"><span class="th">${s.p}</span><span><span class="nm">${rb(s.nr)}</span><span class="ds">${rb(s.d)}</span>
+    <span class="tg">見学 ${s.v}分（目安）</span>${s.cl!=null?`<span class="tg">受付 〜${hm(s.cl)}（目安）</span>`:''}</span></button>`;};
+  app.innerHTML=`${head(2)}<p class="theme"><small>テーマ</small>${rb(d.theme)}</p>
+    <p class="note">テーマに合う見学先を <b>${d.n}か所</b> えらぼう。カードをタップすると、えらぶ／やめる。</p>
+    <div class="cands">${d.sites.map(card).join('')}</div>
+    <div class="bar"><span class="cnt">${G.pick.length}<small> / ${d.n}か所</small></span><button class="btn go" id="ok" ${G.pick.length===d.n?'':'disabled'}>この${d.n}か所で決定</button></div>`;
+  bindBack();
+  app.querySelectorAll('.cd').forEach(b=>b.onclick=()=>{const id=b.dataset.id,i=G.pick.indexOf(id);
+    if(i>=0)G.pick.splice(i,1);else if(G.pick.length<d.n)G.pick.push(id);else return;
+    b.setAttribute('aria-pressed',G.pick.includes(id));
+    app.querySelector('.bar .cnt').innerHTML=`${G.pick.length}<small> / ${d.n}か所</small>`;
+    document.getElementById('ok').disabled=G.pick.length!==d.n;});
+  document.getElementById('ok').onclick=()=>{const bad=G.pick.map(site).filter(s=>!s.f);
+    if(bad.length)return mismatch(bad);
+    G.order=[];route();};
+}
+function mismatch(bad){
+  G.fails++; bump(G.d.id,1);
+  track('answer_question',{category:GID+'-'+G.d.id,question:'theme:'+bad.map(s=>s.id).join(','),correct:false});
+  app.innerHTML=`${head(2)}<div class="fail"><h2>テーマとどう関係しますか？</h2>
+    ${say(FACE.boss,BOSS,`「${bad.map(s=>esc(s.nm)).join('」と「')}」は、テーマ「${rb(G.d.theme)}」とどう関係しますか？`)}
+    ${bad.map(s=>`<div class="say"><span class="fc">${FACE.me}</span><p class="bub"><b class="who">考えてみると…</b>${rb(s.why)}</p></div>`).join('')}
+    <p class="hint"><b>計画のコツ</b>見学先をえらぶときは「その場所で、テーマのどんなことが学べるか」を説明できるかを考えよう。</p>
+    <div class="row"><button class="btn go" id="re">見学先をえらびなおす</button></div></div>`;
+  bindBack();
+  document.getElementById('re').onclick=()=>{G.pick=G.pick.filter(id=>site(id).f);choose();};
+  top0();
+}
+/* 時刻の計算（gen_shugaku.py の schedule と同じ） */
+function plan(order){
+  const d=G.d; let t=d.t0, at='S'; const rows=[['start',t,d.start]], bad=[];
+  for(const it of order){
+    if(it==='L'){t=Math.max(t,d.win[0]);const ok=t<=d.win[1];rows.push(['lunch',t,t+d.lunch,ok?0:1]);if(!ok)bad.push(['lunch',t]);t+=d.lunch;continue;}
+    const [m,mode]=d.tr[at][it]; rows.push(['move',t,m,mode]); t+=m;
+    const s=site(it), late=s.cl!=null&&t>s.cl?1:0; if(late)bad.push(['close',it,t,s.cl]);
+    rows.push(['site',t,t+s.v,it,late]); t+=s.v; at=it;
+  }
+  const [m,mode]=d.tr[at].E; rows.push(['move',t,m,mode]); t+=m;
+  rows.push(['end',t,d.end,t>d.meet?1:0]); if(t>d.meet)bad.push(['late',t,t-d.meet]);
+  for(const [a,b,why] of d.rules)if(order.includes(a)&&order.includes(b)&&order.indexOf(a)>order.indexOf(b))bad.push(['rule',a,b,why]);
+  return {rows,bad,end:t};
+}
+window.__sgPlan=o=>plan(o);
+function ttHtml(rows){
+  return `<ol class="tt">${rows.map(r=>{
+    if(r[0]==='start')return `<li><span class="t">${hm(r[1])}</span><span>${esc(r[2])} を出発</span></li>`;
+    if(r[0]==='move')return `<li class="mv"><span class="t">↓</span><span>${esc(r[3])} ${r[2]}分</span></li>`;
+    if(r[0]==='lunch')return `<li class="${r[3]?'bad':''}"><span class="t">${hm(r[1])}</span><span>昼食（〜${hm(r[2])}）</span></li>`;
+    if(r[0]==='site'){const s=site(r[3]);return `<li class="${r[4]?'bad':''}"><span class="t">${hm(r[1])}</span><span>${esc(s.nm)}　見学（〜${hm(r[2])}）</span></li>`;}
+    return `<li class="${r[3]?'bad':''}"><span class="t">${hm(r[1])}</span><span>${esc(r[2])} に集合（${hm(G.d.meet)}まで）</span></li>`;}).join('')}</ol>`;
+}
+function mapSvg(order){
+  const d=G.d,P=d.pos; let lines='',marks='';
+  const pts=['S',...order.filter(x=>x!=='L')]; if(order.length===G.pick.length+1)pts.push('E');
+  for(let i=0;i+1<pts.length;i++){const a=P[pts[i]],b=P[pts[i+1]],m=d.tr[pts[i]][pts[i+1]];
+    lines+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c2402a" stroke-width="3" stroke-dasharray="${m[1]==='徒歩'?'2 5':'0'}" stroke-linecap="round" opacity=".85"/>`;
+    const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+    lines+=`<rect x="${mx-17}" y="${my-8}" width="34" height="15" rx="7" fill="#fff" stroke="#c2402a" stroke-width="1"/><text x="${mx}" y="${my+3.5}" font-size="10" text-anchor="middle" fill="#c2402a" font-weight="700" font-family="sans-serif">${m[0]}分</text>`;}
+  const se=P.S, ee=P.E;
+  marks+=`<rect x="${se[0]-7}" y="${se[1]-7}" width="14" height="14" rx="3" fill="#1f4e5a"/><text x="${se[0]}" y="${se[1]+22}" font-size="10" text-anchor="middle" fill="#1f4e5a" font-weight="700" font-family="sans-serif">${esc(d.start)}</text>`;
+  if(d.end!==d.start)marks+=`<rect x="${ee[0]-7}" y="${ee[1]-7}" width="14" height="14" rx="3" fill="#1f4e5a"/><text x="${ee[0]}" y="${ee[1]+22}" font-size="10" text-anchor="middle" fill="#1f4e5a" font-weight="700" font-family="sans-serif">${esc(d.end)}（集合）</text>`;
+  for(const id of G.pick){const s=site(id),p=P[id],k=order.filter(x=>x!=='L').indexOf(id);
+    marks+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${k>=0?'#c2402a':'#fff'}" stroke="#c2402a" stroke-width="2"/>`
+      +(k>=0?`<text x="${p[0]}" y="${p[1]+3.5}" font-size="11" text-anchor="middle" fill="#fff" font-weight="700" font-family="sans-serif">${k+1}</text>`:'')
+      +`<text x="${p[0]+s.lab[0]}" y="${p[1]+s.lab[1]}" font-size="11" text-anchor="middle" fill="#26302a" font-weight="700" font-family="sans-serif" paint-order="stroke" stroke="#f4f1e6" stroke-width="3">${esc(s.sn)}</text>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" aria-label="${esc(d.name)}の地図"><rect width="360" height="240" fill="#f4f1e6"/>${d.map}${lines}${marks}</svg>`;
+}
+function route(){
+  const d=G.d, o=G.order, at=o.filter(x=>x!=='L').slice(-1)[0]||'S';
+  const left=[...G.pick.filter(id=>!o.includes(id)),...(o.includes('L')?[]:['L'])];
+  const seq=o.map(x=>x==='L'?'昼食':site(x).sn);
+  app.innerHTML=`${head(3)}<p class="note">地図を見て、回る順番をタップで決めよう。<b>昼食</b>も入れること。線の数字は移動時間（目安）。</p>
+    <div class="mapw">${mapSvg(o)}</div><p class="note" style="margin-top:-8px">地図はおおまかな位置です（実際のきょりとはちがいます）。点線は徒歩。</p>
+    <dl class="conds"><dt>出発</dt><dd>${hm(d.t0)} ${esc(d.start)}</dd><dt>集合</dt><dd>${hm(d.meet)} ${esc(d.end)}</dd><dt>昼食</dt><dd>${d.lunch}分（${hm(d.win[0])}〜${hm(d.win[1])}に始める）</dd></dl>
+    <ul class="seq"><li>${esc(d.start)}</li>${seq.map(x=>`<li class="arrow">→</li><li>${esc(x)}</li>`).join('')}${left.length?'<li class="arrow">→ …</li>':`<li class="arrow">→</li><li>${esc(d.end)}</li>`}</ul>
+    ${left.length?`<div class="label">${o.length+1}番目に行く所</div><div class="ord">${left.map(x=>x==='L'?`<button class="ob lunch" data-x="L"><span>🍙 昼食（${d.lunch}分）</span><small>今いる所の近くで</small></button>`
+      :`<button class="ob" data-x="${x}"><span>${esc(site(x).nm)}</span><small>${esc(d.tr[at][x][1])} ${d.tr[at][x][0]}分・見学 ${site(x).v}分${site(x).cl!=null?'・受付〜'+hm(site(x).cl):''}</small></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="go">この計画で決定</button></div>`}
+    <div class="row">${o.length?'<button class="btn" id="undo">1つもどす</button><button class="linkbtn" id="clr">順番をはじめから</button>':''}<button class="linkbtn" id="repick">見学先をえらびなおす</button></div>
+    <p class="meyasu">移動・見学の時間は目安です。</p>`;
+  bindBack();
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{G.order.push(b.dataset.x);route();});
+  const u=document.getElementById('undo');if(u)u.onclick=()=>{G.order.pop();route();};
+  const c=document.getElementById('clr');if(c)c.onclick=()=>{G.order=[];route();};
+  document.getElementById('repick').onclick=()=>{G.order=[];choose();};
+  const g=document.getElementById('go');if(g)g.onclick=check;
+}
+function check(){
+  const d=G.d, r=plan(G.order);
+  if(r.bad.length){
+    G.fails++; bump(d.id,1);
+    track('answer_question',{category:GID+'-'+d.id,question:'plan:'+G.order.join('>'),correct:false});
+    const msg=b=>b[0]==='late'?`集合時刻 ${hm(d.meet)} に対して、${esc(d.end)} にもどるのは <b>${hm(b[1])}</b>（${b[2]}分おくれ）。`
+      :b[0]==='lunch'?`昼食を始めるのが <b>${hm(b[1])}</b>。${hm(d.win[1])}までに始めたい。`
+      :b[0]==='close'?`${esc(site(b[1]).nm)}に着くのが <b>${hm(b[2])}</b>。受付の目安（〜${hm(b[3])}）に間に合わない。`
+      :`「${esc(site(b[1]).nm)}」より先に「${esc(site(b[2]).nm)}」へ行っています。${rb(b[3])}。`;
+    const hint=r.bad.some(b=>b[0]==='late')?'地図で近い所どうしを続けて回ると、移動の時間がへります。遠い所へ行ったり来たりしていないかな？'
+      :r.bad.some(b=>b[0]==='close')?'受付が早く終わる見学先は、先に回ろう。':r.bad.some(b=>b[0]==='lunch')?'昼食を何番目に入れるかで、昼食の時刻が変わります。':'きまりを思い出そう。';
+    app.innerHTML=`${head(3)}<div class="fail"><h2>時間が足りません</h2>
+      ${say(FACE.boss,BOSS,'この計画だと、うまくいかない所があるようです。')}
+      <ul class="probs">${r.bad.map(b=>`<li>${msg(b)}</li>`).join('')}</ul>${ttHtml(r.rows)}
+      <p class="hint"><b>計画のコツ</b>${hint}</p>
+      <div class="row"><button class="btn go" id="re">順番を考えなおす</button><button class="btn" id="repick">見学先からえらびなおす</button></div></div>`;
+    bindBack();
+    document.getElementById('re').onclick=()=>{G.order=[];route();};
+    document.getElementById('repick').onclick=()=>{G.order=[];choose();};
+    return top0();
+  }
+  G.plan=r;
+  const sl=d.meet-r.end;
+  app.innerHTML=`${head(3)}<div class="good"><h2>よい計画です！</h2>
+    ${say(FACE.boss,BOSS,`テーマに合った見学先で、時間もだいじょうぶ。集合時刻の${sl}分前にもどれますね。${sl>=30?'少し時間の余裕もあります。':''}`)}
+    ${ttHtml(r.rows)}<div class="row"><button class="btn go" id="go">修学旅行に出発！ ▶</button></div></div>`;
+  bindBack(); document.getElementById('go').onclick=()=>{G.step=0;G.total=G.order.filter(x=>x!=='L').reduce((a,id)=>a+site(id).q.length,0);trip();}; top0();
+}
+function meter(){const p=G.total?Math.round(G.score/G.total*100):0;return `<div class="meter"><span>学び度</span><span class="mb"><i style="width:${p}%"></i></span><span>${G.score*10}点</span></div>`;}
+function trip(){
+  const d=G.d, it=G.order[G.step];
+  if(it===undefined)return ending();
+  const rows=G.plan.rows;
+  if(it==='L'){const r=rows.find(x=>x[0]==='lunch');
+    app.innerHTML=`${head(4)}${meter()}<div class="arr"><span class="tm">${hm(r[1])}</span><span class="an">昼食</span></div>
+      <div class="pic">${LUNCHPIC}</div>${say(FACE.kids[G.step%4],KIDS[G.step%4]+'さん','おなかすいた〜！午後の見学のために、しっかり食べます。')}
+      <div class="row"><button class="btn go" id="nx">午後の見学へ ▶</button></div>`;
+    bindBack(); document.getElementById('nx').onclick=()=>{G.step++;trip();}; return top0();}
+  const s=site(it), r=rows.find(x=>x[0]==='site'&&x[3]===it);
+  G.qi=0; G.cur=s;
+  app.innerHTML=`${head(4)}${meter()}<div class="arr"><span class="tm">${hm(r[1])}</span><span class="an">${rb(s.nr)}</span><span class="note">に到着</span></div>
+    <div class="pic">${s.p}</div><p class="txt">${rb(s.d)}</p><div id="qa"></div>`;
+  bindBack(); ask(); top0();
+}
+function ask(){
+  const s=G.cur, q=s.q[G.qi], box=document.getElementById('qa');
+  const ch=shuffle([q[2],...q[3]]);
+  box.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">${say(FACE.kids[q[0]],KIDS[q[0]]+'さん',`先生、${rb(q[1])}`)}
+    <div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${'アイウ'[i]}</span><span>${rb(c)}</span></button>`).join('')}</div><div id="res"></div></div>`;
+  box.querySelectorAll('.op').forEach(b=>b.onclick=()=>{
+    const c=ch[+b.dataset.i], ok=c===q[2];
+    box.querySelectorAll('.op').forEach(x=>{x.disabled=true;if(ch[+x.dataset.i]===q[2])x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    if(ok)G.score++;
+    G.log.push([s.id,G.qi,ok]); G.qn++;
+    track('answer_question',{category:GID+'-'+G.d.id,question:pl(q[1]).slice(0,60),correct:ok});
+    const last=G.qi+1>=s.q.length;
+    document.getElementById('res').innerHTML=`<p class="res ${ok?'ok':'ng'}"><b>${ok?'正解！ 学び度 +10':'実際には…'}</b>${ok?'':'答えは「'+rb(q[2])+'」。'}${rb(q[4])}</p>
+      <div class="row" style="margin-top:10px"><button class="btn go" id="nq">${last?(G.step+1<G.order.length?'次の行き先へ ▶':esc(G.d.end)+'へもどる ▶'):'もう1つ質問が… ▶'}</button></div>`;
+    const m=app.querySelector('.meter');if(m)m.outerHTML=meter();
+    const nq=document.getElementById('nq'); nq.focus({preventScroll:true});
+    nq.onclick=()=>{if(!last){G.qi++;ask();}else{G.step++;trip();}};
+  });
+}
+function rankOf(p){return p>=90?['名ガイド先生','生徒から「先生の説明、すごくわかりやすい！」の声。']:p>=70?['たよれる先生','質問にしっかり答えられました。']:p>=50?['がんばり先生','もう一度回ると、もっと答えられそう！']:['これからの先生','しおりを読みなおして、もう一度チャレンジ！'];}
+function ending(){
+  const d=G.d, r=G.plan, p=G.total?Math.round(G.score/G.total*100):0, rk=rankOf(p);
+  bump(d.id,0);
+  const old=stamps[d.id]; stamps[d.id]=[old?old[0]:Date.now(),Math.max(p,old&&old[1]!=null?old[1]:0)]; store.set(STK,stamps);
+  track('level_end',{level_name:GID+'-'+d.id,success:true,score:G.score,total:G.total});
+  const vis=G.order.filter(x=>x!=='L').map(site);
+  const kw=[...new Set([...vis.flatMap(s=>s.kw),...d.words.map(w=>w[0])])];
+  const ix=ST.indexOf(d), nx=ST[ix+1];
+  app.innerHTML=`${head(5)}<div class="good"><h2>修学旅行、大成功！</h2>${say(FACE.boss,BOSS,`おつかれさまでした。全員、${hm(r.end)}に${esc(d.end)}へもどれました。${G.fails?'計画の立てなおし '+G.fails+'回。':'計画は一発で合格！'}`)}</div>
+    <div class="shiori" id="shiori"><h2>旅のしおり</h2><p class="sub">${esc(SCHOOL)}　修学旅行（見学の日）</p>
+      <div class="dest"><span class="dn"><small>行き先</small>${esc(d.name)}<small>${esc(d.pref)}</small></span><span class="stamp" aria-label="${esc(d.stamp)}のスタンプ">${stampSvg(d.stamp)}</span></div>
+      <p class="theme"><small>テーマ</small>${rb(d.theme)}</p>
+      <h3>行程（時間は目安）</h3>${ttHtml(r.rows)}
+      <h3>学んだこと</h3><ul class="kws">${kw.map(k=>`<li>${rb(k)}</li>`).join('')}</ul>
+      <ul class="words">${d.words.map(w=>`<li><b>${rb(w[0])}</b>${rb(w[1])}</li>`).join('')}</ul>
+      <h3>年表</h3><dl class="timeline">${d.nen.map(e=>`<dt>${esc(e[1])}</dt><dd>${rb(e[2])}</dd>`).join('')}</dl>
+      <p class="lesson"><b>まとめ</b>${rb(d.lesson)}</p>
+      <div class="rank"><span class="label">学び度 ${p}%（${G.score} / ${G.total}問 正解）</span><span class="rn">${esc(rk[0])}</span><span>${esc(rk[1])}</span></div>
+    </div>
+    <div class="row noprint"><button class="btn" id="print">しおりを印刷する</button></div>
+    <div class="row noprint">${nx?`<button class="btn go" id="next">次の行き先「${esc(nx.name)}」へ</button>`:''}<button class="btn${nx?'':' go'}" id="list">行き先をえらぶ</button><button class="linkbtn" id="again">もう一度この行き先を</button></div>${PAID?'':PAIDLINK}`;
+  bindBack();
+  document.getElementById('print').onclick=()=>{try{window.print();}catch(e){}};
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(d);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('shugaku'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'shugaku',err:err,free:'shugaku.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>

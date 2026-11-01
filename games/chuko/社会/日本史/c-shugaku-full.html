@@ -1,0 +1,434 @@
+<title>先生になって修学旅行を計画しよう（中学編） 全8か所</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:course" content="chuko"><meta name="game:subject" content="社会">
+<meta name="game:unit" content="修学旅行を計画しよう">
+<meta name="game:grade" content="中1〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="先生になって修学旅行を計画しよう（中学編）の有料版。奈良・京都・広島と宮島・日光・鎌倉・沖縄・東京・伊勢の全8か所。受付時刻や昼食の時間帯も考えて行程を組み、中学社会と高校日本史の入り口の質問に答えます。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。行き先の一覧（スタンプ帳）→ テーマ → 見学先カード → 地図と順番 → 当日の質問 → 旅のしおり。旅のしおりの朱色の印を差し色に */
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --fg:#26302a; --muted:#5f6a62; --rule:#d7ddd3;
+  --ink:#1f4e5a; --seal:#c2402a; --sealsoft:#f8e4dc; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#9a7210; --pick:#ebefe6;
+  --paper:#fffdf6; --paperline:#e7dfc9;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121614; --surface:#1b201d; --fg:#e6ece6; --muted:#9eaaa2; --rule:#313a34;
+  --ink:#8fd0dc; --seal:#f0765e; --sealsoft:#3a241e; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#252c27;
+  --paper:#201f1a; --paperline:#3a372c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121614; --surface:#1b201d; --fg:#e6ece6; --muted:#9eaaa2; --rule:#313a34;
+  --ink:#8fd0dc; --seal:#f0765e; --sealsoft:#3a241e; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#252c27;
+  --paper:#201f1a; --paperline:#3a372c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(25px,6.6vw,36px);line-height:1.25;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 20px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn:disabled{opacity:.4;cursor:default}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.top{display:flex;align-items:center;gap:10px}
+.steps{flex:1;display:flex;gap:4px}.steps i{flex:1;height:6px;border-radius:3px;background:var(--rule)}.steps i.on{background:var(--seal)}
+.chip{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.say{display:flex;gap:12px;align-items:flex-start}
+.say .fc{flex:none;width:64px;height:64px;border-radius:12px;overflow:hidden;line-height:0}.say .fc svg{width:64px;height:64px;display:block}
+.say .bub{position:relative;flex:1;min-width:0;background:var(--pick);border-radius:12px;padding:10px 14px;margin:0;white-space:pre-line;font-size:16px;line-height:1.85}
+.say .bub b.who{display:block;font-size:12px;color:var(--muted);letter-spacing:.05em}
+.say .bub:before{content:"";position:absolute;left:-7px;top:18px;border:7px solid transparent;border-left:0;border-right-color:var(--pick)}
+.conds{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:15px}
+.conds dt{font-weight:700;color:var(--ink);white-space:nowrap}.conds dd{margin:0}
+.meyasu{font-size:12px;color:var(--muted);border:1px dashed var(--rule);border-radius:6px;padding:4px 10px;margin:0}
+.theme{border-left:5px solid var(--seal);background:var(--sealsoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0;font-weight:700;font-size:17px}
+.theme small{display:block;font-size:12px;color:var(--seal);letter-spacing:.1em}
+.cands{display:grid;gap:8px}
+.cd{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:10px;align-items:flex-start;position:relative}
+.cd:hover{border-color:var(--ink)}
+.cd .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}.cd .th svg{width:96px;height:64px;display:block}
+.cd .nm{display:block;font-weight:700;font-size:16px;line-height:1.5}
+.cd .ds{display:block;font-size:13px;line-height:1.65;color:var(--muted)}
+.cd .tg{display:inline-block;font-size:12px;font-weight:700;background:var(--pick);border-radius:99px;padding:0 8px;margin:4px 4px 0 0}
+.cd[aria-pressed="true"]{border-color:var(--seal);background:var(--sealsoft)}
+.cd[aria-pressed="true"]:after{content:"✓";position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--seal);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px}
+.bar{position:sticky;bottom:8px;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--surface);border:2px solid var(--fg);border-radius:12px;padding:8px 10px 8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.bar .cnt{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
+.bar .cnt small{font-family:var(--body);font-size:12px;color:var(--muted)}
+.mapw{background:#f4f1e6;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.mapw svg{display:block;width:100%;height:auto}
+.ord{display:grid;gap:6px}
+.ob{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 12px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:48px}
+.ob:hover{border-color:var(--ink)}.ob small{font-weight:400;color:var(--muted);font-size:13px;white-space:nowrap}
+.ob.lunch{border-style:dashed}
+.seq{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seq li{background:var(--pick);border-radius:99px;padding:2px 10px;font-size:14px;font-weight:700}
+.seq li.arrow{background:none;padding:0;color:var(--muted)}
+.tt{list-style:none;margin:0;padding:0;font-size:15px;display:grid;gap:2px}
+.tt li{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:baseline;padding:3px 6px;border-radius:6px}
+.tt li .t{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.tt li.mv{color:var(--muted);font-size:13px}.tt li.mv .t{color:var(--muted);font-weight:400}
+.tt li.bad{background:var(--ngsoft);color:var(--ng)}.tt li.bad .t{color:var(--ng)}
+.fail{border:3px dashed var(--gold);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.fail h2,.good h2{margin:0;font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold);line-height:1.5}
+.good{border:3px solid var(--ok);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--oksoft)}
+.good h2{color:var(--ok)}
+.probs{margin:0;padding-left:1.2em;font-size:15px}.probs li{margin:2px 0}
+.hint{font-size:15px;line-height:1.85;background:var(--pick);border-radius:8px;padding:8px 12px;margin:0}
+.hint b{color:var(--seal);display:block;font-size:12px;letter-spacing:.1em}
+.arr{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arr .tm{font-family:var(--mincho);font-weight:700;font-size:18px;color:var(--seal);border:2px solid var(--seal);border-radius:6px;padding:0 8px;line-height:1.6;font-variant-numeric:tabular-nums}
+.arr .an{font-family:var(--display);font-weight:400;font-size:22px;color:var(--ink);line-height:1.4}
+.txt{margin:0;font-size:16px;line-height:1.9}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:10px 14px;font-size:16px;line-height:1.7;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:52px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op.right{border-color:var(--ok);background:var(--oksoft)}.op.wrong{border-color:var(--ng);background:var(--ngsoft)}
+.op:disabled{cursor:default}
+.res{border-radius:10px;padding:10px 14px;margin:0;font-size:15px;line-height:1.85}
+.res.ok{background:var(--oksoft);border-left:5px solid var(--ok)}.res.ng{background:var(--ngsoft);border-left:5px solid var(--ng)}
+.res b{display:block;font-size:16px}
+.meter{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ok)}
+.meter .mb{flex:1;height:8px;background:var(--rule);border-radius:4px;overflow:hidden}.meter .mb i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.shiori{background:var(--paper);border:2px solid var(--fg);border-radius:6px;padding:18px 16px;display:flex;flex-direction:column;gap:12px;
+  background-image:repeating-linear-gradient(transparent 0 31px,var(--paperline) 31px 32px);position:relative}
+.shiori:before{content:"";position:absolute;inset:5px;border:1px dashed var(--paperline);border-radius:3px;pointer-events:none}
+.shiori h2{margin:0;font-family:var(--mincho);font-size:28px;letter-spacing:.4em;text-align:center;line-height:1.4}
+.shiori .sub{margin:0;text-align:center;font-size:14px;color:var(--muted)}
+.shiori h3{margin:6px 0 0;font-size:13px;letter-spacing:.12em;color:var(--seal)}
+.shiori .dest{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.shiori .dn{font-family:var(--display);font-weight:400;font-size:30px;line-height:1.3;color:var(--ink)}
+.shiori .dn small{display:block;font-family:var(--body);font-size:13px;color:var(--muted)}
+.stamp{flex:none;width:104px;height:104px;transform:rotate(-8deg)}.stamp svg{width:104px;height:104px;display:block}
+.kws{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.kws li{border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:1px 8px;font-size:14px;font-weight:700}
+.timeline{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:0}
+.timeline dt{font-weight:700;color:var(--seal);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.timeline dd{margin:0}
+.words{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.words li{border:1px solid var(--rule);border-radius:8px;padding:4px 10px;font-size:14px;line-height:1.7;background:var(--surface)}
+.words li b{font-size:15px;color:var(--ink);margin-right:8px}
+.rank{border:2px solid var(--gold);border-radius:10px;padding:10px 14px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+.rank .rn{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold);line-height:1.4}
+.lesson{font-size:15px;line-height:1.9;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:13px}
+.list{display:grid;gap:8px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:18px;display:block;line-height:1.45}
+.st .ds{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.st .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}.st .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.8}.st.lockd .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:24px;line-height:1}
+.book{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.book .sl{aspect-ratio:1;border:1px dashed var(--rule);border-radius:50%;display:grid;place-items:center;font-size:11px;color:var(--muted);text-align:center;line-height:1.3;overflow:hidden}
+.book .sl svg{width:100%;height:100%;display:block}
+.book .sl.got{border:0}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.meter .mb i{transition:none}}
+@media print{body{background:#fff;color:#000;padding:0}.wrap>header,.noprint,.top{display:none!important}.box{border:0;padding:0}
+  .shiori{background:#fff;border-color:#000}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>社会ゲーム</small>先生になって修学旅行を計画しよう（中学編） 全8か所</h1>
+    <p class="lead">中学3年の担任になって、修学旅行の計画を立てよう。受付時刻・昼食の時間帯にも気をつけて。全8か所。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+const GID="c-shugaku";
+let ST=[];
+const TITLES=[["nara",1,"奈良","律令国家の成立と天平文化",true],["kyoto",2,"京都","貴族・武家・町衆の文化と政治",true],["hiroshima",3,"広島・宮島","平和学習と2つの世界遺産",true],["nikko",4,"日光","幕藩体制と日光の社寺・自然",true],["kamakura",5,"鎌倉","武家政権のしくみと鎌倉文化",true],["okinawa",6,"沖縄","琉球王国の交易と沖縄戦・戦後",true],["tokyo",7,"東京","江戸から近代国家へ・三権分立",true],["ise",8,"伊勢・鳥羽","神宮と庶民の旅・近代の産業",true]];
+const FACE={"kids":["\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#fbe9e7\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#4a6fa5\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#25305a\"/>\u003cpath d=\"M28 58 L40 72 L52 58\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"3\" stroke-linecap=\"round\"/>\u003cpath d=\"M36 68 L40 76 L44 68 Z\" fill=\"#c8402a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M21 40 Q18 12 40 13 Q62 12 59 40 L60 56 Q56 50 56 40 Q55 24 40 24 Q25 24 24 40 Q24 50 20 56 Z\" fill=\"#2b2420\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#e3eefa\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#4a6fa5\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#25283a\"/>\u003crect x=\"36\" y=\"58\" width=\"8\" height=\"6\" fill=\"#25283a\"/>\u003ccircle cx=\"40\" cy=\"66\" r=\"1.6\" fill=\"#d8c070\"/>\u003ccircle cx=\"40\" cy=\"73\" r=\"1.6\" fill=\"#d8c070\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M22 34 Q22 14 40 14 Q58 14 58 34 Q54 22 40 23 Q28 22 22 34 Z\" fill=\"#222\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#eaf4e2\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#4a6fa5\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#25305a\"/>\u003cpath d=\"M28 58 L40 72 L52 58\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"3\" stroke-linecap=\"round\"/>\u003cpath d=\"M36 68 L40 76 L44 68 Z\" fill=\"#c8402a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M21 40 Q18 12 40 13 Q62 12 59 40 L60 56 Q56 50 56 40 Q55 24 40 24 Q25 24 24 40 Q24 50 20 56 Z\" fill=\"#4a3020\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#fbf2dc\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#4a6fa5\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#3a4a6a\"/>\u003cpath d=\"M34 57 L40 72 L46 57 Z\" fill=\"#ffffff\"/>\u003crect x=\"38.5\" y=\"60\" width=\"3\" height=\"12\" fill=\"#b0303a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M22 34 Q22 14 40 14 Q58 14 58 34 Q54 22 40 23 Q28 22 22 34 Z\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>"],"me":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#e8eef4\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#5a6a7a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M22 33 Q21 13 40 13 Q59 13 58 33 Q52 20 40 21 Q27 21 22 33 Z\" fill=\"#2b2b2b\"/>\u003cpath d=\"M30 61 L40 70 L50 61\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003crect x=\"38\" y=\"62\" width=\"4\" height=\"14\" fill=\"#2c5a8a\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>","boss":"\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"#efe8f6\" rx=\"12\"/>\u003cpath d=\"M14 80 Q16 58 40 56 Q64 58 66 80 Z\" fill=\"#3a3f4a\"/>\u003crect x=\"34\" y=\"46\" width=\"12\" height=\"12\" fill=\"#f2cfa9\"/>\u003cellipse cx=\"40\" cy=\"36\" rx=\"17\" ry=\"19\" fill=\"#f2cfa9\"/>\u003cpath d=\"M23 32 Q24 20 30 19 M50 19 Q56 20 57 32\" fill=\"none\" stroke=\"#9a9a9a\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003crect x=\"26\" y=\"32\" width=\"12\" height=\"7\" fill=\"none\" rx=\"3\" stroke=\"#444\" stroke-width=\"1.5\"/>\u003crect x=\"42\" y=\"32\" width=\"12\" height=\"7\" fill=\"none\" rx=\"3\" stroke=\"#444\" stroke-width=\"1.5\"/>\u003cline x1=\"38\" y1=\"35\" x2=\"42\" y2=\"35\" stroke=\"#444\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\u003cpath d=\"M30 61 L40 70 L50 61\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2\" stroke-linecap=\"round\"/>\u003crect x=\"38\" y=\"62\" width=\"4\" height=\"14\" fill=\"#8a2c2c\"/>\u003ccircle cx=\"33\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003ccircle cx=\"47\" cy=\"37\" r=\"2.3\" fill=\"#2b2b2b\"/>\u003cpath d=\"M35 46 Q40 50 45 46\" fill=\"none\" stroke=\"#b0584a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003cellipse cx=\"29\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003cellipse cx=\"51\" cy=\"43\" rx=\"3.2\" ry=\"2\" fill=\"#f2a0a0\" opacity=\"0.5\"/>\u003c/svg>"};
+const KIDS=["みお","れん","さくら","ゆうき"];
+const WHO="中学3年の担任の先生";
+const SCHOOL="中学校3年";
+const LUNCHPIC="\u003csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 200\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"300\" height=\"200\" fill=\"#f6efe0\"/>\u003crect x=\"60\" y=\"60\" width=\"180\" height=\"110\" fill=\"#3a3a40\" rx=\"10\"/>\u003crect x=\"68\" y=\"68\" width=\"80\" height=\"94\" fill=\"#ffffff\" rx=\"6\"/>\u003crect x=\"152\" y=\"68\" width=\"80\" height=\"44\" fill=\"#f7d38a\" rx=\"6\"/>\u003crect x=\"152\" y=\"116\" width=\"80\" height=\"46\" fill=\"#9fd08a\" rx=\"6\"/>\u003ccircle cx=\"88\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"108\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"128\" cy=\"92\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"88\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"108\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003ccircle cx=\"128\" cy=\"118\" r=\"9\" fill=\"#ffffff\" stroke=\"#ddd\" stroke-width=\"1\"/>\u003cpath d=\"M170 100 L192 74 L214 100 Z\" fill=\"#ffffff\" stroke-linejoin=\"round\"/>\u003crect x=\"181\" y=\"92\" width=\"22\" height=\"10\" fill=\"#2a3a2a\"/>\u003ccircle cx=\"170\" cy=\"136\" r=\"9\" fill=\"#e85a4a\"/>\u003ccircle cx=\"194\" cy=\"140\" r=\"8\" fill=\"#f0a040\"/>\u003ccircle cx=\"214\" cy=\"134\" r=\"8\" fill=\"#e85a4a\"/>\u003cline x1=\"250\" y1=\"40\" x2=\"210\" y2=\"150\" stroke=\"#b08050\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003cline x1=\"262\" y1=\"44\" x2=\"222\" y2=\"154\" stroke=\"#b08050\" stroke-width=\"4\" stroke-linecap=\"round\"/>\u003c/svg>";
+const STAMPS={"nara":"奈良マスター","kyoto":"京都マスター","hiroshima":"広島マスター","nikko":"日光マスター","kamakura":"鎌倉マスター","okinawa":"沖縄マスター","tokyo":"東京マスター","ise":"伊勢マスター"};
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const pl=s=>String(s).replace(RB,(m,a,b)=>a||b);
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const hm=t=>Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+const PAIDLINK="<a class=\"paid\" href=\"c-shugaku-full.html\" id=\"paid-link\"><span class=\"pt\">ほかの行き先も計画したい人へ　<b>修学旅行を計画しよう（中学編） 全8か所</b>（有料版）</span><span class=\"pd\">無料版の奈良もふくむ全8か所。京都・広島と宮島・日光・鎌倉・沖縄・東京・伊勢。スタンプ帳つき。</span></a>";
+
+/* ST=行き先 [{id,no,name,yomi,pref,theme,brief,lesson,stamp,start,end,t0,meet,lunch,win:[a,b],n,rules:[[a,b,理由]],
+     tr:{点:{点:[分,手段]}},map:地図の飾り,pos:{点:[x,y]},nen:[[年,表示,できごと]],words:[[用語,説明]],
+     sites:[{id,nm,nr,sn,p,at,lab,v,d,f,cl?,q:[[生徒,質問,正解,[まちがい],説明]],kw:[用語],why}]}]
+   TITLES=[[id,何番目,名前,テーマ,できているか]] */
+const REC=GID+'-p-rec', STK=GID+'-stamps';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={};
+let stamps=store.get(STK,{}); if(!stamps||typeof stamps!=='object'||Array.isArray(stamps))stamps={};
+const saveRec=()=>store.set(REC,rec);
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const site=id=>G.d.sites.find(s=>s.id===id);
+const say=(face,who,text)=>`<div class="say"><span class="fc">${face}</span><p class="bub"><b class="who">${esc(who)}</b>${text}</p></div>`;
+const BOSS='校長先生';
+const head=k=>`<div class="top noprint"><button class="linkbtn" id="back">← 行き先をえらぶ</button><div class="steps" aria-label="${k}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=k?'on':''}"></i>`).join('')}</div><span class="chip">${esc(G.d.name)}</span></div>`;
+const bindBack=()=>{const b=document.getElementById('back');if(b)b.onclick=home;};
+function stampSvg(name,color){color=color||'#c2402a';const n=pl(name),a=n.replace(/マスター$/,'');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="${color}" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="${color}" stroke-width="1.5"/>`
+   +`<text x="50" y="${a.length>3?46:50}" font-size="${a.length>3?17:a.length>2?20:24}" fill="${color}" text-anchor="middle" font-weight="700" font-family="serif">${esc(a)}</text>`
+   +`<text x="50" y="${a.length>3?66:72}" font-size="13" fill="${color}" text-anchor="middle" font-weight="700" font-family="sans-serif">マスター</text>`
+   +`<path d="M20 30 L80 30" stroke="${color}" stroke-width="1"/><path d="M20 80 L80 80" stroke="${color}" stroke-width="1" opacity="0"/></svg>`;}
+function home(){
+  G=null;
+  const row=([id,no,name,theme,ok])=>{const d=ST.find(c=>c.id===id);
+    if(d){const thumb=d.sites.find(s=>s.f).p;const r=rec[id]||[0,0];const s=stamps[id];
+      return `<button class="st" data-id="${id}"><span class="th">${thumb}</span><span><span class="no">行き先 ${no}　${esc(d.pref)}</span><span class="nm"><ruby>${esc(d.name)}<rt>${esc(d.yomi)}</rt></ruby></span>
+        <span class="ds">${rb(d.theme)}</span>
+        ${r[0]?`<span class="bd ok">✓ ${esc(d.stamp)}${s&&s[1]!=null?'（学び度 '+s[1]+'%）':''}</span>`:'<span class="bd new">まだ</span>'}</span></button>`;}
+    return `<a class="st lockd" href="${GID}-full.html"><span class="th">🔒</span><span><span class="no">行き先 ${no}</span><span class="nm">${esc(name)}</span><span class="ds">${rb(theme)}</span><span class="ds">利用コードで遊べます</span></span></a>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">利用コードで行ける行き先</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const got=TITLES.filter(t=>stamps[t[0]]).length;
+  const book=TITLES.map(t=>stamps[t[0]]?`<span class="sl got" title="${esc(t[2])}">${stampSvg(((ST.find(c=>c.id===t[0])||{}).stamp)||STAMPS[t[0]]||t[2]+'マスター')}</span>`:`<span class="sl">${esc(t[2])}</span>`).join('');
+  app.innerHTML=say(FACE.me,'あなた（'+WHO+'）',`今年の修学旅行の計画は、わたしの担当。テーマに合う見学先をえらび、時間内に回れる順番を考え、当日は生徒の質問に答えよう。`)+
+    `<div class="label">あそびかた</div>
+    <p style="margin:0">① テーマを聞く → ② 見学先を${'えらぶ'} → ③ 地図で回る順番と昼食を決める（集合時刻に間に合うように）→ ④ 当日、生徒の質問に答えて「学び度」アップ → ⑤「旅のしおり」とスタンプ！</p>
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">スタンプ帳</span><span class="note">${got} / ${TITLES.length}</span></div>
+    <div class="book">${book}</div>
+    <div class="label">行き先をえらぶ</div>
+    ${PAID?'':`<p class="free">「${esc(ST.map(s=>s.name).join('・'))}」は無料。🔒の行き先は<b>利用コードで全${TITLES.length}か所</b>行けます。</p>`}
+    <div class="list">${rows}</div>${PAID?`<div class="noprint"><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？（スタンプも消えます） <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();stamps={};store.set(STK,stamps);home();};document.getElementById('no').onclick=home;};
+}
+function play(d){ G={d:d,pick:[],order:[],fails:0,score:0,total:0,qn:0,log:[]}; track('level_start',{level_name:GID+'-'+d.id}); brief(); }
+function brief(){
+  const d=G.d;
+  app.innerHTML=`${head(1)}<div class="pic">${d.sites.find(s=>s.f).p}</div>
+    <p class="theme"><small>この修学旅行のテーマ</small>${rb(d.theme)}</p>
+    ${say(FACE.boss,BOSS,rb(d.brief))}
+    <dl class="conds"><dt>出発</dt><dd>${hm(d.t0)}　${esc(d.start)}</dd><dt>集合</dt><dd>${hm(d.meet)}　${esc(d.end)}（時間におくれないこと）</dd>
+      <dt>見学先</dt><dd>${d.n}か所（テーマに合う所）</dd><dt>昼食</dt><dd>${d.lunch}分。${hm(d.win[0])}〜${hm(d.win[1])}の間に始める（早く着いたら${hm(d.win[0])}まで待つ）</dd>
+      ${d.sites.some(s=>s.cl!=null)?'<dt>受付</dt><dd>受付が早く終わる見学先があります（候補のカードを見よう）</dd>':''}
+      ${d.rules.length?'<dt>きまり</dt><dd>'+d.rules.map(r=>rb(r[2])).join('<br>')+'</dd>':''}</dl>
+    <p class="meyasu">見学時間・移動時間・受付の時刻はゲーム用の目安です。実際の旅行では、それぞれの公式の案内で確かめましょう。</p>
+    <div class="row"><button class="btn go" id="nx">見学先をえらぶ ▶</button></div>`;
+  bindBack(); document.getElementById('nx').onclick=choose; top0();
+}
+function choose(){
+  const d=G.d;
+  const card=s=>{const on=G.pick.includes(s.id);return `<button class="cd" data-id="${s.id}" aria-pressed="${on}"><span class="th">${s.p}</span><span><span class="nm">${rb(s.nr)}</span><span class="ds">${rb(s.d)}</span>
+    <span class="tg">見学 ${s.v}分（目安）</span>${s.cl!=null?`<span class="tg">受付 〜${hm(s.cl)}（目安）</span>`:''}</span></button>`;};
+  app.innerHTML=`${head(2)}<p class="theme"><small>テーマ</small>${rb(d.theme)}</p>
+    <p class="note">テーマに合う見学先を <b>${d.n}か所</b> えらぼう。カードをタップすると、えらぶ／やめる。</p>
+    <div class="cands">${d.sites.map(card).join('')}</div>
+    <div class="bar"><span class="cnt">${G.pick.length}<small> / ${d.n}か所</small></span><button class="btn go" id="ok" ${G.pick.length===d.n?'':'disabled'}>この${d.n}か所で決定</button></div>`;
+  bindBack();
+  app.querySelectorAll('.cd').forEach(b=>b.onclick=()=>{const id=b.dataset.id,i=G.pick.indexOf(id);
+    if(i>=0)G.pick.splice(i,1);else if(G.pick.length<d.n)G.pick.push(id);else return;
+    b.setAttribute('aria-pressed',G.pick.includes(id));
+    app.querySelector('.bar .cnt').innerHTML=`${G.pick.length}<small> / ${d.n}か所</small>`;
+    document.getElementById('ok').disabled=G.pick.length!==d.n;});
+  document.getElementById('ok').onclick=()=>{const bad=G.pick.map(site).filter(s=>!s.f);
+    if(bad.length)return mismatch(bad);
+    G.order=[];route();};
+}
+function mismatch(bad){
+  G.fails++; bump(G.d.id,1);
+  track('answer_question',{category:GID+'-'+G.d.id,question:'theme:'+bad.map(s=>s.id).join(','),correct:false});
+  app.innerHTML=`${head(2)}<div class="fail"><h2>テーマとどう関係しますか？</h2>
+    ${say(FACE.boss,BOSS,`「${bad.map(s=>esc(s.nm)).join('」と「')}」は、テーマ「${rb(G.d.theme)}」とどう関係しますか？`)}
+    ${bad.map(s=>`<div class="say"><span class="fc">${FACE.me}</span><p class="bub"><b class="who">考えてみると…</b>${rb(s.why)}</p></div>`).join('')}
+    <p class="hint"><b>計画のコツ</b>見学先をえらぶときは「その場所で、テーマのどんなことが学べるか」を説明できるかを考えよう。</p>
+    <div class="row"><button class="btn go" id="re">見学先をえらびなおす</button></div></div>`;
+  bindBack();
+  document.getElementById('re').onclick=()=>{G.pick=G.pick.filter(id=>site(id).f);choose();};
+  top0();
+}
+/* 時刻の計算（gen_shugaku.py の schedule と同じ） */
+function plan(order){
+  const d=G.d; let t=d.t0, at='S'; const rows=[['start',t,d.start]], bad=[];
+  for(const it of order){
+    if(it==='L'){t=Math.max(t,d.win[0]);const ok=t<=d.win[1];rows.push(['lunch',t,t+d.lunch,ok?0:1]);if(!ok)bad.push(['lunch',t]);t+=d.lunch;continue;}
+    const [m,mode]=d.tr[at][it]; rows.push(['move',t,m,mode]); t+=m;
+    const s=site(it), late=s.cl!=null&&t>s.cl?1:0; if(late)bad.push(['close',it,t,s.cl]);
+    rows.push(['site',t,t+s.v,it,late]); t+=s.v; at=it;
+  }
+  const [m,mode]=d.tr[at].E; rows.push(['move',t,m,mode]); t+=m;
+  rows.push(['end',t,d.end,t>d.meet?1:0]); if(t>d.meet)bad.push(['late',t,t-d.meet]);
+  for(const [a,b,why] of d.rules)if(order.includes(a)&&order.includes(b)&&order.indexOf(a)>order.indexOf(b))bad.push(['rule',a,b,why]);
+  return {rows,bad,end:t};
+}
+window.__sgPlan=o=>plan(o);
+function ttHtml(rows){
+  return `<ol class="tt">${rows.map(r=>{
+    if(r[0]==='start')return `<li><span class="t">${hm(r[1])}</span><span>${esc(r[2])} を出発</span></li>`;
+    if(r[0]==='move')return `<li class="mv"><span class="t">↓</span><span>${esc(r[3])} ${r[2]}分</span></li>`;
+    if(r[0]==='lunch')return `<li class="${r[3]?'bad':''}"><span class="t">${hm(r[1])}</span><span>昼食（〜${hm(r[2])}）</span></li>`;
+    if(r[0]==='site'){const s=site(r[3]);return `<li class="${r[4]?'bad':''}"><span class="t">${hm(r[1])}</span><span>${esc(s.nm)}　見学（〜${hm(r[2])}）</span></li>`;}
+    return `<li class="${r[3]?'bad':''}"><span class="t">${hm(r[1])}</span><span>${esc(r[2])} に集合（${hm(G.d.meet)}まで）</span></li>`;}).join('')}</ol>`;
+}
+function mapSvg(order){
+  const d=G.d,P=d.pos; let lines='',marks='';
+  const pts=['S',...order.filter(x=>x!=='L')]; if(order.length===G.pick.length+1)pts.push('E');
+  for(let i=0;i+1<pts.length;i++){const a=P[pts[i]],b=P[pts[i+1]],m=d.tr[pts[i]][pts[i+1]];
+    lines+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c2402a" stroke-width="3" stroke-dasharray="${m[1]==='徒歩'?'2 5':'0'}" stroke-linecap="round" opacity=".85"/>`;
+    const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+    lines+=`<rect x="${mx-17}" y="${my-8}" width="34" height="15" rx="7" fill="#fff" stroke="#c2402a" stroke-width="1"/><text x="${mx}" y="${my+3.5}" font-size="10" text-anchor="middle" fill="#c2402a" font-weight="700" font-family="sans-serif">${m[0]}分</text>`;}
+  const se=P.S, ee=P.E;
+  marks+=`<rect x="${se[0]-7}" y="${se[1]-7}" width="14" height="14" rx="3" fill="#1f4e5a"/><text x="${se[0]}" y="${se[1]+22}" font-size="10" text-anchor="middle" fill="#1f4e5a" font-weight="700" font-family="sans-serif">${esc(d.start)}</text>`;
+  if(d.end!==d.start)marks+=`<rect x="${ee[0]-7}" y="${ee[1]-7}" width="14" height="14" rx="3" fill="#1f4e5a"/><text x="${ee[0]}" y="${ee[1]+22}" font-size="10" text-anchor="middle" fill="#1f4e5a" font-weight="700" font-family="sans-serif">${esc(d.end)}（集合）</text>`;
+  for(const id of G.pick){const s=site(id),p=P[id],k=order.filter(x=>x!=='L').indexOf(id);
+    marks+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="${k>=0?'#c2402a':'#fff'}" stroke="#c2402a" stroke-width="2"/>`
+      +(k>=0?`<text x="${p[0]}" y="${p[1]+3.5}" font-size="11" text-anchor="middle" fill="#fff" font-weight="700" font-family="sans-serif">${k+1}</text>`:'')
+      +`<text x="${p[0]+s.lab[0]}" y="${p[1]+s.lab[1]}" font-size="11" text-anchor="middle" fill="#26302a" font-weight="700" font-family="sans-serif" paint-order="stroke" stroke="#f4f1e6" stroke-width="3">${esc(s.sn)}</text>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" aria-label="${esc(d.name)}の地図"><rect width="360" height="240" fill="#f4f1e6"/>${d.map}${lines}${marks}</svg>`;
+}
+function route(){
+  const d=G.d, o=G.order, at=o.filter(x=>x!=='L').slice(-1)[0]||'S';
+  const left=[...G.pick.filter(id=>!o.includes(id)),...(o.includes('L')?[]:['L'])];
+  const seq=o.map(x=>x==='L'?'昼食':site(x).sn);
+  app.innerHTML=`${head(3)}<p class="note">地図を見て、回る順番をタップで決めよう。<b>昼食</b>も入れること。線の数字は移動時間（目安）。</p>
+    <div class="mapw">${mapSvg(o)}</div><p class="note" style="margin-top:-8px">地図はおおまかな位置です（実際のきょりとはちがいます）。点線は徒歩。</p>
+    <dl class="conds"><dt>出発</dt><dd>${hm(d.t0)} ${esc(d.start)}</dd><dt>集合</dt><dd>${hm(d.meet)} ${esc(d.end)}</dd><dt>昼食</dt><dd>${d.lunch}分（${hm(d.win[0])}〜${hm(d.win[1])}に始める）</dd></dl>
+    <ul class="seq"><li>${esc(d.start)}</li>${seq.map(x=>`<li class="arrow">→</li><li>${esc(x)}</li>`).join('')}${left.length?'<li class="arrow">→ …</li>':`<li class="arrow">→</li><li>${esc(d.end)}</li>`}</ul>
+    ${left.length?`<div class="label">${o.length+1}番目に行く所</div><div class="ord">${left.map(x=>x==='L'?`<button class="ob lunch" data-x="L"><span>🍙 昼食（${d.lunch}分）</span><small>今いる所の近くで</small></button>`
+      :`<button class="ob" data-x="${x}"><span>${esc(site(x).nm)}</span><small>${esc(d.tr[at][x][1])} ${d.tr[at][x][0]}分・見学 ${site(x).v}分${site(x).cl!=null?'・受付〜'+hm(site(x).cl):''}</small></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="go">この計画で決定</button></div>`}
+    <div class="row">${o.length?'<button class="btn" id="undo">1つもどす</button><button class="linkbtn" id="clr">順番をはじめから</button>':''}<button class="linkbtn" id="repick">見学先をえらびなおす</button></div>
+    <p class="meyasu">移動・見学の時間は目安です。</p>`;
+  bindBack();
+  app.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{G.order.push(b.dataset.x);route();});
+  const u=document.getElementById('undo');if(u)u.onclick=()=>{G.order.pop();route();};
+  const c=document.getElementById('clr');if(c)c.onclick=()=>{G.order=[];route();};
+  document.getElementById('repick').onclick=()=>{G.order=[];choose();};
+  const g=document.getElementById('go');if(g)g.onclick=check;
+}
+function check(){
+  const d=G.d, r=plan(G.order);
+  if(r.bad.length){
+    G.fails++; bump(d.id,1);
+    track('answer_question',{category:GID+'-'+d.id,question:'plan:'+G.order.join('>'),correct:false});
+    const msg=b=>b[0]==='late'?`集合時刻 ${hm(d.meet)} に対して、${esc(d.end)} にもどるのは <b>${hm(b[1])}</b>（${b[2]}分おくれ）。`
+      :b[0]==='lunch'?`昼食を始めるのが <b>${hm(b[1])}</b>。${hm(d.win[1])}までに始めたい。`
+      :b[0]==='close'?`${esc(site(b[1]).nm)}に着くのが <b>${hm(b[2])}</b>。受付の目安（〜${hm(b[3])}）に間に合わない。`
+      :`「${esc(site(b[1]).nm)}」より先に「${esc(site(b[2]).nm)}」へ行っています。${rb(b[3])}。`;
+    const hint=r.bad.some(b=>b[0]==='late')?'地図で近い所どうしを続けて回ると、移動の時間がへります。遠い所へ行ったり来たりしていないかな？'
+      :r.bad.some(b=>b[0]==='close')?'受付が早く終わる見学先は、先に回ろう。':r.bad.some(b=>b[0]==='lunch')?'昼食を何番目に入れるかで、昼食の時刻が変わります。':'きまりを思い出そう。';
+    app.innerHTML=`${head(3)}<div class="fail"><h2>時間が足りません</h2>
+      ${say(FACE.boss,BOSS,'この計画だと、うまくいかない所があるようです。')}
+      <ul class="probs">${r.bad.map(b=>`<li>${msg(b)}</li>`).join('')}</ul>${ttHtml(r.rows)}
+      <p class="hint"><b>計画のコツ</b>${hint}</p>
+      <div class="row"><button class="btn go" id="re">順番を考えなおす</button><button class="btn" id="repick">見学先からえらびなおす</button></div></div>`;
+    bindBack();
+    document.getElementById('re').onclick=()=>{G.order=[];route();};
+    document.getElementById('repick').onclick=()=>{G.order=[];choose();};
+    return top0();
+  }
+  G.plan=r;
+  const sl=d.meet-r.end;
+  app.innerHTML=`${head(3)}<div class="good"><h2>よい計画です！</h2>
+    ${say(FACE.boss,BOSS,`テーマに合った見学先で、時間もだいじょうぶ。集合時刻の${sl}分前にもどれますね。${sl>=30?'少し時間の余裕もあります。':''}`)}
+    ${ttHtml(r.rows)}<div class="row"><button class="btn go" id="go">修学旅行に出発！ ▶</button></div></div>`;
+  bindBack(); document.getElementById('go').onclick=()=>{G.step=0;G.total=G.order.filter(x=>x!=='L').reduce((a,id)=>a+site(id).q.length,0);trip();}; top0();
+}
+function meter(){const p=G.total?Math.round(G.score/G.total*100):0;return `<div class="meter"><span>学び度</span><span class="mb"><i style="width:${p}%"></i></span><span>${G.score*10}点</span></div>`;}
+function trip(){
+  const d=G.d, it=G.order[G.step];
+  if(it===undefined)return ending();
+  const rows=G.plan.rows;
+  if(it==='L'){const r=rows.find(x=>x[0]==='lunch');
+    app.innerHTML=`${head(4)}${meter()}<div class="arr"><span class="tm">${hm(r[1])}</span><span class="an">昼食</span></div>
+      <div class="pic">${LUNCHPIC}</div>${say(FACE.kids[G.step%4],KIDS[G.step%4]+'さん','おなかすいた〜！午後の見学のために、しっかり食べます。')}
+      <div class="row"><button class="btn go" id="nx">午後の見学へ ▶</button></div>`;
+    bindBack(); document.getElementById('nx').onclick=()=>{G.step++;trip();}; return top0();}
+  const s=site(it), r=rows.find(x=>x[0]==='site'&&x[3]===it);
+  G.qi=0; G.cur=s;
+  app.innerHTML=`${head(4)}${meter()}<div class="arr"><span class="tm">${hm(r[1])}</span><span class="an">${rb(s.nr)}</span><span class="note">に到着</span></div>
+    <div class="pic">${s.p}</div><p class="txt">${rb(s.d)}</p><div id="qa"></div>`;
+  bindBack(); ask(); top0();
+}
+function ask(){
+  const s=G.cur, q=s.q[G.qi], box=document.getElementById('qa');
+  const ch=shuffle([q[2],...q[3]]);
+  box.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">${say(FACE.kids[q[0]],KIDS[q[0]]+'さん',`先生、${rb(q[1])}`)}
+    <div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${'アイウ'[i]}</span><span>${rb(c)}</span></button>`).join('')}</div><div id="res"></div></div>`;
+  box.querySelectorAll('.op').forEach(b=>b.onclick=()=>{
+    const c=ch[+b.dataset.i], ok=c===q[2];
+    box.querySelectorAll('.op').forEach(x=>{x.disabled=true;if(ch[+x.dataset.i]===q[2])x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    if(ok)G.score++;
+    G.log.push([s.id,G.qi,ok]); G.qn++;
+    track('answer_question',{category:GID+'-'+G.d.id,question:pl(q[1]).slice(0,60),correct:ok});
+    const last=G.qi+1>=s.q.length;
+    document.getElementById('res').innerHTML=`<p class="res ${ok?'ok':'ng'}"><b>${ok?'正解！ 学び度 +10':'実際には…'}</b>${ok?'':'答えは「'+rb(q[2])+'」。'}${rb(q[4])}</p>
+      <div class="row" style="margin-top:10px"><button class="btn go" id="nq">${last?(G.step+1<G.order.length?'次の行き先へ ▶':esc(G.d.end)+'へもどる ▶'):'もう1つ質問が… ▶'}</button></div>`;
+    const m=app.querySelector('.meter');if(m)m.outerHTML=meter();
+    const nq=document.getElementById('nq'); nq.focus({preventScroll:true});
+    nq.onclick=()=>{if(!last){G.qi++;ask();}else{G.step++;trip();}};
+  });
+}
+function rankOf(p){return p>=90?['名ガイド先生','生徒から「先生の説明、すごくわかりやすい！」の声。']:p>=70?['たよれる先生','質問にしっかり答えられました。']:p>=50?['がんばり先生','もう一度回ると、もっと答えられそう！']:['これからの先生','しおりを読みなおして、もう一度チャレンジ！'];}
+function ending(){
+  const d=G.d, r=G.plan, p=G.total?Math.round(G.score/G.total*100):0, rk=rankOf(p);
+  bump(d.id,0);
+  const old=stamps[d.id]; stamps[d.id]=[old?old[0]:Date.now(),Math.max(p,old&&old[1]!=null?old[1]:0)]; store.set(STK,stamps);
+  track('level_end',{level_name:GID+'-'+d.id,success:true,score:G.score,total:G.total});
+  const vis=G.order.filter(x=>x!=='L').map(site);
+  const kw=[...new Set([...vis.flatMap(s=>s.kw),...d.words.map(w=>w[0])])];
+  const ix=ST.indexOf(d), nx=ST[ix+1];
+  app.innerHTML=`${head(5)}<div class="good"><h2>修学旅行、大成功！</h2>${say(FACE.boss,BOSS,`おつかれさまでした。全員、${hm(r.end)}に${esc(d.end)}へもどれました。${G.fails?'計画の立てなおし '+G.fails+'回。':'計画は一発で合格！'}`)}</div>
+    <div class="shiori" id="shiori"><h2>旅のしおり</h2><p class="sub">${esc(SCHOOL)}　修学旅行（見学の日）</p>
+      <div class="dest"><span class="dn"><small>行き先</small>${esc(d.name)}<small>${esc(d.pref)}</small></span><span class="stamp" aria-label="${esc(d.stamp)}のスタンプ">${stampSvg(d.stamp)}</span></div>
+      <p class="theme"><small>テーマ</small>${rb(d.theme)}</p>
+      <h3>行程（時間は目安）</h3>${ttHtml(r.rows)}
+      <h3>学んだこと</h3><ul class="kws">${kw.map(k=>`<li>${rb(k)}</li>`).join('')}</ul>
+      <ul class="words">${d.words.map(w=>`<li><b>${rb(w[0])}</b>${rb(w[1])}</li>`).join('')}</ul>
+      <h3>年表</h3><dl class="timeline">${d.nen.map(e=>`<dt>${esc(e[1])}</dt><dd>${rb(e[2])}</dd>`).join('')}</dl>
+      <p class="lesson"><b>まとめ</b>${rb(d.lesson)}</p>
+      <div class="rank"><span class="label">学び度 ${p}%（${G.score} / ${G.total}問 正解）</span><span class="rn">${esc(rk[0])}</span><span>${esc(rk[1])}</span></div>
+    </div>
+    <div class="row noprint"><button class="btn" id="print">しおりを印刷する</button></div>
+    <div class="row noprint">${nx?`<button class="btn go" id="next">次の行き先「${esc(nx.name)}」へ</button>`:''}<button class="btn${nx?'':' go'}" id="list">行き先をえらぶ</button><button class="linkbtn" id="again">もう一度この行き先を</button></div>${PAID?'':PAIDLINK}`;
+  bindBack();
+  document.getElementById('print').onclick=()=>{try{window.print();}catch(e){}};
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(d);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('c-shugaku'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'c-shugaku',err:err,free:'c-shugaku.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
