@@ -16,12 +16,12 @@ const SALES_OPEN = false;
 // all（全教科）は中学受験の5教科。中高一貫コースは中学生向けの別のプランで、中学受験の全教科には入りません
 // 中高一貫コースは教科ごと（ckokugo〜cshakai・cjoho）と、中高一貫コースの全教科（chuko）。値段は中学受験の1教科・全教科と同じ（2026-10-29変更）
 const SUBJECTS = { kokugo: "国語", sansu: "算数", rika: "理科", shakai: "社会", shikou: "思考力", all: "全教科", ckokugo: "中高一貫 国語", csugaku: "中高一貫 数学", ceigo: "中高一貫 英語", crika: "中高一貫 理科", cshakai: "中高一貫 社会", cjoho: "中高一貫 情報", chuko: "中高一貫 全教科",
-  kspin: "就活・資格 SPI非言語", kspig: "就活・資格 SPI言語", kitp: "就活・資格 ITパスポート", kfe: "就活・資格 基本情報技術者", kstat: "就活・資格 統計学", kboki: "就活・資格 簿記3級", ktoeic: "就活・資格 TOEIC英語", career: "就活・資格 全教科",
+  kspin: "就活・資格 SPI非言語", kspig: "就活・資格 SPI言語", kitp: "就活・資格 ITパスポート", kfe: "就活・資格 基本情報技術者", kstat: "就活・資格 統計学", kboki: "就活・資格 簿記3級", ktoeic: "就活・資格 TOEIC英語", kbiz: "就活・資格 ビジネスマナー", career: "就活・資格 全教科",
   tsansu: "低学年 算数", tkokugo: "低学年 国語", tshikou: "低学年 思考力", tchishiki: "低学年 ちしき", teigaku: "低学年 全教科" };
 const CHUKO_SUBJ = { ckokugo: "国語", csugaku: "数学", ceigo: "英語", crika: "理科", cshakai: "社会", cjoho: "情報" };
 const isChuko = (s) => s === "chuko" || Object.prototype.hasOwnProperty.call(CHUKO_SUBJ, s);
 // 就活・資格コース（大学生・社会人向け。games/career/ のゲーム）。教科ごと（k〜）と、コースの全教科（career）
-const CAREER_SUBJ = { kspin: "SPI非言語", kspig: "SPI言語", kitp: "ITパスポート", kfe: "基本情報技術者", kstat: "統計学", kboki: "簿記3級", ktoeic: "TOEIC英語" };
+const CAREER_SUBJ = { kspin: "SPI非言語", kspig: "SPI言語", kitp: "ITパスポート", kfe: "基本情報技術者", kstat: "統計学", kboki: "簿記3級", ktoeic: "TOEIC英語", kbiz: "ビジネスマナー" };
 const isCareer = (s) => s === "career" || Object.prototype.hasOwnProperty.call(CAREER_SUBJ, s);
 // 低学年コース（小学1〜3年生向け。games/teigaku/ のゲーム）。教科ごと（t〜）と、コースの全教科（teigaku）
 const TEIGAKU_SUBJ = { tsansu: "算数", tkokugo: "国語", tshikou: "思考力", tchishiki: "ちしき" };
@@ -58,6 +58,7 @@ const PRICES = {
   kstat: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   kboki: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   ktoeic: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
+  kbiz: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   career: { d1: 2000, w1: 4000, m1: 8000, y1: 40000 },   // 就活・資格コースの全教科
   tsansu: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
   tkokugo: { d1: 1000, w1: 2000, m1: 4000, y1: 20000 },
@@ -69,7 +70,7 @@ const PRICES = {
 // 前に買った利用コード（購入したもの。手で作ったコードは対象外）を入れると、1つのコードにつき1回だけ使えます
 const CONTINUE_OFF = 20;
 // ---- 有料版のゲームと教科 ----
-const GAMES = { "kojinari": "kokugo", "c-sugakusha": "csugaku", "tencho": "sansu", "mizutabi": "rika",
+const GAMES = { "k-shinnyu": "kbiz", "kojinari": "kokugo", "c-sugakusha": "csugaku", "tencho": "sansu", "mizutabi": "rika",
   chusho: "kokugo", bungo: "kokugo", setsuzoku: "kokugo", kanji: "kokugo", shinjo: "kokugo", hyoron: "kokugo", jukugo: "kokugo", keigo: "kokugo", koji: "kokugo", hyogen: "kokugo", yoyaku: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
   "keisan-kufu": "sansu", "tokushu-puzzle": "sansu", wariai: "sansu", gyakusan: "sansu", baai: "sansu", seishitsu: "sansu", hayasa: "sansu", menseki: "sansu", kakudo: "sansu", soji: "sansu", "enshu": "sansu", "rittai": "sansu", "mizu": "sansu", "idou": "sansu", "tenidou": "sansu", "shiryo": "sansu", "wariai2": "sansu", "tokushu2": "sansu", "hojin": "sansu", "hirei": "sansu", "tani": "sansu", kisoku: "shikou", tenkai: "shikou", ronri: "shikou", michi: "shikou", heimen: "shikou", sujitsunagi: "shikou", shikitsume: "shikou", tsumiki: "shikou", building: "shikou", nanpure: "shikou", robot: "shikou", origami: "shikou", hitofude: "shikou", mushikui: "shikou", mikata: "shikou", tenbin: "shikou", slide: "shikou", "kazukotoba": "shikou", "katakanahenshin": "shikou", "mojikakure": "shikou", "kanjimeiro": "shikou", "kumiawase": "shikou", "oritatami": "shikou", "saikorogoukei": "shikou", "youbi": "shikou", "enosuiri": "shikou", "doorkagi": "shikou", "nenrei": "shikou", "narabijun": "shikou", "knight": "shikou", "shogikoma": "shikou", "sugoroku": "shikou", "sort": "shikou", "pixel": "shikou", "wakaremichi": "shikou", "kansuu": "shikou", "kaimono": "shikou", "cardate": "shikou", "jikanwari": "shikou", "tournament": "shikou", "kukubingo": "shikou", "sakasapyramid": "shikou", "mahocard": "shikou", "kaiten": "shikou", "senkakomi": "shikou", "kazucard": "shikou", "shiritorinarabe": "shikou", "kakusu": "shikou", "nakamahazure": "shikou", "igo": "shikou", "flowchart": "shikou", "tiling": "shikou", "himo": "shikou", "domino": "shikou", "aiueo": "shikou", "hantaipair": "shikou", "kotowazagattai": "shikou", "kutouten": "shikou", "douon": "shikou", "dajare": "shikou", "onomatope": "shikou", "kanyoue": "shikou", "kaleido": "shikou", "katachikazu": "shikou", "kagee": "shikou", "wakeru": "shikou", "kagamidokei": "shikou", "sankakujin": "shikou", "shima": "shikou", "calendar": "shikou", "okane": "shikou", "tokeizan": "shikou", "league": "shikou", "boushi": "shikou", "sekigime": "shikou", "janken": "shikou", "ippou": "shikou", "kanjicross": "shikou", "bushu": "shikou", "jukushiri": "shikou", "hashigo": "shikou", "skeleton": "shikou", "angou": "shikou", "pentomino": "shikou", "taishomoyo": "shikou", "ironuri": "shikou", "korogashi": "shikou", "kame": "shikou", "komachi": "shikou", "tashicross": "shikou", "keisanblock": "shikou", "futougou": "shikou", "hashikake": "shikou", "shojiki": "shikou", "hannin": "shikou", "ishitobi": "shikou", "reversi": "shikou", "crossword": "shikou", "kanjitashi": "shikou", "jukujuji": "shikou", "shiritori": "shikou", "kotobasagashi": "shikou", "anagram": "shikou", "sakasakotoba": "shikou", "nazonazo": "shikou", "tentsunagi": "shikou", "haguruma": "shikou", "hoshigata": "shikou", "kukumoyou": "shikou", "tangram": "shikou", "tsukure": "shikou", "kazumeiro": "shikou", "kazuate": "shikou", "marubatsu": "shikou", "jintori": "shikou", "hanoi": "shikou", "lightsout": "shikou", "flow": "shikou", "narabe": "shikou", "lamp": "shikou", "ishitori": "shikou", "nonogram": "shikou", "mahojin": "shikou", "matchbou": "shikou", "aburawake": "shikou", "zukeikazu": "shikou", "kagami": "shikou",

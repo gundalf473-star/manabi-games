@@ -1591,7 +1591,7 @@ async function parseXLSX(buf){
 // ---- 行の読み取り ----
 const CODE_RE=/^\s*M\s*N\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*[-‐－ー]?\s*([A-Z0-9]{4})\s*$/i;
 const normCode=s=>{const t=String(s||'').normalize('NFKC'); const m=t.match(CODE_RE); return m?`MN-${m[1]}-${m[2]}-${m[3]}`.toUpperCase():null;};
-const SUBJ={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',teigaku:'低学年 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき',chuko:'中高一貫 全教科',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',ckokugo:'中高一貫 国語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',career:'就活・資格 全科目',kspin:'SPI非言語',kspig:'SPI言語',kitp:'ITパスポート',kfe:'基本情報技術者',kstat:'統計学',kboki:'簿記3級',ktoeic:'TOEIC形式英語'};
+const SUBJ={kokugo:'国語',sansu:'算数',rika:'理科',shakai:'社会',shikou:'思考力',all:'全教科',teigaku:'低学年 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき',chuko:'中高一貫 全教科',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',ckokugo:'中高一貫 国語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',career:'就活・資格 全科目',kspin:'SPI非言語',kspig:'SPI言語',kitp:'ITパスポート',kfe:'基本情報技術者',kstat:'統計学',kboki:'簿記3級',ktoeic:'TOEIC形式英語',kbiz:'ビジネスマナー'};
 const PER={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
 function rowsToCodes(rows){
   rows=rows.filter(r=>r.some(c=>String(c).trim()!==''));

@@ -3,10 +3,10 @@
    期限内のときだけ問題データを受け取ります。この端末には「利用コード・期限・通行証」だけを保存します。 */
 (function(){
 var API=__API__, KEY='mn-access', DEV='mn-device';
-var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika','思考力':'shikou'}, SNAME={kokugo:'国語',sansu:'算数',shakai:'社会',rika:'理科',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',chuko:'中高一貫 全教科',kspin:'就活・資格 SPI非言語',kspig:'就活・資格 SPI言語',kitp:'就活・資格 ITパスポート',kfe:'就活・資格 基本情報技術者',kstat:'就活・資格 統計学',kboki:'就活・資格 簿記3級',ktoeic:'就活・資格 TOEIC英語',career:'就活・資格 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき',teigaku:'低学年 全教科'};
+var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika','思考力':'shikou'}, SNAME={kokugo:'国語',sansu:'算数',shakai:'社会',rika:'理科',shikou:'思考力',all:'全教科',ckokugo:'中高一貫 国語',csugaku:'中高一貫 数学',ceigo:'中高一貫 英語',crika:'中高一貫 理科',cshakai:'中高一貫 社会',cjoho:'中高一貫 情報',chuko:'中高一貫 全教科',kspin:'就活・資格 SPI非言語',kspig:'就活・資格 SPI言語',kitp:'就活・資格 ITパスポート',kfe:'就活・資格 基本情報技術者',kstat:'就活・資格 統計学',kboki:'就活・資格 簿記3級',ktoeic:'就活・資格 TOEIC英語',kbiz:'就活・資格 ビジネスマナー',career:'就活・資格 全教科',tsansu:'低学年 算数',tkokugo:'低学年 国語',tshikou:'低学年 思考力',tchishiki:'低学年 ちしき',teigaku:'低学年 全教科'};
 var CSUBJ={'国語':'ckokugo','数学':'csugaku','英語':'ceigo','理科':'crika','社会':'cshakai','情報':'cjoho'};
 function isChuko(s){return s==='chuko'||/^c(kokugo|sugaku|eigo|rika|shakai|joho)$/.test(s||'');}
-var KSUBJ={'SPI非言語':'kspin','SPI言語':'kspig','ITパスポート':'kitp','基本情報技術者':'kfe','統計学':'kstat','簿記3級':'kboki','TOEIC英語':'ktoeic'};
+var KSUBJ={'SPI非言語':'kspin','SPI言語':'kspig','ITパスポート':'kitp','基本情報技術者':'kfe','統計学':'kstat','簿記3級':'kboki','TOEIC英語':'ktoeic','ビジネスマナー':'kbiz'};
 function isCareer(s){return s==='career'||/^k(spin|spig|itp|fe|stat|boki|toeic)$/.test(s||'');}
 var TSUBJ={'算数':'tsansu','国語':'tkokugo','思考力':'tshikou','ちしき':'tchishiki'};
 function isTeigaku(s){return s==='teigaku'||/^t(sansu|kokugo|shikou|chishiki)$/.test(s||'');}
