@@ -7,7 +7,7 @@ var SUBJ={'国語':'kokugo','算数':'sansu','社会':'shakai','理科':'rika','
 var CSUBJ={'国語':'ckokugo','数学':'csugaku','英語':'ceigo','理科':'crika','社会':'cshakai','情報':'cjoho'};
 function isChuko(s){return s==='chuko'||/^c(kokugo|sugaku|eigo|rika|shakai|joho)$/.test(s||'');}
 var KSUBJ={'SPI非言語':'kspin','SPI言語':'kspig','ITパスポート':'kitp','基本情報技術者':'kfe','統計学':'kstat','簿記3級':'kboki','TOEIC英語':'ktoeic','ビジネスマナー':'kbiz'};
-function isCareer(s){return s==='career'||/^k(spin|spig|itp|fe|stat|boki|toeic)$/.test(s||'');}
+function isCareer(s){return s==='career'||/^k(spin|spig|itp|fe|stat|boki|toeic|biz)$/.test(s||'');}
 var TSUBJ={'算数':'tsansu','国語':'tkokugo','思考力':'tshikou','ちしき':'tchishiki'};
 function isTeigaku(s){return s==='teigaku'||/^t(sansu|kokugo|shikou|chishiki)$/.test(s||'');}
 var PNAME={d1:'1日',w1:'1週間',m1:'1ヵ月',y1:'1年'};
