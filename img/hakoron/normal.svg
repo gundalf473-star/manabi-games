@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="ふつうの顔のハコロン">
+        <ellipse cx="100" cy="188" rx="58" ry="7" fill="#1f3a6e" opacity="0.1"/><rect x="70" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/><rect x="114" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/>
+        <path d="M40 118 Q24 126 24 144" stroke="#1f3a6e" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M150 118 Q166 126 166 144" stroke="#1f3a6e" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <polygon points="150,72 170,60 170,150 150,168" fill="#f0d7a6" stroke="#1f3a6e" stroke-width="4" stroke-linejoin="round"/><rect x="40" y="72" width="110" height="96" rx="14" fill="#fff3d6" stroke="#1f3a6e" stroke-width="4"/>
+        <rect x="46" y="146" width="25" height="10" fill="#d9452f"/><rect x="71" y="146" width="25" height="10" fill="#2f6fd6"/><rect x="96" y="146" width="25" height="10" fill="#e0a11b"/><rect x="121" y="146" width="23" height="10" fill="#0e7c7b"/>
+        <rect x="36" y="56" width="122" height="20" rx="8" fill="#ffe2a0" stroke="#1f3a6e" stroke-width="4"/>
+        <ellipse cx="76" cy="108" rx="7" ry="9" fill="#1f3a6e"/><ellipse cx="114" cy="108" rx="7" ry="9" fill="#1f3a6e"/><circle cx="78" cy="105" r="2.5" fill="#fff"/><circle cx="116" cy="105" r="2.5" fill="#fff"/>
+        <ellipse cx="62" cy="124" rx="8" ry="5" fill="#f4a3a3"/><ellipse cx="128" cy="124" rx="8" ry="5" fill="#f4a3a3"/>
+        <path d="M88 122 Q95 131 102 122" stroke="#1f3a6e" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>

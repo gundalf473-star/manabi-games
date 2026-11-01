@@ -335,5 +335,6 @@ fs.writeFileSync(path.join(OUT, "manifest.webmanifest"), JSON.stringify({ name: 
   start_url: "./index.html?from=app", scope: "./", display: "standalone", background_color: "#f2f5f9", theme_color: "#1f3a6e",
   icons: [{ src: "icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png" }, { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }] }, null, 1));
 for (const f of ["icon-192.png", "icon-512.png", "apple-touch-icon.png", "favicon.svg", "favicon-32.png", "logo.svg", "logo-dark.svg"]) if (fs.existsSync(path.join(ROOT, f))) fs.copyFileSync(path.join(ROOT, f), path.join(OUT, f));
+if (fs.existsSync(path.join(ROOT, "img"))) fs.cpSync(path.join(ROOT, "img"), path.join(OUT, "img"), { recursive: true });   // マスコット（ハコロン）などの画像
 fs.writeFileSync(path.join(OUT, "sw.js"), fs.readFileSync(path.join(ROOT, "scripts", "sw.js"), "utf8").replace("__BUILD__", BUILD_ID));
 console.log(`ゲーム ${list.length} 本で一覧を作りました`);

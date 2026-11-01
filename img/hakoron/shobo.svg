@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="消防士のヘルメットをかぶったハコロン">
+        <rect x="70" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/><rect x="114" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/>
+        <polygon points="150,72 170,60 170,150 150,168" fill="#f0d7a6" stroke="#1f3a6e" stroke-width="4" stroke-linejoin="round"/><rect x="40" y="72" width="110" height="96" rx="14" fill="#fff3d6" stroke="#1f3a6e" stroke-width="4"/>
+        <rect x="46" y="146" width="98" height="10" fill="#e0a11b"/>
+        <path d="M44 74 Q44 30 96 30 Q148 30 148 74 Z" fill="#d9452f" stroke="#1f3a6e" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="26" y="72" width="140" height="12" rx="6" fill="#d9452f" stroke="#1f3a6e" stroke-width="4"/>
+        <path d="M96 34 L96 72" stroke="#ffffff" stroke-width="5"/>
+        <ellipse cx="76" cy="112" rx="7" ry="9" fill="#1f3a6e"/><ellipse cx="114" cy="112" rx="7" ry="9" fill="#1f3a6e"/>
+        <path d="M88 126 Q95 134 102 126" stroke="#1f3a6e" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>

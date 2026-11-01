@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="メガネと指し棒の先生ハコロン">
+        <rect x="70" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/><rect x="114" y="160" width="16" height="24" rx="8" fill="#1f3a6e"/>
+        <path d="M150 116 Q170 104 176 90" stroke="#1f3a6e" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M176 90 L192 34" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round"/>
+        <polygon points="150,72 170,60 170,150 150,168" fill="#f0d7a6" stroke="#1f3a6e" stroke-width="4" stroke-linejoin="round"/><rect x="40" y="72" width="110" height="96" rx="14" fill="#fff3d6" stroke="#1f3a6e" stroke-width="4"/>
+        <rect x="46" y="146" width="25" height="10" fill="#d9452f"/><rect x="71" y="146" width="25" height="10" fill="#2f6fd6"/><rect x="96" y="146" width="25" height="10" fill="#e0a11b"/><rect x="121" y="146" width="23" height="10" fill="#0e7c7b"/>
+        <rect x="36" y="56" width="122" height="20" rx="8" fill="#ffe2a0" stroke="#1f3a6e" stroke-width="4"/>
+        <circle cx="76" cy="108" r="14" fill="none" stroke="#1f3a6e" stroke-width="4"/><circle cx="114" cy="108" r="14" fill="none" stroke="#1f3a6e" stroke-width="4"/><path d="M90 108 L100 108" stroke="#1f3a6e" stroke-width="4"/>
+        <circle cx="76" cy="108" r="5" fill="#1f3a6e"/><circle cx="114" cy="108" r="5" fill="#1f3a6e"/>
+        <path d="M88 130 Q95 137 102 130" stroke="#1f3a6e" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
