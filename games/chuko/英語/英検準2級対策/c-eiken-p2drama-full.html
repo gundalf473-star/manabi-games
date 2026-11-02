@@ -1,0 +1,325 @@
+<title>島のラジオ局　英語の連続ドラマ紙芝居（英検準2級） 全10話</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:course" content="chuko"><meta name="game:subject" content="英語">
+<meta name="game:unit" content="英検準2級対策⑤ ドラマ紙芝居">
+<meta name="game:grade" content="中3〜高1">
+<meta name="game:players" content="1人">
+<meta name="description" content="英語の連続ドラマ紙芝居「島のラジオ局」（英検準2級）の有料版。全10話。丘の上のスタジオ、はじめてのインタビュー、漁師の歌、若い人が少ない島、新しいフェリーの計画、浜のそうじ、止まったラジオ、あらしの夜の放送、そして最後の生放送まで。関係副詞・関係代名詞 what・分詞構文・仮定法過去・I wish・現在完了進行形・使役動詞・知覚動詞・It is … for/of 人 to・受け身の進行形と完了形・so … that・too … to を、物語の例文とクイズで学べます。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。話の一覧（絵・題名・クリア・最高点）→ 紙芝居（絵・英文と🔊・日本語訳・語注・◀ ▶）→ 今日の例文 → クイズ → 結果と次回予告。中高一貫コースの朱色を差し色に、英語は青・例文は金の下線 */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --en:#1f5f9a; --ensoft:#e4eef8; --key:#e0a020; --now:#fff3c4; --nowfg:#2a2520;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --latin:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e;
+  --en:#8cc4f2; --ensoft:#1a2a3a; --key:#e1b44a; --now:#4a3f1c; --nowfg:#fff6dc; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e;
+  --en:#8cc4f2; --ensoft:#1a2a3a; --key:#e1b44a; --now:#4a3f1c; --nowfg:#fff6dc; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 72px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(26px,7vw,38px);line-height:1.2;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+h1 .sub{display:block;font-family:var(--body);font-weight:700;font-size:15px;color:var(--muted);margin-top:6px;letter-spacing:0}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 20px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.en{font-family:var(--latin);color:var(--en);font-weight:700;letter-spacing:.005em}
+.say{border:1px solid var(--en);background:var(--ensoft);color:var(--en);border-radius:99px;font-size:13px;line-height:1;padding:4px 8px;margin-left:6px;cursor:pointer;vertical-align:2px}
+/* 話の一覧 */
+.list{display:grid;gap:8px}
+.st{box-sizing:border-box;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);width:100%}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:112px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.st .th svg{width:112px;height:70px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:16px;display:block;line-height:1.4}
+.st .nm .en{font-size:15px}
+.st .ds{font-size:12px;color:var(--muted);display:block;line-height:1.6}
+.bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.bd.ok{background:var(--oksoft);color:var(--ok)} .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd .th{display:grid;place-items:center;height:70px;background:var(--pick);font-size:24px;line-height:1}
+.st.lockd{opacity:.8} .st.soon{opacity:.55;cursor:default}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.cast div{display:flex;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:8px;padding:6px;font-size:12px;line-height:1.5}
+.cast svg{flex:none;width:52px;height:38px;border-radius:6px;display:block}
+.cast b{display:block;font-size:13px}
+details summary{cursor:pointer;font-weight:700;font-size:14px}
+/* 紙芝居 */
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top .ep{font-size:13px;font-weight:700;color:var(--seal)}
+.dots{flex:1;display:flex;gap:3px;min-width:80px}
+.dots i{flex:1;height:6px;border-radius:3px;background:var(--rule)} .dots i.on{background:var(--seal)}
+.pg{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage{display:flex;flex-direction:column;gap:12px;touch-action:pan-y}
+.pic{position:relative;background:#fff;border:3px solid #6b4f36;border-radius:6px;overflow:hidden;line-height:0;box-shadow:0 3px 0 #00000022}
+.pic svg{display:block;width:100%;height:auto;aspect-ratio:16/10}
+.tz{position:absolute;right:10px;bottom:10px;background:#1f1a2e;color:#fff;font-family:var(--display);font-size:clamp(18px,5vw,26px);line-height:1;padding:8px 14px;border-radius:6px;transform:rotate(-3deg);letter-spacing:.1em}
+.tz.end{background:#1d7a4c}
+.lines{display:flex;flex-direction:column;gap:6px;min-height:96px}
+.ln{margin:0;border-radius:8px;padding:6px 10px;cursor:pointer;border:1px solid transparent;transition:background .2s}
+.ln:hover{border-color:var(--rule)}
+.ln.now{background:var(--now);border-color:var(--key)}
+.ln.now .en{color:var(--nowfg)}
+.ln .who{display:inline-flex;align-items:center;gap:5px;font-family:var(--latin);font-size:13px;font-weight:700;color:var(--muted);margin-right:6px}
+.ln .who::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}
+.ln .en{font-size:19px;line-height:1.6}
+.ln.nar .en{font-weight:500;color:var(--fg);font-style:italic}
+.ln.now.nar .en{color:var(--nowfg)}
+.ln u{text-decoration:underline;text-decoration-color:var(--key);text-decoration-thickness:3px;text-underline-offset:4px}
+.kt{font-family:var(--body);font-style:normal;font-size:11px;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:0 4px;margin-left:6px;vertical-align:3px;white-space:nowrap}
+.ln .ja{display:block;font-size:14px;color:var(--muted);line-height:1.7;margin-top:2px}
+.gloss{margin:0;font-size:13px;color:var(--muted);border-top:1px dashed var(--rule);padding-top:6px}
+.gloss b{color:var(--fg);font-family:var(--latin)}
+.yokoku{margin:0;border:2px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px;font-weight:700}
+.yokoku b{display:block;font-size:12px;color:var(--ink);letter-spacing:.12em}
+.ctrl{display:grid;grid-template-columns:64px 1fr minmax(64px,auto);gap:8px}
+.ctrl button{border:0;border-radius:8px;padding:12px 8px;font-size:18px;font-weight:700;cursor:pointer;background:var(--pick)}
+.ctrl #rd{background:var(--en);color:var(--surface)}
+.ctrl #nx.last{background:var(--fg);color:var(--surface);font-size:15px;padding:12px 14px;white-space:nowrap}
+.ctrl button:disabled{opacity:.35;cursor:default}
+.tog{display:flex;gap:6px;flex-wrap:wrap}
+.tog button{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:13px;cursor:pointer;font-weight:700}
+.tog button[aria-pressed="true"]{border-color:var(--en);background:var(--ensoft);color:var(--en)}
+/* 例文 */
+.ex{border:1px solid var(--rule);border-left:5px solid var(--key);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;background:var(--surface)}
+.ex .en{font-size:18px;line-height:1.55}
+.ex .ja{color:var(--muted);font-size:14px}
+.ex .pt{margin:4px 0 0;font-size:14px;background:var(--pick);border-radius:6px;padding:6px 10px}
+.ex .pt b{color:var(--seal);font-size:12px;margin-right:6px}
+.ex .more{margin:2px 0 0;font-size:14px;border-top:1px dashed var(--rule);padding-top:6px}
+.ex .more b{font-size:12px;color:var(--muted);display:block}
+.ex .more .en{font-size:16px}
+/* クイズ */
+.qt{align-self:flex-start;font-size:12px;font-weight:700;color:var(--en);background:var(--ensoft);border:1px solid var(--en);border-radius:4px;padding:1px 8px}
+.qq{margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.qs{margin:0;font-size:19px;line-height:1.6}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.6;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:54px}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op:hover:not(:disabled){border-color:var(--ink)}
+.op.ok{border-color:var(--ok);background:var(--oksoft)} .op.ng{border-color:var(--ng);background:var(--ngsoft);opacity:.75}
+.op:disabled{cursor:default}
+.fb{margin:0;border-radius:8px;padding:8px 12px;font-size:15px;line-height:1.8}
+.fb b{display:block}
+.fb.ok{background:var(--oksoft)} .fb.ok b{color:var(--ok)} .fb.ng{background:var(--ngsoft)} .fb.ng b{color:var(--ng)}
+.play{border:0;border-radius:99px;background:var(--en);color:var(--surface);font-size:16px;font-weight:700;padding:10px 20px;cursor:pointer;align-self:flex-start}
+.score{font-family:var(--display);font-size:42px;line-height:1.1;color:var(--ink)} .score small{font-size:16px;color:var(--muted);font-family:var(--body)}
+.stars{font-size:26px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.ln{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>英語の連続ドラマ紙芝居</small>島のラジオ局<span class="sub">The Island Radio ／ 英検準2級　全10話</span></h1>
+    <p class="lead">英語で読む連続ドラマ、全10話。絵を見て、聞いて、例文とクイズで英検準2級の文法をたしかめよう。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+const GID="c-eiken-p2drama";
+let ST=[];
+const TITLES=[["ep01",1,"A New Island","新しい島",["関係副詞 where・when","現在完了進行形"],true],["ep02",2,"The Studio on the Hill","丘の上のスタジオ",["too … to 構文","so … that 構文"],true],["ep03",3,"Our First Interview","はじめてのインタビュー",["使役動詞 make・let・have"],true],["ep04",4,"The Fisherman's Song","漁師の歌",["知覚動詞＋O＋原形・-ing"],true],["ep05",5,"Fewer Young People","若い人が少ない島",["関係代名詞 what","It is … for/of 人 to"],true],["ep06",6,"The New Ferry Plan","新しいフェリーの計画",["受け身の進行形・完了形"],true],["ep07",7,"Cleaning the Beach","浜をきれいに",["分詞構文"],true],["ep08",8,"The Silent Radio","止まったラジオ",["仮定法過去","I wish ＋過去形"],true],["ep09",9,"The Storm Night","あらしの夜",["受け身の完了形（復習）","現在完了進行形（復習）"],true],["ep10",10,"The Next Voices","つぎの声",["関係代名詞 what（復習）","仮定法過去・I wish（復習）"],true]];
+const CAST=[["kaito","Kaito","カイト","高校1年生。春にお母さんとそらの島へ引っこしてきた。首にはいつもヘッドホン。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.3)\">\u003crect x=\"-11.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#5b6270\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#5b6270\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"-13.5\" y=\"-37\" width=\"27\" height=\"6\" fill=\"#5b6270\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#ececec\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#ececec\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#2a9d8f\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003crect x=\"-6\" y=\"-66\" width=\"12\" height=\"4\" fill=\"#21867a\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cline x1=\"0\" y1=\"-62\" x2=\"0\" y2=\"-35\" stroke=\"#e8e8e8\" stroke-width=\"1.1\" stroke-linecap=\"round\"/>\u003cline x1=\"-13.5\" y1=\"-50\" x2=\"13.5\" y2=\"-50\" stroke=\"#ffffff\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cpath d=\"M-11,-64 Q0,-55 11,-64\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"3.6\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-11,-64 Q0,-55 11,-64\" fill=\"none\" stroke=\"#444\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"-11.5\" cy=\"-63\" rx=\"3.4\" ry=\"4\" fill=\"#e63946\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"11.5\" cy=\"-63\" rx=\"3.4\" ry=\"4\" fill=\"#e63946\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-15.5,-80 Q-17,-97 -1,-98 Q14,-98 15.5,-82 L12.5,-87 L9.5,-82 L6.5,-89 L1.5,-84 L-3,-90 L-7.5,-84 L-11,-89 Z\" fill=\"#1e2433\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M1,-97 Q2,-107 9,-105\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"3.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M1,-97 Q2,-107 9,-105\" fill=\"none\" stroke=\"#1e2433\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#2a9d8f\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#2a9d8f\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["mio","Mio","ミオ","カイトのいとこで高校2年生。島で生まれ育った、元気な先輩。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.3)\">\u003crect x=\"-10\" y=\"-26\" width=\"7.5\" height=\"22\" fill=\"#e9b98f\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"2.5\" y=\"-26\" width=\"7.5\" height=\"22\" fill=\"#e9b98f\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13.5,-37 L13.5,-37 L14,-23 L1,-23 L0,-28 L-1,-23 L-14,-23 Z\" fill=\"#b9a27a\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#3a7bd5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#3a7bd5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-16.5,-84 Q-18.5,-68 -14,-65 L14,-65 Q18.5,-68 16.5,-84 Z\" fill=\"#3b2a20\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#f08a24\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpolygon points=\"-6,-64 0,-59 -6,-58\" fill=\"#ffffff\" stroke=\"#33302e\" stroke-width=\"0.7\" stroke-linejoin=\"round\"/>\u003cpolygon points=\"6,-64 0,-59 6,-58\" fill=\"#ffffff\" stroke=\"#33302e\" stroke-width=\"0.7\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"0\" cy=\"-55\" r=\"0.9\" fill=\"#ffffff\"/>\u003ccircle cx=\"0\" cy=\"-51\" r=\"0.9\" fill=\"#ffffff\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#e9b98f\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#e9b98f\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#e9b98f\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#e9b98f\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cellipse cx=\"-9.5\" cy=\"-75\" rx=\"2.6\" ry=\"1.6\" fill=\"#f3a49a\" opacity=\"0.7\"/>\u003cellipse cx=\"9.5\" cy=\"-75\" rx=\"2.6\" ry=\"1.6\" fill=\"#f3a49a\" opacity=\"0.7\"/>\u003cpath d=\"M-15.5,-79 Q-15,-97 0,-97 Q15,-97 15.5,-79 Q11,-90 -4,-87 Q-11,-86 -15.5,-79 Z\" fill=\"#3b2a20\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-15.5,-84 Q0,-101 15.5,-84\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"3.8\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-15.5,-84 Q0,-101 15.5,-84\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"2.4\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#f08a24\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#e9b98f\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#f08a24\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#e9b98f\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["lena","Lena","レナ","ドイツから来た留学生（高校1年生）。ラジオが大すき。パン屋のサキさんの家にホームステイ。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.2)\">\u003crect x=\"-11.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#2f4a6e\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#2f4a6e\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"-13.5\" y=\"-37\" width=\"27\" height=\"6\" fill=\"#2f4a6e\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#8a5a3b\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#8a5a3b\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-16,-84 Q-18,-66 -15,-62 L15,-62 Q18,-66 16,-84 Z\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"15\" cy=\"-70\" rx=\"3.6\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"15.4\" cy=\"-65.4\" rx=\"3.4\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"15.8\" cy=\"-60.8\" rx=\"3.2\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"16.2\" cy=\"-56.2\" rx=\"3\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"16.6\" cy=\"-51.6\" rx=\"2.8\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cellipse cx=\"17\" cy=\"-47\" rx=\"2.6\" ry=\"3.2\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cpath d=\"M12,-44 l4,2 l4,-2 l-1,4 l-3,-1 l-3,1 Z\" fill=\"#3a7bd5\" stroke=\"#33302e\" stroke-width=\"0.6\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#c94f6d\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-5,-63.5 Q0,-59 5,-63.5\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"0.9\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-10\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003ccircle cx=\"-6\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003ccircle cx=\"-2\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003ccircle cx=\"2\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003ccircle cx=\"6\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003ccircle cx=\"10\" cy=\"-52\" r=\"1\" fill=\"#ffffff\"/>\u003cline x1=\"-13.5\" y1=\"-37\" x2=\"13.5\" y2=\"-37\" stroke=\"#33302e\" stroke-width=\"0.6\" stroke-linecap=\"round\" opacity=\"0.5\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f9e1d0\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f9e1d0\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f9e1d0\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f9e1d0\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cellipse cx=\"-9.5\" cy=\"-75\" rx=\"2.6\" ry=\"1.6\" fill=\"#f3a49a\" opacity=\"0.7\"/>\u003cellipse cx=\"9.5\" cy=\"-75\" rx=\"2.6\" ry=\"1.6\" fill=\"#f3a49a\" opacity=\"0.7\"/>\u003cpath d=\"M-15.5,-77 Q-16.5,-97 0,-97 Q16.5,-97 15.5,-77 L13.5,-85 L-13.5,-85 Z\" fill=\"#e8c25a\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cline x1=\"-6\" y1=\"-86\" x2=\"-6\" y2=\"-91\" stroke=\"#c9a040\" stroke-width=\"0.6\" stroke-linecap=\"round\"/>\u003cline x1=\"5\" y1=\"-86\" x2=\"5\" y2=\"-92\" stroke=\"#c9a040\" stroke-width=\"0.6\" stroke-linecap=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#c94f6d\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f9e1d0\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#c94f6d\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f9e1d0\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["oki","Mr. Oki","オキさん","ラジオ局「ラジオそらの」の司会者。78才。40年間、朝の番組を続けてきた。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.2)\">\u003crect x=\"-11.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#5a4a3a\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#5a4a3a\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"-13.5\" y=\"-37\" width=\"27\" height=\"6\" fill=\"#5a4a3a\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#3a2e28\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#3a2e28\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#a9c8e6\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-13,-63 L-5,-63 L0,-50 L0,-35 L-13.5,-35 Q-15,-50 -13,-63 Z\" fill=\"#d4a72c\" stroke=\"#33302e\" stroke-width=\"0.9\" stroke-linejoin=\"round\"/>\u003cpath d=\"M13,-63 L5,-63 L0,-50 L0,-35 L13.5,-35 Q15,-50 13,-63 Z\" fill=\"#d4a72c\" stroke=\"#33302e\" stroke-width=\"0.9\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-2.4\" cy=\"-45\" r=\"0.9\" fill=\"#6a4a1a\"/>\u003ccircle cx=\"-2.4\" cy=\"-39\" r=\"0.9\" fill=\"#6a4a1a\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-13,-77 Q-13,-60 0,-58 Q13,-60 13,-77 Q7,-71 0,-72 Q-7,-71 -13,-77 Z\" fill=\"#f1f0ea\" stroke=\"#33302e\" stroke-width=\"0.9\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-7,-74 Q-3,-77 0,-75 Q3,-77 7,-74 Q3,-72.5 0,-73.5 Q-3,-72.5 -7,-74 Z\" fill=\"#dcdad2\" stroke=\"#33302e\" stroke-width=\"0.7\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-4,-71 Q0,-67 4,-71\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-10,-84 Q-7,-85.5 -3,-84\" fill=\"none\" stroke=\"#b88f74\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003cpath d=\"M3,-84 Q7,-85.5 10,-84\" fill=\"none\" stroke=\"#b88f74\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"-14\" cy=\"-82\" rx=\"3.4\" ry=\"5\" fill=\"#f1f0ea\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"14\" cy=\"-82\" rx=\"3.4\" ry=\"5\" fill=\"#f1f0ea\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cpath d=\"M-16.5,-86 Q-16,-100 1,-100 Q16.5,-99 16.5,-86 Z\" fill=\"#6b7480\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-17,-87 L20,-87 Q24,-86 20,-83.5 L-17,-84.5 Z\" fill=\"#555d68\" stroke=\"#33302e\" stroke-width=\"1\" stroke-linejoin=\"round\"/>\u003cline x1=\"-10\" y1=\"-95\" x2=\"8\" y2=\"-97\" stroke=\"#7d8692\" stroke-width=\"0.8\" stroke-linecap=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#a9c8e6\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#a9c8e6\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["mom","Mom","お母さん","カイトのお母さん。そらの島で育った。島の診療所の看護師。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.4)\">\u003crect x=\"-7.5\" y=\"-12\" width=\"5\" height=\"8\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"2.5\" y=\"-12\" width=\"5\" height=\"8\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13.5,-36 L13.5,-36 L17,-9 L-17,-9 Z\" fill=\"#e3d6bf\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#7a5a40\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#7a5a40\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-16,-84 Q-19.5,-60 -15,-55 L15,-55 Q19.5,-60 16,-84 Z\" fill=\"#221a16\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#5b84c4\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-7,-64 Q-4,-57 0,-60 Q4,-57 7,-64\" fill=\"#ffffff\" stroke=\"#33302e\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"0\" cy=\"-52\" r=\"0.8\" fill=\"#ffffff\"/>\u003ccircle cx=\"0\" cy=\"-45\" r=\"0.8\" fill=\"#ffffff\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-15.5,-77 Q-15,-97 0,-97 Q15,-97 15.5,-77 Q12,-91 1,-91 L0,-96 L-1,-91 Q-12,-91 -15.5,-77 Z\" fill=\"#221a16\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003crect x=\"9\" y=\"-92\" width=\"6\" height=\"2.4\" fill=\"#e9c46a\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.6\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#5b84c4\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#5b84c4\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["hama","Mr. Hama","ハマさん","港の漁師。ちょっとがんこ。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.4)\">\u003crect x=\"-11.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#f2c53d\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#f2c53d\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"-13.5\" y=\"-37\" width=\"27\" height=\"6\" fill=\"#f2c53d\"/>\u003crect x=\"-12\" y=\"-16\" width=\"11\" height=\"14\" fill=\"#22252a\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1\" y=\"-16\" width=\"11\" height=\"14\" fill=\"#22252a\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#22252a\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#22252a\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#2f4566\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003crect x=\"-8\" y=\"-56\" width=\"16\" height=\"22\" fill=\"#f2c53d\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cline x1=\"-8\" y1=\"-56\" x2=\"-10\" y2=\"-63\" stroke=\"#f2c53d\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\u003cline x1=\"8\" y1=\"-56\" x2=\"10\" y2=\"-63\" stroke=\"#f2c53d\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\u003crect x=\"-4\" y=\"-52\" width=\"8\" height=\"5\" fill=\"#e2b52d\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.5\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#d9a27a\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#d9a27a\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#d9a27a\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#d9a27a\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-10,-84 Q-7,-85.5 -3,-84\" fill=\"none\" stroke=\"#b88f74\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003cpath d=\"M3,-84 Q7,-85.5 10,-84\" fill=\"none\" stroke=\"#b88f74\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-15.5,-83 Q-15,-96 0,-96 Q15,-96 15.5,-83 Q8,-88 0,-88 Q-8,-88 -15.5,-83 Z\" fill=\"#8f8f8f\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003crect x=\"-16.5\" y=\"-90\" width=\"33\" height=\"5\" fill=\"#f4f4f4\" rx=\"2\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003cline x1=\"-15\" y1=\"-87.5\" x2=\"15\" y2=\"-87.5\" stroke=\"#3a7bd5\" stroke-width=\"0.9\" stroke-linecap=\"round\"/>\u003cellipse cx=\"-17.5\" cy=\"-86\" rx=\"3\" ry=\"2\" fill=\"#f4f4f4\" stroke=\"#33302e\" stroke-width=\"0.6\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#2f4566\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#d9a27a\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#2f4566\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#d9a27a\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["saki","Mrs. Saki","サキさん","島のパン屋さん。レナのホストマザー。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.2)\">\u003crect x=\"-7.5\" y=\"-12\" width=\"5\" height=\"8\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"2.5\" y=\"-12\" width=\"5\" height=\"8\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13.5,-36 L13.5,-36 L17,-9 L-17,-9 Z\" fill=\"#6a5a4a\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#4a3a30\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#4a3a30\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"-14\" cy=\"-86\" r=\"5\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"14\" cy=\"-86\" r=\"5\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"-16\" cy=\"-77\" r=\"4.4\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"16\" cy=\"-77\" r=\"4.4\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"-14\" cy=\"-69\" r=\"3.6\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003ccircle cx=\"14\" cy=\"-69\" r=\"3.6\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#f4eee2\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-9,-57 L9,-57 L11,-34 L-11,-34 Z\" fill=\"#7fae7a\" stroke=\"#33302e\" stroke-width=\"0.8\" stroke-linejoin=\"round\"/>\u003cline x1=\"-9\" y1=\"-57\" x2=\"-6\" y2=\"-64\" stroke=\"#7fae7a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\u003cline x1=\"9\" y1=\"-57\" x2=\"6\" y2=\"-64\" stroke=\"#7fae7a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\u003crect x=\"-5\" y=\"-48\" width=\"10\" height=\"6\" fill=\"#6a9a66\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.5\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-15.5,-80 Q-15,-94 0,-94 Q15,-94 15.5,-80 Q8,-86 0,-85 Q-8,-86 -15.5,-80 Z\" fill=\"#6a4028\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpath d=\"M-16.5,-85 Q-14,-101 1,-101 Q15,-101 16.5,-85 Q0,-90 -16.5,-85 Z\" fill=\"#d9483b\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-6\" cy=\"-94\" r=\"1.1\" fill=\"#fff\"/>\u003ccircle cx=\"2\" cy=\"-97\" r=\"1.1\" fill=\"#fff\"/>\u003ccircle cx=\"8\" cy=\"-92\" r=\"1.1\" fill=\"#fff\"/>\u003ccircle cx=\"-1\" cy=\"-91\" r=\"1.1\" fill=\"#fff\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#f4eee2\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#f4eee2\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"],["ito","Captain Ito","イトウ船長","島と本土を結ぶフェリーの船長。","\u003csvg viewBox=\"20 22 60 44\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\u003crect x=\"0\" y=\"0\" width=\"100\" height=\"100\" fill=\"#f3ecdf\"/>\u003cg transform=\"translate(50 150) scale(1.3)\">\u003crect x=\"-11.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#1f3a68\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"1.5\" y=\"-37\" width=\"10\" height=\"33\" fill=\"#1f3a68\" rx=\"1.5\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003crect x=\"-13.5\" y=\"-37\" width=\"27\" height=\"6\" fill=\"#1f3a68\"/>\u003cellipse cx=\"-6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#1a1a1a\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"6.5\" cy=\"-3.4\" rx=\"6\" ry=\"3.4\" fill=\"#1a1a1a\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15.5\" cy=\"-70\" rx=\"3.6\" ry=\"7.5\" fill=\"#1c1a1a\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003ccircle cx=\"-15\" cy=\"-77\" r=\"2\" fill=\"#d9b44a\"/>\u003cpath d=\"M-13,-63 Q0,-66 13,-63 Q15,-50 13.5,-34 L-13.5,-34 Q-15,-50 -13,-63 Z\" fill=\"#1f3a68\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003cpolygon points=\"-5,-64 0,-55 5,-64\" fill=\"#ffffff\" stroke=\"#33302e\" stroke-width=\"0.7\" stroke-linejoin=\"round\"/>\u003crect x=\"-14.5\" y=\"-64\" width=\"7\" height=\"2.2\" fill=\"#d9b44a\" rx=\"0.5\"/>\u003crect x=\"7.5\" y=\"-64\" width=\"7\" height=\"2.2\" fill=\"#d9b44a\" rx=\"0.5\"/>\u003ccircle cx=\"-3.5\" cy=\"-52\" r=\"1\" fill=\"#d9b44a\"/>\u003ccircle cx=\"3.5\" cy=\"-52\" r=\"1\" fill=\"#d9b44a\"/>\u003ccircle cx=\"-3.5\" cy=\"-45\" r=\"1\" fill=\"#d9b44a\"/>\u003ccircle cx=\"3.5\" cy=\"-45\" r=\"1\" fill=\"#d9b44a\"/>\u003ccircle cx=\"-3.5\" cy=\"-38\" r=\"1\" fill=\"#d9b44a\"/>\u003ccircle cx=\"3.5\" cy=\"-38\" r=\"1\" fill=\"#d9b44a\"/>\u003crect x=\"-3.5\" y=\"-67\" width=\"7\" height=\"5\" fill=\"#f5d0ae\" rx=\"1\" stroke=\"#33302e\" stroke-width=\"0.8\"/>\u003ccircle cx=\"0\" cy=\"-80\" r=\"15\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cellipse cx=\"-15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"15\" cy=\"-78\" rx=\"2.2\" ry=\"3.4\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"0.9\"/>\u003cellipse cx=\"-5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003cellipse cx=\"5.5\" cy=\"-80\" rx=\"1.6\" ry=\"2.1\" fill=\"#33302e\"/>\u003ccircle cx=\"-5\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003ccircle cx=\"6\" cy=\"-80.8\" r=\"0.6\" fill=\"#fff\"/>\u003cpath d=\"M-4,-73 Q0,-69 4,-73\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"1.3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\u003cpath d=\"M-15.5,-79 Q-15,-95 0,-95 Q15,-95 15.5,-79 Q10,-89 -2,-88 Q-10,-87 -15.5,-79 Z\" fill=\"#1c1a1a\" stroke=\"#33302e\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\u003crect x=\"-15\" y=\"-101\" width=\"30\" height=\"10\" fill=\"#ffffff\" rx=\"3\" stroke=\"#33302e\" stroke-width=\"1.2\"/>\u003cpath d=\"M-16.5,-91 L16.5,-91 Q19,-88 15,-87 L-15,-87 Q-19,-88 -16.5,-91 Z\" fill=\"#1f2a44\" stroke=\"#33302e\" stroke-width=\"1\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"0\" cy=\"-96\" r=\"2.4\" fill=\"#d9b44a\" stroke=\"#33302e\" stroke-width=\"0.6\"/>\u003cline x1=\"-14\" y1=\"-92\" x2=\"14\" y2=\"-92\" stroke=\"#d9b44a\" stroke-width=\"0.9\" stroke-linecap=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"-13,-60 -17,-46 -18,-34\" fill=\"none\" stroke=\"#1f3a68\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"-18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#33302e\" stroke-width=\"8.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003cpolyline points=\"13,-60 17,-46 18,-34\" fill=\"none\" stroke=\"#1f3a68\" stroke-width=\"6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\u003ccircle cx=\"18\" cy=\"-34\" r=\"3.3\" fill=\"#f5d0ae\" stroke=\"#33302e\" stroke-width=\"1\"/>\u003c/g>\u003c/svg>"]];
+const NAMES={"kaito":"Kaito","lena":"Lena","mio":"Mio","oki":"Mr. Oki","mom":"Mom","hama":"Mr. Hama","saki":"Mrs. Saki","ito":"Captain Ito","sota":"Sota","tape":"The tape","all":"Everyone","trio":"Kaito, Mio and Lena"};
+const VOICE={"":[1.0,0.95,"f"],"kaito":[1.0,1.02,"m"],"lena":[1.28,1.0,"f"],"mio":[1.18,1.06,"f"],"oki":[0.7,0.86,"m"],"mom":[1.08,0.95,"f"],"hama":[0.62,0.9,"m"],"saki":[1.12,0.92,"f"],"ito":[0.95,0.98,"f"],"sota":[1.45,1.05,"m"],"tape":[0.85,0.94,"m"],"all":[1.1,1.0,"f"],"trio":[1.15,1.02,"f"]};
+const COLOR={"kaito":"#2a9d8f","lena":"#c94f6d","mio":"#f08a24","oki":"#b8901f","mom":"#5b84c4","hama":"#2f4566","saki":"#d9483b","ito":"#1f3a68","sota":"#4f9a3f","tape":"#6b5a4a","all":"#888888","trio":"#2a9d8f"};
+const QNAME={"story":"ストーリー","mean":"例文の意味","fill":"空所補充","listen":"リスニング","order":"並べかえ"};
+const app=document.getElementById('app');
+const PAIDLINK="<a class=\"paid\" href=\"c-eiken-p2drama-full.html\" id=\"paid-link\"><span class=\"pt\">物語の続きを読みたい人へ　<b>島のラジオ局 全10話</b>（有料版）</span><span class=\"pd\">無料版の第1話もふくむ全10話。島の人へのインタビュー、フェリーの計画、浜のそうじ、あらしの夜の放送、そして最後の生放送まで。例文とクイズつき。</span></a>";
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const REC=GID+'-p-rec', SLOWK=GID+'-slow', JAK=GID+'-ja';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={};
+const saveRec=()=>store.set(REC,rec);
+let slow=!!store.get(SLOWK,false), showJa=!!store.get(JAK,false), auto=false;
+/* 読み上げ */
+const TTS=(()=>{try{return 'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';}catch(e){return false;}})();
+let VF=null,VM=null,V0=null;
+const FEM=/female|samantha|zira|aria|jenny|ava|allison|susan|karen|victoria|joanna|salli|kendra|kimberly|ivy|emma|michelle/i, MAL=/(^|\W)male|david|mark|guy|alex|fred|daniel|tom|matthew|joey|justin|christopher|eric|roger|steffan|aaron/i;
+const pickV=()=>{try{const v=speechSynthesis.getVoices().filter(x=>/^en[-_]US/i.test(x.lang));const all=speechSynthesis.getVoices();
+  V0=v[0]||all.find(x=>/^en/i.test(x.lang))||null; VF=v.find(x=>FEM.test(x.name)&&!/male/i.test(x.name.replace(/female/i,'')))||null; VM=v.find(x=>MAL.test(x.name)&&!/female/i.test(x.name))||null;}catch(e){}};
+if(TTS){pickV();try{speechSynthesis.addEventListener('voiceschanged',pickV);}catch(e){}}
+const spk=t=>String(t).replace(/(\d)-(\d)/g,'$1 $2').replace(/[“”]/g,'');
+let tok=0;
+const stopTalk=()=>{tok++;clearTimeout(G&&G.tm);try{TTS&&speechSynthesis.cancel();}catch(e){}};
+function utter(text,who){const v=VOICE[who||'']||VOICE[''];const u=new SpeechSynthesisUtterance(spk(text));u.lang='en-US';
+  const vo=(v[2]==='m'?VM:VF)||V0; if(vo)u.voice=vo; u.pitch=v[0]; u.rate=v[1]*(slow?.72:1); return u;}
+/* items=[[who,text,j]]、onLine(j) で光らせる、onDone はさいごまで読んだら */
+function talk(items,onLine,onDone){
+  stopTalk(); const my=tok; let k=0;
+  const step=()=>{ if(my!==tok)return; if(k>=items.length){onLine(-1);onDone&&onDone();return;}
+    const [who,text,j]=items[k++]; onLine(j);
+    if(!TTS){ G.tm=setTimeout(step,(1000+45*text.length)*(slow?1.4:1)); return; }
+    let done=false; const fin=()=>{if(done)return;done=true;clearTimeout(sf);if(my===tok)G.tm=setTimeout(step,300);};
+    const u=utter(text,who); u.onend=fin; u.onerror=fin;
+    const sf=setTimeout(fin,(2500+text.length*130)*(slow?1.5:1));
+    try{speechSynthesis.speak(u);}catch(e){fin();} };
+  G.tm=setTimeout(step,TTS?80:200);
+}
+const say1=(t,who)=>{ if(!TTS)return; stopTalk(); setTimeout(()=>{try{speechSynthesis.speak(utter(t,who));}catch(e){}},60); };
+app.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.say');if(b){e.preventDefault();e.stopPropagation();say1(b.dataset.t,b.dataset.w||'');}});
+const sayBtn=(t,w)=>TTS?`<button class="say" type="button" data-t="${esc(t)}" data-w="${w||''}" aria-label="英語を聞く">🔊</button>`:'';
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+let G={tm:0};
+const recOf=id=>{const r=rec[id];return r&&typeof r==='object'?r:{c:0,b:-1,l:-1};};
+/* ---------- 話をえらぶ ---------- */
+function home(){
+  stopTalk(); auto=false; G={tm:0};
+  const has=id=>ST.some(e=>e.id===id);
+  const row=([id,no,title,ja,gr,ok])=>{const e=ST.find(x=>x.id===id);
+    if(e){const r=recOf(id);
+      return `<button class="st" data-id="${id}"><span class="th">${e.panels[0].p}</span><span><span class="no">第${no}話　${esc(gr.join('・'))}</span>
+        <span class="nm"><span class="en" lang="en">${esc(title)}</span><br>${esc(ja)}</span>
+        ${r.c?`<span class="bd ok">✓ クリア</span> <span class="ds" style="display:inline">クイズ最高 ${r.b} / 5</span>`:'<span class="bd new">まだ</span>'}</span></button>`;}
+    if(!PAID)return `<a class="st lockd" href="${GID}-full.html"><span class="th">🔒</span><span><span class="no">第${no}話</span><span class="nm"><span class="en" lang="en">${esc(title)}</span><br>${esc(ja)}</span><span class="ds">利用コードで読めます</span></span></a>`;
+    return `<div class="st soon"><span class="th">⏳</span><span><span class="no">第${no}話</span><span class="nm"><span class="en" lang="en">${esc(title)}</span><br>${esc(ja)}</span><span class="ds">じゅんび中</span></span></div>`;};
+  const done=ST.filter(e=>recOf(e.id).c>0).length;
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">高校1年生のカイトが引っこした小さな島「そらの島」。40年続いた島のラジオ局が、夏の終わりに閉まることに――。いとこのミオ、ドイツから来たレナといっしょに、ラジオ局を守ろうとする英語の連続ドラマです。1話ずつ、絵を見ながら英語を聞いて読もう（🔊 で読み上げ、「日本語訳」で訳が出ます）。下線の文が<b>今日の例文</b>。読みおわったら例文の文法をたしかめて、5問のクイズに答えよう。英語は英検準2級（高校中級程度）の単語と文法で書いた、オリジナルの物語です。</p>
+    ${TTS?'':'<p class="note">このブラウザでは英語の読み上げ（🔊）が使えません。英文を読んで進めてください。</p>'}
+    <details><summary>登場人物</summary><div class="cast" style="margin-top:8px">${CAST.map(c=>`<div>${c[4]}<span><b><span class="en" lang="en">${esc(c[1])}</span>（${esc(c[2])}）</b>${esc(c[3])}</span></div>`).join('')}</div></details>
+    <div class="row" style="justify-content:space-between"><span class="label">話をえらぶ</span><span class="note">クリアした話 ${done} / ${ST.length}</span></div>
+    ${PAID?'':`<p class="free">第1話は無料。🔒の話は<b>利用コードで全${TITLES.length}話</b>読めます。</p>`}
+    <div class="list">${TITLES.map(row).join('')}</div>
+    ${PAID?`<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>start(ST.find(e=>e.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？ <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();home();};document.getElementById('no').onclick=home;};
+}
+function start(e){ stopTalk(); auto=false; G={tm:0,e:e,i:0}; track('level_start',{level_name:GID+'-'+e.id}); panel(0); }
+function head(label){ const e=G.e; return `<div class="top"><button class="linkbtn" id="back">← 話をえらぶ</button><span class="ep">第${e.no}話</span>${label}</div>`; }
+const nm=w=>w?NAMES[w]:'';
+/* ---------- 紙芝居 ---------- */
+function panel(i){
+  stopTalk(); const e=G.e, P=e.panels; G.i=i; const p=P[i], last=i===P.length-1, fin=last&&!p.h&&!e.teaser;
+  const dots=`<div class="dots" aria-hidden="true">${P.map((x,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div><span class="pg">${i+1} / ${P.length}</span>`;
+  app.innerHTML=`${head(dots)}
+   <div class="stage" id="stage">
+    <div class="pic">${p.p}${p.h?'<span class="tz">つづく…</span>':''}${fin?'<span class="tz end">おわり</span>':''}</div>
+    <div class="lines" aria-live="off">${p.s.map((l,j)=>`<p class="ln ${l[0]?'sp':'nar'}" data-j="${j}">${l[0]?`<span class="who" style="--c:${COLOR[l[0]]}" lang="en">${esc(nm(l[0]))}</span>`:''}<span class="en" lang="en">${l[3]?'<u>'+esc(l[1])+'</u><span class="kt">例文</span>':esc(l[1])}</span>${showJa?`<span class="ja">${esc(l[2])}</span>`:''}</p>`).join('')}</div>
+    ${p.g.length?`<p class="gloss">語注　${p.g.map(g=>`<b>${esc(g[0])}</b>＝${esc(g[1])}`).join('　')}</p>`:''}
+    ${p.h?`<p class="yokoku"><b>次回予告</b>${esc(e.teaser)}</p>`:''}
+   </div>
+   <div class="ctrl"><button id="pv" aria-label="前の絵" ${i?'':'disabled'}>◀</button><button id="rd">${TTS?'🔊 読む':'▶ 順に光らせる'}</button><button id="nx" class="${last?'last':''}" aria-label="${last?'今日の例文へ':'次の絵'}">${last?'例文へ ▶':'▶'}</button></div>
+   <div class="tog"><button id="tja" aria-pressed="${showJa}">日本語訳</button><button id="tsl" aria-pressed="${slow}">ゆっくり</button><button id="tau" aria-pressed="${auto}">自動めくり</button></div>
+   ${TTS?'':'<p class="note">読み上げが使えないので、自動めくりは文を順に光らせて進みます。</p>'}`;
+  document.getElementById('back').onclick=home;
+  const hl=j=>app.querySelectorAll('.ln').forEach(x=>x.classList.toggle('now',+x.dataset.j===j));
+  const readAll=then=>talk(p.s.map((l,j)=>[l[0],l[1],j]),hl,then);
+  const goNext=()=>{ if(i<P.length-1)panel(i+1); else examples(); };
+  document.getElementById('pv').onclick=()=>{auto=false;if(i)panel(i-1);};
+  document.getElementById('nx').onclick=()=>{ if(last)auto=false; goNext(); };
+  document.getElementById('rd').onclick=()=>readAll(null);
+  app.querySelectorAll('.ln').forEach(x=>x.onclick=()=>{const j=+x.dataset.j;talk([[p.s[j][0],p.s[j][1],j]],hl,null);});
+  document.getElementById('tja').onclick=()=>{showJa=!showJa;store.set(JAK,showJa);const keep=auto;panel(i);if(keep)autoRun();};
+  document.getElementById('tsl').onclick=b=>{slow=!slow;store.set(SLOWK,slow);b.currentTarget.setAttribute('aria-pressed',String(slow));};
+  document.getElementById('tau').onclick=b=>{auto=!auto;b.currentTarget.setAttribute('aria-pressed',String(auto));if(auto)autoRun();else stopTalk();};
+  const autoRun=()=>readAll(()=>{ G.tm=setTimeout(()=>{ if(!auto)return; if(last){auto=false;examples();} else panel(i+1); },1100); });
+  const st=document.getElementById('stage'); let sx=null,sy=null;
+  st.addEventListener('touchstart',ev=>{const t=ev.touches[0];sx=t.clientX;sy=t.clientY;},{passive:true});
+  st.addEventListener('touchend',ev=>{if(sx==null)return;const t=ev.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;sx=null;
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){auto=false;if(dx<0)goNext();else if(i)panel(i-1);}},{passive:true});
+  top0();
+  if(auto)autoRun();
+}
+document.addEventListener('keydown',ev=>{ if(!G.e||!document.getElementById('stage')||ev.target.closest('input,textarea'))return;
+  if(ev.key==='ArrowRight'){auto=false;document.getElementById('nx').click();} if(ev.key==='ArrowLeft'&&G.i){auto=false;panel(G.i-1);} });
+/* ---------- 今日の例文 ---------- */
+function examples(){
+  stopTalk(); const e=G.e;
+  app.innerHTML=`${head('<span class="label" style="flex:1">今日の例文</span>')}
+    <p class="note" style="margin:0">第${e.no}話「${esc(e.ja)}」で出てきた例文です。文法：${esc(e.gr.join('・'))}</p>
+    ${e.keys.map(k=>`<div class="ex"><span><span class="en" lang="en">${esc(k[0])}</span>${sayBtn(k[0])}</span><span class="ja">${esc(k[1])}</span>
+      <p class="pt"><b>文法</b>${esc(k[2])}</p><p class="more"><b>同じ形の例文</b><span class="en" lang="en">${esc(k[3])}</span>${sayBtn(k[3])}<br><span class="ja">${esc(k[4])}</span></p></div>`).join('')}
+    <div class="row"><button class="btn" id="bk">◀ 紙芝居にもどる</button><button class="btn go" id="qz">たしかめクイズへ ▶</button></div>`;
+  document.getElementById('back').onclick=home;
+  document.getElementById('bk').onclick=()=>panel(e.panels.length-1);
+  document.getElementById('qz').onclick=()=>{G.q=0;G.score=0;G.order=e.quiz.map(q=>shuffle(q.c));quiz();};
+  top0();
+}
+/* ---------- たしかめクイズ ---------- */
+function quiz(){
+  stopTalk(); const e=G.e, qi=G.q, q=e.quiz[qi], ch=G.order[qi]; let tries=0, solved=false;
+  let body='';
+  if(q.t==='story') body=`<p class="qq">${/[ぁ-ん]/.test(q.q)?esc(q.q):`<span class="en" lang="en">${esc(q.q)}</span>`}</p>`;
+  if(q.t==='mean') body=`<p class="qs"><span class="en" lang="en">${esc(q.s)}</span>${sayBtn(q.s)}</p><p class="qq">この英文の意味は？</p>`;
+  if(q.t==='fill') body=`<p class="qq">(　　)に入るものは？</p><p class="qs"><span class="en" lang="en">${esc(q.q)}</span></p>`;
+  if(q.t==='listen') body=TTS?`<button class="play" id="pl" type="button">🔊 英語を聞く</button><p class="qq">聞こえた英文の意味は？</p>`
+     :`<p class="note">このブラウザでは読み上げが使えないので、英文を読んで答えよう。</p><p class="qs"><span class="en" lang="en">${esc(q.s)}</span></p><p class="qq">この英文の意味は？</p>`;
+  if(q.t==='order') body=`<p class="qq">「${esc(q.ja)}」を正しい順番の英語にすると？</p>`;
+  const en=x=>!/[ぁ-ゖァ-ヺ一-鿿]/.test(x);
+  app.innerHTML=`${head(`<span class="pg" style="flex:1;text-align:right">クイズ ${qi+1} / ${e.quiz.length}</span>`)}
+    <span class="qt">${QNAME[q.t]}</span>${body}
+    <div class="ch">${ch.map((c,k)=>`<button class="op" data-k="${k}"><span class="k">${'アイウ'[k]}</span><span>${en(c)?`<span class="en" lang="en">${esc(c)}</span>`:esc(c)}</span></button>`).join('')}</div>
+    <div id="fb"></div>`;
+  document.getElementById('back').onclick=home;
+  const pl=document.getElementById('pl'); if(pl){pl.onclick=()=>say1(q.s,'');}
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{ if(solved)return; const c=ch[+b.dataset.k], ok=c===q.c[0]; tries++;
+    track('answer_question',{category:GID+'-'+e.id,question:qi+1,correct:ok});
+    const fb=document.getElementById('fb');
+    if(ok){ solved=true; if(tries===1)G.score++; b.classList.add('ok'); app.querySelectorAll('.op').forEach(x=>x.disabled=true);
+      fb.innerHTML=`<p class="fb ok"><b>${tries===1?'⭕ 正解！':'⭕ 正解！（2回目以降）'}</b>${esc(q.why)}</p><div class="row" style="margin-top:10px"><button class="btn go" id="qn">${qi<e.quiz.length-1?'次の問題 ▶':'結果を見る ▶'}</button>${q.s?sayBtn(q.s):''}</div>`;
+      document.getElementById('qn').onclick=()=>{ if(qi<e.quiz.length-1){G.q++;quiz();} else result(); };
+      document.getElementById('qn').focus({preventScroll:true});
+    } else { b.classList.add('ng'); b.disabled=true;
+      fb.innerHTML=`<p class="fb ng"><b>✖ ちがうよ。もう一度えらぼう</b>${esc(q.hint)}</p>`; }
+  });
+  top0();
+}
+function result(){
+  stopTalk(); const e=G.e, s=G.score, r=recOf(e.id);
+  r.c=(r.c||0)+1; r.l=s; r.b=Math.max(r.b==null?-1:r.b,s); rec[e.id]=r; saveRec();
+  track('level_end',{level_name:GID+'-'+e.id,success:true,score:s});
+  const ix=ST.indexOf(e), nx=ST[ix+1], nt=TITLES[e.no], stars=s>=5?3:s>=3?2:1;
+  app.innerHTML=`${head('<span class="label" style="flex:1">結果</span>')}
+    <p style="margin:0;font-weight:700">第${e.no}話「${esc(e.ja)}」クリア！</p>
+    <div class="row"><span class="score">${s}<small> / 5問（1回目で正解）</small></span><span class="stars" aria-label="星 ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span></div>
+    <p class="note">これまでの最高 ${r.b} / 5問。${s<5?'まちがえた問題の例文を、もう一度🔊で聞いてみよう。':'全問、1回目で正解！'}</p>
+    ${e.teaser?`<p class="yokoku"><b>次回予告</b>${esc(e.teaser)}</p>`:'<p class="yokoku"><b>完結</b>「島のラジオ局」全10話、おしまい。読んでくれてありがとう！</p>'}
+    <div class="row">${nx?`<button class="btn go" id="next">第${nx.no}話「${esc(nx.ja)}」へ ▶</button>`:''}<button class="btn${nx?'':' go'}" id="list">話をえらぶ</button><button class="linkbtn" id="again">もう一度この話を読む</button></div>
+    ${!nx&&nt&&!PAID?`<p class="free">第${nt[1]}話「${esc(nt[3])}」からは有料版で読めます。</p>${PAIDLINK}`:''}`;
+  document.getElementById('back').onclick=home;
+  if(nx)document.getElementById('next').onclick=()=>start(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>start(e);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('c-eiken-p2drama'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'c-eiken-p2drama',err:err,free:'c-eiken-p2drama.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
