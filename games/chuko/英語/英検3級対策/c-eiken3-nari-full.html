@@ -1,0 +1,299 @@
+<title>英検3級 英語のお仕事になりきろう 全6章</title>
+<meta name="game:paid" content="利用コード">
+
+<meta name="game:course" content="chuko"><meta name="game:subject" content="英語">
+<meta name="game:unit" content="英検3級対策">
+<meta name="game:grade" content="中2〜中3">
+<meta name="game:players" content="1人">
+<meta name="description" content="英検3級 英語のお仕事になりきろうの有料版。図書館・おみやげ店・料理教室・動物園・観光案内所・英語新聞の全6章、42問。比較・不定詞・現在完了・受け身・間接疑問・関係代名詞と、掲示・時刻表・記事の読み取り、リスニング（🔊）、Eメールと英作文を、仕事の場面で確かめます。なりきりバッジ集めつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。章の一覧 → 仕事の場所のカード → 場面（絵・文・英語と🔊・選択肢）→ ゲームオーバー（実際には…）／章のまとめ（フレーズ・文法）。中高一貫コースの朱色を差し色に、英語は青 */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --en:#1f5f9a; --ensoft:#e4eef8;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e;
+  --en:#8cc4f2; --ensoft:#1a2a3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e;
+  --en:#8cc4f2; --ensoft:#1a2a3a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal);transition:width .3s}
+.whochip{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.txt{margin:0;white-space:pre-line;font-size:17px;line-height:1.95}
+.en{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-weight:700;color:var(--en);letter-spacing:.01em}
+.say{border:1px solid var(--en);background:var(--ensoft);color:var(--en);border-radius:99px;font-size:13px;line-height:1;padding:3px 7px;margin:0 2px 0 4px;cursor:pointer;vertical-align:2px}
+.say:active{transform:scale(.94)}
+.ask{margin:0;font-size:18px;font-weight:700;color:var(--ink);line-height:1.8}
+.ch{display:grid;gap:8px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.75;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:56px}
+.op .en{font-size:17px}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op .ic{flex:none;width:56px;height:56px}.op .ic svg{width:56px;height:56px;display:block;border-radius:6px}
+.op:active{transform:scale(.98)}
+.sw{border:3px solid var(--seal);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:var(--sealsoft)}
+.sw .swl{font-size:13px;font-weight:700;color:var(--seal);letter-spacing:.12em}
+.sw .got{margin:0;font-size:14px;font-weight:700;color:var(--ok);background:var(--surface);border-radius:99px;padding:2px 14px}
+.sw .swp{width:100%;max-width:340px;border-radius:10px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.sw .swp svg{display:block;width:100%;height:auto}
+.sw .swt{margin:0;font-size:17px;font-weight:700}
+.sw .swn{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,40px);line-height:1.4;color:var(--ink)}
+.sw .swe{margin:0;font-size:14px;letter-spacing:.12em}
+.sw .swr{margin:0;font-size:15px;color:var(--muted)}
+.over{border:3px dashed var(--gold);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.over h2,.endh{margin:0;font-family:var(--display);font-weight:400;font-size:21px;color:var(--gold);line-height:1.5}
+.endh{color:var(--ok)}
+.pick{margin:0;font-size:14px;color:var(--muted)}
+.pick b{color:var(--fg)}
+.hint{font-size:15px;line-height:1.85;background:var(--pick);border-radius:8px;padding:8px 12px;margin:0}
+.hint b{color:var(--seal);display:block;font-size:12px;letter-spacing:.1em}
+.lesson{font-size:16px;line-height:1.9;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:13px}
+.stars{font-size:26px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.phr{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.phr li{border:1px solid var(--rule);border-left:4px solid var(--en);border-radius:8px;padding:6px 12px;font-size:14px;line-height:1.7;background:var(--surface)}
+.phr li .en{font-size:16px;display:inline}
+.phr li span.ja{display:block;color:var(--muted)}
+.words{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.words li{border:1px solid var(--rule);border-radius:8px;padding:6px 12px;font-size:14px;line-height:1.7;background:var(--surface)}
+.words li b{font-size:15px;color:var(--ink);margin-right:8px;display:block}
+.srcs{margin:0;padding-left:18px;font-size:12px;color:var(--muted);line-height:1.7}
+.figrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.fc{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--surface);font-size:12px;line-height:1.5;display:flex;flex-direction:column}
+.fc .fp{line-height:0;background:#fff}.fc .fp svg{display:block;width:100%;height:auto}
+.fc .fn{padding:4px 8px 0;font-weight:700;font-size:14px}
+.fc .fe{padding:0 8px;font-size:11px;letter-spacing:.08em;color:var(--en);font-weight:700}
+.fc .fr{padding:0 8px 6px;color:var(--muted)}
+.fc.no .fp{display:grid;place-items:center;aspect-ratio:3/2;background:var(--pick);font-size:28px;line-height:1;color:var(--muted)}
+.list{display:grid;gap:8px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:17px;display:block;line-height:1.45}
+.st .ds{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.st .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}
+.st .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.78}
+.st.lockd .th,.st.soon .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:24px;line-height:1}
+.st.soon{opacity:.55;cursor:default}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.cnt{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:13px;color:var(--muted);font-family:var(--body)}
+details.cards summary{cursor:pointer;font-weight:700;font-size:14px}
+.speed{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.speed button{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:2px 10px;font-size:13px;cursor:pointer}
+.speed button[aria-pressed="true"]{border-color:var(--en);background:var(--ensoft);color:var(--en);font-weight:700}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.fmt{margin:0;align-self:flex-start;font-size:12px;font-weight:700;color:var(--surface);background:var(--en);border-radius:4px;padding:1px 8px;letter-spacing:.06em}
+.ntc{display:block;white-space:pre-line;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.7;background:var(--surface);border:2px solid var(--en);border-radius:8px;padding:10px 12px;margin:8px 0;color:var(--fg)}
+.lis{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:10px 12px;border:2px dashed var(--en);border-radius:8px;background:var(--ensoft)}
+.say.big{font-size:16px;padding:10px 16px;align-self:flex-start;font-weight:700;vertical-align:0;margin:0}
+.lis details summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.lis .ln{display:block;font-size:15px;line-height:1.7}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}.op:active,.say:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>英検3級 なりきりゲーム</small>英検3級 英語のお仕事になりきろう 全6章</h1>
+    <p class="lead">図書館・おみやげ店・料理教室・動物園・観光案内所・英語新聞。全6章で英検3級の形式をひと通り。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+const GID="c-eiken3-nari";
+let ST=[];
+const TITLES=[["library", 1, "図書館のボランティア", "3級・語い/会話/掲示/Eメール", ["カウンター", "子どもの本コーナー", "事務室"], true], ["shop", 2, "おみやげ店の店員", "3級・比較/熟語/値段", ["売り場", "レジ"], true], ["cooking", 3, "料理教室のアシスタント", "3級・不定詞/現在完了/意見", ["調理台", "食たく"], true], ["zoo", 4, "動物園のガイド", "3級・最上級/受け身/説明文", ["ペンギン池", "ゾウの家"], true], ["tourist", 5, "観光案内所のスタッフ", "3級・道案内/時刻表/間接疑問", ["案内カウンター", "駅のホーム"], true], ["news", 6, "英語新聞の記者", "3級・関係代名詞/記事/英作文", ["インタビュー", "新聞部の部室"], true]];
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TTS=(()=>{try{return 'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';}catch(e){return false;}})();
+const sayBtn=t=>TTS&&/\s/.test(t.trim())?`<button class="say" type="button" data-t="${t}" aria-label="英語を聞く">🔊</button>`:'';
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>').replace(/\n?⟦([^⟧]+)⟧\n?/g,(m,e)=>`<span class="ntc" lang="en">${e.trim()}</span>`).replace(/\n?⟪([^⟫]+)⟫\n?/g,(m,e)=>{const L=e.split('|').map(x=>x.trim());return `<span class="lis">${TTS?`<button class="say big" type="button" data-l="${L.join('|')}">🔊 英語を聞く</button>`:''}<details${TTS?'':' open'}><summary>英文を見る</summary>${L.map((x,i)=>`<span class="ln">${L.length>1?(i%2?'B：':'A：'):''}<span class="en" lang="en">${x}</span></span>`).join('')}</details></span>`;}).replace(/“([^“”]+)”/g,(m,e)=>`<span class="en" lang="en">“${e}”</span>${sayBtn(e)}`);
+const isEn=s=>!/[ぁ-ゖァ-ヺ一-鿿々ー、。「」（）！？]/.test(s);
+const optTxt=s=>isEn(s)?`<span class="en" lang="en">${esc(s)}</span>`:rb(s);
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const PAIDLINK="<a class=\"paid\" href=\"c-eiken3-nari-full.html\" id=\"paid-link\"><span class=\"pt\">ほかの仕事もやりたい人へ　<b>英検3級 英語のお仕事になりきろう 全6章</b>（有料版）</span><span class=\"pd\">無料版の第1章もふくむ全6章。おみやげ店、料理教室、動物園、観光案内所、英語新聞の記者まで。なりきりバッジ集めつき。</span></a>";
+
+/* 英検なりきり：場面に f（英検の出題形式）。文中の ⟦…⟧ は掲示・Eメール、⟪A | B⟫ はリスニング（🔊で読み上げ、英文はかくしておく）
+   ST=章 [{id,no,title,level,sub,start,len,spots:[[ばしょ,英語,説明,絵]],ph:[[英語,日本語]],gr:[[文法,説明]],src:[資料],
+         sc:{場面id:{k:n/q/x/e,t:文,p:絵,nx:次,a:問い,c:[[ことば,行き先,icon?]],h:覚えておこう,l:まとめ,n:何番目,w:ばしょ}}}]
+   TITLES=[[id,第何章,題名,レベル,[ばしょ],できているか]] */
+const REC='c-eiken3-nari-p-rec', CARDK='c-eiken3-nari-cards', SLOWK='c-eiken3-nari-slow';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={}; const saveRec=()=>store.set(REC,rec);
+let cards=store.get(CARDK,{}); if(!cards||typeof cards!=='object'||Array.isArray(cards))cards={};
+let slow=!!store.get(SLOWK,false);
+let VO=null; const pickV=()=>{try{const v=speechSynthesis.getVoices();VO=v.find(x=>x.lang==='en-US')||v.find(x=>/^en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;}catch(e){}};
+if(TTS){pickV();try{speechSynthesis.addEventListener('voiceschanged',pickV);}catch(e){}}
+const say=t=>{if(!TTS)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/（\s*）|\(\s*\)/g,' ... ').replace(/[～…]/g,' ').replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,'&'));u.lang='en-US';if(VO)u.voice=VO;u.rate=slow?.7:.95;speechSynthesis.speak(u);}catch(e){}};
+const clean=t=>String(t).replace(/（\s*）|\(\s*\)/g,' ... ').replace(/[～…]/g,' ').replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,'&');
+const sayL=l=>{if(!TTS)return;try{speechSynthesis.cancel();l.split('|').forEach((x,i)=>{const u=new SpeechSynthesisUtterance(clean(x));u.lang='en-US';if(VO)u.voice=VO;u.rate=slow?.7:.9;u.pitch=i%2?1.35:.9;speechSynthesis.speak(u);});}catch(e){}};
+app.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.say');if(b){e.preventDefault();e.stopPropagation();b.dataset.l?sayL(b.dataset.l):say(b.dataset.t);}});
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+const ckey=(id,nm)=>id+':'+nm;
+const collect=(id,nm)=>{const k=ckey(id,nm);const isNew=!cards[k];if(isNew){cards[k]=Date.now();store.set(CARDK,cards);}return isNew;};
+const ALLFIG=TITLES.flatMap(t=>t[4].map(nm=>ckey(t[0],nm)));
+const nCards=()=>ALLFIG.filter(k=>cards[k]).length;
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const spotOf=(s,nm)=>s.spots.find(f=>f[0]===nm)||[nm,'','',''];
+const figCard=(s,f)=>{const got=!!cards[ckey(s.id,f[0])];
+  return got?`<div class="fc"><span class="fp">${f[3]}</span><span class="fn">${esc(f[0])}</span><span class="fe" lang="en">${esc(f[1])}</span><span class="fr">${rb(f[2])}</span></div>`
+            :`<div class="fc no"><span class="fp">？</span><span class="fn">？？？</span><span class="fr">第${s.no}章「${rb(s.title)}」</span></div>`;};
+function speedRow(){ if(!TTS)return '<p class="note">このブラウザでは英語の読み上げ（🔊）が使えません。</p>';
+  return `<div class="speed">🔊 読み上げの速さ <button type="button" data-sp="0" aria-pressed="${!slow}">ふつう</button><button type="button" data-sp="1" aria-pressed="${slow}">ゆっくり</button></div>`; }
+function home(){
+  G=null; try{TTS&&speechSynthesis.cancel();}catch(e){}
+  const row=([id,no,title,level,spots,ok])=>{const s=ST.find(c=>c.id===id);
+    if(s){const r=rec[id]||[0,0];
+      return `<button class="st" data-id="${id}"><span class="th">${s.sc[s.start].p}</span><span><span class="no">第${no}章　${rb(level)}</span><span class="nm">${rb(title)}</span>
+        <span class="ds">${s.spots.map(f=>esc(f[0])).join(' → ')}</span>
+        ${r[0]?`<span class="bd ok">✓ クリア${r[0]>1?'（'+r[0]+'回）':''}</span>`:'<span class="bd new">まだ</span>'}${r[1]?` <span class="note" style="display:inline">ゲームオーバー ${r[1]}回</span>`:''}</span></button>`;}
+    if(!PAID)return `<a class="st lockd" href="${GID}-full.html"><span class="th">🔒</span><span><span class="no">第${no}章　${rb(level)}</span><span class="nm">${rb(title)}</span><span class="ds">利用コードで遊べます</span></span></a>`;
+    return `<div class="st soon"><span class="th">⏳</span><span><span class="no">第${no}章　${rb(level)}</span><span class="nm">${rb(title)}</span><span class="ds">じゅんび中</span></span></div>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">利用コードで遊べる章</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const total=ALLFIG.length, got=nCards();
+  const gal=ST.map(s=>s.spots.map(f=>figCard(s,f)).join('')).join('');
+  const done=ST.filter(s=>(rec[s.id]||[0])[0]>0).length;
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">あなたは、職場体験で町のいろいろな仕事をする中学2年生のハル。章をえらぶと仕事が始まります。場面ごとに、合う英語や答えを選ぼう。どの問題も、英検3級の出題形式（語い・会話文・読解・リスニング・ライティング）のどれかになっています。うまくいくと仕事が続き、ちがうと「実際には…」で、なぜだめかがわかります。🔊で英語の読み上げも聞けます。</p>
+    ${speedRow()}
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">なりきりバッジ</span><span class="cnt">${got}<small> / ${total}こ</small></span></div>
+    <details class="cards"><summary>バッジを見る</summary><div class="figrow" style="margin-top:8px">${gal}</div></details>
+    <div class="row" style="justify-content:space-between"><span class="label">章をえらぶ</span><span class="note">クリアした章 ${done} / ${ST.length}</span></div>
+    ${PAID?'':`<p class="free">第${ST.map(s=>s.no).join('・')}章は無料。🔒の章は<b>利用コードで全${TITLES.length}章</b>遊べます。</p>`}
+    <div class="list">${rows}</div>${PAID?`<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  app.querySelectorAll('.speed button').forEach(b=>b.onclick=()=>{slow=b.dataset.sp==='1';store.set(SLOWK,slow);app.querySelectorAll('.speed button').forEach(x=>x.setAttribute('aria-pressed',String((x.dataset.sp==='1')===slow)));say('Hello! Good luck today.');});
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？（バッジも消えます） <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();cards={};store.set(CARDK,cards);home();};document.getElementById('no').onclick=home;};
+}
+function play(s){ G={s:s,who:null,from:null,pick:'',overs:0}; track('level_start',{level_name:'c-eiken3-nari-'+s.id}); show(s.start); }
+function head(o){ const n=(o&&o.n)||0; return `<div class="top"><button class="linkbtn" id="back">← 章をえらぶ</button><div class="prog" aria-hidden="true"><i style="width:${Math.round(n/G.s.len*100)}%"></i></div>${G.who?`<span class="whochip">${esc(G.who)}</span>`:''}</div>`; }
+function show(id){
+  try{TTS&&speechSynthesis.cancel();}catch(e){}
+  const s=G.s, o=s.sc[id];
+  if(o.k==='x')return over(o);
+  if(o.w&&o.w!==G.who)return switchCard(id);
+  if(o.k==='e')return ending(o);
+  render(id);
+}
+function switchCard(id){
+  const s=G.s, o=s.sc[id], prev=G.who, f=spotOf(s,o.w);
+  if(prev)collect(s.id,prev);
+  G.who=o.w;
+  const nth=s.spots.findIndex(x=>x[0]===o.w)+1;
+  app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="仕事の場所が変わる">
+    <div class="swl">第${s.no}章　${rb(s.title)}　${nth?nth+'つ目のばしょ':''}</div>
+    ${prev?`<p class="got">✓「${esc(prev)}」のなりきりバッジを手に入れた！</p>`:''}
+    <div class="swp">${f[3]}</div>
+    <p class="swt">${prev?'次のばしょは':'さいしょのばしょは'}</p>
+    <p class="swn">${esc(f[0])}</p><p class="swe en" lang="en">${esc(f[1])}</p>
+    <p class="swr">${rb(f[2])}</p>
+    <button class="btn go" id="nx">${esc(f[0])}へ進む ▶</button></div>`;
+  document.getElementById('back').onclick=home;
+  const nx=document.getElementById('nx'); nx.onclick=()=>o.k==='e'?ending(o):render(id);
+  top0(); nx.focus({preventScroll:true});
+}
+function render(id){
+  const s=G.s, o=s.sc[id];
+  const ch=o.k==='q'?shuffle(o.c):null;
+  app.innerHTML=`${head(o)}${o.f?`<p class="fmt">英検 ${esc(o.f)}</p>`:''}<div class="pic">${o.p}</div><div class="txt">${rb(o.t)}</div>
+    ${o.k==='q'?`<p class="ask">${rb(o.a)}</p><div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${'アイウ'[i]}</span>${c[2]?`<span class="ic">${c[2]}</span>`:''}<span>${optTxt(c[0])}</span></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="nx">次へ ▶</button></div>`}`;
+  document.getElementById('back').onclick=home;
+  if(ch)app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const c=ch[+b.dataset.i];const ok=s.sc[c[1]].k!=='x';
+    track('answer_question',{category:'c-eiken3-nari-'+s.id,question:id,correct:ok});
+    if(!ok){G.from=id;G.pick=c[0];G.overs++;bump(s.id,1);} show(c[1]);});
+  else document.getElementById('nx').onclick=()=>show(o.nx);
+  top0();
+}
+function over(o){
+  const s=G.s;
+  app.innerHTML=`${head(s.sc[G.from]||{})}<div class="over"><h2>おっと、うまくいかなかった！</h2>
+    <p class="pick">あなたが選んだのは：<b>${optTxt(G.pick)}</b>${isEn(G.pick)?sayBtn(esc(G.pick)):''}</p>
+    <div class="pic">${o.p}</div><div class="txt">${rb(o.t)}</div>${o.h?`<p class="hint"><b>覚えておこう</b>${rb(o.h)}</p>`:''}
+    <div class="row"><button class="btn go" id="retry">この場面からやりなおす</button><button class="btn" id="first">最初から</button></div>
+    <div><button class="linkbtn" id="list">章をえらぶ</button></div></div>`;
+  document.getElementById('back').onclick=home;
+  const rt=document.getElementById('retry');rt.onclick=()=>render(G.from);
+  document.getElementById('first').onclick=()=>{G.who=null;show(s.start);};
+  document.getElementById('list').onclick=home;
+  top0(); rt.focus({preventScroll:true});
+}
+function ending(o){
+  const s=G.s, stars=G.overs===0?3:G.overs<=2?2:1;
+  if(G.who)collect(s.id,G.who);
+  bump(s.id,0);
+  track('level_end',{level_name:'c-eiken3-nari-'+s.id,success:true,score:stars});
+  const ix=ST.indexOf(s), nx=ST[ix+1];
+  app.innerHTML=`${head(o)}<p class="endh">🎉 第${s.no}章「${rb(s.title)}」クリア！</p><div class="pic">${o.p}</div><div class="txt">${rb(o.t)}</div>
+    <p class="lesson"><b>この章のまとめ</b>${rb(o.l)}</p>
+    <div class="row"><span class="stars" aria-label="星 ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span><span class="note">${G.overs?'ゲームオーバー '+G.overs+'回。次はノーミスをめざそう！':'ノーミスで最後まで進めた！'}</span></div>
+    <div class="label">使えるフレーズ</div>
+    <ul class="phr">${s.ph.map(p=>`<li><span class="en" lang="en">${esc(p[0])}</span>${sayBtn(esc(p[0]))}<span class="ja">${rb(p[1])}</span></li>`).join('')}</ul>
+    <div class="label">文法ポイント</div>
+    <ul class="words">${s.gr.map(w=>`<li><b>${rb(w[0])}</b>${rb(w[1])}</li>`).join('')}</ul>
+    <div class="label">なりきりバッジ（${nCards()} / ${ALLFIG.length}こ）</div><div class="figrow">${s.spots.map(f=>figCard(s,f)).join('')}</div>
+    <div class="label">参考にした資料</div><ul class="srcs">${s.src.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+    <div class="row">${nx?`<button class="btn go" id="next">次の章「${rb(nx.title)}」</button>`:''}<button class="btn${nx?'':' go'}" id="list">章をえらぶ</button><button class="linkbtn" id="again">もう一度この章を</button></div>${PAID?'':PAIDLINK}`;
+  document.getElementById('back').onclick=home;
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(s);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('c-eiken3-nari'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'c-eiken3-nari',err:err,free:'c-eiken3-nari.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
