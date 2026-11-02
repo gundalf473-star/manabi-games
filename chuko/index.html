@@ -181,7 +181,7 @@ footer a{color:inherit}
   }
   const card=u=>`<div class="card">
         <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${favIdx(u.k)>=0}" title="一覧のいちばん上の「わたしの単元」に入れる">${favIdx(u.k)>=0?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
-        <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
+        <div class="btns">${u.free?`<a href="../${u.free.url}">${u.paid?'無料で5問':'あそぶ →'}</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
   /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
   const PRI=['算数から数学へ','正負の数・文字式','一次方程式','比例と反比例','平面図形','連立方程式','一次関数','図形の性質と証明','確率とデータの活用','式の展開と平方根','二次方程式と関数','相似と三平方の定理','数学Ⅰ','数学A','数学Ⅱ','数学B','数学C',
     '中1英単語・英文法','絵で学ぶ英語','過去形・進行形','中学英文法','会話と読解','高校英文法','英検5級対策','英検4級対策','英検3級対策','英検準2級対策','英検準2級プラス対策','英検2級対策','英検準1級対策','英検ライティング','英検リスニング',

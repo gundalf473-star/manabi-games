@@ -173,7 +173,7 @@ footer a{color:inherit}
   }
   const card=u=>`<div class="card">
         <span class="tags"><span class="tag">${esc(u.grade)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${favIdx(u.k)>=0}" title="一覧のいちばん上の「わたしの単元」に入れる">${favIdx(u.k)>=0?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
-        <div class="btns">${u.free?`<a href="../${u.free.url}">無料で5問</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
+        <div class="btns">${u.free?`<a href="../${u.free.url}">${u.paid?'無料で5問':'あそぶ →'}</a>`:''}${u.paid?`<a class="p" href="../${u.paid.url}">100問（有料版）</a>`:''}</div></div>`;
   /* 分野の並び順（教科書の流れ）。ここにない分野は学年の順で後ろに */
   const PRI=['推論','割合と損益','速さと料金の計算','確率と場合の数','資料の読み取りと集合','二語の関係','語句の意味と用法','文の並べかえと長文読解','ストラテジ','マネジメント','テクノロジ（基礎理論とコンピュータ）','テクノロジ（ネットワーク・セキュリティ・データベース）','アルゴリズムとプログラミング','情報セキュリティ','テクノロジとマネジメントの基礎','データの記述と要約','確率と確率分布','推定と検定','仕訳の基本','決算整理','精算表と財務諸表','文法','語い','短い読解'];
   const fo=x=>{const i=PRI.indexOf(x.f);return i<0?1000+x.g:i;};

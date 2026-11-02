@@ -1,0 +1,1009 @@
+<title>えいたんクロス</title>
+<meta name="game:subject" content="思考力">
+<meta name="game:unit" content="ことば遊び">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1〜4人">
+<meta name="description" content="アルファベットのタイルで英単語をたて・よこに組み立てる対戦ゲーム。ばんの文字を1つ使って単語を作り、たくさんタイルを置いた人の勝ち。1台で2〜4人、またはコンピューターと。簡単・上級ルール、テーマモード、発音つき。無料。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* えいたんクロス：1列。上に点数、まん中に盤、下に手もとのタイルとボタン。青緑を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#22252b; --muted:#5b6270; --rule:#d6dbe4;
+  --ink:#1f3a6e; --accent:#0d6e66; --accentsoft:#dcf1ee; --gold:#9a6b00; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c0352d; --ngsoft:#f8e3e1;
+  --cell:#e6eaf1; --cellline:#c9d0dc; --center:#d3dbe8; --tile:#fffdf6; --tileink:#1b2230; --tileedge:#b9c0cc; --pick:#eef1f6;
+  --p0:#2459d6; --p1:#c94a12; --p2:#177a3b; --p3:#8a35d8; --pstart:#7c8494;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --tilefont:"BIZ UDPGothic","Segoe UI","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151b; --surface:#1b2029; --fg:#e8ebf0; --muted:#a5adba; --rule:#2e3542;
+  --ink:#a9c1ff; --accent:#3cc9b8; --accentsoft:#143430; --gold:#e1b44a; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220;
+  --cell:#222833; --cellline:#323a49; --center:#2c3442; --tile:#f3eee0; --tileink:#151b26; --tileedge:#8a8f99; --pick:#252b36;
+  --p0:#6f9bff; --p1:#ff8a4c; --p2:#4fd17f; --p3:#c58bff; --pstart:#9aa2b0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151b; --surface:#1b2029; --fg:#e8ebf0; --muted:#a5adba; --rule:#2e3542;
+  --ink:#a9c1ff; --accent:#3cc9b8; --accentsoft:#143430; --gold:#e1b44a; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220;
+  --cell:#222833; --cellline:#323a49; --center:#2c3442; --tile:#f3eee0; --tileink:#151b26; --tileedge:#8a8f99; --pick:#252b36;
+  --p0:#6f9bff; --p1:#ff8a4c; --p2:#4fd17f; --p3:#c58bff; --pstart:#9aa2b0; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 76px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,8vw,40px);line-height:1.15;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--body);font-weight:700;font-size:13px;color:var(--accent);letter-spacing:.2em;margin-bottom:4px}
+h2{font-size:17px;margin:0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+rt{font-size:.55em;letter-spacing:0}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.1em}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--rule);border-radius:10px;padding:10px 16px;min-height:44px;font-weight:700;cursor:pointer;background:var(--pick);color:var(--fg)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.go{color:#0b1a18}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.go{color:#0b1a18}}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sm{min-height:38px;padding:6px 12px;font-size:14px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:8px 14px;min-height:42px;font-weight:700;cursor:pointer;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#0b1a18}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0b1a18}}
+.note{font-size:13px;color:var(--muted);margin:0}
+.seat{display:grid;grid-template-columns:14px 1fr;gap:6px 8px;align-items:center;border:1px solid var(--rule);border-radius:10px;padding:8px 10px}
+.seat .dot{width:14px;height:14px;border-radius:50%}
+.seat input{width:100%;min-width:0;border:1px solid var(--rule);border-radius:8px;padding:8px 10px;background:var(--bg);min-height:42px}
+.seat select{border:1px solid var(--rule);border-radius:8px;padding:8px;background:var(--bg);min-height:42px;width:100%}
+.seat .ctl{grid-column:2;display:flex;gap:6px;align-items:center}
+.rec{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.rec b{font-size:20px;color:var(--ink)}
+/* ゲーム画面 */
+.scores{display:flex;gap:6px;flex-wrap:wrap}
+.sc{flex:1 1 0;min-width:72px;border:2px solid var(--rule);border-radius:10px;padding:4px 8px;background:var(--surface);line-height:1.25;position:relative}
+.sc.on{border-color:var(--pc);box-shadow:0 0 0 2px var(--pc) inset}
+.sc .nm{font-size:12px;font-weight:700;color:var(--pc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.sc .pt{font-size:22px;font-weight:700;font-family:var(--tilefont)}
+.sc .pt small{font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.sc .sub{display:block;font-size:11px;color:var(--muted)}
+.info{display:flex;justify-content:space-between;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tools .btn{min-height:36px;padding:4px 10px;font-size:13px}
+.msg{min-height:46px;border-radius:10px;padding:8px 12px;background:var(--accentsoft);font-size:14px;line-height:1.55}
+.msg.ng{background:var(--ngsoft);color:var(--fg)}
+.msg.ok{background:var(--oksoft)}
+.boardwrap{width:100%;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+.board{display:grid;gap:2px;width:100%;max-width:min(560px,max(300px,calc(100vh - 300px)));margin:0 auto;background:var(--cellline);border:2px solid var(--cellline);border-radius:10px;padding:0;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.boardwrap.zoom .board{width:calc(var(--n) * 42px);max-width:none}
+.cell{aspect-ratio:1;border:0;background:var(--cell);padding:0;margin:0;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;min-width:0;border-radius:3px;font-family:var(--tilefont);font-weight:700;color:var(--tileink)}
+.cell.mid{background:var(--center)}
+.cell.t{background:var(--tile);box-shadow:inset 0 -4px 0 var(--oc,var(--tileedge));font-size:var(--fs,16px);cursor:default}
+.cell.t.pend{box-shadow:inset 0 0 0 2px var(--accent),inset 0 -4px 0 var(--accent);cursor:pointer}
+.cell.t.pend.new{animation:pop .18s ease-out}
+.cell.t.cpu{animation:pop .22s ease-out}
+.cell.hint{outline:3px dashed var(--gold);outline-offset:-3px;color:var(--gold);font-size:var(--fs,16px)}
+.cell.last{box-shadow:inset 0 -4px 0 var(--oc,var(--tileedge)),inset 0 0 0 2px var(--oc)}
+.cell.drop{outline:3px solid var(--accent);outline-offset:-3px}
+@keyframes pop{from{transform:scale(.6)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.cell.t.pend,.cell.t.cpu{animation:none}}
+.rack{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;min-height:54px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--rule)}
+.tl{width:min(46px,calc((100vw - 32px - 14px - 35px) / 8));height:50px;border-radius:8px;border:1px solid var(--tileedge);background:var(--tile);color:var(--tileink);font-family:var(--tilefont);font-weight:700;font-size:24px;cursor:pointer;box-shadow:inset 0 -4px 0 var(--pcol,var(--tileedge));touch-action:none}
+.tl[aria-pressed="true"]{transform:translateY(-5px);outline:3px solid var(--accent);outline-offset:1px}
+.tl.back{background:var(--pick);color:var(--muted);cursor:default;font-size:16px}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.acts .btn{padding:8px 6px;font-size:15px}
+.acts .wide{grid-column:span 3}
+.sub2{display:flex;gap:6px;flex-wrap:wrap;justify-content:space-between}
+.ghost{position:fixed;pointer-events:none;z-index:200;opacity:.9}
+/* 重ねて出す画面 */
+.ov{position:fixed;inset:0;z-index:150;background:rgba(10,14,22,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:var(--surface);color:var(--fg);border-radius:16px;padding:20px;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.card h2{font-size:20px}
+.cover{text-align:center;align-items:center}
+.cover .big{font-size:26px;font-weight:700;color:var(--pc)}
+.wd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wd .en{font-family:var(--tilefont);font-size:34px;font-weight:700;letter-spacing:.04em;color:var(--ink)}
+.wd .jp{font-size:18px}
+.wd.small .en{font-size:22px}
+.wd.small .jp{font-size:15px}
+.say{border:1px solid var(--rule);background:var(--pick);border-radius:99px;min-width:44px;min-height:40px;font-size:18px;cursor:pointer}
+.gain{font-weight:700;color:var(--ok)}
+.rules ol,.rules ul{margin:0;padding-left:1.3em}
+.rules li{margin:2px 0}
+.rules h3{font-size:15px;margin:8px 0 2px;color:var(--accent)}
+.rank{display:flex;flex-direction:column;gap:6px}
+.rk{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;border:1px solid var(--rule);border-left:6px solid var(--pc);border-radius:10px;padding:8px 10px;background:var(--surface)}
+.rk .n{font-family:var(--display);font-size:22px;color:var(--ink);text-align:center}
+.rk .s{font-size:24px;font-weight:700;font-family:var(--tilefont)}
+.rk .d{font-size:12px;color:var(--muted)}
+.wlist{display:flex;flex-direction:column;gap:2px}
+.wl{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--rule);padding:4px 0}
+.wl .en{font-family:var(--tilefont);font-weight:700;min-width:6.5em}
+.wl .jp{flex:1;font-size:14px}
+.wl .say{min-height:36px;min-width:40px;font-size:16px}
+details.pw{border:1px solid var(--rule);border-left:6px solid var(--pc);border-radius:10px;padding:8px 12px;background:var(--surface)}
+details.pw summary{cursor:pointer;font-weight:700;min-height:32px}
+.hide{display:none!important}
+/* 低学年：大きめのボタンと文字 */
+body.big{font-size:17px}
+body.big .btn{min-height:52px;font-size:17px}
+body.big .acts .btn{font-size:16px}
+body.big .tl{width:min(50px,calc((100vw - 32px - 14px - 35px) / 8));height:56px;font-size:28px}
+body.big .seg button{min-height:48px;font-size:16px}
+@media (min-width:700px){.tl{width:52px;height:56px;font-size:28px}}
+</style>
+
+<div class="wrap" id="app"><p class="note">読みこんでいます…</p></div>
+
+<script>
+window.WC_CONFIG={"id":"eitancross","N":13,"hand":7,"level":1,"levels":[0,1,2,3,4],"rule":"easy","noQXZ":false,"kana":false,"big":false,"kicker":"思考力パズル・英単語","course":"juken"};
+window.WC_DATA={"levels":["低学年かんたん","英検5級","英検4級","英検3級","英検準2級","ビジネス"],"themes":["動物","食べ物","学校","体・家族","自然"],"words":[["all","すべての",0,0,0,"ぜんぶ"],["am","（わたしは）〜です",0,0,0],["an","ひとつの",0,0,0],["and","そして・〜と",0,0,0,"〜と"],["ant","あり",0,1,1],["ape","おおきなさる",0,1,1],["apple","りんご",0,2,1],["are","〜です",0,0,0],["arm","うで",0,8,1],["art","美術",0,4,0,"ずこう"],["ask","たずねる",0,0,0],["at","〜で",0,0,0],["aunt","おば",0,8,1],["baby","赤ちゃん",0,8,1,"あかちゃん"],["bacon","ベーコン",0,2,0],["bad","悪い",0,0,0,"わるい"],["bag","かばん",0,4,1],["ball","ボール",0,0,1],["bat","こうもり",0,1,1],["bath","おふろ",0,0,1],["be","〜である・いる",0,0,0,"〜である"],["beach","浜辺",0,16,1,"すなはま"],["bean","まめ",0,2,1],["bear","くま",0,1,1],["bed","ベッド",0,0,1],["bee","はち",0,1,1],["beef","ぎゅうにく",0,2,1],["bell","ベル",0,4,1],["belly","おなか",0,8,1],["berry","ベリー",0,2,1],["big","大きい",0,0,0,"おおきい"],["bike","自転車",0,0,1,"じてんしゃ"],["bird","鳥",0,1,1,"とり"],["black","くろ",0,0,0],["blue","青",0,0,0,"あお"],["board","こくばん",0,4,1],["boat","ボート",0,0,1],["body","からだ",0,8,1],["book","本",0,4,1,"ほん"],["box","箱",0,0,1,"はこ"],["boy","男の子",0,8,1,"おとこのこ"],["bread","パン",0,2,0],["brown","ちゃいろ",0,0,0],["bug","むし",0,1,1],["bun","まるいパン",0,2,1],["bunny","うさぎちゃん",0,1,1],["bus","バス",0,0,0],["busy","いそがしい",0,0,0],["but","しかし",0,0,0,"でも"],["by","〜のそばに・〜によって",0,0,0,"〜のそばに"],["cake","ケーキ",0,2,1],["camel","ラクダ",0,1,1],["can","できる",0,0,0],["candy","あめ",0,2,1],["cap","ぼうし",0,0,1],["car","車",0,0,1,"くるま"],["card","カード",0,4,1],["cat","ねこ",0,1,1],["catch","つかまえる",0,0,0],["chair","いす",0,4,1],["chalk","チョーク",0,4,0],["cheek","ほお",0,8,1],["chick","ひよこ",0,1,1],["chin","あご",0,8,1],["chips","ポテトチップス",0,2,0],["city","都市・市",0,0,1,"とし"],["clap","拍手する",0,0,0,"てをたたく"],["class","クラス・授業",0,4,0,"クラス"],["clock","時計（置き時計）",0,4,1,"とけい"],["close","閉める",0,0,0,"しめる"],["cloud","雲",0,16,1,"くも"],["club","部活動・クラブ",0,4,1,"クラブ"],["coat","コート",0,0,1],["cocoa","ココア",0,2,0],["cold","寒い・冷たい",0,0,0,"つめたい・さむい"],["color","色",0,0,1,"いろ"],["come","来る",0,0,0,"くる"],["cook","料理する",0,0,0,"りょうりする"],["cool","すずしい・かっこいい",0,0,0,"すずしい"],["corn","とうもろこし",0,2,0],["cow","うし",0,1,1],["crab","かに",0,1,1],["cream","クリーム",0,2,0],["crow","からす",0,1,1],["cry","泣く・さけぶ",0,0,0,"なく"],["cup","コップ",0,0,1],["curry","カレー",0,2,1],["cut","切る",0,0,0,"きる"],["cute","かわいい",0,0,0],["dad","パパ",0,8,1],["dance","おどる",0,0,0],["day","日・昼",0,0,1,"ひ・いちにち"],["deer","しか",0,1,0],["desk","机",0,4,1,"つくえ"],["dish","皿・料理",0,2,1,"おさら"],["do","する",0,0,0],["dog","犬",0,1,1,"いぬ"],["doll","にんぎょう",0,0,1],["donut","ドーナツ",0,2,1],["door","ドア",0,0,1],["dove","はと",0,1,1],["draw","（線で絵を）かく",0,0,0,"えをかく"],["dress","ドレス",0,0,0],["drink","飲む",0,0,0,"のむ"],["dry","かわいた",0,0,0],["duck","あひる",0,1,1],["eagle","ワシ",0,1,1],["ear","耳",0,8,1,"みみ"],["earth","地球",0,16,0,"ちきゅう"],["easy","かんたんな",0,0,0,"かんたん"],["eat","食べる",0,0,0,"たべる"],["eel","うなぎ",0,1,1],["egg","たまご",0,2,1],["eight","8",0,0,0],["eye","目",0,8,1,"め"],["face","顔",0,8,1,"かお"],["farm","農場",0,0,1,"のうじょう"],["fast","速い",0,0,0,"はやい"],["field","野原・分野",0,16,1,"のはら"],["fig","いちじく",0,2,1],["find","見つける",0,0,0,"みつける"],["fire","火・火事",0,16,1,"ひ"],["fish","魚",0,1,0,"さかな"],["five","5",0,0,0],["fly","飛ぶ",0,0,0,"とぶ"],["food","食べ物",0,2,0,"たべもの"],["foot","足",0,8,0,"あし"],["fork","フォーク",0,0,1],["four","4",0,0,0],["fox","きつね",0,1,1],["fries","フライドポテト",0,2,0],["frog","かえる",0,1,1],["full","いっぱいの",0,0,0,"いっぱい"],["fun","楽しいこと",0,0,0,"たのしい"],["funny","おもしろい",0,0,0],["game","試合・ゲーム",0,0,1,"ゲーム"],["get","手に入れる",0,0,0,"もらう"],["gift","贈り物",0,0,1,"プレゼント"],["girl","女の子",0,8,1,"おんなのこ"],["give","あたえる",0,0,0,"あげる"],["glue","のり",0,4,0],["go","行く",0,0,0,"いく"],["goat","やぎ",0,1,1],["good","よい",0,0,0],["goose","ガチョウ",0,1,0],["grape","ぶどう",0,2,1],["grass","くさ",0,16,0],["gray","はいいろ",0,0,0],["green","みどり",0,0,0],["gum","ガム",0,2,0],["gym","体育館",0,4,0,"たいいくかん"],["hair","かみの毛",0,8,1,"かみのけ"],["ham","ハム",0,2,0],["hand","手",0,8,1,"て"],["happy","幸せな・うれしい",0,0,0,"しあわせ"],["hard","かたい・難しい",0,0,0,"かたい"],["hat","ぼうし",0,0,1],["have","持っている・食べる",0,0,0,"もっている"],["he","かれは",0,0,0],["head","頭",0,8,1,"あたま"],["heart","心・心臓",0,8,1,"こころ・しんぞう"],["hello","こんにちは",0,0,0],["help","手伝う・助ける",0,0,0,"たすける"],["hen","めんどり",0,1,1],["her","かのじょの",0,0,0],["here","ここに",0,0,0,"ここ"],["hi","やあ",0,0,0],["high","高い",0,0,0,"たかい"],["hill","丘",0,16,1,"おか"],["hippo","カバ",0,1,1],["his","かれの",0,0,0],["home","家庭・自宅",0,0,1,"いえ"],["honey","はちみつ",0,2,0],["hop","ぴょんととぶ",0,0,0],["horse","馬",0,1,1,"うま"],["hot","暑い・熱い",0,0,0,"あつい"],["house","家",0,0,1,"いえ"],["how","どうやって",0,0,0],["hug","だきしめる",0,0,0],["hyena","ハイエナ",0,1,1],["ice","こおり",0,16,0],["if","もし〜ならば",0,0,0,"もし〜なら"],["in","〜の中に",0,0,0,"〜のなかに"],["is","〜です",0,0,0],["it","それ",0,0,0],["jam","ジャム",0,2,0],["jelly","ゼリー",0,2,1],["juice","ジュース",0,2,0],["jump","とぶ・はねる",0,0,0],["kick","ける",0,0,0],["kid","こども",0,8,1],["kind","種類・やさしい",0,0,1,"やさしい"],["king","王",0,0,1,"おうさま"],["kite","たこ",0,0,1],["kitty","こねこ",0,1,1],["kiwi","キウイ",0,2,1],["knee","ひざ",0,8,1],["knife","ナイフ",0,0,0],["know","知っている",0,0,0,"しっている"],["koala","コアラ",0,1,1],["lake","湖",0,16,1,"みずうみ"],["lamb","こひつじ",0,1,1],["land","りく",0,16,1],["laugh","笑う",0,0,0,"わらう"],["leaf","葉",0,16,0,"はっぱ"],["learn","学ぶ・覚える",0,0,0,"ならう"],["leg","あし",0,8,1],["lemon","レモン",0,2,1],["like","好きである",0,0,0,"すき"],["lime","ライム",0,2,1],["lion","ライオン",0,1,1],["lip","くちびる",0,8,1],["live","住む",0,0,0,"すむ"],["long","長い",0,0,0,"ながい"],["look","見る",0,0,0,"みる"],["love","大好きである・愛する",0,0,0,"だいすき"],["low","低い",0,0,0,"ひくい"],["lunch","昼食",0,2,0,"ひるごはん"],["make","作る",0,0,0,"つくる"],["man","男の人",0,8,0,"おとこのひと"],["mango","マンゴー",0,2,1],["map","地図",0,4,1,"ちず"],["math","数学",0,4,0,"さんすう"],["me","わたし",0,0,0,"わたしを"],["meat","肉",0,2,0,"にく"],["melon","メロン",0,2,1],["milk","牛乳",0,2,0,"ぎゅうにゅう"],["mole","もぐら",0,1,1],["mom","ママ",0,8,1],["moon","月",0,16,1,"つき"],["moth","が（むし）",0,1,1],["mouse","ねずみ",0,1,0],["mouth","口",0,8,1,"くち"],["mud","どろ",0,16,0],["music","音楽",0,4,0,"おんがく"],["my","わたしの",0,0,0],["nail","つめ",0,8,1],["name","名前",0,0,1,"なまえ"],["neck","くび",0,8,1],["need","必要とする",0,0,0,"ひつよう"],["new","新しい",0,0,0,"あたらしい"],["nice","すてきな",0,0,0,"すてき"],["night","夜",0,0,1,"よる"],["nine","9",0,0,0],["no","いいえ",0,0,0],["noon","正午",0,0,0,"おひる"],["nose","鼻",0,8,1,"はな"],["not","〜ない",0,0,0],["note","メモ",0,4,1],["now","今",0,0,0,"いま"],["nut","ナッツ",0,2,1],["of","〜の",0,0,0],["oh","おお",0,0,0],["oil","あぶら",0,2,0],["old","古い・年をとった",0,0,0,"ふるい"],["olive","オリーブ",0,2,1],["on","〜の上に",0,0,0,"〜のうえに"],["one","1",0,0,0],["onion","たまねぎ",0,2,1],["open","開ける",0,0,0,"あける"],["or","または",0,0,0],["orca","シャチ",0,1,1],["otter","カワウソ",0,1,1],["owl","ふくろう",0,1,1],["page","ページ",0,4,1],["panda","パンダ",0,1,1],["paper","紙",0,4,1,"かみ"],["park","公園",0,16,1,"こうえん"],["party","パーティー",0,0,1],["pasta","パスタ",0,2,0],["pea","えんどうまめ",0,2,1],["peach","もも",0,2,1],["pear","なし",0,2,1],["pen","ペン",0,4,1],["pie","パイ",0,2,1],["pig","ぶた",0,1,1],["pink","ピンク",0,0,0],["pizza","ピザ",0,2,1],["plane","飛行機",0,0,1,"ひこうき"],["play","（スポーツを）する・演奏する",0,0,0,"あそぶ"],["plum","すもも",0,2,1],["pond","いけ",0,16,1],["pony","こうま",0,1,1],["pool","プール",0,4,1],["pork","ぶたにく",0,2,0],["pull","引く",0,0,0,"ひく"],["puppy","こいぬ",0,1,1],["push","押す",0,0,0,"おす"],["put","置く",0,0,0,"おく"],["queen","女王",0,0,1,"じょおう"],["quiz","クイズ",0,4,0],["rain","雨",0,16,0,"あめ"],["rainy","雨の",0,0,0,"あめの"],["rat","ねずみ",0,1,1],["read","読む",0,0,0,"よむ"],["red","あか",0,0,0],["rhino","サイ",0,1,1],["rice","米・ごはん",0,2,0,"ごはん"],["ride","のる",0,0,0],["river","川",0,16,1,"かわ"],["rock","いわ",0,16,1],["room","部屋",0,0,1,"へや"],["rose","ばら",0,16,1],["ruler","じょうぎ",0,4,1],["run","走る",0,0,0,"はしる"],["sad","悲しい",0,0,0,"かなしい"],["salad","サラダ",0,2,0],["salt","しお",0,2,0],["sand","すな",0,16,0],["say","言う",0,0,0,"いう"],["sea","海",0,16,1,"うみ"],["seal","あざらし",0,1,1],["see","見える・会う",0,0,0,"みる"],["seed","たね",0,16,1],["seven","7",0,0,0],["shark","サメ",0,1,1],["she","かのじょ",0,0,0],["sheep","ひつじ",0,1,0],["ship","ふね",0,0,1],["shirt","シャツ",0,0,1],["shoe","くつ",0,0,1],["shop","店",0,0,1,"おみせ"],["short","短い・背が低い",0,0,0,"みじかい"],["sing","歌う",0,0,0,"うたう"],["sit","すわる",0,0,0],["six","6",0,0,0],["skunk","スカンク",0,1,1],["sky","空",0,16,1,"そら"],["sleep","ねむる",0,0,0],["sloth","ナマケモノ",0,1,1],["slow","おそい（速さが）",0,0,0,"おそい"],["small","小さい",0,0,0,"ちいさい"],["smile","ほほえむ",0,0,0,"にっこりする"],["snack","おやつ",0,2,1],["snail","カタツムリ",0,1,1],["snake","ヘビ",0,1,1],["snow","雪",0,16,0,"ゆき"],["snowy","ゆきの",0,0,0],["so","だから",0,0,0],["sock","くつした",0,0,1],["soda","ソーダ",0,2,0],["soft","やわらかい",0,0,0],["son","むすこ",0,8,1],["song","歌",0,4,1,"うた"],["sorry","ごめんなさい",0,0,0],["soup","スープ",0,2,0],["spoon","スプーン",0,0,1],["squid","イカ",0,1,0],["stand","立つ",0,0,0,"たつ"],["star","星",0,16,1,"ほし"],["steak","ステーキ",0,2,1],["stone","石",0,16,1,"いし"],["stop","止まる・やめる",0,0,0,"とまる"],["store","店",0,0,1,"おみせ"],["storm","あらし",0,16,1],["story","物語",0,4,1,"おはなし"],["study","勉強する",0,0,0,"べんきょうする"],["sugar","さとう",0,2,0],["sun","太陽",0,16,1,"たいよう"],["sunny","晴れた",0,0,0,"はれの"],["sushi","すし",0,2,0],["swan","はくちょう",0,1,1],["sweet","あまい",0,0,0],["swim","泳ぐ",0,0,0,"およぐ"],["taco","タコス",0,2,1],["take","取る・持っていく",0,0,0,"とる"],["talk","話す・しゃべる",0,0,0,"はなす"],["tall","背が高い",0,0,0,"せがたかい"],["tape","テープ",0,4,1],["tea","お茶・紅茶",0,2,0,"おちゃ"],["teach","教える",0,0,0,"おしえる"],["team","チーム",0,4,0],["teeth","は（たくさん）",0,8,0],["tell","伝える・話す",0,0,0,"つたえる"],["ten","10",0,0,0],["test","テスト",0,4,1],["thank","感謝する",0,0,0,"かんしゃする"],["that","あれ",0,0,0],["they","かれら",0,0,0],["think","思う・考える",0,0,0,"かんがえる"],["this","これ",0,0,0],["three","3",0,0,0],["thumb","おやゆび",0,8,1],["tiger","トラ",0,1,1],["time","時間・時刻",0,0,1,"じかん"],["to","〜へ",0,0,0],["toad","ひきがえる",0,1,1],["toast","トースト",0,2,1],["today","今日",0,0,0,"きょう"],["toe","あしのゆび",0,8,1],["tofu","とうふ",0,2,0],["tooth","は（くちのなかの）",0,8,0],["town","町",0,0,1,"まち"],["toy","おもちゃ",0,0,1],["train","電車",0,0,1,"でんしゃ"],["tree","木",0,16,1,"き"],["tuna","まぐろ",0,2,0],["twin","ふたご",0,8,1],["two","2",0,0,0],["uncle","おじ",0,8,1],["up","うえへ",0,0,0],["us","わたしたちを",0,0,0],["very","とても",0,0,0],["wait","待つ",0,0,0,"まつ"],["wake","目を覚ます",0,0,0,"おきる"],["walk","歩く",0,0,0,"あるく"],["want","ほしい",0,0,0],["warm","あたたかい",0,0,0],["wash","洗う",0,0,0,"あらう"],["water","水",0,2,0,"みず"],["wave","なみ",0,16,1],["we","わたしたちは",0,0,0],["week","週",0,0,1,"しゅう"],["wet","ぬれた",0,0,0],["whale","クジラ",0,1,1],["what","何",0,0,0,"なに"],["white","しろ",0,0,0],["who","だれ",0,0,0],["wind","風",0,16,0,"かぜ"],["windy","かぜのつよい",0,0,0],["wolf","おおかみ",0,1,1],["woods","もり",0,16,0],["word","単語・言葉",0,4,1,"ことば"],["worm","みみず",0,1,1],["write","書く",0,0,0,"かく"],["yam","やまいも",0,2,1],["year","年",0,0,1,"とし"],["yes","はい",0,0,0],["you","あなた",0,0,0],["zebra","シマウマ",0,1,1],["zero","0",0,0,0],["zoo","動物園",0,0,1,"どうぶつえん"],["about","〜について",1,0,0],["after","〜のあとに",1,0,0],["afternoon","午後",1,0,1],["again","もう一度",1,0,0],["air","空気",1,16,0],["almost","ほとんど",1,0,0],["alphabet","アルファベット",1,4,1],["already","すでに・もう",1,0,0],["also","〜もまた",1,0,0],["always","いつも",1,0,0],["animal","動物",1,1,1],["ankle","足首",1,8,1],["answer","答える",1,4,0],["around","〜のまわりに",1,0,0],["arrive","着く",1,0,0],["backpack","リュックサック",1,4,1],["banana","バナナ",1,2,1],["baseball","野球",1,0,0],["basketball","バスケットボール",1,0,0],["beautiful","美しい",1,0,0],["because","なぜなら",1,0,0],["beetle","甲虫（カブトムシなど）",1,1,1],["before","〜の前に",1,0,0],["behind","〜の後ろに",1,0,0],["between","（2つ）の間に",1,0,0],["birthday","誕生日",1,0,1],["blossom","（木の）花",1,16,1],["books","本（複数）",1,0,0],["borrow","借りる",1,0,0],["break","こわす",1,0,0],["breakfast","朝食",1,2,0],["bridge","橋",1,0,1],["bring","持ってくる",1,0,0],["brother","兄・弟",1,8,1],["brush","ブラシ・ふで",1,4,1],["bush","しげみ",1,16,1],["butter","バター",1,2,0],["butterfly","チョウ",1,1,1],["buy","買う",1,0,0],["cabbage","キャベツ",1,2,1],["calendar","カレンダー",1,4,1],["call","電話する・呼ぶ",1,0,0],["camera","カメラ",1,0,1],["carrot","ニンジン",1,2,1],["chalkboard","黒板",1,4,1],["cheese","チーズ",1,2,0],["cherry","サクランボ",1,2,1],["chicken","ニワトリ",1,1,1],["child","子ども",1,8,0],["children","子どもたち",1,8,0],["chocolate","チョコレート",1,2,0],["classmate","同級生",1,4,1],["classroom","教室",1,4,1],["clean","きれいな・清潔な",1,0,0],["cloudy","くもった",1,0,0],["coffee","コーヒー",1,2,0],["computer","コンピューター",1,4,1],["cookie","クッキー",1,2,1],["country","国・いなか",1,0,1],["cousin","いとこ",1,8,1],["crayon","クレヨン",1,4,1],["daughter","むすめ",1,8,1],["delicious","とてもおいしい",1,0,0],["dessert","デザート",1,2,0],["did","した",1,0,0],["different","ちがった",1,0,0],["difficult","むずかしい",1,0,0],["dinner","夕食",1,2,0],["doctor","医者",1,0,1],["does","する",1,0,0],["dolphin","イルカ",1,1,1],["donkey","ロバ",1,1,1],["down","下へ",1,0,0],["dream","夢を見る",1,0,0],["drill","ドリル",1,4,1],["early","早い",1,0,0],["elbow","ひじ",1,8,1],["elephant","ゾウ",1,1,1],["eleven","11",1,0,0],["enjoy","楽しむ",1,0,0],["eraser","消しゴム",1,4,1],["evening","夕方・晩",1,0,1],["every","毎〜・すべての",1,0,0],["eyebrow","まゆげ",1,8,1],["fall","秋・落ちる",1,16,0],["family","家族",1,8,0],["famous","有名な",1,0,0],["father","父",1,8,1],["favorite","お気に入りの",1,0,0],["fine","元気な・晴れた",1,0,0],["finger","指",1,8,1],["finish","終える",1,0,0],["first","1番目",1,0,0],["flower","花",1,16,1],["for","〜のために",1,0,0],["forest","森",1,16,1],["forget","忘れる",1,0,0],["free","ひまな・無料の",1,0,0],["friend","友だち",1,0,1],["from","〜から",1,0,0],["fruit","果物",1,2,0],["garden","庭",1,16,1],["giraffe","キリン",1,1,1],["gorilla","ゴリラ",1,1,1],["grandma","おばあちゃん",1,8,1],["grandpa","おじいちゃん",1,8,1],["grandson","孫（男の子）",1,8,1],["great","すばらしい",1,0,0],["guitar","ギター",1,4,1],["hamburger","ハンバーガー",1,2,1],["hamster","ハムスター",1,1,1],["hear","聞こえる",1,0,0],["heel","かかと",1,8,1],["him","彼を",1,0,0],["hip","こし",1,8,1],["history","歴史",1,4,0],["holiday","休日",1,0,1],["homework","宿題",1,4,0],["hospital","病院",1,0,1],["hour","1時間",1,0,1],["hours","時間（複数）",1,0,0],["hundred","100",1,0,1],["hungry","おなかがすいた",1,0,0],["idea","考え・アイデア",1,0,1],["insect","こん虫",1,1,1],["island","島",1,16,1],["job","仕事",1,0,1],["just","ちょうど・ただ",1,0,0],["kangaroo","カンガルー",1,1,1],["kitchen","台所",1,0,1],["kitten","子ネコ",1,1,1],["lap","ひざ（すわったときの）",1,8,1],["late","おそい・遅れた",1,0,0],["leave","去る・出発する",1,0,0],["leaves","葉っぱ（ふくすう）",1,16,0],["left","左の",1,0,0],["lend","貸す",1,0,0],["lesson","授業",1,4,1],["letter","手紙・文字",1,4,1],["library","図書館",1,4,1],["listen","聞く・耳をかたむける",1,0,0],["lizard","トカゲ",1,1,1],["locker","ロッカー",1,4,1],["lose","失う・負ける",1,0,0],["many","たくさんの（数）",1,0,0],["maple","カエデ",1,16,1],["marker","マーカー",1,4,1],["mine","私のもの",1,0,0],["minute","分",1,0,1],["minutes","分（複数）",1,0,0],["money","お金",1,0,0],["monkey","サル",1,1,1],["month","月（暦の）",1,0,1],["morning","朝・午前",1,0,1],["mother","母",1,8,1],["mountain","山",1,16,1],["movie","映画",1,0,1],["much","たくさんの（量）",1,0,0],["museum","博物館・美術館",1,0,1],["nature","自然",1,16,0],["near","〜の近くに",1,0,0],["neighbor","近所の人",1,0,1],["never","一度も〜ない",1,0,0],["noodle","めん",1,2,1],["notebook","ノート",1,4,1],["number","数",1,4,1],["nurse","看護師",1,0,1],["ocean","海・大洋",1,16,1],["octopus","タコ",1,1,0],["off","はなれて",1,0,0],["often","よく・しばしば",1,0,0],["only","〜だけ",1,0,0],["orange","オレンジ",1,2,1],["other","ほかの",1,0,0],["our","私たちの",1,0,0],["out","外へ",1,0,0],["over","〜の上に",1,0,0],["paint","（絵の具で）かく・ぬる",1,0,0],["pancake","ホットケーキ",1,2,1],["parent","親",1,8,1],["parrot","オウム",1,1,1],["peanut","ピーナッツ",1,2,1],["pencil","えんぴつ",1,4,1],["penguin","ペンギン",1,1,1],["people","人々",1,8,0],["phone","電話",1,0,1],["piano","ピアノ",1,4,1],["picture","絵・写真",1,4,1],["pine","松",1,16,1],["pineapple","パイナップル",1,2,1],["planet","惑星",1,16,1],["plant","植物",1,16,1],["player","選手",1,0,1],["playground","校庭",1,4,1],["please","どうぞ・お願いします",1,0,0],["popcorn","ポップコーン",1,2,0],["popular","人気のある",1,0,0],["potato","じゃがいも",1,2,1],["practice","練習する",1,0,0],["present","プレゼント",1,0,1],["pretty","かわいらしい",1,0,0],["pudding","プリン",1,2,1],["pumpkin","カボチャ",1,2,1],["purple","むらさき",1,0,0],["question","質問",1,4,1],["rabbit","うさぎ",1,1,1],["raccoon","アライグマ",1,1,1],["rainbow","にじ",1,16,1],["really","本当に",1,0,0],["recorder","リコーダー",1,4,1],["remember","覚えている",1,0,0],["restaurant","レストラン",1,0,1],["right","右・正しい",1,0,0],["same","同じ",1,0,0],["sandwich","サンドイッチ",1,2,1],["school","学校",1,4,1],["science","理科・科学",1,4,0],["scissors","はさみ",1,4,0],["season","季節",1,16,1],["second","2番目",1,0,1],["sell","売る",1,0,0],["send","送る",1,0,0],["sentence","文",1,4,1],["shoulder","かた",1,8,1],["show","見せる",1,0,0],["singer","歌手",1,0,1],["sister","姉・妹",1,8,1],["sleepy","ねむい",1,0,0],["snowman","雪だるま",1,16,0],["soccer","サッカー",1,0,0],["some","いくつかの",1,0,0],["sometimes","ときどき",1,0,0],["soon","すぐに",1,0,0],["space","宇宙・空間",1,16,1],["speak","話す",1,0,0],["spider","クモ",1,1,1],["sport","スポーツ",1,0,1],["spring","春",1,16,1],["squirrel","リス",1,1,1],["stapler","ホッチキス",1,4,1],["start","始める",1,0,0],["station","駅",1,0,1],["stay","滞在する",1,0,0],["strawberry","イチゴ",1,2,1],["street","通り",1,0,1],["strong","強い",1,0,0],["student","生徒・学生",1,4,1],["subject","教科",1,4,1],["summer","夏",1,16,1],["sunflower","ひまわり",1,16,1],["sunrise","日の出",1,16,1],["sunset","夕日",1,16,1],["sunshine","日光",1,16,0],["table","テーブル",1,0,1],["teacher","先生",1,4,1],["tennis","テニス",1,0,0],["textbook","教科書",1,4,1],["textbooks","教科書（複数）",1,0,0],["thanks","ありがとう",1,0,0],["their","彼らの",1,0,0],["them","彼らを",1,0,0],["there","そこに",1,0,0],["these","これら",1,0,0],["third","3番目",1,0,0],["thirsty","のどがかわいた",1,0,0],["thirty","30",1,0,0],["those","あれら",1,0,0],["thousand","1000",1,0,1],["tired","つかれた",1,0,0],["together","いっしょに",1,0,0],["tomato","トマト",1,2,1],["tomorrow","明日",1,0,0],["tongue","舌",1,8,1],["tonight","今夜",1,0,0],["too","〜も・あまりに",1,0,0],["try","ためす・やってみる",1,0,0],["tulip","チューリップ",1,16,1],["tummy","おなか",1,8,1],["turtle","カメ",1,1,1],["twelve","12",1,0,0],["twenty","20",1,0,0],["under","〜の下に",1,0,0],["understand","理解する",1,0,0],["uniform","制服",1,4,1],["use","使う",1,0,0],["usually","たいてい",1,0,0],["vacation","休暇",1,0,1],["vegetable","野菜",1,2,1],["visit","訪れる",1,0,0],["was","〜だった",1,0,0],["watch","（じっと）見る",1,0,0],["watermelon","スイカ",1,2,1],["weather","天気",1,16,0],["weekend","週末",1,0,1],["well","上手に",1,0,0],["were","〜だった",1,0,0],["when","いつ",1,0,0],["where","どこ",1,0,0],["which","どちら",1,0,0],["whose","だれの",1,0,0],["why","なぜ",1,0,0],["win","勝つ",1,0,0],["window","窓",1,0,1],["winter","冬",1,16,1],["with","〜といっしょに",1,0,0],["woman","女の人",1,8,0],["work","働く",1,0,0],["world","世界",1,16,1],["wrist","手首",1,8,1],["yellow","黄色",1,0,0],["yesterday","昨日",1,0,0],["yogurt","ヨーグルト",1,2,0],["young","若い",1,0,0],["your","あなたの",1,0,0],["able","〜できる",2,0,0],["abroad","外国へ",2,0,0],["accept","受け入れる",2,0,0],["accident","事故",2,0,1],["across","〜を横切って",2,0,0],["add","加える",2,0,0],["adults","おとな（複数）",2,0,0],["afraid","こわがって",2,0,0],["age","年れい",2,0,1],["ago","〜前に",2,0,0],["agree","賛成する",2,0,0],["airport","空港",2,0,1],["aisle","通路",2,0,1],["alone","ひとりで",2,0,0],["along","〜にそって",2,0,0],["aloud","声に出して",2,0,0],["among","（3つ以上）の間に",2,0,0],["angry","おこった",2,0,0],["another","もう1つの",2,0,0],["anywhere","どこでも",2,0,0],["area","地域",2,0,1],["ate","食べた",2,0,0],["away","はなれて",2,0,0],["bank","銀行",2,0,1],["beaver","ビーバー",2,1,1],["became","〜になった",2,0,0],["began","始めた",2,0,0],["believe","信じる",2,0,0],["belong","所属する",2,0,0],["best","いちばんよい",2,0,0],["better","もっとよい",2,0,0],["bigger","もっと大きい",2,0,0],["blood","血",2,8,0],["blow","（風が）ふく",2,0,0],["bone","骨",2,8,1],["bottle","びん",2,0,1],["bottom","底",2,0,1],["brain","脳",2,8,1],["brave","勇かんな",2,0,0],["breath","息",2,0,1],["bright","明るい",2,0,0],["broke","こわした",2,0,0],["brought","持ってきた",2,0,0],["build","建てる",2,0,0],["building","建物",2,0,1],["built","建てた",2,0,0],["burn","燃やす",2,0,0],["business","仕事・商売",2,0,0],["came","来た",2,0,0],["camp","キャンプ",2,0,1],["captain","キャプテン",2,0,1],["careful","注意深い",2,0,0],["carefully","注意深く",2,0,0],["carry","運ぶ",2,0,0],["castle","城",2,0,1],["caught","つかまえた",2,0,0],["cave","どうくつ",2,16,1],["center","中心",2,0,1],["cereal","シリアル",2,2,0],["ceremony","式典",2,4,1],["chance","機会",2,0,1],["change","変える",2,0,0],["character","性格・登場人物",2,0,1],["cheap","安い",2,0,0],["check","確認する",2,0,0],["cheerful","元気のよい",2,0,0],["cheetah","チーター",2,1,1],["choose","選ぶ",2,0,0],["chorus","合唱",2,4,0],["chose","選んだ",2,0,0],["clear","はっきりした",2,0,0],["climb","登る",2,0,0],["coast","海岸",2,16,1],["coin","硬貨",2,0,1],["collect","集める",2,0,0],["college","大学",2,0,1],["company","会社",2,0,1],["concert","コンサート",2,0,1],["contest","コンテスト",2,0,1],["corner","角",2,0,1],["could","〜できた",2,0,0],["count","数える",2,0,0],["course","進路・課程",2,0,1],["cover","おおう",2,0,0],["crocodile","ワニ",2,1,1],["crowded","こみ合った",2,0,0],["cucumber","キュウリ",2,2,1],["culture","文化",2,0,1],["curious","好奇心の強い",2,0,0],["custom","習慣",2,0,1],["danger","危険",2,0,1],["dangerous","危険な",2,0,0],["dark","暗い",2,0,0],["date","日付",2,0,1],["dear","親愛なる",2,0,0],["decide","決める",2,0,0],["deep","深い",2,0,0],["department","部門",2,0,1],["desert","砂漠",2,16,1],["design","設計する",2,0,0],["diary","日記",2,4,1],["dictionary","辞書",2,4,1],["difference","ちがい",2,0,1],["dinosaur","恐竜",2,1,1],["direction","方向",2,0,1],["dirty","よごれた",2,0,0],["downstairs","下の階へ",2,0,0],["drama","劇",2,4,1],["drank","飲んだ",2,0,0],["drive","運転する",2,0,0],["drop","落とす",2,0,0],["drove","運転した",2,0,0],["during","〜の間ずっと",2,0,0],["easily","かんたんに",2,0,0],["empty","からの",2,0,0],["energy","エネルギー",2,0,0],["engineer","技術者",2,0,1],["entrance","入り口",2,4,1],["especially","特に",2,0,0],["even","〜でさえ",2,0,0],["event","出来事・行事",2,0,1],["ever","今までに",2,0,0],["everywhere","どこでも・いたる所に",2,0,0],["exam","試験",2,4,1],["example","例",2,0,1],["excited","わくわくした",2,0,0],["exciting","わくわくさせる",2,0,0],["expensive","高価な",2,0,0],["experience","経験",2,0,1],["explain","説明する",2,0,0],["fact","事実",2,0,1],["factory","工場",2,0,1],["fail","失敗する",2,0,0],["farmer","農家の人",2,0,1],["feel","感じる",2,0,0],["fell","落ちた",2,0,0],["felt","感じた",2,0,0],["festival","祭り",2,0,1],["fever","熱",2,0,0],["fight","戦う",2,0,0],["finally","ついに・最後に",2,0,0],["fix","修理する",2,0,0],["flag","旗",2,0,1],["flew","飛んだ",2,0,0],["floor","床・階",2,0,1],["flour","小麦粉",2,2,0],["fog","きり",2,16,0],["follow","ついていく",2,0,0],["foreign","外国の",2,0,0],["forgot","忘れた",2,0,0],["found","見つけた",2,0,0],["fresh","新鮮な",2,0,0],["friendly","親しみやすい",2,0,0],["future","未来",2,0,1],["garbage","生ごみ",2,0,0],["garlic","ニンニク",2,2,0],["gave","あたえた",2,0,0],["gentle","やさしい・おだやかな",2,0,0],["glad","うれしい",2,0,0],["goal","目標",2,0,1],["got","手に入れた",2,0,0],["grade","学年・成績",2,4,1],["grain","穀物",2,2,1],["grew","育った",2,0,0],["ground","地面",2,16,1],["group","グループ",2,0,1],["grow","育つ・育てる",2,0,0],["guest","客",2,0,1],["guide","案内人",2,0,1],["habit","くせ・習慣",2,0,1],["had","持っていた",2,0,0],["hall","ホール・広間",2,0,1],["happen","起こる",2,0,0],["hawk","タカ",2,1,1],["headache","頭痛",2,0,0],["health","健康",2,0,0],["heard","聞いた",2,0,0],["heavy","重い",2,0,0],["helpful","役に立つ",2,0,0],["hit","打つ",2,0,0],["hobby","しゅみ",2,0,1],["hold","持つ・開催する",2,0,0],["hole","穴",2,0,1],["hometown","故郷",2,0,1],["hope","望む",2,0,0],["hotel","ホテル",2,0,1],["huge","巨大な",2,0,0],["hurry","急ぐ",2,0,0],["hurt","傷つける",2,0,0],["husband","夫",2,8,1],["important","大切な",2,0,0],["inside","中で",2,0,0],["instead","代わりに",2,0,0],["interest","興味",2,0,1],["introduce","紹介する",2,0,0],["invite","招待する",2,0,0],["jellyfish","クラゲ",2,1,1],["join","参加する",2,0,0],["jungle","ジャングル",2,16,1],["keep","保つ・持ち続ける",2,0,0],["kept","保った",2,0,0],["key","かぎ",2,0,1],["knew","知っていた",2,0,0],["language","言語",2,0,1],["large","大きい・広い",2,0,0],["later","あとで",2,0,0],["lemonade","レモネード",2,2,1],["leopard","ヒョウ",2,1,1],["lettuce","レタス",2,2,0],["lie","横になる",2,0,0],["life","生活・命",2,0,0],["lift","持ち上げる",2,0,0],["light","軽い",2,16,0],["lightning","いなずま",2,16,0],["line","線・列",2,0,1],["list","一覧表",2,0,1],["little","量が少ない",2,0,0],["lonely","さびしい",2,0,0],["lost","なくした",2,0,0],["lucky","運がよい",2,0,0],["machine","機械",2,0,1],["made","作った",2,0,0],["main","主な",2,0,0],["market","市場",2,0,1],["match","試合",2,0,1],["may","〜してもよい・〜かもしれない",2,0,0],["maybe","もしかすると",2,0,0],["meal","食事",2,2,1],["medicine","薬",2,0,1],["meet","会う",2,0,0],["meeting","会議",2,0,1],["member","メンバー",2,0,1],["menu","メニュー",2,2,1],["message","伝言",2,0,1],["met","会った",2,0,0],["middle","まん中",2,0,0],["mind","心",2,0,1],["mirror","鏡",2,0,1],["miss","のがす・さびしく思う",2,0,0],["mistake","まちがい",2,0,1],["moment","瞬間",2,0,1],["mosquito","蚊",2,1,1],["move","動く・引っこす",2,0,0],["mushroom","キノコ",2,2,1],["must","〜しなければならない",2,0,0],["narrow","せまい",2,0,0],["national","国の",2,0,0],["necessary","必要な",2,0,0],["nervous","緊張した",2,0,0],["news","ニュース",2,0,0],["office","事務所",2,0,1],["once","一度・かつて",2,0,0],["order","注文する",2,0,0],["outside","外で",2,0,0],["own","自分自身の",2,0,0],["pair","一組",2,0,1],["parents","両親",2,0,0],["pass","手わたす・通る",2,0,0],["passport","パスポート",2,0,1],["patient","がまん強い",2,0,0],["pay","支払う",2,0,0],["peace","平和",2,0,0],["pepper","コショウ",2,2,0],["person","人",2,0,0],["pet","ペット",2,1,1],["pick","つむ・拾う",2,0,0],["pigeon","ハト",2,1,1],["pilot","パイロット",2,0,1],["place","場所",2,0,1],["plan","計画する",2,0,0],["pocket","ポケット",2,0,1],["point","点・要点",2,0,1],["police","警察",2,0,0],["poor","貧しい・へたな",2,0,0],["poster","ポスター",2,0,1],["power","力",2,0,1],["price","値段",2,0,1],["principal","校長",2,4,1],["prize","賞",2,0,1],["probably","たぶん",2,0,0],["problem","問題",2,0,1],["program","番組・計画",2,0,1],["project","計画・事業",2,0,1],["quickly","すばやく",2,0,0],["quiet","静かな",2,0,0],["race","競走",2,0,1],["ran","走った",2,0,0],["reach","着く・届く",2,0,0],["ready","準備ができた",2,0,0],["real","本当の",2,0,0],["reason","理由",2,0,1],["receive","受け取る",2,0,0],["recipe","レシピ",2,2,1],["report","報告",2,4,1],["rest","休み・残り",2,0,1],["restroom","お手洗い",2,0,0],["return","帰る・返す",2,0,0],["rich","金持ちの・豊かな",2,0,0],["ring","鳴る",2,0,0],["rise","上がる",2,0,0],["road","道路",2,0,1],["roof","屋根",2,0,1],["round","丸い",2,0,0],["rule","規則",2,0,1],["safe","安全な",2,0,0],["said","言った",2,0,0],["sale","セール中",2,0,0],["salmon","サケ",2,2,0],["sang","歌った",2,0,0],["sat","すわった",2,0,0],["sauce","ソース",2,2,1],["sausage","ソーセージ",2,2,1],["save","救う・節約する",2,0,0],["saw","見た",2,0,0],["scientist","科学者",2,0,1],["seasons","季節・四季（複数）",2,0,0],["seat","座席",2,0,1],["secret","秘密",2,0,1],["service","サービス",2,0,1],["shake","ふる・ゆれる",2,0,0],["shape","形",2,0,1],["share","分け合う",2,0,0],["sharp","するどい",2,0,0],["shoes","くつ",2,0,0],["should","〜すべきだ",2,0,0],["shout","さけぶ",2,0,0],["shrimp","エビ",2,2,0],["shrine","神社",2,0,1],["shy","はずかしがりの",2,0,0],["sick","病気の",2,0,0],["side","側",2,0,1],["sight","光景・視力",2,0,1],["sign","標識・合図",2,0,1],["since","〜以来",2,0,0],["size","大きさ",2,0,1],["skin","はだ",2,8,1],["slept","ねむった",2,0,0],["slowly","ゆっくりと",2,0,0],["smaller","もっと小さい",2,0,0],["smart","かしこい",2,0,0],["smell","におい",2,0,1],["soil","土",2,16,0],["someday","いつか",2,0,0],["sound","〜に聞こえる",2,0,0],["sparrow","スズメ",2,1,1],["speaker","話す人・スピーカー",2,0,1],["special","特別な",2,0,0],["speech","スピーチ",2,0,1],["spend","（時間・お金を）使う",2,0,0],["spinach","ほうれん草",2,2,0],["spoke","話した",2,0,0],["staff","職員",2,0,0],["stage","舞台",2,0,1],["stamp","切手",2,0,1],["stars","星（複数）",2,0,0],["step","一歩・段階",2,0,1],["still","まだ",2,0,0],["stomach","胃・おなか",2,8,0],["stood","立った",2,0,0],["straight","まっすぐに",2,0,0],["strange","奇妙な",2,0,0],["subway","地下鉄",2,0,1],["suddenly","とつぜん",2,0,0],["support","支える",2,0,0],["sure","確かな",2,0,0],["surprise","おどろかせる",2,0,0],["surprised","おどろいた",2,0,0],["swam","泳いだ",2,0,0],["taste","〜な味がする",2,0,0],["taught","教えた",2,0,0],["temple","寺",2,0,1],["tents","テント（複数）",2,0,0],["terrible","ひどい",2,0,0],["than","〜よりも",2,0,0],["theater","劇場",2,0,1],["then","そのとき",2,0,0],["thing","もの・こと",2,0,1],["though","〜だけれども",2,0,0],["thought","思った",2,0,0],["threw","投げた",2,0,0],["throat","のど",2,8,1],["through","〜を通りぬけて",2,0,0],["throw","投げる",2,0,0],["thunder","かみなり",2,16,0],["ticket","切符",2,0,1],["told","話した",2,0,0],["took","取った",2,0,0],["touch","さわる",2,0,0],["tourist","観光客",2,0,1],["tower","塔・タワー",2,0,0],["tradition","伝統",2,0,1],["travel","旅行する",2,0,0],["trip","旅行",2,0,1],["true","本当の",2,0,0],["turn","曲がる・回す",2,0,0],["twice","2回",2,0,0],["understood","理解した",2,0,0],["universe","宇宙",2,0,1],["until","〜まで（ずっと）",2,0,0],["upstairs","上の階へ",2,0,0],["useful","役に立つ",2,0,0],["valley","谷",2,16,1],["view","ながめ",2,0,1],["village","村",2,0,1],["voice","声",2,0,1],["volcano","火山",2,16,1],["volunteer","ボランティア",2,0,1],["wall","かべ",2,0,1],["waterfall","滝",2,16,1],["way","道・方法",2,0,1],["wear","身につけている",2,0,0],["went","行った",2,0,0],["wheat","小麦",2,2,0],["while","〜している間に",2,0,0],["wide","広い",2,0,0],["wife","妻",2,8,0],["wild","野生の",2,0,0],["will","〜するだろう",2,0,0],["winner","勝者",2,0,1],["without","〜なしで",2,0,0],["won","勝った",2,0,0],["wonder","〜かしらと思う",2,0,0],["wonderful","すばらしい",2,0,0],["wood","木材",2,0,1],["wore","着ていた",2,0,0],["worry","心配する",2,0,0],["worse","もっと悪い",2,0,0],["would","〜だろう",2,0,0],["wrong","まちがった",2,0,0],["wrote","書いた",2,0,0],["yet","（否定文で）まだ・（疑問文で）もう",2,0,0],["ability","能力",3,0,1],["above","〜の上に",3,0,0],["absent","欠席の",3,0,0],["accurate","正確な",3,0,0],["achieve","達成する",3,0,0],["action","行動",3,0,1],["active","活動的な",3,0,0],["actually","実は",3,0,0],["adapt","適応する",3,0,0],["address","住所",3,0,0],["admire","感心する",3,0,0],["adult","おとな",3,8,1],["advantage","有利な点",3,0,1],["adventure","冒険",3,0,1],["advice","助言",3,0,0],["against","〜に反対して",3,0,0],["agreement","合意",3,0,1],["ahead","前方に",3,0,0],["alarm","警報",3,0,1],["allow","許す",3,0,0],["although","〜だけれども",3,0,0],["amazing","おどろくべき",3,0,0],["amount","量",3,0,1],["ancestor","祖先",3,8,1],["ancient","古代の",3,0,0],["anxious","心配して",3,0,0],["anyone","だれか",3,0,0],["anything","何でも",3,0,0],["anyway","とにかく",3,0,0],["apart","はなれて",3,0,0],["apologize","謝る",3,0,0],["appear","現れる",3,0,0],["apply","申しこむ・当てはめる",3,0,0],["argue","言い争う",3,0,0],["argument","議論",3,0,1],["article","記事",3,0,1],["asleep","ねむって",3,0,0],["atmosphere","大気・ふんい気",3,0,1],["attend","出席する",3,0,2],["attention","注意",3,0,0],["attract","引きつける",3,0,0],["audience","観客",3,0,0],["author","作者",3,4,1],["available","利用できる",3,0,0],["avoid","さける",3,0,0],["awake","目がさめて",3,0,0],["award","賞",3,0,1],["aware","気づいて",3,0,0],["awful","ひどい",3,0,0],["bake","焼く",3,2,0],["bakery","パン屋",3,2,1],["balance","つり合い",3,0,1],["basic","基本的な",3,0,0],["beat","打ち負かす",3,0,0],["below","〜の下に",3,0,0],["bend","曲げる",3,0,0],["beside","〜のそばに",3,0,0],["beverage","飲み物",3,2,1],["beyond","〜をこえて",3,0,0],["bill","請求書・お札",3,0,1],["billion","10億",3,0,1],["bite","かむ",3,0,0],["bitter","苦い",3,0,0],["blame","責める",3,0,0],["boil","ゆでる",3,2,0],["border","国境",3,0,1],["boring","退屈な",3,0,0],["both","両方",3,0,0],["bought","買った",3,0,0],["bow","おじぎする",3,0,0],["breathe","呼吸する",3,0,0],["cafeteria","食堂",3,2,1],["calm","落ち着いた",3,0,0],["career","職業",3,0,3],["case","場合・事例",3,0,1],["cattle","牛（家畜）",3,1,0],["cause","引き起こす",3,0,0],["celebrate","祝う",3,0,0],["century","世紀",3,0,1],["certain","確かな",3,0,0],["certainly","確かに",3,0,0],["chapter","章",3,4,1],["charity","慈善",3,0,1],["chat","おしゃべりする",3,0,0],["cheer","応援する",3,0,0],["chef","料理長",3,0,1],["choice","選択",3,0,1],["citizen","市民",3,0,1],["clerk","店員",3,0,3],["cliff","がけ",3,16,1],["climate","気候",3,16,1],["coach","コーチ",3,0,1],["comedy","喜劇",3,0,1],["comment","意見",3,0,1],["common","共通の・ふつうの",3,0,0],["community","地域社会",3,0,1],["compare","比べる",3,0,0],["complain","不満を言う",3,0,0],["completely","完全に",3,0,0],["condition","状態",3,0,1],["confuse","混乱させる",3,0,0],["connect","つなぐ",3,0,0],["consider","よく考える",3,0,0],["contact","連絡",3,0,1],["contain","ふくむ",3,0,0],["continent","大陸",3,16,1],["continue","続ける",3,0,0],["contribute","貢献する",3,0,0],["convenient","便利な",3,0,0],["cooperate","協力する",3,0,0],["coral","サンゴ",3,1,1],["correct","正しい",3,0,0],["costume","衣装",3,0,1],["cough","せき",3,8,1],["courage","勇気",3,0,0],["create","創り出す",3,0,0],["creative","創造的な",3,0,0],["creature","生き物",3,1,1],["crew","乗組員",3,0,1],["crisis","危機",3,0,0],["crowd","群衆",3,0,0],["cure","治療",3,0,1],["current","現在の",3,0,0],["customer","客",3,0,1],["damage","損害",3,0,0],["dancer","ダンサー",3,0,1],["data","データ",3,0,0],["decision","決心",3,0,1],["decrease","減る",3,0,0],["delay","遅れ",3,0,1],["deliver","配達する",3,0,0],["democracy","民主主義",3,0,0],["depend","たよる",3,0,0],["describe","説明する・描写する",3,0,0],["desire","願望",3,0,1],["despite","〜にもかかわらず",3,0,0],["destroy","破壊する",3,0,0],["detail","細部",3,0,1],["develop","発達させる・開発する",3,0,0],["device","装置",3,0,1],["diet","食事",3,2,1],["dig","ほる",3,0,0],["directly","直接に",3,0,0],["disappear","消える",3,0,0],["disaster","災害",3,0,1],["discover","発見する",3,0,0],["discovery","発見",3,0,1],["disease","病気",3,0,1],["distance","きょり",3,0,1],["divide","分ける",3,0,2],["donate","寄付する",3,0,0],["due","しめ切り",3,0,0],["dull","退屈な",3,0,0],["each","それぞれ",3,0,0],["earn","かせぐ",3,0,0],["earthquake","地震",3,16,1],["economy","経済",3,0,0],["education","教育",3,0,0],["effect","効果・影響",3,0,1],["efficient","効率のよい",3,0,0],["effort","努力",3,0,1],["either","どちらか",3,0,0],["elect","選挙で選ぶ",3,0,0],["election","選挙",3,0,1],["electric","電気の",3,0,0],["emergency","緊急事態",3,0,1],["encourage","はげます",3,0,0],["enjoyed","楽しんだ",3,0,0],["enough","十分な",3,0,0],["enter","入る",3,0,0],["entire","全体の",3,0,0],["equal","等しい",3,0,0],["error","まちがい",3,0,1],["escape","にげる",3,0,0],["essay","作文",3,4,1],["essential","不可欠な",3,0,0],["establish","設立する",3,0,0],["everyone","みんな",3,0,0],["everything","すべてのこと",3,0,0],["evidence","証拠",3,0,0],["exact","正確な",3,0,0],["examine","調べる",3,0,0],["excellent","優れた",3,0,0],["except","〜を除いて",3,0,0],["exchange","交換する",3,0,0],["excuse","言いわけ",3,0,1],["exhibition","展覧会",3,0,1],["exist","存在する",3,0,0],["expect","期待する",3,0,0],["expert","専門家",3,0,1],["explore","探検する",3,0,0],["express","表現する",3,0,0],["extreme","極端な",3,0,0],["facility","施設",3,0,1],["fair","公平な",3,0,0],["false","まちがった",3,0,0],["familiar","よく知られた",3,0,0],["fan","せんす・うちわ",3,0,0],["fantastic","すばらしい",3,0,0],["fashion","流行",3,0,1],["fault","欠点・責任",3,0,1],["fear","恐怖",3,0,1],["feather","羽",3,1,1],["few","少しの",3,0,0],["fill","満たす",3,0,0],["flat","平らな",3,0,0],["flavor","風味",3,2,1],["flight","飛行・便",3,0,1],["flood","洪水",3,16,1],["fold","折る",3,0,0],["force","強いる",3,0,0],["forever","永遠に",3,0,0],["fortune","運・財産",3,0,1],["freedom","自由",3,0,0],["fry","油であげる",3,2,1],["fuel","燃料",3,0,1],["fur","毛皮",3,1,0],["gather","集まる・集める",3,0,0],["general","一般的な",3,0,0],["generation","世代",3,8,1],["gesture","身ぶり",3,0,1],["glacier","氷河",3,16,1],["global","地球規模の",3,0,0],["goods","商品",3,0,0],["government","政府",3,0,0],["gradually","だんだんと",3,0,0],["graduate","卒業する",3,0,0],["graduation","卒業",3,4,1],["grammar","文法",3,4,0],["greet","あいさつする",3,0,0],["grocery","食料品",3,2,1],["growth","成長",3,0,1],["guard","警備員",3,0,1],["guess","推測する",3,0,0],["habitat","生息地",3,0,1],["handle","あつかう",3,0,0],["harbor","港",3,16,1],["hate","きらう",3,0,0],["healthy","健康な",3,0,0],["hero","英雄",3,0,1],["herself","彼女自身",3,0,0],["hide","かくす",3,0,0],["himself","彼自身",3,0,0],["honest","正直な",3,0,0],["honor","名誉",3,0,1],["horizon","地平線",3,16,1],["host","主人役",3,0,1],["however","しかしながら",3,0,0],["human","人間の",3,0,0],["humor","ユーモア",3,0,0],["hunger","空腹・飢え",3,0,0],["hunt","狩る",3,0,0],["hurricane","ハリケーン",3,16,1],["ill","病気の",3,0,0],["image","印象",3,0,1],["imagine","想像する",3,0,0],["importance","重要性",3,0,0],["impossible","不可能な",3,0,0],["improve","改善する",3,0,0],["include","ふくむ",3,0,0],["income","収入",3,0,1],["increase","増える",3,0,0],["individual","個人",3,0,1],["indoor","屋内の",3,0,0],["industry","産業",3,0,1],["influence","影響をあたえる",3,0,0],["inform","知らせる",3,0,0],["ingredient","材料",3,2,1],["injure","けがをさせる",3,0,0],["injury","けが",3,8,1],["invent","発明する",3,0,0],["invention","発明",3,0,1],["itself","それ自体",3,0,0],["journalist","記者",3,0,1],["journey","旅",3,0,1],["judge","判断する",3,0,0],["kingdom","王国",3,0,1],["knock","ノックする",3,0,0],["knowledge","知識",3,4,0],["labor","労働",3,0,0],["latest","最新の",3,0,0],["law","法律",3,0,1],["lawyer","弁護士",3,0,1],["lazy","なまけた",3,0,0],["lead","導く",3,0,0],["leader","指導者",3,0,1],["least","最も少ない",3,0,0],["less","より少ない",3,0,0],["level","水準・レベル",3,0,1],["librarian","図書館員",3,4,1],["license","免許",3,0,3],["local","地元の",3,0,0],["lock","かぎをかける",3,0,0],["loud","大きな音の",3,0,0],["luck","運",3,0,0],["luggage","手荷物",3,0,0],["lung","肺",3,8,1],["major","主要な",3,0,0],["mammal","ほ乳類",3,1,1],["manage","うまく〜する・管理する",3,0,0],["marry","結婚する",3,0,0],["material","材料",3,0,1],["mayor","市長",3,0,1],["mean","意味する",3,0,0],["meaning","意味",3,0,1],["measure","測る",3,0,0],["melt","とける",3,0,0],["memory","記憶・思い出",3,0,1],["mental","精神の",3,0,0],["mention","言及する",3,0,0],["method","方法",3,0,1],["mild","おだやかな",3,0,0],["million","100万",3,0,1],["mission","使命",3,0,1],["mix","まぜる",3,0,0],["modern","現代の",3,0,0],["mood","気分",3,0,1],["more","もっと",3,0,0],["moreover","さらに",3,0,0],["most","最も",3,0,0],["movement","運動",3,0,1],["muscle","筋肉",3,8,1],["myself","私自身",3,0,0],["nation","国家・国民",3,0,1],["native","生まれた土地の",3,0,0],["natural","自然の",3,0,0],["naturally","自然に",3,0,0],["nearby","近くの",3,0,0],["nearly","ほとんど",3,0,0],["neat","きちんとした",3,0,0],["negative","否定的な",3,0,0],["neither","どちらも〜ない",3,0,0],["nephew","おい",3,8,1],["nest","巣",3,1,1],["niece","めい",3,8,1],["nobody","だれも〜ない",3,0,0],["nod","うなずく",3,0,0],["noisy","うるさい",3,0,0],["nor","〜もない",3,0,0],["nothing","何も〜ない",3,0,0],["notice","気づく",3,0,0],["novel","小説",3,4,1],["nutrition","栄養",3,2,0],["obey","従う",3,0,0],["offer","申し出る",3,0,0],["official","公式の",3,0,0],["opinion","意見",3,0,1],["organize","組織する",3,0,0],["otherwise","そうでなければ",3,0,0],["outdoor","屋外の",3,0,0],["owner","持ち主",3,0,1],["oxygen","酸素",3,16,0],["pack","荷造りする",3,0,0],["package","小包",3,0,1],["pain","痛み",3,0,0],["pale","青白い",3,0,0],["paragraph","段落",3,4,1],["path","小道",3,0,1],["peaceful","平和な",3,0,0],["perfect","完全な",3,0,0],["perform","演じる",3,0,0],["period","期間",3,0,1],["permission","許可",3,0,1],["photo","写真",3,0,1],["photograph","写真",3,0,1],["physical","身体の",3,0,0],["pity","残念なこと",3,0,0],["plain","かざりのない",3,0,0],["plastic","プラスチック",3,0,1],["pleasant","（物事が）楽しい",3,0,2],["poem","詩",3,4,1],["poet","詩人",3,4,1],["polite","ていねいな",3,0,0],["pollution","汚染",3,0,0],["population","人口",3,0,1],["positive","前向きな",3,0,0],["possible","可能な",3,0,0],["pour","注ぐ",3,0,0],["poverty","貧困",3,0,0],["pray","祈る",3,0,0],["predict","予測する",3,0,0],["prefer","〜のほうを好む",3,0,0],["prepare","準備する",3,0,0],["pressure","圧力",3,0,0],["prevent","防ぐ",3,0,0],["pride","ほこり",3,0,0],["prince","王子",3,0,1],["princess","王女",3,0,0],["principle","原則",3,0,1],["print","印刷する",3,0,0],["private","個人の",3,0,0],["produce","生産する",3,0,0],["product","製品",3,0,1],["professor","教授",3,0,1],["progress","進歩",3,0,0],["promise","約束する",3,0,0],["protect","守る",3,0,0],["protein","たんぱく質",3,2,0],["proud","ほこりに思う",3,0,0],["provide","あたえる・供給する",3,0,0],["public","一般の人々",3,0,0],["publish","出版する",3,0,0],["pure","純粋な",3,0,0],["purpose","目的",3,0,1],["quality","質",3,0,0],["quarter","4分の1",3,0,1],["raise","上げる・育てる",3,0,0],["rare","めずらしい",3,0,0],["rather","むしろ",3,0,0],["realize","気づく・実現する",3,0,0],["recently","最近",3,0,0],["recognize","認める・見分ける",3,0,0],["recommend","すすめる",3,0,0],["recover","回復する",3,0,0],["recycle","再利用する",3,0,0],["reduce","減らす",3,0,0],["refuse","断る",3,0,0],["region","地域",3,0,1],["regular","ふだんの・規則正しい",3,0,0],["relative","親せき",3,8,1],["relax","くつろぐ",3,0,0],["remain","残る",3,0,0],["remove","取り除く",3,0,0],["rent","借りる",3,0,0],["repair","修理する",3,0,0],["repeat","くり返す",3,0,0],["replace","取りかえる",3,0,0],["reply","返事をする",3,0,0],["reptile","は虫類",3,1,1],["rescue","救助する",3,0,0],["research","研究",3,4,0],["resource","資源",3,0,1],["respect","尊敬する",3,0,0],["result","結果",3,0,1],["review","復習する",3,0,0],["reward","ほうび",3,0,1],["risk","危険性",3,0,1],["role","役割",3,0,1],["roll","転がる",3,0,0],["rough","あらい",3,0,0],["rude","失礼な",3,0,0],["rush","急ぐ",3,0,0],["safety","安全",3,0,0],["salty","しょっぱい",3,0,0],["sample","見本",3,0,1],["scene","場面",3,0,1],["schedule","予定",3,0,1],["scream","さけぶ",3,0,0],["screen","画面",3,0,1],["seafood","シーフード",3,2,0],["search","さがす",3,0,0],["seem","〜のように見える",3,0,0],["select","選ぶ",3,0,0],["serious","深刻な・まじめな",3,0,0],["seriously","真剣に",3,0,0],["several","いくつかの",3,0,0],["severe","厳しい",3,0,0],["shadow","影",3,0,1],["shelf","たな",3,0,0],["shell","貝がら",3,1,1],["shine","かがやく",3,0,0],["shower","シャワー",3,0,1],["silence","沈黙",3,0,0],["silent","静かな",3,0,0],["similar","似ている",3,0,0],["simple","単純な",3,0,0],["sink","しずむ",3,0,0],["site","場所",3,0,1],["skill","技術・技能",3,0,1],["slice","ひと切れ",3,2,1],["smooth","なめらかな",3,0,0],["social","社会の",3,0,0],["society","社会",3,0,0],["solution","解決策",3,0,1],["solve","解決する",3,0,0],["someone","だれか",3,0,0],["something","何か",3,0,0],["somewhere","どこかで",3,0,0],["sort","並べる",3,0,2],["sour","すっぱい",3,0,0],["source","源",3,0,1],["species","（生物の）種",3,1,0],["spell","つづる",3,0,0],["spice","香辛料",3,2,1],["spicy","からい",3,0,0],["spill","こぼす",3,0,0],["spirit","精神",3,0,1],["spread","広がる",3,0,0],["statue","像",3,0,1],["steep","けわしい",3,0,0],["stranger","見知らぬ人",3,0,1],["stream","小川",3,16,1],["stretch","のばす",3,0,0],["strict","きびしい",3,0,0],["structure","構造",3,0,1],["style","様式",3,0,1],["succeed","成功する",3,0,0],["success","成功",3,0,0],["sudden","とつぜんの",3,0,0],["suffer","苦しむ",3,0,0],["suggest","提案する",3,0,0],["sunlight","日光",3,16,0],["suppose","思う",3,0,0],["survive","生き残る",3,0,0],["swing","ゆれる",3,0,0],["symbol","象徴",3,0,1],["system","仕組み",3,0,1],["tail","しっぽ",3,1,1],["talent","才能",3,0,1],["tap","軽くたたく",3,0,0],["task","仕事",3,0,1],["tax","税金",3,0,1],["tear","なみだ",3,0,1],["technology","科学技術",3,0,1],["teenager","十代の若者",3,8,1],["theme","テーマ",3,0,1],["themselves","彼ら自身",3,0,0],["therefore","それゆえに",3,0,0],["thick","厚い",3,0,0],["thin","うすい",3,0,0],["tie","結ぶ",3,0,0],["tight","きつい",3,0,0],["tiny","とても小さい",3,0,0],["title","題名",3,4,1],["tool","道具",3,0,1],["toothache","歯痛",3,8,1],["topic","話題",3,0,1],["tour","旅行",3,0,1],["tourists","観光客（複数）",3,0,0],["toward","〜の方へ",3,0,0],["towel","タオル",3,0,1],["track","線路・トラック",3,0,1],["trade","貿易",3,0,1],["traffic","交通",3,0,0],["translate","翻訳する",3,0,0],["treasure","宝物",3,0,1],["trick","いたずら",3,0,1],["trouble","困ったこと",3,0,0],["truck","トラック",3,0,1],["trust","信頼する",3,0,0],["truth","真実",3,0,0],["type","型",3,0,1],["typhoon","台風",3,16,1],["typical","典型的な",3,0,0],["umbrella","かさ",3,0,0],["unique","独特の",3,0,0],["unless","〜しない限り",3,0,0],["unlike","〜とちがって",3,0,0],["upset","動揺した",3,0,0],["usual","いつもの",3,0,0],["valuable","貴重な",3,0,0],["value","価値",3,0,1],["variety","多様性",3,0,1],["various","さまざまな",3,0,0],["victim","犠牲者",3,0,1],["visitor","訪問者",3,0,1],["vitamin","ビタミン",3,2,1],["vocabulary","語い",3,4,0],["vote","投票する",3,0,0],["wallet","さいふ",3,0,1],["warn","警告する",3,0,0],["waste","むだにする",3,0,0],["weak","弱い",3,0,0],["website","ウェブサイト",3,0,1],["weigh","重さがある",3,0,0],["wheel","車輪",3,0,1],["wheelchair","車いす",3,0,1],["whether","〜かどうか",3,0,0],["whisper","ささやく",3,0,0],["whole","全体の",3,0,0],["wildlife","野生生物",3,1,0],["wing","つばさ",3,1,1],["wipe","ふく",3,0,0],["wise","かしこい",3,0,0],["wish","願い",3,0,1],["within","〜以内に",3,0,0],["wooden","木の",3,0,0],["worst","最悪の",3,0,0],["worth","〜の価値がある",3,0,0],["wrap","包む",3,0,0],["yell","さけぶ",3,0,0],["yourself","あなた自身",3,0,0],["youth","若さ・青年時代",3,0,0],["absence","欠席",4,0,1],["absolutely","まったく",4,0,0],["absorb","吸収する",4,0,0],["academic","学問の",4,0,0],["acquire","得る",4,0,0],["activity","活動",4,0,1],["addition","追加",4,0,1],["adjust","調整する",4,0,0],["admission","入場",4,0,1],["admit","認める",4,0,0],["adopt","採用する",4,0,0],["advance","進む",4,0,0],["advanced","進んだ",4,0,0],["advertise","広告する",4,0,0],["affect","影響する",4,0,0],["afford","余裕がある",4,0,0],["aid","援助",4,0,0],["aim","ねらう",4,0,0],["aircraft","航空機",4,0,0],["alive","生きている",4,0,0],["allergy","アレルギー",4,0,1],["ambulance","救急車",4,0,1],["analysis","分析",4,0,0],["anger","怒り",4,0,0],["announce","発表する",4,0,0],["annoy","いらいらさせる",4,0,0],["annual","年1回の",4,0,2],["anxiety","不安",4,0,0],["apparently","どうやら",4,0,0],["appetite","食欲",4,2,0],["appreciate","感謝する",4,0,0],["approach","近づく",4,0,0],["approve","承認する",4,0,2],["architect","建築家",4,0,1],["arrange","整える",4,0,2],["arrest","逮捕する",4,0,0],["arrival","到着",4,0,1],["artificial","人工の",4,0,0],["aspect","側面",4,0,1],["assignment","課題",4,4,1],["assist","手伝う",4,0,0],["assume","思いこむ",4,0,0],["athlete","運動選手",4,0,1],["attach","取りつける",4,0,0],["attempt","試みる",4,0,0],["attitude","態度",4,0,1],["attractive","魅力的な",4,0,0],["authority","権威",4,0,1],["automatic","自動の",4,0,0],["automobile","自動車",4,0,1],["average","平均の",4,0,0],["bacteria","細菌",4,0,0],["baggage","手荷物",4,0,0],["bargain","お買い得品",4,0,1],["barrier","障害",4,0,1],["basis","基礎",4,0,0],["battery","電池",4,0,1],["behave","ふるまう",4,0,0],["behavior","行動",4,0,0],["benefit","利益",4,0,3],["biology","生物学",4,4,0],["blanket","毛布",4,0,1],["boss","上司",4,0,0],["branch","枝・支店",4,0,3],["brand","銘柄",4,0,3],["brief","短い",4,0,0],["briefly","手短に",4,0,0],["broad","広い",4,0,0],["burden","負担",4,0,1],["bury","うめる",4,0,0],["calculate","計算する",4,0,0],["campaign","運動",4,0,1],["cancel","中止する",4,0,2],["candidate","候補者",4,0,1],["capable","能力がある",4,0,0],["capacity","容量",4,0,3],["capital","首都・資本",4,0,3],["capture","とらえる",4,0,0],["carbon","炭素",4,16,0],["cash","現金",4,0,2],["casual","気軽な",4,0,0],["category","分類",4,0,1],["cell","細胞",4,0,1],["central","中心の",4,0,0],["chain","くさり",4,0,1],["challenge","挑戦する",4,0,0],["charge","請求する",4,0,0],["chase","追いかける",4,0,0],["chemical","化学物質",4,0,1],["chief","主な",4,0,0],["claim","主張する",4,0,0],["clever","りこうな",4,0,0],["colleague","同僚",4,0,3],["combine","組み合わせる",4,0,0],["comfort","なぐさめ",4,0,0],["commercial","コマーシャル",4,0,1],["committee","委員会",4,0,3],["compete","競争する",4,0,0],["complaint","不満",4,0,3],["complete","完成させる",4,0,0],["completed","完成した",4,0,0],["concept","概念",4,0,1],["concern","心配",4,0,0],["conclusion","結論",4,0,1],["conduct","行う",4,0,2],["confidence","自信",4,0,0],["confident","確信している",4,0,2],["conflict","対立",4,0,1],["conscious","意識している",4,0,0],["consist","成り立つ",4,0,0],["constant","一定の",4,0,0],["constantly","絶えず",4,0,0],["construct","建設する",4,0,0],["consume","消費する",4,0,0],["consumer","消費者",4,0,3],["contrast","対照",4,0,1],["convince","納得させる",4,0,0],["cope","対処する",4,0,0],["cousins","いとこ（複数）",4,0,0],["critical","重大な",4,0,0],["criticize","批判する",4,0,0],["crop","作物",4,2,1],["cultural","文化の",4,0,0],["currency","通貨",4,0,0],["currently","現在",4,0,0],["cycle","周期",4,0,1],["daily","毎日の",4,0,0],["debt","借金",4,0,3],["decade","10年間",4,0,1],["declare","宣言する",4,0,0],["decline","減る・断る",4,0,2],["defeat","負かす",4,0,0],["defend","守る",4,0,0],["definitely","確かに",4,0,0],["definition","定義",4,0,1],["degree","学位",4,4,1],["delayed","遅れた",4,0,0],["delete","消す",4,0,0],["delicate","繊細な",4,0,0],["delivery","配達",4,0,3],["demand","要求する",4,0,2],["deny","否定する",4,0,0],["deposit","預金",4,0,3],["deserve","値する",4,0,0],["detect","発見する",4,0,0],["determine","決定する",4,0,0],["devote","ささげる",4,0,0],["differ","異なる",4,0,0],["digital","デジタルの",4,0,2],["disagree","反対する",4,0,0],["discount","割引",4,0,3],["discuss","話し合う",4,0,2],["discussion","話し合い",4,0,1],["display","展示する",4,0,0],["district","地区",4,0,1],["disturb","じゃまする",4,0,0],["dive","もぐる",4,0,0],["document","文書",4,0,3],["donation","寄付",4,0,1],["doubt","疑う",4,0,0],["dramatic","劇的な",4,0,0],["drought","干ばつ",4,16,1],["duty","義務",4,0,1],["economic","経済の",4,0,2],["edge","はし",4,0,1],["editor","編集者",4,0,1],["elderly","年配の",4,8,0],["electronic","電子の",4,0,2],["element","要素",4,0,1],["elementary","初歩の",4,0,0],["emerge","現れる",4,0,0],["emotion","感情",4,0,1],["emotional","感情的な",4,0,0],["emperor","皇帝",4,0,1],["emphasize","強調する",4,0,0],["employee","従業員",4,0,3],["employer","雇い主",4,0,3],["enable","可能にする",4,0,0],["encounter","出会う",4,0,0],["engine","エンジン",4,0,1],["enormous","巨大な",4,0,0],["ensure","確実にする",4,0,0],["entirely","まったく",4,0,0],["equipment","設備",4,0,2],["evaluate","評価する",4,0,2],["eventually","結局",4,0,0],["evolution","進化",4,0,0],["evolve","進化する",4,0,0],["exactly","正確に",4,0,0],["exception","例外",4,0,1],["exclude","除く",4,0,0],["exercise","運動",4,0,1],["exhibit","展示する",4,0,0],["expand","広げる",4,0,2],["expense","費用",4,0,3],["export","輸出する",4,0,2],["expose","さらす",4,0,0],["extend","延長する",4,0,0],["extinct","絶滅した",4,0,0],["extinction","絶滅",4,16,1],["extra","余分の",4,0,0],["extremely","非常に",4,0,0],["fame","名声",4,0,0],["fare","運賃",4,0,1],["feature","特徴",4,0,1],["fee","料金",4,0,3],["feed","えさをやる",4,0,0],["female","女性の",4,0,0],["fiction","作り話",4,0,0],["finance","財政",4,0,3],["financial","財政の",4,0,2],["firm","会社",4,0,3],["flexible","柔軟な",4,0,2],["float","うかぶ",4,0,0],["flow","流れる",4,0,0],["flu","インフルエンザ",4,0,0],["fluent","流ちょうな",4,0,0],["fluently","流ちょうに",4,0,0],["focus","集中する",4,0,0],["forbid","禁止する",4,0,0],["forgive","許す",4,0,0],["former","前の",4,0,0],["fortunate","幸運な",4,0,0],["foundation","基礎",4,0,1],["frequent","たびたびの",4,0,0],["frequently","しばしば",4,0,0],["frighten","こわがらせる",4,0,0],["function","機能",4,0,1],["fund","資金",4,0,3],["gap","すきま",4,0,1],["garage","車庫",4,0,1],["gender","性別",4,0,1],["gene","遺伝子",4,8,1],["generally","一般に",4,0,0],["generate","生み出す",4,0,0],["generous","気前のよい",4,0,2],["genius","天才",4,0,0],["globe","地球",4,0,1],["grateful","感謝している",4,0,0],["gravity","重力",4,16,0],["greenhouse","温室",4,16,1],["guarantee","保証する",4,0,0],["hardly","ほとんど〜ない",4,0,0],["harmful","有害な",4,0,0],["harvest","収穫",4,2,1],["heritage","遺産",4,0,0],["hesitate","ためらう",4,0,0],["highly","非常に",4,0,0],["highway","幹線道路",4,0,1],["historical","歴史的な",4,0,0],["honestly","正直に",4,0,0],["horrible","おそろしい",4,0,0],["humid","むし暑い",4,0,0],["ideal","理想的な",4,0,0],["identify","特定する",4,0,0],["identity","身元・自分らしさ",4,0,1],["ignore","無視する",4,0,0],["illegal","違法な",4,0,0],["illness","病気",4,8,0],["imitate","まねる",4,0,0],["immediate","即座の",4,0,0],["immigrant","移民",4,0,1],["impact","影響",4,0,1],["import","輸入する",4,0,2],["impress","感動させる",4,0,0],["incident","出来事",4,0,1],["incredible","信じられない",4,0,0],["indicate","示す",4,0,0],["infant","乳児",4,8,1],["infection","感染",4,8,1],["initial","最初の",4,0,0],["innocent","無実の",4,0,0],["inspire","ふるいたたせる",4,0,0],["install","設置する",4,0,0],["instance","例",4,0,1],["institute","研究所",4,0,1],["instrument","楽器・器具",4,0,1],["insurance","保険",4,0,2],["intend","〜するつもりだ",4,0,0],["internet","インターネット",4,0,0],["investment","投資",4,0,3],["invisible","目に見えない",4,0,0],["involve","関わらせる",4,0,0],["issue","発行する",4,0,0],["item","品目",4,0,1],["justice","正義",4,0,0],["laboratory","研究所",4,0,1],["landscape","風景",4,16,1],["laptop","ノートパソコン",4,0,1],["largely","主に",4,0,0],["lately","最近",4,0,0],["lecture","講義",4,4,1],["legal","合法の",4,0,0],["leisure","余暇",4,0,0],["liberty","自由",4,0,0],["lifestyle","生活様式",4,0,1],["likely","〜しそうな",4,0,0],["limit","限界",4,0,1],["liquid","液体",4,0,1],["literature","文学",4,4,0],["lively","元気な",4,0,0],["location","場所",4,0,1],["logic","論理",4,0,0],["logical","論理的な",4,0,0],["loose","ゆるい",4,0,0],["loss","損失",4,0,0],["mainly","主に",4,0,0],["maintain","維持する",4,0,2],["majority","大多数",4,0,1],["male","男性の",4,0,0],["manner","方法",4,0,1],["media","メディア",4,0,0],["medical","医学の",4,0,0],["mess","散らかったもの",4,0,0],["metal","金属",4,0,1],["microwave","電子レンジ",4,0,1],["minimum","最小限の",4,0,0],["minister","大臣",4,0,1],["minority","少数派",4,0,1],["miracle","奇跡",4,0,1],["mixture","混合物",4,0,1],["mostly","たいてい",4,0,0],["motion","動き",4,0,1],["motivate","やる気にさせる",4,0,0],["mystery","なぞ",4,0,1],["myth","神話",4,0,1],["negotiate","交渉する",4,0,2],["network","ネットワーク",4,0,1],["nowadays","近ごろ",4,0,0],["obstacle","障害",4,0,1],["obtain","手に入れる",4,0,0],["obvious","明らかな",4,0,0],["obviously","明らかに",4,0,0],["occasion","機会",4,0,1],["occupation","職業",4,0,3],["occupy","占める",4,0,0],["occur","起こる",4,0,0],["operation","手術・運営",4,0,3],["opponent","相手",4,0,1],["oppose","反対する",4,0,0],["option","選択肢",4,0,1],["orbit","軌道",4,16,1],["ordinary","ふつうの",4,0,0],["organic","有機の",4,2,0],["origin","起源",4,0,1],["original","もとの・独創的な",4,0,0],["originally","もともと",4,0,0],["outcome","結果",4,0,1],["overcome","克服する",4,0,0],["overseas","海外の",4,0,2],["owe","借りがある",4,0,0],["pace","ペース",4,0,1],["painful","痛い",4,0,0],["partly","部分的に",4,0,0],["partner","相手",4,0,3],["passage","一節・通路",4,0,1],["passenger","乗客",4,0,1],["pattern","もよう",4,0,1],["perfectly","完全に",4,0,0],["permanent","永久的な",4,0,0],["permit","許可する",4,0,0],["personal","個人的な",4,0,0],["personally","個人的には",4,0,0],["persuade","説得する",4,0,0],["philosophy","哲学",4,4,0],["physics","物理学",4,4,0],["pioneer","先駆者",4,0,1],["pleasure","楽しみ",4,0,1],["policy","政策",4,0,3],["portrait","肖像画",4,0,1],["possess","所有する",4,0,0],["possibly","もしかしたら",4,0,0],["postpone","延期する",4,0,2],["potential","可能性",4,0,1],["practical","実用的な",4,0,2],["praise","ほめる",4,0,0],["precious","貴重な",4,0,0],["predator","捕食者",4,1,1],["preserve","保存する",4,0,0],["president","大統領",4,0,3],["pretend","ふりをする",4,0,0],["previously","以前に",4,0,0],["prey","えもの",4,1,1],["primary","主要な",4,0,0],["priority","優先事項",4,0,3],["process","処理する",4,0,0],["promote","促進する",4,0,2],["promptly","すぐに",4,0,2],["proper","適切な",4,0,0],["properly","適切に",4,0,0],["property","財産",4,0,1],["proposal","提案",4,0,3],["propose","提案する",4,0,2],["protest","抗議",4,0,1],["prove","証明する",4,0,0],["pursue","追い求める",4,0,0],["quantity","量",4,0,1],["quit","やめる",4,0,0],["range","範囲",4,0,1],["rapid","急速な",4,0,0],["rarely","めったに〜ない",4,0,0],["raw","生の",4,2,0],["react","反応する",4,0,0],["reaction","反応",4,0,1],["reality","現実",4,0,1],["reasonable","手ごろな",4,0,2],["recall","思い出す",4,0,0],["recent","最近の",4,0,0],["reception","受付",4,0,3],["recovery","回復",4,0,1],["reduction","減少",4,0,1],["refer","参照する",4,0,0],["reference","参考",4,0,1],["reflect","反映する",4,0,0],["reform","改革",4,0,1],["refugee","難民",4,0,1],["register","登録する",4,0,2],["regularly","定期的に",4,0,0],["reject","拒否する",4,0,0],["relatively","比較的",4,0,0],["release","発表する",4,0,0],["reliable","信頼できる",4,0,2],["rely","頼る",4,0,0],["remind","思い出させる",4,0,0],["remote","遠くはなれた",4,0,2],["request","依頼",4,0,3],["resident","住民",4,0,1],["resist","抵抗する",4,0,0],["resolve","解決する",4,0,0],["respond","答える",4,0,2],["restore","回復させる",4,0,0],["retire","引退する",4,0,2],["reveal","明らかにする",4,0,0],["revolution","革命",4,0,1],["rhythm","リズム",4,0,1],["roughly","おおよそ",4,0,0],["routine","日課",4,0,1],["royal","王室の",4,0,0],["ruin","だめにする",4,0,0],["rumor","うわさ",4,0,1],["rural","いなかの",4,0,0],["satellite","衛星",4,0,1],["satisfy","満足させる",4,0,0],["scare","こわがらせる",4,0,0],["scenery","景色",4,16,0],["scholar","学者",4,4,1],["scientific","科学的な",4,0,0],["scold","しかる",4,0,0],["score","得点・スコア",4,0,1],["security","安全",4,0,0],["seek","さがし求める",4,0,0],["semester","学期",4,4,1],["senior","年上の",4,0,0],["sense","感覚",4,0,1],["sensitive","敏感な",4,0,0],["separate","分ける",4,0,0],["separately","別々に",4,0,0],["serve","仕える・出す",4,0,0],["settle","落ち着く",4,0,0],["shelter","避難所",4,0,1],["shift","移す",4,0,0],["shortage","不足",4,0,1],["shortly","まもなく",4,0,0],["signal","信号",4,0,1],["similarly","同様に",4,0,0],["simply","単に",4,0,0],["sincere","心からの",4,0,0],["slight","わずかな",4,0,0],["slightly","わずかに",4,0,0],["smartphone","スマートフォン",4,0,1],["smoothly","なめらかに",4,0,0],["solar","太陽の",4,16,0],["solid","固体の",4,0,0],["spare","予備の",4,0,0],["specific","具体的な",4,0,0],["spot","地点",4,0,1],["spouse","配偶者",4,8,1],["stable","安定した",4,0,0],["stadium","スタジアム",4,0,1],["standard","基準",4,0,1],["stare","じっと見る",4,0,0],["starve","飢える",4,0,0],["statement","声明",4,0,3],["steadily","着実に",4,0,2],["steady","着実な",4,0,0],["strategy","戦略",4,0,3],["strength","強さ",4,0,1],["stress","ストレス",4,0,0],["strongly","強く",4,0,0],["struggle","もがく",4,0,0],["substance","物質",4,0,1],["suburb","郊外",4,0,1],["suitable","適した",4,0,0],["supply","供給する",4,0,2],["surely","確かに",4,0,0],["surface","表面",4,0,1],["surgery","手術",4,0,1],["surround","囲む",4,0,0],["survey","調査",4,0,3],["survival","生存",4,0,0],["suspect","疑う",4,0,0],["swallow","飲みこむ",4,0,0],["symptom","症状",4,8,1],["talented","才能のある",4,0,0],["target","目標",4,0,3],["technical","技術的な",4,0,0],["technique","技術",4,0,1],["temporary","一時的な・臨時の",4,0,2],["tend","〜しがちだ",4,0,0],["territory","領土",4,0,1],["theory","理論",4,0,1],["thoroughly","徹底的に",4,0,2],["threat","おどし",4,0,1],["threaten","おどす",4,0,0],["total","合計",4,0,1],["totally","まったく",4,0,0],["tough","たいへんな",4,0,0],["tourism","観光業",4,0,0],["tragedy","悲劇",4,0,1],["transfer","移す",4,0,2],["transform","変える",4,0,0],["transport","輸送する",4,0,2],["treat","あつかう",4,0,0],["trend","傾向",4,0,3],["tropical","熱帯の",4,16,0],["truly","本当に",4,0,0],["tunnel","トンネル",4,0,1],["tutor","家庭教師",4,4,1],["typically","典型的に",4,0,0],["ultimately","最終的に",4,0,0],["unite","団結する",4,0,0],["unusual","ふつうでない",4,0,0],["update","更新する",4,0,0],["urban","都会の",4,0,0],["urge","うながす",4,0,0],["urgent","急を要する",4,0,2],["vaccine","ワクチン",4,0,1],["valid","有効な",4,0,2],["vary","さまざまだ",4,0,0],["vast","広大な",4,0,0],["version","版",4,0,1],["vet","獣医",4,0,1],["victory","勝利",4,0,1],["virtual","仮想の",4,0,0],["virus","ウイルス",4,0,0],["visible","目に見える",4,0,0],["vision","視力・展望",4,0,1],["visual","視覚の",4,0,0],["vital","きわめて重要な",4,0,0],["voluntary","任意の",4,0,2],["wage","賃金",4,0,3],["wander","さまよう",4,0,0],["wealthy","裕福な",4,0,0],["welfare","福祉",4,0,0],["widely","広く",4,0,0],["willing","進んで〜する",4,0,0],["worldwide","世界的な",4,0,0],["access","アクセスする",5,0,2],["accountant","会計士",5,0,3],["accounting","会計",5,0,3],["advisor","顧問",5,0,3],["agency","代理店",5,0,3],["agenda","議題・議事日程",5,0,3],["allocate","割り当てる",5,0,2],["analyst","アナリスト",5,0,3],["analyze","分析する",5,0,2],["applicant","応募者",5,0,3],["approval","承認",5,0,3],["assess","評価する",5,0,2],["asset","資産",5,0,3],["assign","割り当てる",5,0,2],["assistant","助手",5,0,3],["associate","同僚",5,0,3],["attachment","添付ファイル",5,0,3],["attendee","出席者",5,0,3],["audit","監査",5,0,3],["authorize","権限を与える",5,0,2],["bankrupt","破産した",5,0,2],["bid","入札",5,0,3],["billing","請求",5,0,2],["bonus","ボーナス",5,0,2],["briefcase","書類かばん",5,0,3],["brochure","パンフレット",5,0,3],["budget","予算",5,0,3],["buyer","買い手",5,0,3],["cargo","貨物",5,0,3],["cashier","レジ係",5,0,3],["catalog","カタログ",5,0,3],["client","顧客",5,0,3],["commerce","商業",5,0,2],["commission","手数料",5,0,3],["commute","通勤する",5,0,2],["commuter","通勤者",5,0,3],["competitor","競争相手",5,0,3],["compliance","法令順守",5,0,3],["component","部品",5,0,3],["conference","会議",5,0,3],["confirm","確認する",5,0,2],["conform","従う",5,0,2],["consensus","合意",5,0,2],["consult","相談する",5,0,2],["consultant","コンサルタント",5,0,3],["contract","契約",5,0,3],["contractor","請負業者",5,0,3],["convention","大会",5,0,3],["coordinate","調整する",5,0,2],["copy","コピー",5,0,3],["corporate","企業の",5,0,2],["cost","費用",5,0,3],["counter","カウンター",5,0,3],["coupon","クーポン",5,0,3],["courier","宅配業者",5,0,3],["coworker","同僚",5,0,3],["credit","信用",5,0,3],["database","データベース",5,0,3],["deadline","締め切り",5,0,3],["deal","取引",5,0,3],["dealer","販売店",5,0,3],["delegate","代表者",5,0,3],["depart","出発する",5,0,2],["departure","出発",5,0,3],["designer","デザイナー",5,0,3],["developer","開発者",5,0,3],["director","重役",5,0,3],["dispatch","発送する",5,0,2],["distribute","配布する",5,0,2],["division","部門",5,0,3],["draft","下書き",5,0,3],["duplicate","複製",5,0,3],["earnings","収益",5,0,2],["edit","編集する",5,0,2],["efficiency","効率",5,0,3],["email","電子メール",5,0,3],["employ","雇う",5,0,2],["employment","雇用",5,0,3],["enclose","同封する",5,0,2],["enroll","登録する",5,0,2],["enterprise","企業",5,0,3],["entry","参加・記入",5,0,3],["errand","用事",5,0,3],["estimate","見積もり",5,0,3],["exceed","超える",5,0,2],["executive","重役",5,0,3],["expertise","専門知識",5,0,2],["expire","期限が切れる",5,0,2],["extension","内線・延長",5,0,3],["feedback","意見・感想",5,0,2],["fiscal","会計の",5,0,2],["forecast","予測",5,0,3],["form","用紙",5,0,3],["founder","創業者",5,0,3],["freelance","フリーランスの",5,0,2],["freight","貨物",5,0,3],["hire","雇う",5,0,2],["implement","実行する",5,0,2],["included","ふくまれている",5,0,2],["inquiry","問い合わせ",5,0,3],["inspect","検査する",5,0,2],["inspection","検査",5,0,3],["intern","研修生",5,0,3],["internship","インターン",5,0,3],["interview","面接",5,0,3],["inventory","在庫",5,0,3],["invest","投資する",5,0,2],["investor","投資家",5,0,3],["invoice","請求書",5,0,3],["itinerary","旅程表",5,0,3],["launch","発売する・売り出す",5,0,2],["layoff","一時解雇",5,0,3],["lease","賃貸契約",5,0,3],["lender","貸し手",5,0,3],["loan","融資",5,0,3],["lobby","ロビー",5,0,3],["logistics","物流",5,0,2],["logo","ロゴ",5,0,3],["loyalty","忠誠",5,0,3],["management","経営",5,0,3],["manager","管理者",5,0,3],["mandatory","義務の",5,0,2],["manual","説明書",5,0,3],["margin","利ざや",5,0,3],["marketing","マーケティング",5,0,2],["memo","メモ",5,0,3],["merchant","商人",5,0,3],["merger","合併",5,0,3],["notify","知らせる",5,0,2],["objective","目標",5,0,3],["online","オンラインの",5,0,2],["operate","操作する",5,0,2],["outlet","直販店",5,0,3],["outline","概要",5,0,3],["overdue","期限切れの",5,0,2],["overlook","見落とす",5,0,2],["overtime","残業",5,0,2],["packaging","包装",5,0,2],["paperwork","書類仕事",5,0,2],["parcel","小包",5,0,3],["patent","特許",5,0,3],["payment","支払い",5,0,3],["payroll","給与",5,0,3],["personnel","人事・職員",5,0,2],["portfolio","作品集",5,0,3],["position","地位",5,0,3],["postage","郵便料金",5,0,3],["postponed","延期された",5,0,2],["press","報道機関",5,0,2],["pricing","価格設定",5,0,2],["production","生産",5,0,3],["profile","人物紹介",5,0,3],["profit","利益",5,0,3],["profitable","もうかる",5,0,2],["promotion","昇進・販売促進",5,0,3],["prototype","試作品",5,0,3],["punctual","時間を守る",5,0,2],["punctually","時間どおりに",5,0,2],["purchase","購入する",5,0,2],["qualify","資格を得る",5,0,2],["quarterly","四半期の",5,0,2],["quote","見積もり",5,0,3],["rate","料金・割合",5,0,3],["receipt","領収書・レシート",5,0,3],["recruit","採用する",5,0,2],["refund","返金",5,0,3],["reimburse","払い戻す",5,0,2],["relocate","移転する",5,0,2],["renew","更新する",5,0,2],["renovate","改装する",5,0,2],["rental","賃貸",5,0,3],["require","必要とする",5,0,2],["reschedule","予定を変更する",5,0,2],["reserve","予約する",5,0,2],["resign","辞職する",5,0,2],["results","結果",5,0,2],["retail","小売り",5,0,2],["retailer","小売業者",5,0,3],["revenue","収益・売上高",5,0,3],["revise","改訂する",5,0,2],["salary","給料",5,0,3],["sales","売上",5,0,2],["savings","貯金",5,0,2],["secretary","秘書",5,0,3],["sector","部門",5,0,3],["securely","安全に",5,0,2],["seminar","セミナー",5,0,3],["sent","送られた",5,0,2],["shipment","発送品",5,0,3],["shipping","発送",5,0,2],["shuttle","シャトル便",5,0,3],["signature","署名",5,0,3],["slogan","標語",5,0,3],["spacious","広々とした",5,0,2],["specialist","専門家",5,0,3],["sponsor","後援者",5,0,3],["startup","新興企業",5,0,3],["stationery","文房具",5,0,3],["stock","在庫・株",5,0,3],["submit","提出する",5,0,2],["subscribe","定期購読する",5,0,2],["summary","要約",5,0,3],["supervise","監督する",5,0,2],["supervisor","監督者",5,0,3],["supplier","供給業者",5,0,3],["tariff","関税",5,0,3],["technician","技術者",5,0,3],["tenant","借り主",5,0,3],["terminal","ターミナル",5,0,3],["trademark","商標",5,0,3],["trainee","研修生",5,0,3],["training","研修",5,0,3],["trial","試用",5,0,3],["unit","単位",5,0,3],["upgrade","性能を上げる",5,0,2],["vacancy","空き・欠員",5,0,3],["vehicle","乗り物",5,0,3],["vendor","売り手",5,0,3],["venture","ベンチャー事業",5,0,3],["venue","会場",5,0,3],["verify","確認する",5,0,2],["volume","量",5,0,3],["voucher","引換券",5,0,3],["warehouse","倉庫",5,0,3],["warranty","保証",5,0,3],["wholesale","卸売り",5,0,2],["wholesaler","卸売業者",5,0,3],["workforce","労働力",5,0,3],["workload","仕事量",5,0,3],["workplace","職場",5,0,3],["workshop","研修会",5,0,3]]};
+</script>
+<script>
+/* えいたんクロス ルールエンジン（画面なし。node でも動く）
+   盤: N×N。マスは null か {ch, o(置いた人の番号。はじめの単語は -1), t(置いた手番)}
+   ルール: 'easy'（簡単ルール） / 'adv'（上級ルール） */
+(function (root) {
+'use strict';
+const A = 97;
+const RARE = new Set(['q', 'x', 'z', 'j', 'k', 'v', 'w']);
+
+/* ---------- 乱数（再現できるように種つき） ---------- */
+function rng(seed) {
+  let a = (seed >>> 0) || 1;
+  return function () { a = (a + 0x6D2B79F5) | 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function shuffle(a, R) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); const x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+
+/* ---------- タイルの袋（オリジナルの配分・100枚） ---------- */
+const DIST = { e: 11, a: 8, i: 8, o: 8, u: 4, t: 6, n: 6, s: 5, r: 6, l: 4, d: 4, h: 3, c: 3, m: 3, p: 3, g: 3, b: 2, f: 2, w: 2, y: 2, k: 2, v: 1, j: 1, x: 1, q: 1, z: 1 };
+const DIST_LOW = Object.assign({}, DIST, { q: 0, x: 0, z: 0, a: 9, o: 9, e: 12, i: 9 });   // 低学年：Q・X・Z なし、母音を多めに（101枚）
+function makeBag(noQXZ, R) {
+  const d = noQXZ ? DIST_LOW : DIST, bag = [];
+  for (const k in d) for (let i = 0; i < d[k]; i++) bag.push(k);
+  return shuffle(bag, R);
+}
+
+/* ---------- 単語リスト ----------
+   data.words: [word, meaning, level, themeBits, flags(1=複数形OK 2=ビジネス), kana?]
+   level: 0低学年 1英検5級 2英検4級 3英検3級 4英検準2級 5ビジネス */
+function inLevel(row, L) { return L === 5 ? (row[2] <= 3 || (row[4] & 2) > 0) : row[2] <= L; }
+function pluralOf(w) {
+  if (/[^aeiou]y$/.test(w)) return w.slice(0, -1) + 'ies';
+  if (/(s|x|z|ch|sh)$/.test(w)) return w + 'es';
+  if (/(o|f|fe)$/.test(w)) return null;
+  return w + 's';
+}
+function buildDict(data, opt) {
+  const L = opt.level, th = opt.theme == null || opt.theme < 0 ? -1 : opt.theme;
+  const map = new Map();
+  for (const r of data.words) {
+    if (!inLevel(r, L)) continue;
+    if (th >= 0 && !(r[3] & (1 << th))) continue;
+    map.set(r[0], { w: r[0], m: r[1], k: r[5] || r[1], lv: r[2] });
+  }
+  if (opt.plural) {
+    for (const e of Array.from(map.values())) {
+      const row = data.words.find((r) => r[0] === e.w);
+      if (!(row[4] & 1)) continue;
+      const p = pluralOf(e.w);
+      if (p && p.length <= 10 && !map.has(p)) map.set(p, { w: p, m: e.m + '（複数）', k: e.k + '（ふくすう）', lv: e.lv, base: e.w });
+    }
+  }
+  const list = [];
+  for (const w of map.keys()) {
+    const cnt = new Int8Array(26); let mask = 0;
+    for (let i = 0; i < w.length; i++) { const c = w.charCodeAt(i) - A; cnt[c]++; mask |= 1 << c; }
+    list.push({ w, cnt, mask, len: w.length });
+  }
+  return { map, list, level: L, theme: th, get: (w) => map.get(w) || null, has: (w) => map.has(w) };
+}
+function themeCounts(data, L) {
+  const n = (data.themes || []).map(() => 0);
+  for (const r of data.words) if (inLevel(r, L)) for (let t = 0; t < n.length; t++) if (r[3] & (1 << t)) n[t]++;
+  return n;
+}
+
+/* ---------- ゲーム ---------- */
+function newGame(o) {
+  const R = o.rng || rng(o.seed || (Date.now() & 0x7fffffff));
+  const N = o.N || 13;
+  const st = {
+    N, hs: o.handSize || 7, maxHand: (o.handSize || 7) + 3, rule: o.rule === 'adv' ? 'adv' : 'easy', bonus: o.bonus !== false,
+    roundCap: o.roundCap || 30, R, dict: o.dict,
+    board: Array.from({ length: N }, () => Array(N).fill(null)),
+    bag: makeBag(!!o.noQXZ, R), players: [], turn: 0, round: 1, turnNo: 0, emptyPasses: 0, passStreak: 0, over: false, reason: '', log: [],
+  };
+  st.TOTAL = st.bag.length;
+  // はじめの単語（3〜5文字。テーマモードならテーマの語から）
+  const pool = st.dict.list.filter((x) => x.len >= 3 && x.len <= 5 && !st.dict.get(x.w).base);
+  const sw = (o.startWord && st.dict.has(o.startWord)) ? o.startWord : (pool.length ? pool[Math.floor(R() * pool.length)].w : 'dog');
+  const r0 = Math.floor(N / 2), c0 = Math.floor((N - sw.length) / 2);
+  for (let i = 0; i < sw.length; i++) st.board[r0][c0 + i] = { ch: sw[i], o: -1, t: 0 };
+  st.startWord = sw;
+  for (const p of o.players) {
+    st.players.push({ name: p.name, kind: p.kind || 'human', cpu: p.cpu || 'normal', color: p.color || '', hand: [], score: 0, tiles: 0, bonus: 0, hints: 0, words: [], passes: 0, swaps: 0 });
+  }
+  for (const p of st.players) draw(st, p, st.hs);
+  return st;
+}
+function draw(st, p, n) { let k = 0; while (k < n && st.bag.length && p.hand.length < st.maxHand) { p.hand.push(st.bag.pop()); k++; } return k; }
+function cur(st) { return st.players[st.turn]; }
+function at(st, r, c) { return r >= 0 && c >= 0 && r < st.N && c < st.N ? st.board[r][c] : undefined; }
+function countBoardTiles(st) { let n = 0; for (const row of st.board) for (const x of row) if (x && x.o >= 0) n++; return n; }
+function tileCount(st) { let n = st.bag.length + countBoardTiles(st); for (const p of st.players) n += p.hand.length; return n; }
+
+/* 置き方を調べる。tiles=[{r,c,ch}]。返り値 {ok, err, words:[{w, cells:[[r,c]..], main, entry}], dir, main, gain, bonus} */
+function validate(st, tiles, dictOverride) {
+  const dict = dictOverride || st.dict, N = st.N;
+  if (!tiles || !tiles.length) return { ok: false, err: 'none' };
+  const nk = new Map();
+  for (const t of tiles) {
+    if (t.r < 0 || t.c < 0 || t.r >= N || t.c >= N) return { ok: false, err: 'out' };
+    if (st.board[t.r][t.c]) return { ok: false, err: 'occupied' };
+    const k = t.r * N + t.c; if (nk.has(k)) return { ok: false, err: 'occupied' };
+    nk.set(k, t.ch);
+  }
+  const get = (r, c) => { if (r < 0 || c < 0 || r >= N || c >= N) return null; const b = st.board[r][c]; if (b) return b.ch; const n = nk.get(r * N + c); return n || null; };
+  const isNew = (r, c) => nk.has(r * N + c);
+  const sameR = tiles.every((t) => t.r === tiles[0].r), sameC = tiles.every((t) => t.c === tiles[0].c);
+  if (!sameR && !sameC) return { ok: false, err: 'line' };
+  const run = (r, c, dr, dc) => {   // (r,c) をふくむ、たて/よこの連続したならび
+    let r1 = r, c1 = c; while (get(r1 - dr, c1 - dc)) { r1 -= dr; c1 -= dc; }
+    const cells = []; let w = '', rr = r1, cc = c1;
+    while (get(rr, cc)) { cells.push([rr, cc]); w += get(rr, cc); rr += dr; cc += dc; }
+    return { w, cells };
+  };
+  const dirs = tiles.length > 1 ? [sameR ? 'H' : 'V'] : ['H', 'V'];
+  // すきまの確認（置いたタイルの間がすべてうまっていること）
+  {
+    const d = dirs[0]; const dr = d === 'V' ? 1 : 0, dc = d === 'H' ? 1 : 0;
+    if (tiles.length > 1) {
+      const ks = tiles.map((t) => (d === 'H' ? t.c : t.r)), lo = Math.min(...ks), hi = Math.max(...ks);
+      for (let i = lo; i <= hi; i++) { const r = d === 'H' ? tiles[0].r : i, c = d === 'H' ? i : tiles[0].c; if (!get(r, c)) return { ok: false, err: 'gap' }; }
+    }
+    void dr; void dc;
+  }
+  if (st.rule === 'easy') {
+    // 簡単ルール：1列にならべた単語が、ばんの文字をちょうど1つ使う（交わる）。
+    // となりにくっつけてもよいが、くっついてできた たて・よこのならびも単語になっていること。
+    let best = null, firstErr = null;
+    for (const d of dirs) {
+      const dr = d === 'V' ? 1 : 0, dc = d === 'H' ? 1 : 0;
+      const R = run(tiles[0].r, tiles[0].c, dr, dc);
+      if (R.w.length < 2) { firstErr = firstErr || 'noBoard'; continue; }
+      const ex = R.cells.filter(([r, c]) => !isNew(r, c)).length;
+      if (ex === 0) { firstErr = firstErr === 'tooMany' ? firstErr : 'noBoard'; continue; }
+      if (ex > 1) { firstErr = 'tooMany'; continue; }
+      best = { d, R, dr, dc }; break;
+    }
+    if (!best) return { ok: false, err: firstErr || 'noBoard' };
+    const words = [{ w: best.R.w, cells: best.R.cells, main: true }];
+    for (const t of tiles) {
+      const X = run(t.r, t.c, best.dc, best.dr);
+      if (X.w.length >= 2) words.push({ w: X.w, cells: X.cells, main: false });
+    }
+    for (const w of words) { const e = dict.get(w.w); if (!e) return { ok: false, err: 'notWord', word: w.w, cross: !w.main }; w.entry = e; }
+    return finish(st, tiles, words, best.d);
+  }
+  // 上級ルール
+  let d = dirs[0];
+  if (tiles.length === 1) {
+    const h = run(tiles[0].r, tiles[0].c, 0, 1), v = run(tiles[0].r, tiles[0].c, 1, 0);
+    d = h.w.length >= v.w.length ? 'H' : 'V';
+  }
+  const dr = d === 'V' ? 1 : 0, dc = d === 'H' ? 1 : 0;
+  const words = [];
+  const M = run(tiles[0].r, tiles[0].c, dr, dc);
+  if (M.w.length >= 2) words.push({ w: M.w, cells: M.cells, main: true });
+  for (const t of tiles) {
+    const X = run(t.r, t.c, dc, dr);
+    if (X.w.length >= 2) words.push({ w: X.w, cells: X.cells, main: false });
+  }
+  if (!words.length) return { ok: false, err: 'noBoard' };
+  if (!words.some((w) => w.cells.some(([r, c]) => !isNew(r, c)))) return { ok: false, err: 'noBoard' };
+  if (!words[0].main) words[0].main = true;   // 1枚だけで、よこ/たての単語が1つのとき
+  for (const w of words) { const e = dict.get(w.w); if (!e) return { ok: false, err: 'notWord', word: w.w, cross: !w.main }; w.entry = e; }
+  return finish(st, tiles, words, d);
+}
+function finish(st, tiles, words, d) {
+  const main = words.find((w) => w.main) || words[0];
+  const bonus = st.bonus ? Math.max(0, main.w.length - 4) : 0;
+  return { ok: true, words, dir: d, main: main.w, gain: tiles.length + bonus, tilesUsed: tiles.length, bonus };
+}
+
+/* 手持ちから使えるか（文字の数） */
+function handCounts(hand) { const c = new Int8Array(26); for (const ch of hand) c[ch.charCodeAt(0) - A]++; return c; }
+
+/* 置ける手をさがす。opt: {limit(最大の数), deadline(ms時刻), shortOnly} */
+function genMoves(st, hand, opt) {
+  opt = opt || {};
+  const N = st.N, dict = st.dict, hc = handCounts(hand), easy = st.rule === 'easy';
+  let hmask = 0; for (let i = 0; i < 26; i++) if (hc[i]) hmask |= 1 << i;
+  const out = [], seen = new Set();
+  const limit = opt.limit || Infinity, deadline = opt.deadline || 0;
+  // 盤にある文字
+  let bmask = 0; for (const row of st.board) for (const x of row) if (x) bmask |= 1 << (x.ch.charCodeAt(0) - A);
+  const cands = [];
+  for (const W of dict.list) {
+    if (W.len > N) continue;
+    if (opt.maxLen && W.len > opt.maxLen) continue;
+    let miss = 0, missMask = 0;
+    for (let i = 0; i < 26; i++) { const d = W.cnt[i] - hc[i]; if (d > 0) { miss += d; missMask |= 1 << i; } }
+    if (miss >= W.len) continue;                 // 手持ちから1枚も置けない
+    if (easy && miss > 1) continue;              // 簡単ルール：盤の文字はちょうど1つ
+    if (missMask & ~bmask) continue;             // 足りない文字が盤にない
+    cands.push({ W, miss, missMask });
+  }
+  const lines = [];
+  for (let r = 0; r < N; r++) lines.push({ d: 'H', k: r });
+  for (let c = 0; c < N; c++) lines.push({ d: 'V', k: c });
+  const used = new Int8Array(26);
+  for (const L of lines) {
+    const cell = (i) => (L.d === 'H' ? st.board[L.k][i] : st.board[i][L.k]);
+    const chs = []; let lmask = 0, any = false;
+    for (let i = 0; i < N; i++) { const x = cell(i); chs.push(x ? x.ch : null); if (x) { lmask |= 1 << (x.ch.charCodeAt(0) - A); any = true; } }
+    // となりの列にタイルがあるか（上級ルールで、ならべて置く手のため）
+    let near = false;
+    if (!easy) for (let i = 0; i < N && !near; i++) { for (const dk of [-1, 1]) { const kk = L.k + dk; if (kk < 0 || kk >= N) continue; if (L.d === 'H' ? st.board[kk][i] : st.board[i][kk]) { near = true; break; } } }
+    if (!any && (easy || !near)) continue;
+    for (const C of cands) {
+      if (C.missMask & ~lmask) continue;
+      if (!any && C.miss) continue;
+      const W = C.W, w = W.w, len = W.len;
+      for (let s = 0; s + len <= N; s++) {
+        if (s > 0 && chs[s - 1]) continue;
+        if (s + len < N && chs[s + len]) continue;
+        used.fill(0); let ok = true, ex = 0, nnew = 0;
+        for (let i = 0; i < len; i++) {
+          const b = chs[s + i];
+          if (b) { if (b !== w[i]) { ok = false; break; } ex++; }
+          else { const ci = w.charCodeAt(i) - A; if (++used[ci] > hc[ci]) { ok = false; break; } nnew++; }
+        }
+        if (!ok || !nnew) continue;
+        if (easy && ex !== 1) continue;
+        const tiles = [];
+        for (let i = 0; i < len; i++) if (!chs[s + i]) tiles.push(L.d === 'H' ? { r: L.k, c: s + i, ch: w[i] } : { r: s + i, c: L.k, ch: w[i] });
+        const key = tiles.map((t) => t.r * N + t.c + t.ch).sort().join(',');
+        if (seen.has(key)) continue;
+        const v = validate(st, tiles);
+        if (!v.ok) continue;
+        seen.add(key);
+        out.push({ tiles, v, score: v.gain, word: v.main });
+        if (out.length >= limit) return out;
+      }
+      if (deadline && out.length && Date.now() > deadline) return out;
+    }
+  }
+  return out;
+}
+
+/* コンピューターの手。level: 'weak' | 'normal' | 'strong' */
+function rareScore(m) { let s = 0; for (const t of m.tiles) if (RARE.has(t.ch)) s++; return s; }
+function cpuChoose(st, level, R) {
+  R = R || st.R;
+  const p = cur(st);
+  const t0 = Date.now();
+  let moves;
+  if (level === 'weak') moves = genMoves(st, p.hand, { maxLen: 5, deadline: t0 + 400 });
+  else moves = genMoves(st, p.hand, { deadline: t0 + 700 });
+  if (moves.length) {
+    if (level === 'weak') {
+      const short = moves.filter((m) => m.tiles.length <= 3);
+      const pool = short.length && R() < 0.8 ? short : moves;
+      return { type: 'place', move: pool[Math.floor(R() * pool.length)] };
+    }
+    moves.sort((a, b) => b.score - a.score || rareScore(b) - rareScore(a) || b.word.length - a.word.length);
+    if (level === 'normal') {
+      const n = Math.max(1, Math.ceil(moves.length * 0.4));
+      return { type: 'place', move: moves[Math.floor(R() * n)] };
+    }
+    return { type: 'place', move: moves[0] };
+  }
+  // 置けないとき：めずらしい文字が多ければ交換、それ以外はパス（1枚もらう）
+  const rare = p.hand.map((ch, i) => [ch, i]).filter(([ch]) => RARE.has(ch));
+  const vowels = p.hand.filter((ch) => 'aeiou'.includes(ch)).length;
+  if (level !== 'weak' && st.bag.length >= 1) {
+    let idx = [];
+    if (rare.length >= 2) idx = rare.slice(0, 3).map((x) => x[1]);
+    else if (vowels === 0 || vowels === p.hand.length) idx = p.hand.map((_, i) => i).slice(0, 3);
+    if (idx.length) return { type: 'swap', idx: idx.slice(0, Math.min(3, st.bag.length)) };
+  }
+  return { type: 'pass' };
+}
+function hint(st) {
+  const p = cur(st);
+  const moves = genMoves(st, p.hand, {});
+  if (!moves.length) return null;
+  moves.sort((a, b) => b.score - a.score || a.tiles.length - b.tiles.length);
+  return moves[0];
+}
+
+/* ---------- 手番の進め方 ---------- */
+function removeFromHand(p, chs) {
+  const h = p.hand.slice();
+  for (const ch of chs) { const i = h.indexOf(ch); if (i < 0) return false; h.splice(i, 1); }
+  p.hand = h; return true;
+}
+function place(st, tiles) {
+  if (st.over) return { ok: false, err: 'over' };
+  const p = cur(st);
+  const chk = handCounts(p.hand); for (const t of tiles) { if (--chk[t.ch.charCodeAt(0) - A] < 0) return { ok: false, err: 'hand' }; }
+  const v = validate(st, tiles);
+  if (!v.ok) return v;
+  removeFromHand(p, tiles.map((t) => t.ch));
+  for (const t of tiles) st.board[t.r][t.c] = { ch: t.ch, o: st.turn, t: st.turnNo + 1 };
+  p.tiles += tiles.length; p.bonus += v.bonus; p.score += v.gain;
+  for (const w of v.words) p.words.push({ w: w.w, m: w.entry.m, k: w.entry.k, main: w.main });
+  draw(st, p, Math.max(0, st.hs - p.hand.length));
+  st.emptyPasses = 0; st.passStreak = 0;
+  st.log.push({ type: 'place', p: st.turn, word: v.main, gain: v.gain, tiles: tiles.length });
+  if (!p.hand.length && !st.bag.length) { st.over = true; st.reason = 'out'; }
+  return Object.assign({}, v, { ok: true });
+}
+function pass(st) {
+  const p = cur(st);
+  const wasEmpty = st.bag.length === 0;
+  const got = draw(st, p, 1);
+  p.passes++;
+  if (wasEmpty) st.emptyPasses++; else st.emptyPasses = 0;
+  st.passStreak++;
+  st.log.push({ type: 'pass', p: st.turn, drew: got });
+  if (st.emptyPasses >= st.players.length) { st.over = true; st.reason = 'pass'; }
+  else if (st.passStreak >= st.players.length * 2) { st.over = true; st.reason = 'stall'; }   // 全員が2回つづけてパス（ふくろが残っていても）
+  return { ok: true, drew: got };
+}
+function swap(st, idx) {
+  const p = cur(st);
+  idx = Array.from(new Set(idx)).filter((i) => i >= 0 && i < p.hand.length);
+  const n = Math.min(idx.length, 3, st.bag.length);
+  if (!n) return { ok: false, err: 'swap' };
+  idx = idx.slice(0, n).sort((a, b) => b - a);
+  const out = idx.map((i) => p.hand[i]);
+  for (const i of idx) p.hand.splice(i, 1);
+  const got = [];
+  for (let k = 0; k < n; k++) got.push(st.bag.pop());
+  p.hand.push(...got);
+  st.bag.push(...out); shuffle(st.bag, st.R);
+  p.swaps++;
+  st.emptyPasses = 0; st.passStreak = 0;
+  st.log.push({ type: 'swap', p: st.turn, n });
+  return { ok: true, n, out, got };
+}
+function useHint(st) { const p = cur(st); p.hints++; if (p.score > 0) p.score--; }
+function next(st) {
+  if (st.over) return;
+  st.turnNo++;
+  st.turn = (st.turn + 1) % st.players.length;
+  if (st.turn === 0) { st.round++; if (st.round > st.roundCap) { st.over = true; st.reason = 'cap'; st.round = st.roundCap; } }
+}
+function ranking(st) {
+  const order = st.players.map((p, i) => ({ i, p })).sort((a, b) => b.p.score - a.p.score || b.p.tiles - a.p.tiles);
+  let rank = 0, prev = null;
+  order.forEach((x, k) => { if (!prev || prev.p.score !== x.p.score) rank = k + 1; x.rank = rank; prev = x; });
+  return order;
+}
+/* 盤の上のすべての単語（2文字以上のならび） */
+function boardSequences(st) {
+  const N = st.N, out = [];
+  for (let r = 0; r < N; r++) { let w = ''; for (let c = 0; c <= N; c++) { const x = c < N ? st.board[r][c] : null; if (x) w += x.ch; else { if (w.length >= 2) out.push({ w, d: 'H', r, c: c - w.length }); w = ''; } } }
+  for (let c = 0; c < N; c++) { let w = ''; for (let r = 0; r <= N; r++) { const x = r < N ? st.board[r][c] : null; if (x) w += x.ch; else { if (w.length >= 2) out.push({ w, d: 'V', r: r - w.length, c }); w = ''; } } }
+  return out;
+}
+
+const E = { rng, shuffle, makeBag, DIST, DIST_LOW, buildDict, themeCounts, inLevel, pluralOf, newGame, validate, genMoves, cpuChoose, hint, place, pass, swap, useHint, next, cur, ranking, tileCount, countBoardTiles, boardSequences, handCounts, at };
+if (typeof module !== 'undefined' && module.exports) module.exports = E; else root.WCEngine = E;
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>
+/* えいたんクロス 画面 */
+(function () {
+'use strict';
+const E = window.WCEngine, CFG = window.WC_CONFIG, DATA = window.WC_DATA;
+const app = document.getElementById('app');
+const KANA = !!CFG.kana;
+if (CFG.big) document.body.classList.add('big');
+const LEVELS = ['低学年《ていがくねん》かんたん', '英検《えいけん》5級《きゅう》', '英検《えいけん》4級《きゅう》', '英検《えいけん》3級《きゅう》', '英検《えいけん》準《じゅん》2級《きゅう》', 'ビジネス'];
+const LVKEY = ['low', 'e5', 'e4', 'e3', 'p2', 'biz'];
+const THEMES = ['動物《どうぶつ》', '食《た》べ物《もの》', '学校《がっこう》', '体《からだ》・家族《かぞく》', '自然《しぜん》'];
+const CPU_LV = { weak: 'よわい', normal: 'ふつう', strong: 'つよい' };
+const PCOL = ['var(--p0)', 'var(--p1)', 'var(--p2)', 'var(--p3)'];
+const RB = /(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// ふりがな： 低学年のページはルビ、それ以外は漢字だけ
+const H = (s) => esc(s).replace(RB, (m, a, b, r) => KANA ? '<ruby>' + (a || b) + '<rt>' + r + '</rt></ruby>' : (a || b));
+const HB = (s) => H(s).replace(/&lt;(\/?)b&gt;/g, '<$1b>');   // ルールの太字（<b>だけ通す）
+const P = (s) => String(s).replace(RB, (m, a, b) => a || b);   // 属性やalert用（ルビなし）
+const UP = (w) => w.toUpperCase();
+const track = (n, p) => { try { window.mnTrack && window.mnTrack(n, p); } catch (e) {} };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+const REC_KEY = 'eitan-cross-' + CFG.course + '-rec', SET_KEY = 'eitan-cross-' + CFG.course + '-setup';
+const ID = CFG.id;
+const meaningOf = (x) => (KANA ? (x.k || x.m) : x.m);
+
+/* ---------- 音声（英語の読み上げ） ---------- */
+const TTS = (() => { try { return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined'; } catch (e) { return false; } })();
+let enVoice = null;
+function pickVoice() { try { const vs = speechSynthesis.getVoices() || []; enVoice = vs.find((v) => v.lang === 'en-US') || vs.find((v) => /^en/i.test(v.lang)) || null; } catch (e) {} }
+if (TTS) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+function speak(w) {
+  if (!TTS) return;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(w); u.lang = 'en-US'; u.rate = 0.85; if (enVoice) u.voice = enVoice; speechSynthesis.speak(u); } catch (e) {}
+}
+const sayBtn = (w) => TTS ? `<button type="button" class="say" data-say="${esc(w)}" aria-label="${esc(w)} の発音を聞く">🔊</button>` : '';
+document.addEventListener('click', (ev) => { const b = ev.target.closest('[data-say]'); if (b) { ev.preventDefault(); speak(b.getAttribute('data-say')); } });
+
+/* ---------- 設定 ---------- */
+const defSeats = (mode) => mode === 'solo'
+  ? [{ name: 'あなた', kind: 'human', cpu: 'normal' }, { name: 'コンピューターA', kind: 'cpu', cpu: 'normal' }]
+  : [{ name: 'プレイヤー1', kind: 'human', cpu: 'normal' }, { name: 'プレイヤー2', kind: 'human', cpu: 'normal' }, { name: 'プレイヤー3', kind: 'human', cpu: 'normal' }];
+let S = Object.assign({ mode: 'solo', seats: defSeats('solo'), level: CFG.level, rule: CFG.rule, theme: -1, bonus: true }, store.get(SET_KEY, {}) || {});
+if (!CFG.levels.includes(S.level)) S.level = CFG.level;
+if (!Array.isArray(S.seats) || S.seats.length < 2 || S.seats.length > 4) S.seats = defSeats(S.mode);
+S.seats = S.seats.map((x) => ({ name: String(x.name || '').slice(0, 12) || 'プレイヤー', kind: x.kind === 'cpu' ? 'cpu' : 'human', cpu: CPU_LV[x.cpu] ? x.cpu : 'normal' }));
+if (S.rule !== 'adv') S.rule = 'easy';
+const saveSetup = () => store.set(SET_KEY, S);
+const themeOK = (L) => E.themeCounts(DATA, L).map((n) => n >= 60);
+function fixTheme() { if (S.theme >= 0 && !themeOK(S.level)[S.theme]) S.theme = -1; }
+
+function renderSetup() {
+  fixTheme();
+  const rec = store.get(REC_KEY, null) || {};
+  const ok = themeOK(S.level);
+  const levelBtns = CFG.levels.map((L) => `<button type="button" data-lv="${L}" aria-pressed="${S.level === L}">${H(LEVELS[L])}</button>`).join('');
+  const themeBtns = [`<button type="button" data-th="-1" aria-pressed="${S.theme < 0}">すべて</button>`]
+    .concat(THEMES.map((t, i) => ok[i] ? `<button type="button" data-th="${i}" aria-pressed="${S.theme === i}">${H(t)}</button>` : '')).join('');
+  const nTheme = ok.filter(Boolean).length;
+  const seats = S.seats.map((s, i) => `<div class="seat" style="--pc:${PCOL[i]}"><span class="dot" style="background:${PCOL[i]}"></span>
+      <input type="text" maxlength="12" value="${esc(s.name)}" data-name="${i}" aria-label="${i + 1}人目の名前">
+      <span class="ctl"><select data-kind="${i}" aria-label="${i + 1}人目は人かコンピューターか"><option value="human"${s.kind === 'human' ? ' selected' : ''}>${P('人《ひと》')}</option>
+        <option value="cpu:weak"${s.kind === 'cpu' && s.cpu === 'weak' ? ' selected' : ''}>コンピューター（よわい）</option>
+        <option value="cpu:normal"${s.kind === 'cpu' && s.cpu === 'normal' ? ' selected' : ''}>コンピューター（ふつう）</option>
+        <option value="cpu:strong"${s.kind === 'cpu' && s.cpu === 'strong' ? ' selected' : ''}>コンピューター（つよい）</option></select></span></div>`).join('');
+  const nH = S.seats.filter((s) => s.kind === 'human').length;
+  app.innerHTML = `
+  <header>
+    <h1><small>${H(CFG.kicker)}</small>えいたんクロス</h1>
+    <p class="lead">${H('アルファベットのタイルで、英単語《えいたんご》をたて・よこに組《く》み立《た》てよう。ばんの上《うえ》の文字《もじ》を1つ使《つか》って単語《たんご》を作《つく》り、たくさんタイルを置《お》いた人《ひと》の勝《か》ち！')}</p>
+  </header>
+  <section class="box">
+    <div class="label">${H('だれと あそぶ？')}</div>
+    <div class="seg" id="mode"><button type="button" data-mode="solo" aria-pressed="${S.mode === 'solo'}">${H('ひとりで（コンピューターと）')}</button><button type="button" data-mode="group" aria-pressed="${S.mode === 'group'}">${H('みんなで（1台《だい》を回《まわ》す）')}</button></div>
+    <div style="display:flex;flex-direction:column;gap:6px">${seats}</div>
+    <div class="row"><button type="button" class="btn sm" id="addseat" ${S.seats.length >= 4 ? 'disabled' : ''}>＋ ${H('人数《にんずう》をふやす')}</button><button type="button" class="btn sm" id="delseat" ${S.seats.length <= 2 ? 'disabled' : ''}>− ${H('へらす')}</button></div>
+    <p class="note">${nH === 0 ? H('人《ひと》が｜1人《ひとり》もいません。｜1人《ひとり》は「人《ひと》」にしてね。') : nH >= 2 ? H('人《ひと》が｜2人《ふたり》以上《いじょう》のときは、番《ばん》がかわるたびに「つぎは○○さん」の画面《がめん》が出《で》ます。手《て》もとのタイルを見《み》せないように、交代《こうたい》してね。') : H('コンピューターの強《つよ》さは よわい・ふつう・つよい からえらべます。')}</p>
+  </section>
+  <section class="box">
+    <div class="label">${H('単語《たんご》のレベル')}</div>
+    <div class="seg" id="levels">${levelBtns}</div>
+    <p class="note">${H('えらんだレベルと、それよりやさしいレベルの単語《たんご》が使《つか》えます。')}（${E.buildDict(DATA, { level: S.level, theme: -1 }).list.length}${H('語《ご》')}）</p>
+    <div class="label">${H('ルール')}</div>
+    <div class="seg" id="rules"><button type="button" data-rule="easy" aria-pressed="${S.rule === 'easy'}">${H('簡単《かんたん》ルール')}</button><button type="button" data-rule="adv" aria-pressed="${S.rule === 'adv'}">${H('上級《じょうきゅう》ルール')}</button></div>
+    <p class="note">${S.rule === 'easy' ? H('簡単《かんたん》：ばんの文字《もじ》1つと交《まじ》わるように、たてか よこに1語《ご》。となりにくっついたら、そこも単語《たんご》になっていればOK。') : H('上級《じょうきゅう》：くっつけて置《お》いてもOK。できた たて・よこのならびが、ぜんぶ単語《たんご》になっていること。')}</p>
+    <div class="label">${H('テーマ')}</div>
+    <div class="seg" id="themes">${themeBtns}</div>
+    ${nTheme ? '' : `<p class="note">${H('このレベルには、テーマモードに使《つか》えるだけの単語《たんご》（60語《ご》以上《いじょう》）があるテーマがありません。')}</p>`}
+    <div class="label">${H('ボーナス（5文字《もじ》以上《いじょう》の単語《たんご》）')}</div>
+    <div class="seg" id="bonus"><button type="button" data-bonus="1" aria-pressed="${S.bonus}">${H('ボーナスあり')}</button><button type="button" data-bonus="0" aria-pressed="${!S.bonus}">${H('ボーナスなし')}</button></div>
+  </section>
+  <div class="row"><button type="button" class="btn go" id="start" style="flex:1;font-size:18px" ${nH ? '' : 'disabled'}>${H('はじめる')}</button><button type="button" class="btn" id="showrules">${H('ルール')}</button></div>
+  ${rec.games ? `<section class="box"><div class="label">${H('この端末《たんまつ》の記録《きろく》')}</div><div class="rec"><span>${H('ベスト')} <b>${rec.best || 0}</b> ${H('点《てん》')}</span><span>${H('つくった単語《たんご》')} <b>${rec.words || 0}</b> ${H('語《ご》')}</span><span>${H('あそんだ回数《かいすう》')} <b>${rec.games}</b></span></div></section>` : ''}`;
+  app.querySelectorAll('[data-mode]').forEach((b) => b.onclick = () => { if (S.mode === b.dataset.mode) return; S.mode = b.dataset.mode; S.seats = defSeats(S.mode); saveSetup(); renderSetup(); });
+  app.querySelectorAll('[data-lv]').forEach((b) => b.onclick = () => { S.level = +b.dataset.lv; saveSetup(); renderSetup(); });
+  app.querySelectorAll('[data-th]').forEach((b) => b.onclick = () => { S.theme = +b.dataset.th; saveSetup(); renderSetup(); });
+  app.querySelectorAll('[data-rule]').forEach((b) => b.onclick = () => { S.rule = b.dataset.rule; saveSetup(); renderSetup(); });
+  app.querySelectorAll('[data-bonus]').forEach((b) => b.onclick = () => { S.bonus = b.dataset.bonus === '1'; saveSetup(); renderSetup(); });
+  app.querySelectorAll('[data-name]').forEach((inp) => inp.oninput = () => { S.seats[+inp.dataset.name].name = inp.value.slice(0, 12); saveSetup(); });
+  app.querySelectorAll('[data-kind]').forEach((sel) => sel.onchange = () => { const s = S.seats[+sel.dataset.kind], v = sel.value; if (v === 'human') s.kind = 'human'; else { s.kind = 'cpu'; s.cpu = v.split(':')[1]; }
+    if (s.kind === 'cpu' && /^プレイヤー|^あなた/.test(s.name)) s.name = 'コンピューター' + 'ABCD'[+sel.dataset.kind];
+    if (s.kind === 'human' && /^コンピューター/.test(s.name)) s.name = 'プレイヤー' + (+sel.dataset.kind + 1);
+    saveSetup(); renderSetup(); });
+  document.getElementById('addseat').onclick = () => { const i = S.seats.length; S.seats.push(S.mode === 'solo' ? { name: 'コンピューター' + 'ABCD'[i], kind: 'cpu', cpu: 'normal' } : { name: 'プレイヤー' + (i + 1), kind: 'human', cpu: 'normal' }); saveSetup(); renderSetup(); };
+  document.getElementById('delseat').onclick = () => { S.seats.pop(); saveSetup(); renderSetup(); };
+  document.getElementById('start').onclick = startGame;
+  document.getElementById('showrules').onclick = showRules;
+}
+
+/* ---------- ルールの画面 ---------- */
+function rulesHtml() {
+  const hs = CFG.hand;
+  return `<div class="rules">
+  <h3>${HB('あそびかた')}</h3>
+  <ol>
+    <li>${HB(`ばんは ${CFG.N}×${CFG.N}マス。まん中《なか》に、はじめの単語《たんご》が1つ置《お》いてあります。`)}</li>
+    <li>${HB(`｜1人《ひとり》${hs}枚《まい》のタイルを持《も》ちます。自分《じぶん》の番《ばん》に、つぎの3つから1つをえらびます。`)}
+      <ul><li>${HB('<b>置《お》く</b>：タイルをならべて単語《たんご》を作《つく》る。使《つか》ったぶん、ふくろから補充《ほじゅう》。')}</li>
+      <li>${HB('<b>パス</b>：置《お》かずに、タイルを1枚《まい》もらう（ふくろが空《から》なら、もらわずにパス）。')}</li>
+      <li>${HB('<b>交換《こうかん》</b>：タイルを3枚《まい》まで、ふくろのタイルと取《と》りかえる（これで1回《かい》の番《ばん》）。')}</li></ul></li>
+    <li>${HB('まちがった単語《たんご》のときは、タイルが手《て》もとにもどります。ペナルティはないので、もう一度《いちど》ためしてね。')}</li>
+  </ol>
+  <h3>${HB('簡単《かんたん》ルール')}</h3>
+  <ul><li>${HB('たてか よこの1列《れつ》に1語《ご》。ばんの上《うえ》の文字《もじ》を<b>ちょうど1つ</b>使《つか》って交《まじ》わる。')}</li>
+  <li>${HB('ほかのタイルのとなりに置《お》いてもOK。ただし、くっついてできた たて・よこのならびも、単語《たんご》になっていること。ななめにとなるのは自由《じゆう》。')}</li>
+  <li>${HB('ばんにある単語《たんご》の前《まえ》や後《うし》ろにつなげて、長《なが》くするのはなし（ばんの文字《もじ》を2つ使《つか》うことになるため）。')}</li></ul>
+  <h3>${HB('上級《じょうきゅう》ルール')}</h3>
+  <ul><li>${HB('タイルは1列《れつ》に、すきまなく。ばんのタイルにくっつけて置《お》く。')}</li>
+  <li>${HB('できた たて・よこのならび（2文字《もじ》以上《いじょう》）が、<b>ぜんぶ</b>単語《たんご》になっていること。')}</li>
+  <li>${HB('名詞《めいし》のふつうの複数形《ふくすうけい》（-s / -es / -ies）も使《つか》えます（上級《じょうきゅう》ルールだけ）。')}</li></ul>
+  <h3>${HB('点数《てんすう》')}</h3>
+  <ul><li>${HB('<b>置《お》いたタイル1枚《まい》＝1点《てん》</b>。いちばん大事《だいじ》なのは、たくさんタイルを使《つか》うこと。')}</li>
+  <li>${HB('ボーナスあり のとき：5文字《もじ》以上《いじょう》の単語《たんご》は、4文字《もじ》をこえた1文字《もじ》ごとに＋1点《てん》。')}</li>
+  <li>${HB('ヒントを使《つか》うと −1点《てん》（0点《てん》より下《した》にはならない）。')}</li></ul>
+  <h3>${HB('おわり')}</h3>
+  <ul><li>${HB('ふくろが空《から》で、だれかの手《て》もとのタイルが0枚《まい》になったとき。')}</li>
+  <li>${HB('ふくろが空《から》のまま、全員《ぜんいん》がつづけてパスしたとき。')}</li>
+  <li>${HB('全員《ぜんいん》が2回《かい》つづけてパスしたとき（ふくろにタイルが残《のこ》っていても）。')}</li>
+  <li>${HB('30ラウンド（全員《ぜんいん》が30回《かい》ずつ番《ばん》をした）になったとき。')}</li>
+  <li>${HB('点数《てんすう》がいちばん多《おお》い人《ひと》の勝《か》ち。同点《どうてん》は同《おな》じ順位《じゅんい》です。')}</li></ul>
+  <p class="note">${HB('タイルは アルファベット100枚《まい》（母音《ぼいん》が多《おお》め。Q・X・Z は1枚《まい》ずつ）。')}${CFG.noQXZ ? H('このページでは Q・X・Z のタイルはなく、そのぶん母音《ぼいん》が多《おお》めです（101枚《まい》）。') : ''}</p>
+  </div>`;
+}
+function showRules() {
+  overlay(`<h2>${H('ルール')}</h2>${rulesHtml()}<button type="button" class="btn go" data-close>${H('とじる')}</button>`);
+}
+let ovEl = null;
+function overlay(html, opt) {
+  closeOverlay();
+  opt = opt || {};
+  ovEl = document.createElement('div');
+  ovEl.className = 'ov';
+  ovEl.innerHTML = `<div class="card ${opt.cls || ''}" role="dialog" aria-modal="true" ${opt.style ? `style="${opt.style}"` : ''}>${html}</div>`;
+  document.body.appendChild(ovEl);
+  ovEl.addEventListener('click', (ev) => { const c = ev.target.closest('[data-close]'); if (c) { closeOverlay(); opt.onclose && opt.onclose(); } });
+  const f = ovEl.querySelector('[data-close],.btn'); if (f) setTimeout(() => { try { f.focus(); } catch (e) {} }, 30);
+  return ovEl;
+}
+function closeOverlay() { if (ovEl) { ovEl.remove(); ovEl = null; } }
+
+/* ---------- ゲーム ---------- */
+let G = null;
+function startGame() {
+  const dict = E.buildDict(DATA, { level: S.level, theme: S.theme, plural: S.rule === 'adv' });
+  if (dict.list.length < 20) { alert('単語が少なすぎます。テーマを「すべて」にしてください。'); return; }
+  const players = S.seats.map((s, i) => ({ name: (s.name || '').trim() || (s.kind === 'cpu' ? 'コンピューター' : 'プレイヤー' + (i + 1)), kind: s.kind, cpu: s.cpu, color: PCOL[i] }));
+  const st = E.newGame({ dict, rule: S.rule, bonus: S.bonus, N: CFG.N, handSize: CFG.hand, noQXZ: CFG.noQXZ, players });
+  G = { st, pend: [], sel: null, mode: 'place', swapSel: [], hint: null, busy: false, msg: '', msgCls: '', zoom: false, last: [], cpuShow: [] };
+  G.humans = players.filter((p) => p.kind === 'human').length;
+  track('level_start', { level_name: ID + '-' + LVKEY[S.level] + '-' + S.rule + (S.theme >= 0 ? '-t' + S.theme : '') });
+  setMsg(H(`はじめの単語《たんご》は「${UP(st.startWord)}」（${meaningOf(dict.get(st.startWord))}）。`), '');
+  beginTurn();
+}
+function setMsg(html, cls) { G.msg = html; G.msgCls = cls || ''; const m = document.getElementById('msg'); if (m) { m.innerHTML = html; m.className = 'msg ' + (cls || ''); } }
+const curP = () => G.st.players[G.st.turn];
+
+function beginTurn() {
+  const st = G.st;
+  G.pend = []; G.sel = null; G.mode = 'place'; G.swapSel = []; G.hint = null;
+  const p = curP();
+  if (p.kind === 'cpu') { renderGame(); cpuTurn(); return; }
+  if (G.humans >= 2) {
+    renderGame(true);
+    overlay(`<div class="cover" style="--pc:${p.color};display:flex;flex-direction:column;gap:10px;align-items:center">
+      <p class="note">${H(`ラウンド ${st.round} / ${st.roundCap}`)}</p>
+      <div class="big">${H('つぎは')} ${esc(p.name)} ${H('さん')}</div>
+      <p class="note">${H('ほかの人《ひと》は、画面《がめん》を見《み》ないでね。')}</p>
+      ${G.lastNote ? `<p class="msg" style="width:100%">${G.lastNote}</p>` : ''}
+      <button type="button" class="btn go" data-close style="min-width:12em">${H('はじめる')}</button></div>`, { cls: 'cover', onclose: () => { renderGame(); } });
+    return;
+  }
+  renderGame();
+}
+
+function scoresHtml() {
+  const st = G.st;
+  return st.players.map((p, i) => `<div class="sc ${i === st.turn && !st.over ? 'on' : ''}" style="--pc:${p.color}"><span class="nm">${i === st.turn && !st.over ? '▶ ' : ''}${esc(p.name)}</span>
+    <span class="pt">${p.score}<small>${H('点《てん》')}</small></span><span class="sub">${H('手《て》もと')} ${p.hand.length}${H('枚《まい》')}${p.kind === 'cpu' ? '・' + CPU_LV[p.cpu] : ''}</span></div>`).join('');
+}
+function renderGame(hidden) {
+  const st = G.st, p = curP(), N = st.N, human = p.kind === 'human';
+  const pk = new Map(G.pend.map((t) => [t.r * N + t.c, t]));
+  const hk = new Map(G.hint ? G.hint.tiles.map((t) => [t.r * N + t.c, t]) : []);
+  const ck = new Map(G.cpuShow.map((t) => [t.r * N + t.c, t]));
+  const lastK = new Set(G.last);
+  const mid = Math.floor(N / 2);
+  let cells = '';
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+    const k = r * N + c, b = st.board[r][c], pd = pk.get(k), h = hk.get(k), cp = ck.get(k);
+    const lbl = `${r + 1}行${c + 1}列`;
+    if (b) {
+      const oc = b.o >= 0 ? st.players[b.o].color : 'var(--pstart)';
+      cells += `<div class="cell t${lastK.has(k) ? ' last' : ''}" style="--oc:${oc}" role="img" aria-label="${lbl} ${UP(b.ch)}">${UP(b.ch)}</div>`;
+    } else if (pd) cells += `<button type="button" class="cell t pend${pd.n ? ' new' : ''}" style="--oc:${p.color}" data-cell="${k}" aria-label="${lbl} ${UP(pd.ch)}（タップでもどす）">${UP(pd.ch)}</button>`;
+    else if (cp) cells += `<div class="cell t cpu" style="--oc:${p.color}" aria-label="${lbl} ${UP(cp.ch)}">${UP(cp.ch)}</div>`;
+    else cells += `<button type="button" class="cell${r === mid && c === mid ? ' mid' : ''}${h ? ' hint' : ''}" data-cell="${k}" aria-label="${lbl}${h ? ' ヒント ' + UP(h.ch) : ' あき'}">${h ? UP(h.ch) : ''}</button>`;
+  }
+  G.pend.forEach((t) => { t.n = false; });
+  const used = new Set(G.pend.map((t) => t.hi));
+  let rack = '';
+  if (hidden) rack = p.hand.map(() => `<span class="tl back">?</span>`).join('');
+  else if (!human) rack = p.hand.map(() => `<span class="tl back" aria-hidden="true">?</span>`).join('') + `<span class="note" style="width:100%;text-align:center">${esc(p.name)} ${H('の番《ばん》です')}</span>`;
+  else rack = p.hand.map((ch, i) => used.has(i) ? '' : `<button type="button" class="tl" data-hi="${i}" style="--pcol:${p.color}" aria-pressed="${G.mode === 'swap' ? G.swapSel.includes(i) : G.sel === i}" aria-label="タイル ${UP(ch)}">${UP(ch)}</button>`).join('') || `<span class="note">${H('ぜんぶ置《お》いたよ。「決定《けってい》」をおしてね')}</span>`;
+  const dis = !human || G.busy || hidden ? 'disabled' : '';
+  let acts;
+  if (G.mode === 'swap') {
+    acts = `<button type="button" class="btn go wide" id="doswap" ${dis} ${G.swapSel.length ? '' : 'disabled'}>${H(`この${G.swapSel.length}枚《まい》を交換《こうかん》する`)}</button>
+      <button type="button" class="btn wide" id="cancelswap" ${dis}>${H('交換《こうかん》をやめる')}</button>`;
+  } else {
+    acts = `<button type="button" class="btn go wide" id="ok" ${dis} ${G.pend.length ? '' : 'disabled'}>${H('決定《けってい》')}</button>
+      <button type="button" class="btn" id="undo" ${dis} ${G.pend.length ? '' : 'disabled'}>${H('もどす')}</button>
+      <button type="button" class="btn" id="hint" ${dis}>${H('ヒント')}<small style="font-weight:400">（−1）</small></button>
+      <button type="button" class="btn" id="mix" ${dis}>${H('まぜる')}</button>
+      <button type="button" class="btn" id="pass" ${dis}>${H('パス')}<small style="font-weight:400">${st.bag.length ? H('（＋1枚《まい》）') : ''}</small></button>
+      <button type="button" class="btn" id="swap" ${dis} ${st.bag.length ? '' : 'disabled'}>${H('交換《こうかん》')}</button>
+      ${G.hint ? `<button type="button" class="btn" id="usehint" ${dis}>${H('ヒントどおり置《お》く')}</button>` : '<span></span>'}`;
+  }
+  const lvName = H(LEVELS[S.level]) + (S.theme >= 0 ? '・' + H(THEMES[S.theme]) : '') + '・' + (st.rule === 'easy' ? H('簡単《かんたん》') : H('上級《じょうきゅう》'));
+  app.innerHTML = `
+  <div class="scores" aria-live="polite">${scoresHtml()}</div>
+  <div class="info"><span>${lvName}・${H('ふくろ')} ${st.bag.length}${H('枚《まい》')}・${H('ラウンド')} ${st.round}/${st.roundCap}</span>
+    <span class="tools"><button type="button" class="btn sm" id="zoom">${G.zoom ? H('ばんを戻《もど》す') : H('ばんを大《おお》きく')}</button><button type="button" class="btn sm" id="rulesbtn">${H('ルール')}</button><button type="button" class="btn sm" id="quit">${H('やめる')}</button></span></div>
+  <div id="msg" class="msg ${G.msgCls}" aria-live="polite">${G.msg}</div>
+  <div class="boardwrap${G.zoom ? ' zoom' : ''}" id="bw"><div class="board" id="board" style="--n:${N};grid-template-columns:repeat(${N},1fr)">${cells}</div></div>
+  <div class="rack" id="rack">${rack}</div>
+  <div class="acts">${acts}</div>`;
+  fitFont();
+  bindGame();
+}
+function fitFont() {
+  const b = document.getElementById('board'); if (!b) return;
+  const w = b.getBoundingClientRect().width / G.st.N;
+  b.style.setProperty('--fs', Math.max(11, Math.round(w * 0.58)) + 'px');
+}
+addEventListener('resize', () => { if (G && document.getElementById('board')) fitFont(); });
+
+function bindGame() {
+  const st = G.st, p = curP();
+  const q = (id) => document.getElementById(id);
+  q('zoom').onclick = () => { G.zoom = !G.zoom; renderGame(); };
+  q('rulesbtn').onclick = showRules;
+  q('quit').onclick = () => {
+    overlay(`<h2>${H('ゲームをやめますか？')}</h2><p>${H('ここまでの結果《けっか》を見《み》て、おわりにします。')}</p>
+      <div class="row"><button type="button" class="btn go" id="qyes">${H('やめて結果《けっか》を見《み》る')}</button><button type="button" class="btn" data-close>${H('つづける')}</button></div>`);
+    document.getElementById('qyes').onclick = () => { closeOverlay(); st.over = true; st.reason = 'quit'; renderEnd(); };
+  };
+  if (p.kind !== 'human' || G.busy) return;
+  const board = q('board');
+  board.onclick = (ev) => {
+    const c = ev.target.closest('[data-cell]'); if (!c) return;
+    const k = +c.dataset.cell, r = Math.floor(k / st.N), cc = k % st.N;
+    tapCell(r, cc);
+  };
+  q('rack').onclick = (ev) => {
+    const t = ev.target.closest('[data-hi]'); if (!t) return;
+    if (G._dragged) { G._dragged = false; return; }
+    const i = +t.dataset.hi;
+    if (G.mode === 'swap') {
+      const j = G.swapSel.indexOf(i);
+      if (j >= 0) G.swapSel.splice(j, 1);
+      else if (G.swapSel.length < Math.min(3, st.bag.length)) G.swapSel.push(i);
+      else setMsg(H(`交換《こうかん》できるのは${Math.min(3, st.bag.length)}枚《まい》までです。`), 'ng');
+      renderGame(); return;
+    }
+    G.sel = G.sel === i ? null : i;
+    if (G.sel != null && !G.pend.length) setMsg(H(`「${UP(p.hand[i])}」をえらんだよ。置《お》きたいマスをタップしてね。`), '');
+    renderGame();
+  };
+  bindDrag();
+  if (G.mode === 'swap') {
+    q('doswap').onclick = doSwap;
+    q('cancelswap').onclick = () => { G.mode = 'place'; G.swapSel = []; setMsg(H('交換《こうかん》をやめました。'), ''); renderGame(); };
+    return;
+  }
+  q('ok').onclick = submit;
+  q('undo').onclick = () => { G.pend = []; G.sel = null; setMsg(H('タイルを手《て》もとにもどしたよ。'), ''); renderGame(); };
+  q('hint').onclick = doHint;
+  q('mix').onclick = () => { if (G.pend.length) { G.pend = []; } G.sel = null; E.shuffle(p.hand, Math.random); renderGame(); };
+  q('pass').onclick = doPass;
+  q('swap').onclick = () => { G.pend = []; G.sel = null; G.mode = 'swap'; G.swapSel = []; setMsg(H(`交換《こうかん》するタイルを${Math.min(3, st.bag.length)}枚《まい》までえらんでね。`), ''); renderGame(); };
+  if (q('usehint')) q('usehint').onclick = () => {
+    const h = G.hint; G.pend = []; const usedI = new Set();
+    for (const t of h.tiles) { const i = p.hand.findIndex((ch, j) => ch === t.ch && !usedI.has(j)); if (i < 0) return; usedI.add(i); G.pend.push({ r: t.r, c: t.c, ch: t.ch, hi: i }); }
+    G.hint = null; setMsg(H('ヒントのとおりに置《お》いたよ。「決定《けってい》」をおしてね。'), ''); renderGame();
+  };
+}
+function tapCell(r, c) {
+  const st = G.st, p = curP();
+  if (G.mode === 'swap') return;
+  const pi = G.pend.findIndex((t) => t.r === r && t.c === c);
+  if (pi >= 0) { G.pend.splice(pi, 1); renderGame(); return; }
+  if (st.board[r][c]) return;
+  if (G.sel == null) {
+    const free = p.hand.map((_, i) => i).filter((i) => !G.pend.some((t) => t.hi === i));
+    if (!free.length) return;
+    setMsg(H('先《さき》に、下《した》のタイルを1枚《まい》えらんでね。'), ''); return;
+  }
+  G.pend.push({ r, c, ch: p.hand[G.sel], hi: G.sel, n: true });
+  G.sel = null;
+  // つぎのタイルを自動《じどう》ではえらばない（まちがえて置《お》かないように）
+  renderGame();
+}
+/* パソコンのマウスでは、タイルをドラッグしてマスに置ける */
+function bindDrag() {
+  const rack = document.getElementById('rack');
+  rack.querySelectorAll('[data-hi]').forEach((el) => {
+    el.addEventListener('pointerdown', (ev) => {
+      if (ev.pointerType !== 'mouse' || ev.button !== 0 || G.mode !== 'place') return;
+      const i = +el.dataset.hi, sx = ev.clientX, sy = ev.clientY; let gh = null, over = null;
+      const mv = (e) => {
+        if (!gh && Math.hypot(e.clientX - sx, e.clientY - sy) < 6) return;
+        if (!gh) { gh = el.cloneNode(true); gh.classList.add('ghost'); document.body.appendChild(gh); }
+        gh.style.left = (e.clientX - 23) + 'px'; gh.style.top = (e.clientY - 25) + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY), c = t && t.closest && t.closest('.cell[data-cell]');
+        if (over && over !== c) over.classList.remove('drop');
+        over = c && !c.classList.contains('t') ? c : null; if (over) over.classList.add('drop');
+      };
+      const up = (e) => {
+        removeEventListener('pointermove', mv); removeEventListener('pointerup', up);
+        if (gh) { gh.remove(); G._dragged = true; setTimeout(() => { G._dragged = false; }, 0);
+          if (over) { const k = +over.dataset.cell; G.sel = i; tapCell(Math.floor(k / G.st.N), k % G.st.N); } }
+      };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    });
+  });
+}
+
+const ERR = {
+  none: '下《した》のタイルをえらんで、ばんのマスに置《お》いてね。',
+  out: 'そこには置《お》けないよ。', occupied: 'そこには置《お》けないよ。',
+  line: 'タイルは、たてか よこの1列《れつ》にならべてね。',
+  gap: 'タイルとタイルの間《あいだ》があいているよ。つづけて置《お》いてね。',
+  noBoardEasy: 'ばんの上《うえ》の文字《もじ》を1つ使《つか》って、交《まじ》わるように単語《たんご》を作《つく》ってね。',
+  noBoardAdv: 'ばんの上《うえ》のタイルに、くっつけて置《お》いてね。',
+  tooMany: '簡単《かんたん》ルールでは、ばんの文字《もじ》はちょうど1つだけ使《つか》うよ（単語《たんご》の前《まえ》や後《うし》ろにつなげて長《なが》くするのもなし）。',
+  hand: 'そのタイルは持《も》っていないよ。',
+};
+function submit() {
+  const st = G.st, p = curP();
+  const tiles = G.pend.map((t) => ({ r: t.r, c: t.c, ch: t.ch }));
+  const res = E.place(st, tiles);
+  if (!res.ok) {
+    if (res.err === 'notWord') {
+      G.pend = []; G.sel = null;
+      setMsg(H(`${res.cross ? 'となりとくっついてできた' : ''}「${UP(res.word)}」は、このレベルの単語《たんご》リストにないみたい。タイルを手《て》もとにもどしたよ。もう一度《いちど》やってみよう！`), 'ng');
+    } else setMsg(H(ERR[res.err === 'noBoard' ? (st.rule === 'easy' ? 'noBoardEasy' : 'noBoardAdv') : res.err] || ERR.none), 'ng');
+    renderGame(); return;
+  }
+  G.last = tiles.map((t) => t.r * st.N + t.c);
+  G.pend = [];
+  for (const w of res.words) track('answer_question', { correct: true, question: w.w });
+  showWord(res, p, false, () => advance(`${esc(p.name)}：${UP(res.main)}（+${res.gain}${H('点《てん》')}）`));
+}
+function wordRows(res, small) {
+  return res.words.map((w) => `<div class="wd ${small || !w.main ? 'small' : ''}"><span class="en" lang="en">${esc(w.w)}</span>${sayBtn(w.w)}<span class="jp">${esc(meaningOf(w.entry))}</span></div>`).join('');
+}
+function showWord(res, p, auto, cb) {
+  const gainTxt = `+${res.gain}${H('点《てん》')}（${H('タイル')}${res.tilesUsed}${H('枚《まい》')}${res.bonus ? '＋' + H('ボーナス') + res.bonus : ''}）`;
+  overlay(`<div style="--pc:${p.color}"><p class="note" style="color:${p.color};font-weight:700">${esc(p.name)}</p></div>
+    ${wordRows(res)}
+    <p class="gain">${gainTxt}</p>
+    <button type="button" class="btn go" data-close>${auto ? H('つぎへ') : H('OK')}</button>`, { onclose: () => { clearTimeout(G._t); cb && cb(); } });
+  if (!auto) speak(res.main);
+  if (auto) G._t = setTimeout(() => { if (ovEl) { closeOverlay(); cb && cb(); } }, 2200);
+}
+function info(html, cb, auto) {
+  overlay(`${html}<button type="button" class="btn go" data-close>${H('OK')}</button>`, { onclose: () => { clearTimeout(G._t); cb && cb(); } });
+  if (auto) G._t = setTimeout(() => { if (ovEl) { closeOverlay(); cb && cb(); } }, auto);
+}
+function doHint() {
+  const st = G.st;
+  G.pend = []; G.sel = null;
+  if (G.hint) {   // 同じ番に2回おしても、同じヒントをもう一度見せるだけ（2回目は点数をへらさない）
+    const e0 = st.dict.get(G.hint.word);
+    setMsg(H(`ヒント：「${UP(G.hint.word)}」（${meaningOf(e0)}）を、点線《てんせん》のマスに置《お》けるよ。`), '');
+    renderGame(); return;
+  }
+  const m = E.hint(st);
+  if (!m) { setMsg(H('いまの手《て》もとでは、置《お》ける場所《ばしょ》が見《み》つからないよ。パスか交換《こうかん》をしよう（点数《てんすう》はへらないよ）。'), ''); renderGame(); return; }
+  E.useHint(st);
+  G.hint = m;
+  const e = st.dict.get(m.word);
+  setMsg(H(`ヒント：「${UP(m.word)}」（${meaningOf(e)}）を、点線《てんせん》のマスに置《お》けるよ。（−1点《てん》）`), '');
+  renderGame();
+}
+function doPass() {
+  const st = G.st, p = curP();
+  G.pend = []; G.sel = null;
+  const full = st.bag.length && p.hand.length >= st.maxHand;
+  const r = E.pass(st);
+  const txt = r.drew ? H('パスして、タイルを1枚《まい》もらったよ。') : full ? H(`手《て》もとが${st.maxHand}枚《まい》でいっぱいなので、もらわずにパスしたよ。`) : H('ふくろが空《から》なので、そのままパスしたよ。');
+  info(`<h2>${H('パス')}</h2><p>${txt}</p>`, () => advance(`${esc(p.name)}：${H('パス')}`));
+}
+function doSwap() {
+  const st = G.st, p = curP();
+  const r = E.swap(st, G.swapSel);
+  G.mode = 'place'; G.swapSel = [];
+  if (!r.ok) { setMsg(H('交換《こうかん》できませんでした。'), 'ng'); renderGame(); return; }
+  info(`<h2>${H('交換《こうかん》')}</h2><p>${H(`${r.n}枚《まい》を交換《こうかん》したよ。`)}</p><p style="font-family:var(--tilefont);font-size:22px;font-weight:700">${r.out.map(UP).join(' ')} → ${r.got.map(UP).join(' ')}</p>`, () => advance(`${esc(p.name)}：${H('交換《こうかん》')} ${r.n}${H('枚《まい》')}`));
+}
+function advance(note) {
+  const st = G.st;
+  G.lastNote = note || '';
+  if (st.over) { renderEnd(); return; }
+  E.next(st);
+  if (st.over) { renderEnd(); return; }
+  setMsg(note || '', '');
+  beginTurn();
+}
+
+/* ---------- コンピューターの番 ---------- */
+function cpuTurn() {
+  const st = G.st, p = curP();
+  G.busy = true;
+  setMsg(esc(p.name) + H(' が考《かんが》えています…'), '');
+  renderGame();
+  setTimeout(() => {
+    const ch = E.cpuChoose(st, p.cpu);
+    if (ch.type === 'place') {
+      const tiles = ch.move.tiles.slice();
+      let k = 0;
+      const step = () => {
+        if (k < tiles.length) { G.cpuShow.push(tiles[k++]); renderGame(); setTimeout(step, 260); return; }
+        G.cpuShow = [];
+        const res = E.place(st, tiles);
+        G.busy = false;
+        if (!res.ok) { advance(); return; }   // 念のため
+        G.last = tiles.map((t) => t.r * st.N + t.c);
+        renderGame();
+        showWord(res, p, true, () => advance(`${esc(p.name)}：${UP(res.main)}（+${res.gain}${H('点《てん》')}）`));
+      };
+      step();
+    } else if (ch.type === 'swap') {
+      const r = E.swap(st, ch.idx);
+      G.busy = false;
+      info(`<p><b style="color:${p.color}">${esc(p.name)}</b> ${H(`は タイルを${r.n || 0}枚《まい》交換《こうかん》しました。`)}</p>`, () => advance(`${esc(p.name)}：${H('交換《こうかん》')}`), 1500);
+    } else {
+      const r = E.pass(st);
+      G.busy = false;
+      info(`<p><b style="color:${p.color}">${esc(p.name)}</b> ${r.drew ? H('は パスして、タイルを1枚《まい》もらいました。') : H('は パスしました。')}</p>`, () => advance(`${esc(p.name)}：${H('パス')}`), 1500);
+    }
+  }, 650);
+}
+
+/* ---------- おわり ---------- */
+function renderEnd() {
+  closeOverlay();
+  const st = G.st;
+  const R = E.ranking(st);
+  const why = { out: 'タイルを使《つか》いきった人《ひと》がいたので、おわり！', pass: 'ふくろが空《から》で、全員《ぜんいん》がパスしたので、おわり！', cap: '30ラウンドになったので、おわり！', stall: '全員《ぜんいん》が2回《かい》つづけてパスしたので、おわり！', quit: 'ゲームをやめました。' }[st.reason] || 'おわり！';
+  // 記録（この端末だけ）
+  const humans = st.players.filter((p) => p.kind === 'human');
+  const rec = store.get(REC_KEY, null) || {};
+  const best = Math.max(rec.best || 0, ...humans.map((p) => p.score));
+  const newBest = humans.some((p) => p.score > (rec.best || 0) && p.score > 0);
+  const nw = humans.reduce((a, p) => a + p.words.length, 0);
+  store.set(REC_KEY, { best, words: (rec.words || 0) + nw, games: (rec.games || 0) + 1, last: new Date().toISOString().slice(0, 10) });
+  track('level_end', { level_name: ID + '-' + LVKEY[S.level] + '-' + st.rule + (S.theme >= 0 ? '-t' + S.theme : ''), success: true });
+  const top = R.filter((x) => x.rank === 1).map((x) => esc(x.p.name));
+  const rows = R.map((x) => `<div class="rk" style="--pc:${x.p.color}"><span class="n">${x.rank}</span><span><b>${esc(x.p.name)}</b>${x.p.kind === 'cpu' ? `<span class="d">（${CPU_LV[x.p.cpu]}）</span>` : ''}<br>
+      <span class="d">${H('タイル')} ${x.p.tiles}${H('枚《まい》')}・${H('ボーナス')} ${x.p.bonus}・${H('ヒント')} ${x.p.hints}${H('回《かい》')}・${H('単語《たんご》')} ${x.p.words.length}</span></span><span class="s">${x.p.score}<small style="font-size:12px">${H('点《てん》')}</small></span></div>`).join('');
+  const lists = st.players.map((p, i) => {
+    const seen = new Set(), ws = p.words.filter((w) => !seen.has(w.w) && seen.add(w.w));
+    return `<details class="pw" style="--pc:${p.color}" ${p.kind === 'human' || st.players.every((q) => q.kind === 'cpu') ? 'open' : ''}><summary>${esc(p.name)}（${ws.length}${H('語《ご》')}）</summary>
+      <div class="wlist">${ws.length ? ws.map((w) => `<div class="wl"><span class="en" lang="en">${esc(w.w)}</span>${sayBtn(w.w)}<span class="jp">${esc(KANA ? (w.k || w.m) : w.m)}</span></div>`).join('') : `<p class="note">${H('まだ単語《たんご》はありません。')}</p>`}</div></details>`;
+  }).join('');
+  app.innerHTML = `
+  <header><h1><small>${H('結果《けっか》')}</small>${top.length > 1 ? H('同点《どうてん》で') + ' ' + top.join('・') + ' ' + H('の勝《か》ち！') : top[0] + ' ' + H('の勝《か》ち！')}</h1>
+  <p class="lead">${H(why)}</p></header>
+  ${newBest ? `<div class="msg ok">${H(`この端末《たんまつ》のベスト記録《きろく》（${best}点《てん》）！`)}</div>` : ''}
+  <section class="rank">${rows}</section>
+  <section class="box"><div class="label">${H('今日《きょう》つくった単語《たんご》')}</div>${lists}
+    <p class="note">${TTS ? H('🔊 をおすと、英語《えいご》の発音《はつおん》が聞《き》けます。') : H('この端末《たんまつ》では、英語《えいご》の音声《おんせい》は使《つか》えません。')}</p></section>
+  <div class="row"><button type="button" class="btn go" id="again" style="flex:1">${H('同《おな》じ設定《せってい》でもう一度《いちど》')}</button><button type="button" class="btn" id="tosetup">${H('設定《せってい》にもどる')}</button></div>`;
+  document.getElementById('again').onclick = startGame;
+  document.getElementById('tosetup').onclick = () => { G = null; renderSetup(); scrollTo(0, 0); };
+  scrollTo(0, 0);
+}
+
+window.WCUI = { get G() { return G; }, S, startGame, renderSetup };
+renderSetup();
+})();
+
+</script>
