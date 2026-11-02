@@ -116,7 +116,7 @@ details.cards summary{cursor:pointer;font-weight:700;font-size:15px;line-height:
 
 <div class="wrap">
   <header>
-    <h1><small>ちしきゲーム</small><ruby>人物<rt>じんぶつ</rt></ruby>に なりきろう 全10人</h1>
+    <h1><small>ちしきゲーム</small><ruby>人物<rt>じんぶつ</rt></ruby>に なりきろう <ruby>全<rt>ぜん</rt></ruby>10<ruby>人<rt>にん</rt></ruby></h1>
     <p class="lead"><ruby>全<rt>ぜん</rt></ruby>10<ruby>人<rt>にん</rt></ruby>の <ruby>人物<rt>じんぶつ</rt></ruby>に なりきって、つぎに どうするかを えらぼう。</p>
   </header>
   <section class="box" id="app"></section>
@@ -214,7 +214,7 @@ function switchCard(id){
   G.who=o.w;
   const nth=s.figs.findIndex(x=>x[0]===o.w)+1;
   app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="人物の こうたい">
-    <div class="swl">${s.no}「${rb(s.title)}」　${nth?nth+rb('人目《にんめ》の 人物《じんぶつ》'):''}</div>
+    <div class="swl">${s.no}「${rb(s.title)}」　${nth?nth+rb('ばんめの 人物《じんぶつ》'):''}</div>
     ${pf?`<p class="got">✓「${fname(pf)}」の ${rb('人物《じんぶつ》カードを 手《て》に 入《い》れた！')}</p>`:''}
     <div class="swp">${f[3]}</div>
     <p class="swt">${prev?'ここからは、あなたは':'あなたは'}</p>

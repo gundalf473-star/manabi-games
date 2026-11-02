@@ -213,7 +213,7 @@ function switchCard(id){
   G.who=o.w;
   const nth=s.figs.findIndex(x=>x[0]===o.w)+1;
   app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="人物の こうたい">
-    <div class="swl">${s.no}「${rb(s.title)}」　${nth?nth+rb('人目《にんめ》の 人物《じんぶつ》'):''}</div>
+    <div class="swl">${s.no}「${rb(s.title)}」　${nth?nth+rb('ばんめの 人物《じんぶつ》'):''}</div>
     ${pf?`<p class="got">✓「${fname(pf)}」の ${rb('偉人《いじん》カードを 手《て》に 入《い》れた！')}</p>`:''}
     <div class="swp">${f[3]}</div>
     <p class="swt">${prev?'ここからは、あなたは':'あなたは'}</p>
