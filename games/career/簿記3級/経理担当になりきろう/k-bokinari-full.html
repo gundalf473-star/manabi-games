@@ -1,0 +1,336 @@
+<title>経理担当になりきろう 全8章</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:course" content="career"><meta name="game:subject" content="簿記3級">
+<meta name="game:unit" content="経理担当になりきろう">
+<meta name="game:grade" content="大学生・社会人">
+<meta name="game:players" content="1人">
+<meta name="description" content="経理担当になりきろうの有料版。仕訳の基本、商品売買（三分法）、現金と預金、手形と電子記録債権、給料と税金、固定資産と減価償却、決算整理、精算表と財務諸表まで、全8章。1年分の取引を記録して決算まで進みます。金額はすべて計算して確かめたオリジナルの例です。役割カード集めつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。章の一覧 → 役割の交代カード → 場面（絵・文・表・選択肢）→ ゲームオーバー（実際には…＋正しい仕訳）／章のまとめ（仕訳のポイント・図解・用語・参考）。深い青緑を基本に、借方は青・貸方は朱 */
+:root{
+  --bg:#f3f2ee; --surface:#ffffff; --fg:#26241f; --muted:#666056; --rule:#dcd6ca;
+  --ink:#1f4e5a; --seal:#b4451f; --sealsoft:#f8e8df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#9a6f0e; --pick:#eeebe3;
+  --dr:#1f4e8a; --drsoft:#e6eef9; --cr:#a3401c; --crsoft:#fbeae2; --line:#26241f;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141412; --surface:#1d1c19; --fg:#ece7dd; --muted:#a59e92; --rule:#36332d;
+  --ink:#7cc4d4; --seal:#f08a5d; --sealsoft:#3a2318; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28261f;
+  --dr:#8fb6f0; --drsoft:#1c2636; --cr:#f0a07c; --crsoft:#35221a; --line:#ece7dd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141412; --surface:#1d1c19; --fg:#ece7dd; --muted:#a59e92; --rule:#36332d;
+  --ink:#7cc4d4; --seal:#f08a5d; --sealsoft:#3a2318; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28261f;
+  --dr:#8fb6f0; --drsoft:#1c2636; --cr:#f0a07c; --crsoft:#35221a; --line:#ece7dd; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(26px,7vw,38px);line-height:1.25;margin:0;color:var(--ink)}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+h1 .ns{font-size:.5em;letter-spacing:.02em;white-space:nowrap;display:inline-block}
+.lead{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.label{font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:8px;padding:12px 22px;font-size:16px;font-weight:700;cursor:pointer;background:var(--pick)}
+.btn.go{background:var(--fg);color:var(--surface)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--ink);transition:width .3s}
+.whochip{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+.yr{align-self:flex-start;font-weight:700;font-size:15px;color:var(--ink);border:2px solid var(--ink);border-radius:6px;padding:0 10px;line-height:1.6;font-variant-numeric:tabular-nums}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:10px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.txt{margin:0;white-space:pre-line;font-size:16.5px;line-height:1.9}
+.ask{margin:0;font-size:18px;font-weight:700;color:var(--ink);line-height:1.7}
+.ch{display:grid;gap:10px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.7;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:56px;min-width:0}
+.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}
+.op .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:14px}
+.op .ic{flex:none;width:48px;height:48px}.op .ic svg{width:48px;height:48px;display:block;border-radius:6px}
+.op.jop{flex-direction:column;align-items:stretch;gap:6px;padding:6px 6px 8px}
+.op.jop .k{width:auto;height:auto;border-radius:4px;padding:0 8px;align-self:flex-start;font-size:13px;line-height:1.7}
+.op:active{transform:scale(.98)}
+.tbs{display:flex;flex-direction:column;gap:10px;min-width:0}
+/* 仕訳・T勘定・2列の表 */
+.jt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px;line-height:1.45;font-weight:400;background:var(--surface);color:var(--fg)}
+.jt caption{caption-side:top;text-align:left;font-weight:700;font-size:13px;color:var(--muted);padding:0 0 3px}
+.jt th{font-size:12px;font-weight:700;padding:3px 6px;letter-spacing:.08em}
+.jt th.d{background:var(--drsoft);color:var(--dr);text-align:left}
+.jt th.c{background:var(--crsoft);color:var(--cr);text-align:left;border-left:2px solid var(--line)}
+.jt td{padding:4px 4px 4px 6px;vertical-align:top;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}
+.jt td.a{font-weight:700}
+.jt td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding:4px 5px 4px 1px;font-size:12.5px;letter-spacing:-.01em}
+.jt td.c0{border-left:2px solid var(--line)}
+.jt col.a{width:26%}.jt col.n{width:24%}
+.jt.fs col.a{width:27%}.jt.fs col.n{width:23%}
+.jt tr.sum td{border-top:2px solid var(--line);border-bottom:3px double var(--line);font-weight:700}
+.jt td.ind{padding-left:14px;font-weight:400;color:var(--muted)}
+.jt.ta{border-top:0}
+.jt.ta caption{text-align:center;color:var(--fg);font-size:14px;border-bottom:2px solid var(--line);padding-bottom:2px}
+.jt.ta th{display:none}
+.jt .neg{color:var(--cr)}
+.jbox{border:1px solid var(--rule);border-radius:6px;overflow:hidden;min-width:0}
+.jbox.good{border:2px solid var(--ok)}
+.jbox.bad{border:2px dashed var(--ng)}
+.jlab{font-size:12px;font-weight:700;padding:2px 8px;background:var(--oksoft);color:var(--ok)}
+.jbox.bad .jlab{background:var(--ngsoft);color:var(--ng)}
+/* 精算表 */
+.wsw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--rule);border-radius:6px;max-width:100%}
+.ws{width:100%;min-width:300px;border-collapse:collapse;font-size:11.5px;line-height:1.35;font-variant-numeric:tabular-nums}
+.ws caption{caption-side:top;text-align:left;font-weight:700;font-size:13px;color:var(--muted);padding:4px 6px}
+.ws th{font-size:11px;padding:3px 3px;background:var(--pick);border-left:1px solid var(--rule);font-weight:700;line-height:1.3}
+.ws td{padding:4px 3px;border-top:1px solid var(--rule);border-left:1px solid var(--rule);text-align:right;white-space:nowrap}
+.ws td:first-child,.ws th:first-child{text-align:left;border-left:0;white-space:normal;font-weight:700;width:24%}
+.ws .sd{display:block;font-size:9.5px;font-weight:700;line-height:1.1;text-align:right}
+.ws .dr .sd{color:var(--dr)}.ws .cr .sd{color:var(--cr)}
+.sw{border:3px solid var(--ink);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;background:var(--pick)}
+.sw .swl{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.12em}
+.sw .got{margin:0;font-size:14px;font-weight:700;color:var(--ok);background:var(--surface);border-radius:99px;padding:2px 14px}
+.sw .swp{width:100%;max-width:340px;border-radius:10px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.sw .swp svg{display:block;width:100%;height:auto}
+.sw .swt{margin:0;font-size:17px;font-weight:700}
+.sw .swy{margin:0;font-size:13px;color:var(--muted);letter-spacing:.08em;line-height:1.3}
+.sw .swn{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(22px,7vw,32px);line-height:1.35;color:var(--ink)}
+.sw .swr{margin:0;font-size:15px;color:var(--muted)}
+.over{border:3px dashed var(--gold);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface);min-width:0}
+.over h2,.endh{margin:0;font-family:var(--display);font-weight:400;font-size:21px;color:var(--gold);line-height:1.5}
+.endh{color:var(--ok)}
+.pick{margin:0;font-size:14px;color:var(--muted)}
+.pick b{color:var(--fg)}
+.hint{font-size:15px;line-height:1.85;background:var(--pick);border-radius:8px;padding:8px 12px;margin:0}
+.hint b{color:var(--seal);display:block;font-size:12px;letter-spacing:.1em}
+.lesson{font-size:16px;line-height:1.9;border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;padding:8px 12px;margin:0}
+.lesson b{display:block;color:var(--ok);font-size:13px}
+.stars{font-size:26px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.pts{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:pt}
+.pts li{counter-increment:pt;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pts li b{font-size:15px;color:var(--ink)}
+.pts li b::before{content:counter(pt) ". "}
+.words{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.words li{border:1px solid var(--rule);border-radius:8px;padding:6px 12px;font-size:14px;line-height:1.7;background:var(--surface)}
+.words li b{font-size:16px;color:var(--ink);margin-right:8px}
+.figrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.fc{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--surface);font-size:12px;line-height:1.5;display:flex;flex-direction:column}
+.fc .fp{line-height:0;background:#fff}.fc .fp svg{display:block;width:100%;height:auto}
+.fc .fn{padding:4px 8px;font-weight:700;font-size:13px}
+.fc .fr{padding:0 8px 6px;color:var(--muted)}
+.fc.no .fp{display:grid;place-items:center;aspect-ratio:3/2;background:var(--pick);font-size:28px;line-height:1;color:var(--muted)}
+.list{display:grid;gap:8px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:8px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st:hover{border-color:var(--ink)}
+.st .th{flex:none;width:96px;border-radius:6px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:12px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:1.4}
+.st .nm{font-weight:700;font-size:17px;display:block;line-height:1.45}
+.st .ds{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.st .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}
+.st .bd.new{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.78}
+.st.lockd .th,.st.soon .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:24px;line-height:1}
+.st.soon{opacity:.55;cursor:default}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:14px;margin:0;background:var(--sealsoft)}
+.cnt{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:13px;color:var(--muted);font-family:var(--body)}
+details.cards summary{cursor:pointer;font-weight:700;font-size:14px}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+.src{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px;color:var(--muted);line-height:1.6}
+.src li::before{content:"・"}
+.src .u{word-break:break-all;font-size:11px}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}.op:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>簿記3級ゲーム</small>経理担当になりきろう<span class=ns> 全8章</span></h1>
+    <p class="lead">仕訳の基本から決算・財務諸表まで、全8章。経理担当になりきって、1年分の取引を記録しよう。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let ST=[];
+const TITLES=[["hajime",1,"会社のはじまりと仕訳の基本","仕訳の基本",["社長 おおのさん","経理担当 ひなたさん","経理の先輩 みずきさん"],true],["baibai",2,"商品を仕入れて売る","商品売買（三分法）",["経理担当 ひなたさん","店長 そらさん","仕入先 かわせさん"],true],["genkin",3,"現金と預金の管理","現金・預金",["経理担当 ひなたさん","小口係 そらさん","経理の先輩 みずきさん"],true],["tegata",4,"手形と電子記録債権","手形・電子記録債権",["得意先 ほしのさん","経理担当 ひなたさん","社長 おおのさん"],true],["kyuryo",5,"給料と税金","給料・税金",["税理士 もりさん","経理担当 ひなたさん","経理の先輩 みずきさん"],true],["kotei",6,"固定資産と減価償却","固定資産",["社長 おおのさん","経理担当 ひなたさん","中古品店 たかぎさん"],true],["kessan",7,"決算整理","決算整理",["経理の先輩 みずきさん","経理担当 ひなたさん","税理士 もりさん"],true],["zaimu",8,"精算表と財務諸表","精算表・財務諸表",["経理担当 ひなたさん","社長 おおのさん","経理の先輩 みずきさん"],true]];
+const NOTE="日商簿記検定は日本商工会議所が主催する検定試験です。このゲームは日本商工会議所および各地商工会議所とは関係がなく、承認を受けたものでもありません。取引の例はすべてオリジナルです。出題範囲は2026年度の試験まで使われる出題区分表（2022年度適用）に合わせています。2027年4月からの試験は新しい区分表になり、手形などが範囲から外れるので、受験の前に最新の区分表を確かめてください。";
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const fmt=n=>{const s=Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');return n<0?'△'+s:s;};
+/* 表：k=j 仕訳（借方／貸方）、t T勘定、f 2列の表（損益計算書・貸借対照表）、w 精算表 */
+function two(o,cls,cap,h){
+  const n=Math.max(o.l.length,o.r.length), rows=[];
+  if([...o.l,...o.r].every(x=>!x||x[1]==null)){   /* 金額のない表（5つのグループなど）は、ことばだけの2列 */
+    const c1=(x,first)=>`<td class="a${first?' c0':''}">${x?rb(x[0]):''}</td>`;
+    for(let i=0;i<n;i++)rows.push(`<tr>${c1(o.l[i],0)}${c1(o.r[i],1)}</tr>`);
+    return `<table class="jt ${cls}">${cap?`<caption>${rb(cap)}</caption>`:''}<colgroup><col><col></colgroup>
+      <thead><tr><th class="d">${esc(h[0])}</th><th class="c">${esc(h[1])}</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;}
+  const cell=(x,first)=>x?`<td class="a${(x[0]||'').startsWith('　')?' ind':''}${first?' c0':''}">${rb((x[0]||'').replace(/^　/,''))}</td><td class="n${x[1]<0?' neg':''}">${x[1]==null?'':fmt(x[1])}</td>`:`<td class="a${first?' c0':''}"></td><td class="n"></td>`;
+  for(let i=0;i<n;i++)rows.push(`<tr>${cell(o.l[i],0)}${cell(o.r[i],1)}</tr>`);
+  if(o.s){const s=a=>a.reduce((t,x)=>t+(x[1]||0),0);rows.push(`<tr class="sum"><td class="a">合計</td><td class="n">${fmt(s(o.l))}</td><td class="a c0">合計</td><td class="n">${fmt(s(o.r))}</td></tr>`);}
+  return `<table class="jt ${cls}">${cap?`<caption>${rb(cap)}</caption>`:''}<colgroup><col class="a"><col class="n"><col class="a"><col class="n"></colgroup>
+    <thead><tr><th class="d" colspan="2">${esc(h[0])}</th><th class="c" colspan="2">${esc(h[1])}</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+function tbl(o,lab,kind){
+  let h='';
+  if(o.k==='j')h=two(o,'jj','',['借方','貸方']);
+  else if(o.k==='t')h=two(o,'ta',o.t,['借方','貸方']);
+  else if(o.k==='f')h=two(o,'fs',o.t,o.h);
+  else{const c=v=>v==null?'<td></td>':`<td class="${v>0?'dr':'cr'}"><span class="sd">${v>0?'借':'貸'}</span>${fmt(Math.abs(v))}</td>`;
+    return `<div class="wsw"><table class="ws"><caption>${rb(o.t)}</caption><thead><tr><th>勘定科目</th>${o.h.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead>
+      <tbody>${o.rows.map(r=>`<tr><td>${rb(r[0])}</td>${r.slice(1).map(c).join('')}</tr>`).join('')}</tbody></table></div>`;}
+  return `<div class="jbox${kind?' '+kind:''}">${lab?`<div class="jlab">${esc(lab)}</div>`:''}${h}</div>`;
+}
+const tbls=(a,first)=>a&&a.length?`<div class="tbs">${a.map((o,i)=>tbl(o,i===0&&first?first:'',i===0&&first?'good':'')).join('')}</div>`:'';
+const PAIDLINK="<a class=\"paid\" href=\"k-bokinari-full.html\" id=\"paid-link\"><span class=\"pt\">続きの取引もやりたい人へ　<b>経理担当になりきろう 全8章</b>（有料版）</span><span class=\"pd\">無料版の第1章もふくむ全8章。商品売買、現金と預金、手形と電子記録債権、給料と税金、固定資産、決算整理、精算表と財務諸表まで。役割カード集めつき。</span></a>";
+
+const REC='k-bokinari-p-rec', CARDK='k-bokinari-cards';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={}; const saveRec=()=>store.set(REC,rec);
+let cards=store.get(CARDK,{}); if(!cards||typeof cards!=='object'||Array.isArray(cards))cards={};
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+const ckey=(id,nm)=>id+':'+nm;
+const collect=(id,nm)=>{const k=ckey(id,nm);const isNew=!cards[k];if(isNew){cards[k]=Date.now();store.set(CARDK,cards);}return isNew;};
+const ALLROLE=TITLES.flatMap(t=>t[4].map(nm=>ckey(t[0],nm)));
+const nCards=()=>ALLROLE.filter(k=>cards[k]).length;
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const roleOf=(s,nm)=>s.roles.find(f=>f[0]===nm)||[nm,'','',''];
+const roleCard=(s,f)=>{const got=!!cards[ckey(s.id,f[0])];
+  return got?`<div class="fc"><span class="fp">${f[3]}</span><span class="fn">${esc(f[0])}</span><span class="fr">${rb(f[2])}</span></div>`
+            :`<div class="fc no"><span class="fp">？</span><span class="fn">？？？</span><span class="fr">第${s.no}章「${rb(s.title)}」</span></div>`;};
+const isJ=c=>c&&c.length===3&&typeof c[2]==='object';
+function home(){
+  G=null;
+  const row=([id,no,title,area,roles,ok])=>{const s=ST.find(c=>c.id===id);
+    if(s){const r=rec[id]||[0,0];
+      return `<button class="st" data-id="${id}"><span class="th">${s.sc[s.start].p}</span><span><span class="no">第${no}章　${rb(area)}</span><span class="nm">${rb(title)}</span>
+        <span class="ds">${s.roles.map(f=>esc(f[0])).join(' → ')}</span>
+        ${r[0]?`<span class="bd ok">✓ クリア${r[0]>1?'（'+r[0]+'回）':''}</span>`:'<span class="bd new">まだ</span>'}${r[1]?` <span class="note" style="display:inline">ゲームオーバー ${r[1]}回</span>`:''}</span></button>`;}
+    if(!PAID)return `<a class="st lockd" href="k-bokinari-full.html"><span class="th">🔒</span><span><span class="no">第${no}章　${rb(area)}</span><span class="nm">${rb(title)}</span><span class="ds">利用コードで遊べます</span></span></a>`;
+    return `<div class="st soon"><span class="th">⏳</span><span><span class="no">第${no}章　${rb(area)}</span><span class="nm">${rb(title)}</span><span class="ds">じゅんび中</span></span></div>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">利用コードで遊べる章</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const total=ALLROLE.length, got=nCards();
+  const gal=ST.map(s=>s.roles.map(f=>roleCard(s,f)).join('')).join('');
+  const done=ST.filter(s=>(rec[s.id]||[0])[0]>0).length;
+  app.innerHTML=`<div class="label">あそびかた</div>
+    <p style="margin:0">架空の会社「株式会社みのり雑貨」の経理担当になりきって、4月から3月までの1年間の取引を記録します。場面ごとに、正しい仕訳・勘定科目・金額・理由を選びます。日商簿記3級のルールのとおりに選ぶと話が続き、ちがうと「実際には…」で、ルールとその理由がわかります。最後は決算と財務諸表まで。とちゅうで役割が交代します。</p>
+    <p class="note">${esc(NOTE)}</p>
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">集めた役割カード</span><span class="cnt">${got}<small> / ${total}まい</small></span></div>
+    <details class="cards"><summary>役割カードを見る</summary><div class="figrow" style="margin-top:8px">${gal}</div></details>
+    <div class="row" style="justify-content:space-between"><span class="label">章をえらぶ</span><span class="note">クリアした章 ${done} / ${ST.length}</span></div>
+    ${PAID?'':`<p class="free">第${ST.map(s=>s.no).join('・')}章は無料。🔒の章は<b>利用コードで全${TITLES.length}章</b>遊べます。</p>`}
+    <div class="list">${rows}</div>${PAID?`<div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML='本当に消しますか？（役割カードも消えます） <button class="linkbtn" id="yes" style="color:var(--ng)">消す</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();cards={};store.set(CARDK,cards);home();};document.getElementById('no').onclick=home;};
+}
+function play(s){ G={s:s,who:null,from:null,pick:null,overs:0}; track('level_start',{level_name:'k-bokinari-'+s.id}); show(s.start); }
+function head(o){ const n=(o&&o.n)||0; return `<div class="top"><button class="linkbtn" id="back">← 章をえらぶ</button><div class="prog" aria-hidden="true"><i style="width:${Math.round(n/G.s.len*100)}%"></i></div>${G.who?`<span class="whochip">${esc(G.who)}</span>`:''}</div>`; }
+function show(id){
+  const s=G.s, o=s.sc[id];
+  if(o.k==='x')return over(o);
+  if(o.w&&o.w!==G.who)return switchCard(id);
+  if(o.k==='e')return ending(o);
+  render(id);
+}
+function switchCard(id){
+  const s=G.s, o=s.sc[id], prev=G.who, f=roleOf(s,o.w);
+  if(prev)collect(s.id,prev);
+  G.who=o.w;
+  const nth=s.roles.findIndex(x=>x[0]===o.w)+1;
+  app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="役割の交代">
+    <div class="swl">第${s.no}章　${rb(s.title)}　${nth?nth+'人目の役割':''}</div>
+    ${prev?`<p class="got">✓「${esc(prev)}」の役割カードを手に入れた！</p>`:''}
+    <div class="swp">${f[3]}</div>
+    <p class="swt">${prev?'ここからは、あなたは':'あなたは'}</p>
+    <p class="swy">${esc(f[1])}</p><p class="swn">${esc(f[0])}。</p>
+    <p class="swr">${rb(f[2])}</p>
+    <button class="btn go" id="nx">この役割で進む ▶</button></div>`;
+  document.getElementById('back').onclick=home;
+  const nx=document.getElementById('nx'); nx.onclick=()=>o.k==='e'?ending(o):render(id);
+  top0(); nx.focus({preventScroll:true});
+}
+function render(id){
+  const s=G.s, o=s.sc[id];
+  const ch=o.k==='q'?shuffle(o.c):null;
+  const opt=(c,i)=>isJ(c)?`<button class="op jop" data-i="${i}" aria-label="${'アイウ'[i]}：${esc(c[0])}"><span class="k">${'アイウ'[i]}</span>${tbl(c[2])}</button>`
+    :`<button class="op" data-i="${i}"><span class="k">${'アイウ'[i]}</span>${c[2]?`<span class="ic">${c[2]}</span>`:''}<span>${rb(c[0])}</span></button>`;
+  app.innerHTML=`${head(o)}${o.y!=null?`<span class="yr">${esc(o.y)}</span>`:''}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${tbls(o.tb)}
+    ${o.k==='q'?`<p class="ask">${rb(o.a)}</p><div class="ch">${ch.map(opt).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="nx">次へ ▶</button></div>`}`;
+  document.getElementById('back').onclick=home;
+  if(ch)app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const c=ch[+b.dataset.i];const ok=s.sc[c[1]].k!=='x';
+    track('answer_question',{category:'k-bokinari-'+s.id,question:id,correct:ok});
+    if(!ok){G.from=id;G.pick=c;G.overs++;bump(s.id,1);} show(c[1]);});
+  else document.getElementById('nx').onclick=()=>show(o.nx);
+  top0();
+}
+function over(o){
+  const s=G.s, c=G.pick||['',''];
+  app.innerHTML=`${head(s.sc[G.from]||{})}<div class="over"><h2>おっと、ちがうみたい！</h2>
+    ${isJ(c)?`<p class="pick">あなたが選んだ仕訳：</p>${tbl(c[2],'あなたの答え','bad')}`:`<p class="pick">あなたが選んだのは：<b>${rb(c[0])}</b></p>`}
+    <div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${tbls(o.tb,(o.tb&&o.tb[0]&&o.tb[0].k==='j')?'正しい仕訳':'')}${o.h?`<p class="hint"><b>覚えておこう</b>${rb(o.h)}</p>`:''}
+    <div class="row"><button class="btn go" id="retry">この場面からやりなおす</button><button class="btn" id="first">最初から</button></div>
+    <div><button class="linkbtn" id="list">章をえらぶ</button></div></div>`;
+  document.getElementById('back').onclick=home;
+  const rt=document.getElementById('retry');rt.onclick=()=>render(G.from);
+  document.getElementById('first').onclick=()=>{G.who=null;show(s.start);};
+  document.getElementById('list').onclick=home;
+  top0(); rt.focus({preventScroll:true});
+}
+function ending(o){
+  const s=G.s, stars=G.overs===0?3:G.overs<=2?2:1;
+  if(G.who)collect(s.id,G.who);
+  bump(s.id,0);
+  track('level_end',{level_name:'k-bokinari-'+s.id,success:true,score:stars});
+  const ix=ST.indexOf(s), nx=ST[ix+1];
+  app.innerHTML=`${head(o)}<p class="endh">🎉 第${s.no}章「${rb(s.title)}」クリア！</p>${o.y!=null?`<span class="yr">${esc(o.y)}</span>`:''}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${tbls(o.tb)}
+    <p class="lesson"><b>この章のまとめ</b>${rb(o.l)}</p>
+    <div class="row"><span class="stars" aria-label="星 ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span><span class="note">${G.overs?'ゲームオーバー '+G.overs+'回。次はノーミスをめざそう！':'ノーミスで最後まで進めた！'}</span></div>
+    <div class="label">仕訳のポイント　${rb(s.area)}</div>
+    <ol class="pts">${s.pts.map(p=>`<li><b>${rb(p[0])}</b>${tbl(p[1])}</li>`).join('')}</ol>
+    <div class="label">図解</div>${tbls(s.fig)}
+    <div class="label">用語</div>
+    <ul class="words">${s.words.map(w=>`<li><b>${rb(w[0])}</b>${rb(w[1])}</li>`).join('')}</ul>
+    <div class="label">参考にした情報</div>
+    <ul class="src">${(s.src||[]).map(e=>`<li>${esc(e[0])} <span class="u">${esc(e[1])}</span></li>`).join('')}</ul>
+    <p class="note">${esc(NOTE)}</p>
+    <div class="label">なりきった役割（役割カード ${nCards()} / ${ALLROLE.length}まい）</div><div class="figrow">${s.roles.map(f=>roleCard(s,f)).join('')}</div>
+    <div class="row">${nx?`<button class="btn go" id="next">次の章「${rb(nx.title)}」</button>`:''}<button class="btn${nx?'':' go'}" id="list">章をえらぶ</button><button class="linkbtn" id="again">もう一度この章を</button></div>${PAID?'':PAIDLINK}`;
+  document.getElementById('back').onclick=home;
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(s);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('k-bokinari'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'k-bokinari',err:err,free:'k-bokinari.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
