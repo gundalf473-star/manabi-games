@@ -87,6 +87,14 @@ body{margin:0;background:#e6eaf0;color:var(--fg);font-family:var(--body)}
 .sheet .sq .op.ok{border-color:#1d8150;background:#e0f1e6;color:#1d8150}
 .sheet .sq .ex{font-size:8.5pt;color:var(--muted);line-height:1.55;border-left:2.5px solid var(--accent);padding-left:2mm}
 .sheet.tight .samples-h,.sheet.tight .samples{display:none}
+.sheet .nari{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2mm}
+.sheet .nc{border:1.5px solid var(--c);border-radius:2.5mm;padding:1.6mm 2.4mm;display:flex;flex-direction:column;gap:.6mm;background:#fff}
+.sheet .nc .tg{font-size:7.5pt;font-weight:700;color:var(--c)}
+.sheet .nc b{font-size:9.5pt;line-height:1.35;color:var(--fg)}
+.sheet.tight .nari{display:none}
+.sheet.tight0 .feat span{display:none}
+.sheet.tight0 .nari{grid-template-columns:repeat(4,1fr)}
+.sheet.tight1 .feats{display:none}
 @page{size:A4 portrait;margin:0}
 @media print{
   body{background:#fff}
@@ -1402,53 +1410,45 @@ const ORG='まなびゲーム箱　お問い合わせ：manabigamebako.com/conta
 const OP=(t,ok)=>[t,!!ok];
 const COURSES={
  juken:{name:'中学受験',path:'/',kicker:'中学受験のための学習ゲームサイト',
-  def:{catch:'中学受験の勉強を、<em>ゲームで楽しく</em>。',
-   lead:'算数・国語・理科・社会・思考力。小4〜小6の入試範囲を、4択クイズとパズル、人物や生き物になりきるゲームで楽しく身につけられる学習サイトです。スマホ・タブレット・パソコンから、登録なしですぐ遊べます。',
-   stats:'無料ゲーム 220本以上｜有料版 210本以上｜5教科',plan:'全教科・1ヵ月'},
+  def:{catch:'なりきって、選んで、<em>覚える</em>。',
+   lead:'歴史の人物、科学者、作家、生き物、気になる仕事の人に「なりきって」、場面ごとに「どうする？」を選ぶ学習ゲーム。まちがえると「実際には…」と理由がわかります。算数・国語・理科・社会・思考力の入試範囲を、スマホ・タブレット・パソコンで楽しく。',
+   stats:'有料版ゲーム 230本以上｜なりきりシリーズ 15本以上｜5教科',plan:'全教科・1年'},
   subj:[['算数','--s1'],['国語','--s2'],['理科','--s3'],['社会','--s4'],['思考力','--s5']],
-  feats:[['1回10問、答えたらすぐ解説','まちがえた問題は、その場で解説を読んで、最後にまとめて復習できます。'],
-   ['覚えた問題・にがてを記録','有料版では「にがて」だけを集めて練習。覚えた数が増えていくのが見えます。'],
-   ['なりきり・すごろくで深く学ぶ','歴史の人物、作家、科学者、生き物になりきるゲームや、日本一周・世界一周の地理すごろくも。'],
-   ['おうちの人も見守れる','保護者ページで、今週どの単元をどれだけ練習したかがわかります。']],
+  feats:[["なりきって選ぶから、忘れない", "信長になって桶狭間へ、天文学者になって月を観測。自分で選んだ場面は記憶に残ります。"], ["まちがえても「実際には…」", "正しい答えと理由をその場で説明。その場面からやりなおせます。"], ["事実と計算はしっかり確認", "教科書・官公庁などの資料で確かめ、計算はプログラムで検算しています。"], ["おうちの人も見守れる", "保護者ページで、どの単元をどれだけ練習したかがわかります。"]],
+  nari:[["社会", "--s4", "歴史の人物になりきろう"], ["社会", "--s4", "しくみになりきろう（公民）"], ["社会", "--s4", "日本の産業になりきろう"], ["社会", "--s4", "国連の職員になりきろう"], ["理科", "--s3", "生き物になりきろう"], ["理科", "--s3", "科学者になりきろう"], ["理科", "--s3", "天文学者・宇宙飛行士"], ["理科", "--s3", "地質学者になりきろう"], ["国語", "--s2", "作家・歌人になりきろう"], ["国語", "--s2", "故事成語の主人公"], ["算数", "--s1", "お店の店長になりきろう"], ["算数", "--s1", "鉄道ダイヤ・建築家"], ["思考力", "--s5", "名探偵になりきろう"], ["社会", "--s4", "江戸の藩主・明治の大臣（シミュレーション）"], ["社会", "--s4", "先生になって修学旅行を計画"]],
   samples:[{tg:'社会・日本の地形',c:'--s4',q:'日本でいちばん長い川はどれですか。',ops:[OP('ア 利根川'),OP('イ 信濃川',1),OP('ウ 石狩川'),OP('エ 最上川')],ex:'信濃川は長さ367km。長野県では千曲川とよばれ、新潟県で日本海に注ぎます。'},
    {tg:'算数・計算のくふう',c:'--s1',q:'36＋19＋64＋81 を、くふうして計算すると？',ops:[OP('ア 180'),OP('イ 200',1),OP('ウ 190'),OP('エ 210')],ex:'36＋64＝100、19＋81＝100 のように、たして100になる組を先に作ります。'}]},
  teigaku:{name:'低学年',path:'/teigaku/',kicker:'小学1〜3年生のための学習ゲーム',
-  def:{catch:'はじめての勉強を、<em>ゲームで楽しく</em>。',
-   lead:'かず・計算・時計、ひらがなと漢字、考える力のパズル、生き物や地図のちしき。小学1〜3年生が、ふりがなと読み上げつきのクイズで楽しく練習できます。登録なしで、すぐ遊べます。',
-   stats:'ゲーム 28本｜4分野｜小1〜小3',plan:'低学年 全教科・1ヵ月'},
+  def:{catch:'なりきって、<em>まなぶ</em>。',
+   lead:'信長、消防士、アサガオ、世界の小学生――いろいろな人や生き物に「なりきって」、つぎに どうするかを えらぶゲーム。漢字にはすべて ふりがな、🔊読み上げつきで、小学1〜3年生が ひとりでも楽しく学べます。',
+   stats:'ゲーム 35本｜なりきりシリーズ 11本｜小1〜小3',plan:'低学年 全教科・1年'},
   subj:[['算数','--s1'],['国語','--s2'],['思考力','--s5'],['ちしき','--s3']],
-  feats:[['ふりがな・読み上げつき','ひとりで読めない字があっても大丈夫。問題を声で読み上げます。'],
-   ['すぐに答え合わせ','答えるとすぐに○×と、やさしい解説が出ます。'],
-   ['おはなしの主人公になれる','お話の主人公になって選んでいくゲームで、読む力と考える力を育てます。'],
-   ['おうちの人も見守れる','保護者ページで、どれだけ練習したかがわかります。']],
+  feats:[["ふりがな・読み上げつき", "ひとりで読めない字があっても大丈夫。🔊で読み上げます。"], ["2つから えらぶだけ", "場面ごとに2つの中から選ぶので、小1でも遊べます。"], ["まちがえても やさしく", "「ほんとうは…」と理由を教えてくれて、その場面からやりなおせます。"], ["くらしと安全も学べる", "行事、食べ物、ごみと水、あんぜんのきまりまで。"]],
+  nari:[["ちしき", "--s3", "人物になりきろう"], ["ちしき", "--s3", "世界の偉人になりきろう"], ["ちしき", "--s3", "お仕事になりきろう"], ["ちしき", "--s3", "身近な生き物になりきろう"], ["ちしき", "--s3", "水やごみになって旅しよう"], ["ちしき", "--s3", "食べ物ができるまで"], ["ちしき", "--s3", "日本の行事になりきろう"], ["ちしき", "--s3", "世界の小学生になりきろう"], ["ちしき", "--s3", "あんぜん探検隊"], ["算数", "--s1", "お店やさんになろう"], ["思考力", "--s5", "おはなしの主人公"]],
   samples:[{tg:'さんすう・たしざん',c:'--s1',q:'8＋7 は いくつ？',ops:[OP('ア 14'),OP('イ 15',1),OP('ウ 16'),OP('エ 13')],ex:'8に あと2で 10。のこりの 5を たして 15に なります。'},
    {tg:'こくご・かん字の読み',c:'--s2',q:'「月よう日」の「月」の 読み方は？',ops:[OP('ア つき'),OP('イ げつ',1),OP('ウ がつ'),OP('エ にち')],ex:'曜日のときは「げつ」と読みます。「一月」は「いちがつ」、「お月見」は「つき」です。'}]},
  chuko:{name:'中高一貫',path:'/chuko/',kicker:'中高一貫校の学習ゲーム',
-  def:{catch:'中学の勉強を、<em>ゲームで先取り</em>。',
-   lead:'中高一貫校に進んだ人のための、入学準備と中学の学習。数学・英語・国語・理科・社会・情報を、4択クイズと世界史の人物になりきるゲームで。中学受験で身につけた力を、中学・高校の学習へつなげます。',
-   stats:'ゲーム 160本以上｜6教科｜中1〜高校入り口',plan:'中高一貫 全教科・1ヵ月'},
+  def:{catch:'なりきって、<em>歴史と英語を体験</em>。',
+   lead:'世界史の人物、海外を旅する中学生、数学者、戦国の足軽、ローマの指導者に「なりきって」選ぶゲーム。中学の数学・英語・国語・理科・社会・情報を、クイズとなりきりで楽しく先取りできます。',
+   stats:'ゲーム 170本｜なりきり・シミュレーション 9本｜6教科',plan:'中高一貫 全教科・1年'},
   subj:[['数学','--s1'],['英語','--s6'],['国語','--s2'],['理科','--s3'],['社会','--s4'],['情報','--s5']],
-  feats:[['1回10問、答えたらすぐ解説','まちがえた問題は、その場で解説を読んで、最後にまとめて復習できます。'],
-   ['英語は文法から英検形式まで','中学英語の文法、英単語、英検の形式に近い問題で練習できます。'],
-   ['世界史の人物になりきる','古代から現代まで、歴史の人物になって選んでいくゲームで、流れごと身につきます。'],
-   ['にがてだけを集めて練習','有料版では、まちがえた問題を集めてくり返し練習できます。']],
+  feats:[["人物になって歴史を体験", "世界史の人物や戦国の足軽になって、歴史の分かれ道を選びます。"], ["英語で海外を旅する", "空港・ホームステイ・買い物の場面で、正しい英語を選んで進みます。"], ["国を治めるシミュレーション", "ローマ帝国の予算を決めて、本当の歴史とくらべます。"], ["にがてだけを集めて練習", "有料版では、まちがえた問題を集めてくり返し練習できます。"]],
+  nari:[["社会", "--s4", "世界史の人物になりきろう"], ["英語", "--s6", "英語で旅になりきろう"], ["数学", "--s1", "数学者になりきろう"], ["社会", "--s4", "戦国足軽ものがたり"], ["社会", "--s4", "秦の統一 兵士ものがたり"], ["社会", "--s4", "三国志 兵士ものがたり"], ["社会", "--s4", "ローマ帝国を治めよう"], ["社会", "--s4", "修学旅行を計画しよう（中学編）"], ["社会", "--s4", "ツアーコンダクターになって世界旅行"]],
   samples:[{tg:'数学・1次方程式',c:'--s1',q:'2x＋3＝11 のとき、x の値は？',ops:[OP('ア 3'),OP('イ 4',1),OP('ウ 7'),OP('エ 8')],ex:'3を右へ移して 2x＝8。両辺を2でわって x＝4 です。'},
    {tg:'英語・3人称単数',c:'--s6',q:'She (　　) tennis every Sunday.',ops:[OP('ア play'),OP('イ plays',1),OP('ウ playing'),OP('エ is play')],ex:'主語が she（3人称単数）で現在の習慣なので、動詞に s をつけて plays です。'}]},
  career:{name:'就活・資格',path:'/career/',kicker:'大学生・社会人のための就活・資格コース',
-  def:{catch:'就活・資格の対策を、<em>スキマ時間にゲームで</em>。',
-   lead:'SPI形式の非言語・言語、ITパスポート、基本情報技術者、統計学、簿記3級、TOEIC形式の英語、ビジネスマナー。通学・通勤のスキマ時間に、スマホのクイズでくり返し練習できます。',
-   stats:'8分野｜ゲーム 25本｜スマホで1回数分',plan:'就活・資格 全科目・1ヵ月'},
+  def:{catch:'なりきって、<em>仕事の基本を身につける</em>。',
+   lead:'新入社員になって電話応対・敬語・名刺交換を、経理担当になって1年分の仕訳と決算を体験。SPI・ITパスポート・基本情報・統計学・簿記3級・TOEIC形式の英語も、スマホのクイズでスキマ時間にくり返し練習できます。',
+   stats:'ゲーム 26本｜9分野｜なりきり 2本',plan:'就活・資格 全科目・1年'},
   subj:[['SPI非言語','--s1'],['SPI言語','--s2'],['ITパスポート','--s3'],['基本情報','--s6'],['統計学','--s4'],['簿記3級','--s5'],['TOEIC形式','--s7'],['ビジネスマナー','--s2']],
-  feats:[['1回10問、答えたらすぐ解説','計算の手順や考え方を、その場で確かめられます。'],
-   ['スキマ時間にくり返し','登録なしで、スマホからすぐ。1回数分で終わります。'],
-   ['にがてだけを集めて練習','有料版では、まちがえた問題を集めて、できるまでくり返せます。'],
-   ['覚えた数が見える','覚えた問題の数が増えていくので、続けやすくなります。']],
+  feats:[["新入社員になって学ぶ", "電話・敬語・メール・名刺交換・報連相・席次を場面ごとに体験。"], ["経理担当になって簿記", "1年分の取引を仕訳して、決算と財務諸表まで作ります。"], ["スキマ時間にくり返し", "登録なしで、スマホからすぐ。1回数分で終わります。"], ["にがてだけを集めて練習", "有料版では、まちがえた問題を集めて、できるまでくり返せます。"]],
+  nari:[["ビジネスマナー", "--s2", "新入社員になりきろう"], ["簿記3級", "--s5", "経理担当になりきろう"]],
   samples:[{tg:'SPI非言語・損益算',c:'--s1',q:'原価800円の品物に、原価の2割5分の利益を見込んで定価をつけた。定価はいくら？',ops:[OP('ア 960円'),OP('イ 1,000円',1),OP('ウ 1,025円'),OP('エ 1,200円')],ex:'800×(1＋0.25)＝1,000円。2割5分は0.25です。'},
    {tg:'ITパスポート・2進数',c:'--s3',q:'2進数の 1011 を10進数で表すと？',ops:[OP('ア 9'),OP('イ 10'),OP('ウ 11',1),OP('エ 13')],ex:'8×1＋4×0＋2×1＋1×1＝11 です。'}]}
 };
 let COURSE='juken'; try{COURSE=localStorage.getItem('flyer-course')||'juken';}catch(e){} if(!COURSES[COURSE])COURSE='juken';
 const C=()=>COURSES[COURSE];
-const DEF0={deadline:'',gift:'有料版プレゼント',org:ORG};
+const DEF0={deadline:'',gift:'1年間 無料利用券',org:ORG};
 const defOf=k=>k in C().def?C().def[k]:DEF0[k];
 const KEYS=['catch','lead','stats','plan','deadline','gift','org'];
 const $=id=>document.getElementById(id);
@@ -1457,7 +1457,7 @@ const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
 let ROWS=[]; // {code,plan,deadline,to}
 
 // ---- 文字の欄 ----
-const sk=k=>'flyer2-'+COURSE+'-'+k;
+const sk=k=>'flyer3-'+COURSE+'-'+k;
 function loadTexts(){ KEYS.forEach(k=>{const v=store.get(sk(k)); $('t-'+k).value=v!=null?v:defOf(k);}); }
 function drawCourses(){ $('courses').innerHTML=Object.entries(COURSES).map(([id,c])=>`<button type="button" data-c="${id}" class="${id===COURSE?'on':''}">${c.name}</button>`).join(''); }
 $('courses').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;COURSE=b.dataset.c;store.set('flyer-course',COURSE);drawCourses();loadTexts();render();});
@@ -1519,10 +1519,10 @@ function sheet(r){
     <div class="subjects">${subj.map(([n,c])=>`<span class="subj" style="--c:var(${c})">${n}</span>`).join('')}</div>
     <div class="feats">${cc.feats.map(([b,t],i)=>`<div class="feat"><span class="n">${i+1}</span><div><b>${esc(b)}</b><span>${esc(t)}</span></div></div>`).join('')}</div>
     ${stats?`<div class="stats">${stats}</div>`:''}
-    <div class="samples-h">たとえば、こんな問題</div>
+    ${cc.nari?`<div class="samples-h">なりきりシリーズ（${cc.nari.length}本）</div><div class="nari">${cc.nari.map(([t,c,n])=>`<div class="nc" style="--c:var(${c})"><span class="tg">${esc(t)}</span><b>${esc(n)}</b></div>`).join('')}</div>`:`<div class="samples-h">たとえば、こんな問題</div>
     <div class="samples">${cc.samples.map(x=>`<div class="sq" style="--c:var(${x.c})"><span class="tg">${esc(x.tg)}</span><div class="qq">${esc(x.q)}</div>
         <div class="ops">${x.ops.map(([t,ok])=>`<span class="op${ok?' ok':''}">${esc(t)}${ok?' ○':''}</span>`).join('')}</div>
-        <div class="ex">${esc(x.ex)}</div></div>`).join('')}</div>
+        <div class="ex">${esc(x.ex)}</div></div>`).join('')}</div>`}
     <div class="access">
       <div class="qr">${qrSVG(qrText)}<span>スマホのカメラで<br>読み取ってください</span></div>
       <div class="acc">
@@ -1546,7 +1546,7 @@ function render(){
   $('count').textContent=ROWS.length?`${ROWS.length}枚（1つの利用コードごとに1枚）を印刷します。`:'利用コードを読み込んでいないので、利用コードなしのチラシ（1枚）を印刷します。何枚でも印刷できます。';
 }
 // 文字の大きさ（フォント）によって1枚におさまらないときは、問題の例を省いて1枚におさめる
-function fit(){ document.querySelectorAll('.sheet').forEach(sh=>{ sh.classList.remove('tight'); if(sh.scrollHeight>sh.clientHeight+1)sh.classList.add('tight'); }); }
+function fit(){ document.querySelectorAll('.sheet').forEach(sh=>{ sh.classList.remove('tight','tight1','tight0'); const over=()=>sh.scrollHeight>sh.clientHeight+1; if(over())sh.classList.add('tight0'); if(over())sh.classList.add('tight1'); if(over())sh.classList.add('tight'); }); }
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 window.addEventListener('beforeprint',fit);
 $('print').onclick=()=>{fit();window.print();};
