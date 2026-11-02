@@ -1,0 +1,296 @@
+<title>日本の行事になりきろう 全8つ</title>
+<meta name="game:paid" content="利用コード">
+<meta name="game:course" content="teigaku"><meta name="game:subject" content="ちしき">
+<meta name="game:unit" content="日本の行事">
+<meta name="game:grade" content="小1〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="日本の行事になりきろうの有料版。お正月・節分・ひなまつり・こどもの日・七夕・お月見・七五三・大みそかの全8つ。なりきって選びながら、行事の日にち・いみ・かざりや食べものを知ります。地域や家でちがうことも紹介。なりきりカード集め・🔊読み上げつき。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。行事の一覧 → なりきる人の交代カード → 場面（大きな絵・文・ことば・2つの選択肢・🔊）→ ゲームオーバー（ほんとうは…）／まとめ（こんな日・いつ・もの・ちがうことも）。朱色を差し色に */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
+  --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7.5vw,40px);line-height:1.3;margin:0;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+h1 small{display:block;font-family:var(--mincho);font-size:15px;color:var(--seal);letter-spacing:.3em;margin-bottom:4px}
+h1 rt{font-family:var(--body);font-size:.32em;letter-spacing:0}
+.lead{margin:4px 0 0;color:var(--muted);font-size:15px;line-height:2}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:400}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.label{font-size:13px;font-weight:700;color:var(--seal);letter-spacing:.1em}
+.note{font-size:13px;color:var(--muted);margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:13px 24px;font-size:17px;font-weight:700;cursor:pointer;background:var(--pick);line-height:1.9}
+.btn.go{background:var(--fg);color:var(--surface)}
+.btn.say{padding:6px 14px;font-size:15px;background:var(--surface);border:2px solid var(--rule)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px;padding:0}
+.stampbox,.stampget{align-self:flex-start;font-weight:700;font-size:15px;background:var(--sealsoft);color:var(--seal);border-radius:99px;padding:4px 14px}
+.stampget{font-size:16px}
+.top{display:flex;align-items:center;gap:10px}
+.prog{flex:1;height:8px;background:var(--rule);border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--seal);transition:width .3s}
+.whochip{font-size:13px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:6px;padding:0 6px;white-space:nowrap;line-height:2}
+.pic{background:#fff;border:1px solid var(--rule);border-radius:12px;overflow:hidden;line-height:0}
+.pic svg{display:block;width:100%;height:auto}
+.txt{margin:0;white-space:pre-line;font-size:20px;line-height:2.1}
+.ask{margin:0;font-size:20px;font-weight:700;color:var(--ink);line-height:2}
+.ch{display:grid;gap:10px}
+.op{border:2px solid var(--rule);background:var(--surface);border-radius:14px;padding:14px 16px;font-size:19px;line-height:1.95;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:64px}
+@media (hover:hover){.op:hover:not(:disabled){border-color:var(--ink);background:var(--pick)}.st:hover{border-color:var(--ink)}}
+.op .k{flex:none;width:32px;height:32px;border-radius:50%;background:var(--pick);display:grid;place-items:center;font-size:16px;line-height:1}
+.op:active{transform:scale(.98)}
+.kotoba{margin:0;font-size:16px;line-height:2;border:2px dotted var(--rule);border-radius:10px;padding:6px 12px}
+.kotoba b{color:var(--seal);font-size:13px;margin-right:8px}
+.kotoba span{display:block}
+.sw{border:3px solid var(--seal);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:var(--sealsoft)}
+.sw .swl{font-size:14px;font-weight:700;color:var(--seal);letter-spacing:.08em;line-height:2}
+.sw .got{margin:0;font-size:15px;font-weight:700;color:var(--ok);background:var(--surface);border-radius:14px;padding:2px 14px;line-height:2}
+.sw .swp{width:100%;max-width:340px;border-radius:10px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.sw .swp svg{display:block;width:100%;height:auto}
+.sw .swt{margin:0;font-size:19px;font-weight:700}
+.sw .swn{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,40px);line-height:1.6;color:var(--ink)}
+.sw .swn rt{font-family:var(--body);font-size:.36em;letter-spacing:.05em}
+.sw .swr{margin:0;font-size:17px;line-height:2;color:var(--muted)}
+.over{border:3px dashed var(--gold);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.over h2,.endh{margin:0;font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold);line-height:1.6}
+.endh{color:var(--ok)}
+.pick{margin:0;font-size:16px;color:var(--muted);line-height:2}
+.pick b{color:var(--fg)}
+.hint{font-size:17px;line-height:2;background:var(--pick);border-radius:10px;padding:8px 12px;margin:0}
+.hint b{display:block;color:var(--seal);font-size:15px}
+.konna{border-left:5px solid var(--ok);background:var(--oksoft);border-radius:0 10px 10px 0;padding:8px 12px;margin:0}
+.konna b{display:block;color:var(--ok);font-size:15px}
+.konna ul{margin:4px 0 0;padding-left:1.3em;font-size:18px;line-height:2.05}
+.itsu,.more{margin:0;font-size:17px;line-height:2;background:var(--pick);border-radius:10px;padding:8px 12px}
+.itsu b,.more b{display:block;color:var(--seal);font-size:14px}
+.dougu{margin:0;background:var(--pick);border-radius:10px;padding:8px 12px}
+.dougu b{display:block;color:var(--seal);font-size:14px}
+.dougu ul{margin:4px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 8px}
+.dougu li{background:var(--surface);border:1px solid var(--rule);border-radius:99px;padding:0 12px;font-size:17px;line-height:2.1}
+.stars{font-size:28px;color:var(--gold);letter-spacing:.1em;line-height:1}
+.figrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.fc{border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface);font-size:13px;line-height:1.8;display:flex;flex-direction:column}
+.fc .fp{line-height:0;background:#fff}.fc .fp svg{display:block;width:100%;height:auto}
+.fc .fn{padding:4px 8px 0;font-weight:700;font-size:16px;line-height:2}
+.fc .fr{padding:0 8px 6px;color:var(--muted)}
+.fc.no .fp{display:grid;place-items:center;aspect-ratio:3/2;background:var(--pick);font-size:28px;line-height:1;color:var(--muted)}
+details.cards summary{cursor:pointer;font-weight:700;font-size:15px;line-height:2}
+.cnt{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:13px;color:var(--muted);font-family:var(--body)}
+.list{display:grid;gap:10px}
+.st{border:2px solid var(--rule);background:var(--surface);border-radius:14px;padding:10px;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg)}
+.st .th{flex:none;width:96px;border-radius:8px;overflow:hidden;line-height:0;border:1px solid var(--rule);background:#fff}
+.st .th svg{width:96px;height:64px;display:block}
+.st .no{display:block;font-size:13px;font-weight:700;color:var(--seal);line-height:1.9}
+.st .nm{font-weight:700;font-size:19px;display:block;line-height:1.8}
+.st .ds{font-size:14px;color:var(--muted);display:block;line-height:1.9}
+.st .bd{display:inline-block;font-size:13px;font-weight:700;border-radius:99px;padding:0 10px;margin-top:2px}
+.st .bd.ok{background:var(--oksoft);color:var(--ok)}
+.st .bd.no{background:var(--pick);color:var(--muted)}
+.st.lockd{opacity:.78}
+.st.lockd .th,.st.soon .th{display:grid;place-items:center;height:64px;background:var(--pick);font-size:26px;line-height:1}
+.st.soon{opacity:.55;cursor:default}
+.free{border:1px dashed var(--seal);border-radius:8px;padding:8px 12px;font-size:15px;margin:0;background:var(--sealsoft);line-height:2}
+.paid{display:flex;flex-direction:column;gap:2px;border:2px solid var(--seal);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg);background:var(--sealsoft)}
+.paid .pt{font-size:15px} .paid .pt b{font-family:var(--display);font-weight:400;color:var(--seal)}
+.paid .pd{font-size:13px;color:var(--muted)}
+.lock input{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--fg);width:100%;box-sizing:border-box}
+.err{color:var(--ng);font-size:14px;margin:0;min-height:1.5em}
+.shop{background:var(--pick);border-radius:8px;padding:12px 14px;font-size:14px}
+.shop a{color:var(--seal);font-weight:700}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}.op:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><small>ちしきゲーム</small><ruby>日本<rt>にほん</rt></ruby>の <ruby>行事<rt>ぎょうじ</rt></ruby>に なりきろう <ruby>全<rt>ぜん</rt></ruby>8つ</h1>
+    <p class="lead"><ruby>全<rt>ぜん</rt></ruby>8つの <ruby>行事<rt>ぎょうじ</rt></ruby>で、じゅんびを する <ruby>家族<rt>かぞく</rt></ruby>に なりきって、つぎに どうするかを えらぼう。</p>
+  </header>
+  <section class="box" id="app"></section>
+</div>
+
+<script>
+(function(){
+const PAID=true;
+let ST=[];
+const TITLES=[["shogatsu",1,"お正月《しょうがつ》","冬《ふゆ》の 行事《ぎょうじ》",["お姉ちゃん","おばあちゃん"],true],["setsubun",2,"節分《せつぶん》","冬《ふゆ》の 行事《ぎょうじ》",["お兄ちゃん","お父さん"],true],["hina",3,"ひなまつり","春《はる》の 行事《ぎょうじ》",["いもうと","お母さん"],true],["kodomo",4,"こどもの日《ひ》","春《はる》の 行事《ぎょうじ》",["おとうと","おじいちゃん"],true],["tanabata",5,"七夕《たなばた》","夏《なつ》の 行事《ぎょうじ》",["お姉ちゃん","おじいちゃん"],true],["tsukimi",6,"お月見《つきみ》","秋《あき》の 行事《ぎょうじ》",["お兄ちゃん","おばあちゃん"],true],["shichigosan",7,"七五三《しちごさん》","秋《あき》の 行事《ぎょうじ》",["お姉ちゃん","お父さん"],true],["omisoka",8,"大《おお》みそか","冬《ふゆ》の 行事《ぎょうじ》",["おとうと","おじいちゃん"],true]];
+const app=document.getElementById('app');
+const RB=/(?:｜([^｜《》]+)|([一-鿿々〆ヶ]+))《([^《》]+)》/g;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=s=>esc(s).replace(RB,(m,a,b,r)=>'<ruby>'+(a||b)+'<rt>'+r+'</rt></ruby>');
+const yomi=s=>String(s).replace(RB,(m,a,b,r)=>r).replace(/[｜]/g,'').replace(/\n/g,'。').replace(/（/g,'、').replace(/）/g,'、').replace(/…+/g,'、').replace(/〜/g,'から');
+const sayNote=(b,m)=>{try{if(!b)return;let n=b.parentNode.querySelector('.saynote');if(!n){n=document.createElement('span');n.className='note saynote';b.parentNode.appendChild(n);}n.textContent=m;}catch(e){}};
+try{if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}}catch(e){}
+const say=(t,b)=>{try{if(!('speechSynthesis' in window)){sayNote(b,'この ブラウザでは 読み上げが つかえません。');return false;}const S=speechSynthesis;
+  const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=0.9;const vs=S.getVoices(),ja=vs.filter(v=>/^ja(-|_)/i.test(v.lang));
+    if(ja.length)u.voice=ja.find(v=>v.localService)||ja[0];else if(vs.length)sayNote(b,'この 端末には 日本語の 声が ないようです。せっていで 日本語の 音声を 入れてください。');
+    u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')sayNote(b,'読み上げが できませんでした（'+e.error+'）。音量や せっていを 確かめてください。');};
+    window.__mnU=u;S.resume();S.speak(u);};
+  if(S.speaking||S.pending){S.cancel();setTimeout(go,150);}else go();return true;}catch(e){return false;}};
+const hush=()=>{try{speechSynthesis.cancel();}catch(e){}};
+const STK='mn-stamp-t';const stamps=()=>{try{return +localStorage.getItem(STK)||0;}catch(e){return 0;}};
+const addStamp=()=>{const n=stamps()+1;try{localStorage.setItem(STK,String(n));}catch(e){}return n;};
+const STAMPBOX=()=>`<div class="stampbox" aria-label="あつめたスタンプ">🌸 あつめたスタンプ <b>${stamps()}</b> こ</div>`;
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const PAIDLINK="<a class=\"paid\" href=\"t-gyoji-full.html\" id=\"paid-link\"><span class=\"pt\">もっと なりきりたい <ruby>人<rt>ひと</rt></ruby>へ　<b><ruby>日本<rt>にほん</rt></ruby>の <ruby>行事<rt>ぎょうじ</rt></ruby>に なりきろう <ruby>全<rt>ぜん</rt></ruby>8つ</b>（<ruby>有料版<rt>ゆうりょうばん</rt></ruby>）</span><span class=\"pd\"><ruby>無料版<rt>むりょうばん</rt></ruby>の お<ruby>正月<rt>しょうがつ</rt></ruby>も ふくむ <ruby>全<rt>ぜん</rt></ruby>8つの <ruby>行事<rt>ぎょうじ</rt></ruby>。<ruby>節分<rt>せつぶん</rt></ruby>・ひなまつり・こどもの<ruby>日<rt>ひ</rt></ruby>・<ruby>七夕<rt>たなばた</rt></ruby>・お<ruby>月見<rt>つきみ</rt></ruby>・<ruby>七五三<rt>しちごさん</rt></ruby>・<ruby>大<rt>おお</rt></ruby>みそか。なりきりカード あつめつき。</span></a>";
+
+/* ST=章 [{id,no,title,sub,kind,points,mono,when,vary,more,start,len,figs:[[名前,よみ,説明,絵]],
+         sc:{場面id:{k:n/q/x/e,t:文,p:絵,nx:次,a:問い,c:[[ことば,行き先]],h:おぼえておこう,d:[[ことば,説明]],n:何番目,w:人}}}]
+   TITLES=[[id,何番め,名前,なかま分け,[なりきる人の名前],できているか]] */
+const REC='t-gyoji-p-rec', CARDK='t-gyoji-cards';
+let rec=store.get(REC,{}); if(!rec||typeof rec!=='object'||Array.isArray(rec))rec={}; const saveRec=()=>store.set(REC,rec);
+let cards=store.get(CARDK,{}); if(!cards||typeof cards!=='object'||Array.isArray(cards))cards={};
+const bump=(id,i)=>{const r=Array.isArray(rec[id])?rec[id]:[0,0];r[i]++;rec[id]=r;saveRec();};
+const ckey=(id,nm)=>id+':'+nm;
+const collect=(id,nm)=>{const k=ckey(id,nm);const isNew=!cards[k];if(isNew){cards[k]=Date.now();store.set(CARDK,cards);}return isNew;};
+const ALLFIG=TITLES.flatMap(t=>t[4].map(nm=>ckey(t[0],nm)));
+const nCards=()=>ALLFIG.filter(k=>cards[k]).length;
+const CARDN='なりきりカード', JOB='行事《ぎょうじ》';
+const HOWTO='行事《ぎょうじ》の じゅんびを する 家族《かぞく》に なりきろう。ばめんごとに 「つぎに どうするか」を 2つから えらぶよ。行事《ぎょうじ》の いみに 合《あ》った ほうを えらぶと つづきが 見《み》られます。とちゅうで 家族《かぞく》の だれかに かわることも あるよ。🔊で 読《よ》みあげます。';
+let G=null;
+const top0=()=>{try{const y=app.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo(0,y);}catch(e){}};
+const sayBtn=(id,txt)=>{const b=document.getElementById(id);if(!b)return;if(!('speechSynthesis' in window)){b.hidden=true;return;}b.onclick=()=>say(txt(),b);};
+const SAYB='<button class="btn say" id="say">🔊 よみあげ</button>';
+const figOf=(s,nm)=>s.figs.find(f=>f[0]===nm)||[nm,'','',''];
+const fname=f=>f[1]&&f[1]!==f[0]?`<ruby>${esc(f[0])}<rt>${esc(f[1])}</rt></ruby>`:esc(f[0]);
+const figCard=(s,f)=>{const got=!!cards[ckey(s.id,f[0])];
+  return got?`<div class="fc"><span class="fp">${f[3]}</span><span class="fn">${fname(f)}</span><span class="fr">${rb(f[2])}</span></div>`
+            :`<div class="fc no"><span class="fp">？</span><span class="fn">？？？</span><span class="fr">${s.no}「${rb(s.title)}」</span></div>`;};
+const kotoba=o=>o.d?`<p class="kotoba">${o.d.map(e=>`<span><b>ことば</b>${rb(e[0])}… ${rb(e[1])}</span>`).join('')}</p>`:'';
+function home(){
+  G=null; hush();
+  const row=([id,no,title,kind,figs,ok])=>{const s=ST.find(c=>c.id===id);
+    if(s){const r=rec[id]||[0,0];
+      return `<button class="st" data-id="${id}"><span class="th">${s.sc[s.start].p}</span><span><span class="no">${no}　${rb(kind)}</span><span class="nm">${rb(title)}</span>
+        <span class="ds">${rb(s.sub)}</span>
+        ${r[0]?`<span class="bd ok">✓ クリア${r[0]>1?'（'+r[0]+'かい）':''}</span>`:'<span class="bd no">まだ</span>'}${r[1]?` <span class="note" style="display:inline">ゲームオーバー ${r[1]}かい</span>`:''}</span></button>`;}
+    if(!PAID)return `<a class="st lockd" href="t-gyoji-full.html"><span class="th">🔒</span><span><span class="no">${no}　${rb(kind)}</span><span class="nm">${rb(title)}</span><span class="ds">${rb('有料版《ゆうりょうばん》で あそべます')}</span></span></a>`;
+    return `<div class="st soon"><span class="th">⏳</span><span><span class="no">${no}　${rb(kind)}</span><span class="nm">${rb(title)}</span><span class="ds">じゅんび<ruby>中<rt>ちゅう</rt></ruby></span></span></div>`;};
+  const has=t=>ST.some(c=>c.id===t[0]);
+  const rows=PAID?TITLES.map(row).join(''):TITLES.filter(has).map(row).join('')+`<div class="label" style="margin-top:6px">${rb('有料版《ゆうりょうばん》で あそべる 行事《ぎょうじ》')}</div>`+TITLES.filter(t=>!has(t)).map(row).join('');
+  const total=ALLFIG.length, got=nCards();
+  const gal=ST.map(s=>s.figs.map(f=>figCard(s,f)).join('')).join('');
+  const done=ST.filter(s=>(rec[s.id]||[0])[0]>0).length;
+  app.innerHTML=`${STAMPBOX()}<div class="label">あそびかた</div>
+    <p style="margin:0;font-size:17px;line-height:2.05">${rb(HOWTO)}</p>
+    <div class="row" style="justify-content:space-between"><span class="label" style="color:var(--fg)">${rb(CARDN)}</span><span class="cnt">${got}<small> / ${total}まい</small></span></div>
+    <details class="cards"><summary>${rb(CARDN+'を 見《み》る')}</summary><div class="figrow" style="margin-top:8px">${gal}</div></details>
+    <div class="row" style="justify-content:space-between"><span class="label">${rb(JOB+'を えらぶ')}</span><span class="note">クリア ${done} / ${ST.length}</span></div>
+    ${PAID?'':`<p class="free">${rb(ST.map(s=>s.title).join('・')+'は 無料《むりょう》。🔒の 行事《ぎょうじ》も、有料版《ゆうりょうばん》なら 全部《ぜんぶ》で '+TITLES.length+'つ あそべます。')}</p>`}
+    <div class="row">${SAYB}</div>
+    <div class="list">${rows}</div>${PAID?`<div><button class="linkbtn" id="reset">きろくを けす</button> <span id="resetq"></span></div>`:PAIDLINK}`;
+  sayBtn('say',()=>yomi(HOWTO));
+  app.querySelectorAll('button.st').forEach(b=>b.onclick=()=>play(ST.find(s=>s.id===b.dataset.id)));
+  const rs=document.getElementById('reset');
+  if(rs)rs.onclick=()=>{document.getElementById('resetq').innerHTML=rb('ほんとうに けしますか？（なりきりカードも きえます）')+' <button class="linkbtn" id="yes" style="color:var(--ng)">けす</button> <button class="linkbtn" id="no">やめる</button>';
+    document.getElementById('yes').onclick=()=>{rec={};saveRec();cards={};store.set(CARDK,cards);home();};document.getElementById('no').onclick=home;};
+}
+function play(s){ G={s:s,who:null,from:null,pick:'',overs:0}; track('level_start',{level_name:'t-gyoji-'+s.id}); show(s.start); }
+function head(o){ const n=(o&&o.n)||0, f=G.who?figOf(G.s,G.who):null;
+  return `<div class="top"><button class="linkbtn" id="back">← もどる</button><div class="prog" aria-hidden="true"><i style="width:${Math.round(n/G.s.len*100)}%"></i></div>${f?`<span class="whochip">${fname(f)}</span>`:''}</div>`; }
+function show(id){
+  hush(); const s=G.s, o=s.sc[id];
+  if(o.k==='x')return over(o);
+  if(o.w&&o.w!==G.who)return switchCard(id);
+  if(o.k==='e')return ending(o);
+  render(id);
+}
+function switchCard(id){
+  const s=G.s, o=s.sc[id], prev=G.who, f=figOf(s,o.w), pf=prev?figOf(s,prev):null;
+  if(prev)collect(s.id,prev);
+  G.who=o.w;
+  const nth=s.figs.findIndex(x=>x[0]===o.w)+1;
+  app.innerHTML=`${head(o)}<div class="sw" role="group" aria-label="なりきる 人の こうたい">
+    <div class="swl">${s.no}「${rb(s.title)}」　${nth?nth+rb('人目《にんめ》'):''}</div>
+    ${pf?`<p class="got">✓「${fname(pf)}」の ${rb(CARDN+'を 手《て》に 入《い》れた！')}</p>`:''}
+    <div class="swp">${f[3]}</div>
+    <p class="swt">${prev?'ここからは、あなたは':'あなたは'}</p>
+    <p class="swn">${fname(f)}。</p>
+    <p class="swr">${rb(f[2])}</p>
+    <button class="btn go" id="nx">${fname(f)}に なって すすむ ▶</button>
+    <div class="row">${SAYB}</div></div>`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>(prev?(pf[1]+'の なりきりカードを 手に 入れた。ここからは、あなたは '):'あなたは ')+f[1]+'。'+yomi(f[2]));
+  const nx=document.getElementById('nx'); nx.onclick=()=>{hush();o.k==='e'?ending(o):render(id);};
+  top0(); nx.focus({preventScroll:true});
+}
+function render(id){
+  hush(); const s=G.s, o=s.sc[id];
+  const ch=o.k==='q'?shuffle(o.c):null;
+  app.innerHTML=`${head(o)}<div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${kotoba(o)}
+    ${o.k==='q'?`<p class="ask">${rb(o.a)}</p><div class="ch">${ch.map((c,i)=>`<button class="op" data-i="${i}"><span class="k">${i+1}</span><span>${rb(c[0])}</span></button>`).join('')}</div>`
+      :`<div class="row"><button class="btn go" id="nx">つぎへ ▶</button></div>`}
+    <div class="row">${SAYB}</div>`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>yomi(o.t)+(o.d?'。'+o.d.map(e=>'ことば。'+yomi(e[0])+'、'+yomi(e[1])).join('。'):'')+(ch?'。'+yomi(o.a)+'。'+ch.map((c,i)=>(i+1)+'ばん、'+yomi(c[0])).join('。'):''));
+  if(ch)app.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const c=ch[+b.dataset.i];const ok=s.sc[c[1]].k!=='x';
+    track('answer_question',{category:'t-gyoji-'+s.id,question:id,correct:ok});
+    if(!ok){G.from=id;G.pick=c[0];G.overs++;bump(s.id,1);} show(c[1]);});
+  else document.getElementById('nx').onclick=()=>show(o.nx);
+  top0();
+}
+function over(o){
+  const s=G.s;
+  app.innerHTML=`${head(s.sc[G.from]||{})}<div class="over"><h2>${rb('おっと！ ちょっと ちがうよ')}</h2>
+    <p class="pick">あなたが えらんだのは：<b>${rb(G.pick)}</b></p>
+    <div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p><p class="hint"><b>💡 おぼえておこう</b>${rb(o.h)}</p>
+    <div class="row"><button class="btn go" id="retry">この ばめんから やりなおす</button><button class="btn" id="first">さいしょから</button></div>
+    <div class="row">${SAYB}<button class="linkbtn" id="list">${rb(JOB+'を えらぶ')}</button></div></div>`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>'おっと！ ちょっと ちがうよ。'+yomi(o.t)+'。おぼえておこう。'+yomi(o.h));
+  const rt=document.getElementById('retry');rt.onclick=()=>render(G.from);
+  document.getElementById('first').onclick=()=>{G.who=null;show(s.start);};
+  document.getElementById('list').onclick=home;
+  top0(); rt.focus({preventScroll:true});
+}
+function ending(o){
+  hush(); const s=G.s, stars=G.overs===0?3:G.overs<=2?2:1;
+  if(G.who)collect(s.id,G.who);
+  bump(s.id,0); const got=addStamp();
+  track('level_end',{level_name:'t-gyoji-'+s.id,success:true,score:stars});
+  const ix=ST.indexOf(s), nx=ST[ix+1];
+  app.innerHTML=`${head(o)}<p class="endh">🎉 「${rb(s.title)}」 クリア！</p><div class="pic">${o.p}</div><p class="txt">${rb(o.t)}</p>${kotoba(o)}
+    <div class="konna"><b>${rb('この 行事《ぎょうじ》は こんな 日《ひ》')}</b><ul>${s.points.map(p=>`<li>${rb(p)}</li>`).join('')}</ul></div>
+    <p class="itsu"><b>いつ？</b>${rb(s.when)}</p>
+    <div class="dougu"><b>${rb('行事《ぎょうじ》の もの・食《た》べもの')}</b><ul>${s.mono.map(p=>`<li>${rb(p)}</li>`).join('')}</ul></div>
+    <p class="itsu"><b>${rb('家《いえ》や 地域《ちいき》で ちがうことも')}</b>${rb(s.vary)}</p>
+    <p class="more"><b>${rb('もっと 知《し》りたい')}</b>${rb(s.more)}</p>
+    <div class="row"><span class="stars" aria-label="ほし ${stars}こ">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span><span class="note">${G.overs?'ゲームオーバー '+G.overs+'かい。つぎは ノーミスを めざそう！':'ノーミスで さいごまで いけたね！'}</span></div>
+    <div class="stampget">🌸 スタンプ ゲット！ これまで <b>${got}</b> こ</div>
+    <div class="label">${rb('なりきった 人《ひと》（'+CARDN)} ${nCards()} / ${ALLFIG.length}まい）</div><div class="figrow">${s.figs.map(f=>figCard(s,f)).join('')}</div>
+    <div class="row">${nx?`<button class="btn go" id="next">${rb('つぎの 行事《ぎょうじ》「'+nx.title+'」')}</button>`:''}<button class="btn${nx?'':' go'}" id="list">${rb(JOB+'を えらぶ')}</button></div>
+    <div class="row">${SAYB}<button class="linkbtn" id="again">もう いちど あそぶ</button></div>${PAID?'':PAIDLINK}`;
+  document.getElementById('back').onclick=home;
+  sayBtn('say',()=>yomi(s.title)+'、クリア。'+yomi(o.t)+'。この ぎょうじは こんな 日。'+s.points.map(yomi).join('。')+'。いつ？ '+yomi(s.when)+'。ぎょうじの もの・たべもの。'+s.mono.map(yomi).join('、')+'。いえや ちいきで ちがうことも。'+yomi(s.vary)+'。もっと 知りたい。'+yomi(s.more));
+  if(nx)document.getElementById('next').onclick=()=>play(nx);
+  document.getElementById('list').onclick=home;
+  document.getElementById('again').onclick=()=>play(s);
+  top0();
+}
+async function decrypt(){ return mnAccess.load('t-gyoji'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'t-gyoji',err:err,free:'t-gyoji.html',onOpen:async()=>{ ST=await decrypt(); home(); }}); }
+(async()=>{
+  if(!PAID){ home(); return; }
+  try{ ST=await decrypt(); home(); }catch(e){ lockScreen(e); }
+})();
+})();
+</script>
