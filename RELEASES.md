@@ -122,3 +122,4 @@
 | 就活・資格・ITパスポート「IT担当になりきろう」全8章（無料版は第1章） | 必要（GAMES に "k-itnari": "kitp" を追加・自動反映） | k-itnari のパックを入れる | ― |
 | 就活・資格・ビジネスマナー「就活生になりきろう（面接の日まで）」全8章（無料版は第1章） | 必要（GAMES に "k-shukatsu": "kbiz" を追加・自動反映） | k-shukatsu のパックを入れる | ― |
 | 「じゅくごクロス」4コース版（jukugocross・t-jukugocross・c-jukugocross・k-jukugocross、無料） | ― | ― | ― |
+| 社会「貨物船の船長になりきろう（貿易と交通）」全7章（無料版は出航準備） | 必要（GAMES に "senchou": "shakai" を追加・自動反映） | senchou のパックを入れる | ― |
