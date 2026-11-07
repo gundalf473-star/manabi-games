@@ -675,7 +675,7 @@ function renderSetup() {
   const nTheme = ok.filter(Boolean).length;
   const seats = S.seats.map((s, i) => `<div class="seat" style="--pc:${PCOL[i]}"><span class="dot" style="background:${PCOL[i]}"></span>
       <input type="text" maxlength="12" value="${esc(s.name)}" data-name="${i}" aria-label="${i + 1}${P('人目《にんめ》の名前《なまえ》')}">
-      <span class="ctl"><select data-kind="${i}" aria-label="${i + 1}${P('人目《にんめ》は人《ひと》かコンピューターか')}"><option value="human"${s.kind === 'human' ? ' selected' : ''}>${P('人《ひと》')}</option>
+      <span class="ctl"><select data-kind="${i}" aria-label="${i + 1}${P('人目《にんめ》は人《ひと》かコンピューターか')}"><option value="human"${s.kind === 'human' ? ' selected' : ''}>${KANA ? 'ひと' : '人'}</option>
         <option value="cpu:weak"${s.kind === 'cpu' && s.cpu === 'weak' ? ' selected' : ''}>コンピューター（よわい）</option>
         <option value="cpu:normal"${s.kind === 'cpu' && s.cpu === 'normal' ? ' selected' : ''}>コンピューター（ふつう）</option>
         <option value="cpu:strong"${s.kind === 'cpu' && s.cpu === 'strong' ? ' selected' : ''}>コンピューター（つよい）</option></select></span></div>`).join('');
