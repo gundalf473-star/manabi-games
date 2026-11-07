@@ -11,6 +11,26 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
+| （いまはなし） | ― | ― | ― |
+
+**販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
+
+worker.js は 2026-10-31 から GitHub Actions で自動で Cloudflare に入るので、「サーバー」の手作業はいらなくなった（Actions の「Deploy worker」が成功しているかだけ見る）。
+
+## リリースずみ
+
+| リリース日時 | サーバー（worker.js） | 問題データ | 管理画面 | メモ |
+|---|---|---|---|---|
+| 2026-11-07 12:11（日本時間） | 7156af2 の版（GitHub Actions の自動デプロイ Deploy worker #61 で反映） | senchou を入れた。12:15 に「すべて入っています」を確認（下の表の単元すべて） | 変更なし（パソコンの admin.html が、情報・就活・資格・低学年を選べる版かは手もとで確認） | 新作7本（遠足の計画を立てよう・寺子屋に入門しよう・英語ドラマ紙芝居 英検5級／2級・IT担当になりきろう・就活生になりきろう・貨物船の船長になりきろう）と、じゅくごクロス4コース版（無料）。7本とも公開前の確認ずみ。あわせて、これまで「まだリリースしていない変更」にあった分も、サーバーと問題データに入っていることを確認した |
+| 2026-10-29 05:56（日本時間） | fa04e4b の版（343行） | 全62本を入れ直し（「すべて入っています」を確認） | fa04e4b の版（つながらないときの理由を表示） | 独自ドメイン manabigamebako.com に切りかえ（SITE_URL も変更）。購入ページは準備中・サーバーでも決済を止めた。理科・社会の新単元、公民・都道府県の有料版、思考力2本、算数2本など 43件をまとめてリリース |
+| 2026-10-28 08:30（日本時間） | 349893f の版（274行） | kisoku・ronri・tenkai（確認後の版）。kamakura ほか全部入っていることを確認 | 349893f の版（思考力を選べる） | 思考力を別プランにした。鎌倉時代・思考力3本を追加 |
+
+### 2026-11-07 12:11 の時点で入っていることを確認した変更（ひとつずつの日時は記録なし）
+
+2026-10-29 のリリースのあとに追加した分です。12:15 の接続確認で、問題データがすべて入っていることを確かめました。
+
+| 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
+|---|---|---|---|
 | 販促チラシ：チラシ印刷（server/flyer.html）・二次元コードから利用コードが入る（plan.html）・管理画面で利用コードをまとめて作ってCSVで保存 | ― | ― | 必要（admin.html と flyer.html をパソコンに置く） |
 | 算数の新単元「計算と逆算」「数の性質」（確認後の版・各100問） | 必要（GAMES に gyakusan・seishitsu を追加） | gyakusan・seishitsu を入れる | ― |
 | 間をあけた解き直し（まちがえた問題を1・3・7・14日後にもう一度。有料版のすべての問題ゲーム）・毎日の計算ドリル（drill.html、無料） | ― | ― | ― |
@@ -43,15 +63,6 @@
 | 中高一貫コースに教科「情報」を追加：情報社会と情報モラル・情報のデジタル化・コンピュータのしくみ・ネットワークとセキュリティ・プログラミング① 変数・条件・くり返し・プログラミング② 関数・探索・整列・データの活用・モデル化とシミュレーション（各100問・無料版5問）。料金プランに「中高一貫 情報」（cjoho）を追加、中高一貫 全教科の対象に情報を追加 | 必要（SUBJECTS・CHUKO_SUBJ・PRICES に cjoho、GAMES に c-joho1・c-joho2・c-joho3・c-joho4・c-joho5・c-joho6・c-joho7・c-joho8 を "cjoho" で追加） | 8単元のパックを入れる | 必要（教科の選択肢に「中高一貫 情報」） |
 | 新コース「就活・資格コース」（games/career/・career/index.html）：SPI非言語5・SPI言語3・ITパスポート4・基本情報技術者3・統計学3・簿記3級3・TOEIC英語3（各100問・無料版5問）。料金プラン kspin・kspig・kitp・kfe・kstat・kboki・ktoeic（1教科）と career（全教科）、中高一貫のコードで継続割引 | 必要（SUBJECTS・CAREER_SUBJ・PRICES・covers・継続割引、GAMES に24単元） | 24単元のパックを入れる | 必要（教科の選択肢に就活・資格コース） |
 | 新コース「低学年コース」（games/teigaku/・teigaku/index.html）：算数8・国語7・思考力6・ちしき3（各100問・無料版5問・1回5問・ふりがな・読み上げ・スタンプ）。料金プラン tsansu・tkokugo・tshikou・tchishiki（1教科）と teigaku（全教科）、低学年のコードで中学受験コースに継続割引 | 必要（SUBJECTS・TEIGAKU_SUBJ・PRICES・covers・PREV_COURSE、GAMES に24単元） | 24単元のパックを入れる | 必要（教科の選択肢に低学年コース） |
-
-**販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
-
-## リリースずみ
-
-| リリース日時 | サーバー（worker.js） | 問題データ | 管理画面 | メモ |
-|---|---|---|---|---|
-| 2026-10-29 05:56（日本時間） | fa04e4b の版（343行） | 全62本を入れ直し（「すべて入っています」を確認） | fa04e4b の版（つながらないときの理由を表示） | 独自ドメイン manabigamebako.com に切りかえ（SITE_URL も変更）。購入ページは準備中・サーバーでも決済を止めた。理科・社会の新単元、公民・都道府県の有料版、思考力2本、算数2本など 43件をまとめてリリース |
-| 2026-10-28 08:30（日本時間） | 349893f の版（274行） | kisoku・ronri・tenkai（確認後の版）。kamakura ほか全部入っていることを確認 | 349893f の版（思考力を選べる） | 思考力を別プランにした。鎌倉時代・思考力3本を追加 |
 | 思考力・入り口ゲーム第1弾 20本：ひらがなクロスワード・漢字たし算・熟語の十字・しりとり迷路・ことばさがし・ならべかえことば・さかさことば・なぞなぞ・点つなぎ絵・くるくる歯車もよう・星の形づくり・九九のもよう・タングラム・目標の数をつくれ・数の迷路・数あてゲーム・○×ならべ・点と線の陣取り・ハノイの塔・ライトをすべて消せ（無料版5問・有料版100問） | 必要（GAMES に crossword・kanjitashi・jukujuji・shiritori・kotobasagashi・anagram・sakasakotoba・nazonazo・tentsunagi・haguruma・hoshigata・kukumoyou・tangram・tsukure・kazumeiro・kazuate・marubatsu・jintori・hanoi・lightsout を "shikou" で追加） | 20本のパックを入れる | ― |
 | 思考力・入り口ゲーム第2弾 20本：漢字クロスワード・部首パズル・熟語しりとり・ことばのはしご・スケルトン・暗号解読・ペントミノのはこづめ・対称もようを完成させよう・色ぬりパズル・サイコロころがし・カメの線・小町算・たし算クロス・計算ブロック・不等号パズル・橋かけパズル・正直村とうそつき村・犯人さがし・石とび・リバーシ（無料版5問・有料版100問） | 必要（GAMES に kanjicross・bushu・jukushiri・hashigo・skeleton・angou・pentomino・taishomoyo・ironuri・korogashi・kame・komachi・tashicross・keisanblock・futougou・hashikake・shojiki・hannin・ishitobi・reversi を "shikou" で追加） | 20本のパックを入れる | ― |
 | 思考力・入り口ゲーム第3弾 20本：句読点パズル・同じ読み方の漢字・ダジャレ見つけ・音とようすのことば・体のことばの慣用句・万華鏡もよう・形は何種類？・かげ絵あて・同じ形に分けよう・鏡の時計・三角陣・星陣・島づくりパズル・カレンダーのひみつ・お金パズル・時計算・リーグ戦の表・ぼうしの色パズル・席決めパズル・じゃんけん推理・一方通行の町（無料版5問・有料版100問） | 必要（GAMES に kutouten・douon・dajare・onomatope・kanyoue・kaleido・katachikazu・kagee・wakeru・kagamidokei・sankakujin・shima・calendar・okane・tokeizan・league・boushi・sekigime・janken・ippou を "shikou" で追加） | 20本のパックを入れる | ― |
