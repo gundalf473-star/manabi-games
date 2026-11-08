@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:["レベル1 情報デザインの考え方","抽象化・可視化・構造化・情報の整理"],L2:["レベル2 色と配色","色の三属性・RGB・CMY・カラーUD"],L3:["レベル3 文字とレイアウト","書体・可読性・近接・整列・反復・対比"],L4:["レベル4 グラフと図解","グラフの選び方・ピクトグラム・図の種類"],L5:["レベル5 使いやすさと問題解決","ユーザビリティ・アクセシビリティ・UD"]};
+const CATS={L1:["レベル1 情報デザインの考え方","抽象化・可視化・構造化・情報の整理"],L2:["レベル2 色と配色","色の三属性・RGB・CMY・カラーUD"],L3:["レベル3 文字とレイアウト","書体・可読性・近接・整列・反復・対比"],L4:["レベル4 グラフと図解","グラフの選び方・ピクトグラム・図の種類"],L5:["レベル5 使いやすさと問題解決","ユーザビリティ・アクセシビリティ・UD・問題解決"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -140,7 +140,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="c-joho9-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>情報デザイン 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。情報デザインの考え方、色と配色、文字とレイアウト、グラフと図解、使いやすさと問題解決の5段階、各20問。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>情報デザインの3つの手法</dt><dd>抽象化（細部を省いて要点を残す）、可視化（図やグラフで見えるようにする）、構造化（順序や階層を整理する）。情報の整理の基準には、位置・分類・時間・名前の順・連続量がある。</dd><dt>色</dt><dd>色の三属性は色相・明度・彩度。光の三原色（RGB）は重ねると明るくなり白に（加法混色）、色料の三原色（CMY）は重ねると暗くなる（減法混色、印刷はCMYK）。文字と背景は明度差（コントラスト）を大きく。色だけに頼らず形や文字でも区別する（カラーユニバーサルデザイン）。</dd><dt>文字とレイアウト</dt><dd>明朝体は長文向き、ゴシック体は見出し・標識向き。視認性・可読性・判読性。デザインの4原則：近接・整列・反復・対比。余白とグリッドで整える。</dd><dt>グラフと図解</dt><dd>変化は折れ線、割合は円・帯、大小は棒、2つの量の関係は散布図、バランスはレーダーチャート。ピクトグラム（JIS Z 8210）、インフォグラフィック、フローチャート、ベン図、ツリー図、ガントチャート。</dd><dt>使いやすさ</dt><dd>ユーザビリティ（使いやすさ）、アクセシビリティ（だれもが利用できるか）、ユニバーサルデザイン（はじめから多くの人に）とバリアフリー（障壁を取り除く）、シグニファイア、フェイルセーフ、フールプルーフ、UIとUX。問題解決はPDCAサイクルで改善をくり返す。</dd></dl>`;
+const TIMELINE=`<dl class="matome"><dt>情報デザインの3つの手法</dt><dd>抽象化（細部を省いて要点を残す）、可視化（図やグラフで見えるようにする）、構造化（順序や階層を整理する）。情報の整理の基準には、位置・五十音（アルファベット）・時間・分類（カテゴリー）・階層（連続量）の5つがある。</dd><dt>色</dt><dd>色の三属性は色相・明度・彩度。光の三原色（RGB）は重ねると明るくなり白に（加法混色）、色料の三原色（CMY）は重ねると暗くなる（減法混色、印刷はCMYK）。文字と背景は明度差（コントラスト）を大きく。色だけに頼らず形や文字でも区別する（カラーユニバーサルデザイン）。</dd><dt>文字とレイアウト</dt><dd>明朝体は長文向き、ゴシック体は見出し・標識向き。視認性・可読性・判読性。デザインの4原則：近接・整列・反復・対比。余白とグリッドで整える。</dd><dt>グラフと図解</dt><dd>変化は折れ線、割合は円・帯、大小は棒、2つの量の関係は散布図、バランスはレーダーチャート。ピクトグラム（JIS Z 8210）、インフォグラフィック、フローチャート、ベン図、ツリー図、ガントチャート。</dd><dt>使いやすさ</dt><dd>ユーザビリティ（使いやすさ）、アクセシビリティ（だれもが利用できるか）、ユニバーサルデザイン（はじめから多くの人に）とバリアフリー（障壁を取り除く）、シグニファイア、フェイルセーフ、フールプルーフ、UIとUX。</dd><dt>問題解決</dt><dd>問題の発見・明確化→情報の収集・分析→解決策の立案→実行→評価・改善の流れで進める。計画・実行・評価・改善をくり返すPDCAサイクルで、よりよいものにしていく。</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-joho9'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'c-joho9',err:err,free:'c-joho9.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
@@ -260,7 +260,7 @@ function result(){
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
     <p style="margin:0">${r===1?'全問正解！情報デザインはばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解説を読み直して、もう一度ちょうせんしよう。'}</p>
-    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    <div class="row"><button class="btn go" id="again">${PAID?'レベルをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
   document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
