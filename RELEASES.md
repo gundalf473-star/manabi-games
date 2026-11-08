@@ -16,6 +16,9 @@
 | 算数「速さと比」全100問（無料版5問） | 必要（GAMES に "hayasahi": "sansu" を追加・自動反映） | hayasahi のパックを入れる | ― |
 | 国語「物語文の読解」全100問（オリジナルの物語20話、無料版は1話5問） | 必要（GAMES に "monogatari": "kokugo" を追加・自動反映） | monogatari のパックを入れる | ― |
 | 国語「記述の書き方」全50問（無料版5問） | 必要（GAMES に "kijutsu": "kokugo" を追加・自動反映） | kijutsu のパックを入れる | ― |
+| 社会「歴史の並べかえ」全100問（無料版5問） | 必要（GAMES に "narabe": "shakai" を追加・自動反映） | narabe のパックを入れる | ― |
+| 社会「文化史まとめ」全101問（無料版5問） | 必要（GAMES に "bunkashi": "shakai" を追加・自動反映） | bunkashi のパックを入れる | ― |
+| 社会「人口と環境問題」全56問（無料版5問） | 必要（GAMES に "jinko": "shakai" を追加・自動反映） | jinko のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
