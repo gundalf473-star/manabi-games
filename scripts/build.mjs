@@ -325,6 +325,8 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
   fs.writeFileSync(path.join(OUT, "mix.html"), sitePage(mix, "mix.html"));
   const ichibun = fs.readFileSync(path.join(ROOT, "ichibun.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
   fs.writeFileSync(path.join(OUT, "ichibun.html"), sitePage(ichibun, "ichibun.html"));
+  const kanji = fs.readFileSync(path.join(ROOT, "kanji.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY);
+  fs.writeFileSync(path.join(OUT, "kanji.html"), sitePage(kanji, "kanji.html"));
   console.log(`今日の1問：${pool.length}問`);
 }
 if (SITE_URL) {
