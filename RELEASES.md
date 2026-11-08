@@ -11,7 +11,7 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
-| （いまはなし） | ― | ― | ― |
+| 中高一貫の新単元8本：空間図形（c-kukan）・データの活用（c-data1）・数学A 図形の性質（c-zusei）・数学A 整数の性質（c-seisu）・数学Ⅲ 極限と微分法（c-su3a）・数学Ⅲ 積分法（c-su3b）・故事成語（c-koji）・元素記号と周期表（c-genso）。8本とも公開前の確認ずみ | 必要（GAMES に8本を追加。main に入ると自動デプロイ） | packs-chuko-8.zip の8本をアップロード | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
