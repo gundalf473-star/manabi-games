@@ -11,7 +11,7 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
-| （いまはなし） | ― | ― | ― |
+| 中高一貫 国語2本：小説の読解（c-shosetsu）・古文の読解（c-kobun3）。2本とも公開前の確認ずみ | 必要（GAMES に2本を追加。main に入ると自動デプロイ） | packs-kokugo-dokkai.zip の2本をアップロード | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
