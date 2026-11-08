@@ -38,7 +38,7 @@ button{font:inherit;color:inherit}
 .prog i{display:block;height:100%;background:var(--seal)}
 .nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
 .tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
-.passage{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--seal);border-radius:8px;padding:12px 14px;margin:0;max-height:46vh;overflow:auto;font-size:15px;line-height:1.95;white-space:pre-line}
+.passage{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--seal);border-radius:8px;padding:12px 14px;margin:0;max-height:none;overflow:visible;font-size:15px;line-height:1.95;white-space:pre-line}
 .passage .pt{display:block;font-weight:700;color:var(--seal);margin-bottom:4px;font-size:14px}
 .q{margin:0;white-space:pre-line;font-size:18px;font-weight:700;line-height:1.7}
 .q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
@@ -142,7 +142,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="c-shosetsu-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>小説の読解 100問</b>（有料版）</span><span class="pd">無料版の1話もふくむ全20話・100問。場面と心情、行動の理由、心情の変化、表現の工夫、人物像と主題の5段階。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>心情は「様子」に出る</dt><dd>「指先がしめる」「目をそらす」など、体の様子や行動、短い言葉から気持ちを読む。</dd><dt>理由は前後にある</dt><dd>人物の行動の理由は、その前の出来事や会話、あとの行動から考える。</dd><dt>心情の変化</dt><dd>はじめと終わりの場面を比べ、「何がきっかけで」「どう変わったか」をとらえる。</dd><dt>情景描写</dt><dd>天気や景色の描写は、人物の気持ちと重ねて書かれることが多い（雨→晴れ＝気持ちが晴れる）。</dd><dt>表現技法</dt><dd>直喩（〜のような）、隠喩（たとえを示す言葉を使わない）、擬人法（人でないものを人のように）、象徴（物に意味を重ねる）。</dd><dt>主題</dt><dd>題名、くり返し出てくる物、結末の変化に注目して、作品が伝えたいことを考える。</dd></dl>`;
+const TIMELINE=`<dl class="matome"><dt>心情は「様子」に出る</dt><dd>「指先がしめっている」「目をそらす」など、体の様子や行動、短い言葉から気持ちを読む。</dd><dt>理由は前後にある</dt><dd>人物の行動の理由は、その前の出来事や会話、あとの行動から考える。</dd><dt>心情の変化</dt><dd>はじめと終わりの場面を比べ、「何がきっかけで」「どう変わったか」をとらえる。</dd><dt>情景描写</dt><dd>天気や景色の描写は、人物の気持ちと重ねて書かれることが多い（雨→晴れ＝気持ちが晴れる）。</dd><dt>表現技法</dt><dd>直喩（〜のような）、隠喩（たとえを示す言葉を使わない）、擬人法（人でないものを人のように）、象徴（物に意味を重ねる）、誇張（大げさに言う）、対比（二つを比べて目立たせる）、倒置法（語順を入れかえる）、体言止め（名詞で終える）。</dd><dt>主題</dt><dd>題名、くり返し出てくる物、結末の変化に注目して、作品が伝えたいことを考える。</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-shosetsu'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'c-shosetsu',err:err,free:'c-shosetsu.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
@@ -164,7 +164,7 @@ function homePaid(){
     <div class="label">レベルをえらぶ（1回10問）</div>
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
-      <button class="cat" data-l="all"><span class="nm">小説まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="all"><span class="nm">小説まるごと</span><span class="ds">全20話からランダムに2話（10問）</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
       ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
@@ -265,7 +265,7 @@ function result(){
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
     <p style="margin:0">${r===1?'全問正解！文章をしっかり読めています。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題は、本文のどこに理由が書いてあるか、もう一度さがしてみよう。'}</p>
-    <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
+    <div class="row"><button class="btn go" id="again">${PAID?'レベルをえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
   document.getElementById('again').onclick=()=>PAID?home():(course='free',start(shuffle(QS)));
