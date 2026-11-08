@@ -14,6 +14,8 @@
 | 社会「時事問題クイズ 2027年入試」全63問（無料版5問。2025年秋〜2026年秋のできごと） | 必要（GAMES に "jiji2027": "shakai" を追加・自動反映） | jiji2027 のパックを入れる | ― |
 | 算数「立体の切断」全100問（無料版5問・図つき） | 必要（GAMES に "setsudan": "sansu" を追加・自動反映） | setsudan のパックを入れる | ― |
 | 算数「速さと比」全100問（無料版5問） | 必要（GAMES に "hayasahi": "sansu" を追加・自動反映） | hayasahi のパックを入れる | ― |
+| 国語「物語文の読解」全100問（オリジナルの物語20話、無料版は1話5問） | 必要（GAMES に "monogatari": "kokugo" を追加・自動反映） | monogatari のパックを入れる | ― |
+| 国語「記述の書き方」全50問（無料版5問） | 必要（GAMES に "kijutsu": "kokugo" を追加・自動反映） | kijutsu のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
