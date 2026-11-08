@@ -11,7 +11,7 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
-| （いまはなし） | ― | ― | ― |
+| 中高一貫 社会「ローマ帝国を治めよう②」（c-rome2、4シナリオ）。公開前の確認と、事実の検索確認ずみ | c-rome2 を追加（GitHub Actions で自動デプロイ） | packs-rome2.zip（c-rome2）を入れる | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
