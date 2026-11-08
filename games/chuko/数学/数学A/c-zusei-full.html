@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:["レベル1 三角形の五心","重心・外心・内心・垂心"],L2:["レベル2 三角形と比","角の二等分線・チェバ・メネラウス"],L3:["レベル3 円の性質","円周角・内接四角形・接弦定理"],L4:["レベル4 方べきの定理と接線","弦・割線・接線の長さ"],L5:["レベル5 2円と空間図形","位置関係・共通接線・多面体"]};
+const CATS={L1:["レベル1 三角形の五心","重心・外心・内心・垂心"],L2:["レベル2 三角形と比","角の二等分線・チェバ・メネラウス"],L3:["レベル3 円の性質","円周角・内接四角形・接弦定理"],L4:["レベル4 方べきの定理と接線","弦・割線・接線の長さ"],L5:["レベル5 2円と空間図形","位置関係・共通接線・正三角形・多面体"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -140,7 +140,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="c-zusei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>数学A 図形の性質 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。三角形の五心、三角形と比、円の性質、方べきの定理、2円と空間図形までの5段階、各20問。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>三角形の五心</dt><dd>重心（中線の交点。中線を2：1に分ける）、外心（垂直二等分線の交点。外接円の中心）、内心（角の二等分線の交点。内接円の中心。∠BIC＝90°＋∠A/2）、垂心（垂線の交点。鋭角三角形で∠BHC＝180°−∠A）。このほか、1つの内角と2つの外角の二等分線の交点を傍心といい、合わせて五心という。</dd><dt>角の二等分線と比</dt><dd>∠Aの二等分線がBCと交わる点をDとすると BD：DC＝AB：AC。</dd><dt>チェバ・メネラウス</dt><dd>どちらも (AR/RB)×(BP/PC)×(CQ/QA)＝1。チェバは3直線が1点で交わるとき、メネラウスは1直線が3辺（またはその延長）と交わるとき。</dd><dt>円の性質</dt><dd>円周角＝中心角の半分。内接四角形の対角の和は180°。接線と弦のつくる角＝その内部の弧に対する円周角（接弦定理）。</dd><dt>方べきの定理</dt><dd>PA×PB＝PC×PD。接線なら PT²＝PA×PB。</dd><dt>2円の位置関係</dt><dd>中心間の距離d、半径r＞r′で、d＞r＋r′ 離れる、d＝r＋r′ 外接、r−r′＜d＜r＋r′ 2点で交わる、d＝r−r′ 内接、d＜r−r′ 内部。</dd><dt>オイラーの多面体定理</dt><dd>（頂点）−（辺）＋（面）＝2。</dd></dl>`;
+const TIMELINE=`<dl class="matome"><dt>三角形の五心</dt><dd>重心（中線の交点。中線を2：1に分ける）、外心（垂直二等分線の交点。外接円の中心）、内心（角の二等分線の交点。内接円の中心。∠BIC＝90°＋∠A/2）、垂心（垂線の交点。鋭角三角形で∠BHC＝180°−∠A）。このほか、1つの内角と2つの外角の二等分線の交点を傍心といい、合わせて五心という。</dd><dt>角の二等分線と比</dt><dd>∠Aの二等分線がBCと交わる点をDとすると BD：DC＝AB：AC。</dd><dt>チェバ・メネラウス</dt><dd>どちらも (AR/RB)×(BP/PC)×(CQ/QA)＝1。チェバは3直線が1点で交わるとき、メネラウスは1直線が3辺（またはその延長）と交わるとき。</dd><dt>円の性質</dt><dd>円周角＝中心角の半分。内接四角形の対角の和は180°。接線と弦のつくる角＝その内部の弧に対する円周角（接弦定理）。</dd><dt>方べきの定理</dt><dd>PA×PB＝PC×PD。接線なら PT²＝PA×PB。</dd><dt>三角形の成立条件</dt><dd>いちばん長い辺＜他の2辺の和。</dd><dt>2円の位置関係</dt><dd>中心間の距離d、半径r＞r′で、d＞r＋r′ 離れる、d＝r＋r′ 外接、r−r′＜d＜r＋r′ 2点で交わる、d＝r−r′ 内接、d＜r−r′ 内部。</dd><dt>オイラーの多面体定理</dt><dd>（頂点）−（辺）＋（面）＝2。</dd><dt>共通接線の長さ</dt><dd>中心間の距離d、半径r、r′で、共通外接線の接点間は√(d²−(r−r′)²)、共通内接線は√(d²−(r＋r′)²)。</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-zusei'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'c-zusei',err:err,free:'c-zusei.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }

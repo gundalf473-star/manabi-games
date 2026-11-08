@@ -4,7 +4,7 @@
 <meta name="game:unit" content="数学Ⅲ 極限と微分法">
 <meta name="game:grade" content="高3">
 <meta name="game:players" content="1人">
-<meta name="description" content="数学Ⅲ 極限と微分法の有料版。数列の極限と rⁿ の極限、無限等比級数と循環小数、sin x/x や e を使う関数の極限、三角・指数・対数関数と積・商・合成関数の微分、接線・極値・最小値・変曲点まで、5段階×20問の全100問。">
+<meta name="description" content="数学Ⅲ 極限と微分法の有料版。数列の極限と rⁿ の極限、無限等比級数と循環小数、sin x/x や e を使う関数の極限、三角・指数・対数関数と積・商・合成関数の微分、接線・極値・最大値と最小値・変曲点まで、5段階×20問の全100問。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:["レベル1 数列の極限","分数式・無理式・rⁿ"],L2:["レベル2 無限級数","無限等比級数・循環小数"],L3:["レベル3 関数の極限","sin x/x・e・x→∞"],L4:["レベル4 微分の計算","積・商・合成関数"],L5:["レベル5 微分の応用","接線・極値・変曲点"]};
+const CATS={L1:["レベル1 数列の極限","分数式・無理式・rⁿ"],L2:["レベル2 無限級数","無限等比級数・循環小数"],L3:["レベル3 関数の極限","sin x/x・e・x→∞"],L4:["レベル4 微分の計算","積・商・合成関数"],L5:["レベル5 微分の応用","接線・極値・最大値・変曲点"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -140,7 +140,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="c-su3a-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>数学Ⅲ 極限と微分法 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。数列の極限、無限級数、関数の極限、微分の計算、微分の応用までの5段階、各20問。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>数列の極限</dt><dd>分数式は最高次でわる。√ の差は有理化。rⁿ は |r|＜1 で0、r＝1 で1、r＞1 で∞、r≦−1 で振動。</dd><dt>無限等比級数</dt><dd>初項a（a≠0）、公比r の和は |r|＜1 のとき a/(1−r)。|r|≧1 なら発散。</dd><dt>関数の極限</dt><dd>lim[x→0] sin x/x＝1。lim[h→0](1＋h)^(1/h)＝e。lim[h→0](eʰ−1)/h＝1。lim[h→0] log(1＋h)/h＝1。</dd><dt>微分の公式</dt><dd>(sin x)′＝cos x、(cos x)′＝−sin x、(tan x)′＝1/cos²x、(eˣ)′＝eˣ、(log x)′＝1/x、(log|x|)′＝1/x、(aˣ)′＝aˣ log a。積 (fg)′＝f′g＋fg′、商 (f/g)′＝(f′g−fg′)/g²、合成関数 {f(g(x))}′＝f′(g(x))g′(x)。</dd><dt>微分の応用</dt><dd>接線 y−f(a)＝f′(a)(x−a)。f′の符号が変わる点で極値、f″の符号が変わる点が変曲点。</dd></dl>`;
+const TIMELINE=`<dl class="matome"><dt>数列の極限</dt><dd>分数式は最高次でわる。√ の差は有理化。rⁿ は |r|＜1 で0、r＝1 で1、r＞1 で∞、r≦−1 で振動。</dd><dt>無限等比級数</dt><dd>初項a（a≠0）、公比r の和は |r|＜1 のとき a/(1−r)。|r|≧1 なら発散。</dd><dt>関数の極限</dt><dd>lim[x→0] sin x/x＝1、lim[x→0] tan x/x＝1。lim[h→0](1＋h)^(1/h)＝e。lim[h→0](eʰ−1)/h＝1。lim[h→0] log(1＋h)/h＝1。</dd><dt>微分の公式</dt><dd>(sin x)′＝cos x、(cos x)′＝−sin x、(tan x)′＝1/cos²x、(eˣ)′＝eˣ、(log x)′＝1/x、(log|x|)′＝1/x、(aˣ)′＝aˣ log a。積 (fg)′＝f′g＋fg′、商 (f/g)′＝(f′g−fg′)/g²、合成関数 {f(g(x))}′＝f′(g(x))g′(x)。</dd><dt>微分の応用</dt><dd>接線 y−f(a)＝f′(a)(x−a)。f′の符号が変わる点で極値、f″の符号が変わる点が変曲点。</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-su3a'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'c-su3a',err:err,free:'c-su3a.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }

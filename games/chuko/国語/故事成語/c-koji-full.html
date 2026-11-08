@@ -140,7 +140,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="c-koji-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>故事成語 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。意味、漢字、もとになった話、使い方、出典と人物の5段階、各20問。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>故事成語とは</dt><dd>中国の古い書物にある話（故事）から生まれた言葉。短い言葉に、もとの話の教訓がこめられている。</dd><dt>主な出典</dt><dd>論語（孔子の言葉）・孟子・荀子・韓非子・荘子・列子・孫子などの思想書、史記・戦国策・十八史略・三国志などの歴史書。</dd><dt>人物とむすびつけて覚える</dt><dd>項羽（四面楚歌）、韓信（背水の陣）、藺相如（完璧・刎頸の交わり）、劉備と諸葛亮（三顧の礼・水魚の交わり・泣いて馬謖を斬る）、呉王夫差と越王勾践（臥薪嘗胆）。</dd><dt>使い方の注意</dt><dd>「他山の石」は他人のよくない言動を自分に役立てること（りっぱな行いには使わない）。「杞憂」は無用の心配。「助長」は本来、よけいな手助けで害を与えること。</dd></dl>`;
+const TIMELINE=`<dl class="matome"><dt>故事成語とは</dt><dd>中国の古い書物にある話（故事）から生まれた言葉。短い言葉に、もとの話の教訓がこめられている。</dd><dt>主な出典</dt><dd>論語（孔子の言葉）・孟子・荀子・韓非子・荘子・列子・孫子などの思想書、史記・戦国策・十八史略・三国志などの歴史書。</dd><dt>人物とむすびつけて覚える</dt><dd>項羽（四面楚歌）、韓信（背水の陣）、藺相如（完璧・刎頸の交わり）、劉備と諸葛亮（三顧の礼・水魚の交わり）、諸葛亮（泣いて馬謖を斬る）、呉王夫差と越王勾践（臥薪嘗胆）。</dd><dt>使い方の注意</dt><dd>「他山の石」は他人のよくない言動を自分に役立てること（りっぱな行いには使わない）。「杞憂」は無用の心配。「助長」は本来、よけいな手助けで害を与えること。</dd></dl>`;
 
 async function decrypt(){ return mnAccess.load('c-koji'); }
 function lockScreen(err){ mnAccess.lock(app,{game:'c-koji',err:err,free:'c-koji.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
