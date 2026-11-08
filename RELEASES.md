@@ -11,7 +11,7 @@
 
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
-| （いまはなし） | ― | ― | ― |
+| 中高一貫 日本史探究5本：原始・古代（c-jshi1）・中世（c-jshi2）・近世（c-jshi3）・近代（c-jshi4）・現代（c-jshi5）。5本とも公開前の確認と、全問の事実の検索確認ずみ | 必要（GAMES に5本を追加。main に入ると自動デプロイ） | packs-nihonshi-5.zip の5本をアップロード | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
