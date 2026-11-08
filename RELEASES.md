@@ -12,6 +12,8 @@
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
 | 社会「時事問題クイズ 2027年入試」全63問（無料版5問。2025年秋〜2026年秋のできごと） | 必要（GAMES に "jiji2027": "shakai" を追加・自動反映） | jiji2027 のパックを入れる | ― |
+| 算数「立体の切断」全100問（無料版5問・図つき） | 必要（GAMES に "setsudan": "sansu" を追加・自動反映） | setsudan のパックを入れる | ― |
+| 算数「速さと比」全100問（無料版5問） | 必要（GAMES に "hayasahi": "sansu" を追加・自動反映） | hayasahi のパックを入れる | ― |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
