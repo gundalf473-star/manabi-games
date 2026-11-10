@@ -207,7 +207,10 @@ function counts(){
 let N=rd('mn-toki-n',20); if(![10,20,30].includes(N))N=20;
 let OFF=new Set(rd('mn-toki-off',[])||[]);
 function failNote(F){if(!F||!F.length)return '';
-  return `<div style="border-left:4px solid var(--ng);padding:2px 0 2px 12px"><p style="margin:0;font-weight:700">読みこめなかった単元があります</p><ul style="margin:4px 0;padding-left:20px;font-size:14px">${F.map(x=>`<li>${esc(x.u.t.replace(/\s*\d+問$/,''))}：${esc(x.m)}</li>`).join('')}</ul><div class="row"><a class="btn sub" href="plan.html">利用中のプラン</a><a class="btn sub" href="buy.html">料金プランを見る</a></div></div>`;}
+  /* 同じ理由はまとめて1行に。プランや期限が理由のときだけ、プランのボタンを出す */
+  const by={};F.forEach(x=>{(by[x.m]=by[x.m]||[]).push(tn(x.u));});
+  const plan=F.some(x=>x.k==='none'||x.k==='expired'||x.k==='subject');
+  return `<div style="border-left:4px solid var(--ng);padding:2px 0 2px 12px"><p style="margin:0;font-weight:700">読みこめなかった単元があります</p><ul style="margin:4px 0;padding-left:20px;font-size:14px">${Object.entries(by).map(([m,ts])=>`<li>${esc(ts.join('・'))}：${esc(m)}</li>`).join('')}</ul>${plan?'<div class="row"><a class="btn sub" href="plan.html">利用中のプラン</a><a class="btn sub" href="buy.html">料金プランを見る</a></div>':''}</div>`;}
 function home(msg){
   const C=counts(), has=C.filter(u=>u.n>0), all=has.reduce((s,u)=>s+u.n,0), dueAll=has.reduce((s,u)=>s+u.due.length,0);
   if(!has.length){app.innerHTML=`<section class="box">${msg?`<p style="margin:0;color:var(--ng);font-weight:700">${esc(msg)}</p>`:''}<p style="margin:0;font-weight:700">いま、解き直す問題はありません。</p>
@@ -233,7 +236,7 @@ async function begin(units){
   app.innerHTML='<section class="box"><p class="note">問題を読みこんでいます…</p></section>';
   const pools=[], skipped=[], failed=[];
   const why=e=>{const k=e&&e.error;const m=(window.mnAccess&&mnAccess.ERR)||{};
-    if(k==='none')return '有料版のプランが見つかりません';if(k==='subject')return 'いまのプランでは使えない教科です';return m[k]||'うまく読みこめませんでした';};
+    if(k==='none'){let live=false;try{live=mnAccess.list().some(x=>x.exp>Date.now());}catch(x){}return live?'いまのプランでは使えない教科です':'有料版のプランが見つかりません';}if(k==='subject')return 'いまのプランでは使えない教科です';return m[k]||'うまく読みこめませんでした';};
   const order=units.sort((a,b)=>b.due.length-a.due.length||b.n-a.n);
   /* 4単元ずつまとめて読みこむ */
   for(let i=0;i<order.length;i+=4){
