@@ -41,7 +41,11 @@ button:disabled{opacity:.4;cursor:default}
     <input id="files" type="file" accept=".json,.zip,application/zip,application/json" multiple>
     <label style="display:flex;gap:6px;align-items:center;font-size:14px"><input type="checkbox" id="again" style="width:auto"> 同じものも入れ直す</label>
     <div id="pkres" class="pkres"></div>
-    <div class="row" style="flex-wrap:wrap"><button id="chk" type="button" style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">しらべる</button><button id="up" type="button" disabled style="flex:0 0 auto">入れる</button></div><pre id="o2"></pre></section>
+    <div class="row" style="flex-wrap:wrap"><button id="chk" type="button" style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">しらべる</button><button id="up" type="button" disabled style="flex:0 0 auto">入れる</button></div><pre id="o2"></pre>
+    <h2 style="font-size:15px;margin-top:8px">サーバーに入っているパックのハッシュ値</h2>
+    <p class="note">いまサーバーに入っているパックの SHA-256 ハッシュ値を出します。リポジトリの PACKS.md の「json の SHA-256」と同じなら、最新のパックが入っています（入れた日時も出ます）。この画面で入れる前に入れたパックは、記録がないので、ボタンを押したときに計算します（本数が多いと少し時間がかかります）。</p>
+    <div class="row" style="flex-wrap:wrap"><input id="hq" placeholder="ゲーム名でしぼる（例：sansu、c-、kisoku）" style="flex:1 1 200px"><button id="hashes" type="button" style="flex:0 0 auto">ハッシュ値を出す</button><button id="hcsv" type="button" disabled style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">CSVで保存</button></div>
+    <div id="hres" style="overflow-x:auto"></div><pre id="o2h"></pre></section>
 
   <section class="box"><h2>3. 利用コードを作る（テスト・プレゼント・おわび用）</h2>
     <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option><option value="shikou">思考力</option><option value="chuko">中高一貫 全教科</option><option value="ckokugo">中高一貫 国語</option><option value="csugaku">中高一貫 数学</option><option value="ceigo">中高一貫 英語</option><option value="crika">中高一貫 理科</option><option value="cshakai">中高一貫 社会</option><option value="cjoho">中高一貫 情報</option><option value="career">就活・資格 全教科</option><option value="kspin">就活・資格 SPI非言語</option><option value="kspig">就活・資格 SPI言語</option><option value="kitp">就活・資格 ITパスポート</option><option value="kfe">就活・資格 基本情報技術者</option><option value="kstat">就活・資格 統計学</option><option value="kboki">就活・資格 簿記3級</option><option value="ktoeic">就活・資格 TOEIC英語</option><option value="kbiz">就活・資格 ビジネスマナー</option><option value="teigaku">低学年 全教科</option><option value="tsansu">低学年 算数</option><option value="tkokugo">低学年 国語</option><option value="tshikou">低学年 思考力</option><option value="tchishiki">低学年 ちしき</option></select></div>
@@ -92,6 +96,27 @@ $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$
 const PK={items:[],known:null};
 const fnv=t=>{let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(16)+'-'+t.length;};
 const sums=()=>{try{return JSON.parse(ls('adm-sums')||'{}')||{};}catch(e){return {};}};
+/* SHA-256（PACKS.md・サーバーと同じ計算）と、サーバーのハッシュ値の一覧（記録のないものは 20 本ずつ計算してもらう） */
+const sha256=async t=>{if(!(window.crypto&&crypto.subtle))return '';return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('');};
+async function serverHashes(only,prog){
+  let H=(await call('/api/admin/pack-hashes')).hashes;
+  const need=Object.keys(H).filter(g=>!H[g].sha&&(!only||only.includes(g)));
+  for(let i=0;i<need.length;i+=20){const part=need.slice(i,i+20);prog&&prog(i,need.length);
+    const d=(await call('/api/admin/pack-hashes?fill='+encodeURIComponent(part.join(',')))).hashes;part.forEach(g=>{if(d[g])H[g]=d[g];});}
+  return H;
+}
+let HROWS=[];
+$('hashes').onclick=async()=>{ $('hashes').disabled=true; $('hres').innerHTML=''; show('o2h','しらべています…');
+  try{ const q=$('hq').value.trim(); let H=await call('/api/admin/pack-hashes').then(d=>d.hashes);
+    const gs=Object.keys(H).filter(g=>!q||g.includes(q)).sort();
+    H=await serverHashes(gs,(i,n)=>show('o2h',`記録のないパックを計算しています… ${i} / ${n}`));
+    HROWS=gs.map(g=>[g,H[g].sha||'',H[g].at?new Date(H[g].at).toLocaleString('ja-JP'):'（この画面で入れる前）']);
+    $('hres').innerHTML=`<table style="border-collapse:collapse;font-size:13px;width:100%"><tr><th style="text-align:left">ゲーム</th><th style="text-align:left">SHA-256（はじめの16文字）</th><th style="text-align:left">入れた日時</th></tr>${HROWS.map(r=>`<tr><td>${esc(r[0])}</td><td title="${esc(r[1])}" style="font-family:monospace">${esc(r[1].slice(0,16))}</td><td>${esc(r[2])}</td></tr>`).join('')}</table>`;
+    show('o2h',`${HROWS.length}本。ハッシュ値にマウスをのせると、64文字ぜんぶが出ます。CSVで保存すると、ぜんぶの値をExcelなどでくらべられます。`); $('hcsv').disabled=!HROWS.length;
+  }catch(e){ show('o2h','しらべられませんでした：'+(e.message==='not_found'||e.message==='404'?'サーバーの worker.js が古いようです。新しい worker.js を貼りかえてください。':e.message)); }
+  $('hashes').disabled=false; };
+$('hcsv').onclick=()=>{ const csv='\uFEFF'+[['ゲーム','SHA-256','入れた日時'],...HROWS].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='パックのハッシュ値_'+new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')+'.csv'; document.body.appendChild(a); a.click(); a.remove(); };
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function readPicked(){
   const fs=[...$('files').files], out=[], bad=[];
@@ -112,16 +137,19 @@ async function check(){
   if(/^https:\/\//.test(base())){try{known=(await call('/api/admin/info')).packs;}catch(e){conn='（サーバーにつながらないため、サーバーにあるかどうかは確かめられませんでした）';}}
   else conn='（「1. サーバーとの接続」がまだなので、サーバーにあるかどうかは確かめられません）';
   const S=sums();
+  let SH=null; if(known){try{SH=await serverHashes(list.map(x=>x.g));}catch(e){SH=null;}}
+  for(const x of list)x.sha=await sha256(x.text);
   list.forEach(x=>{
     try{const j=JSON.parse(x.text);x.n=Array.isArray(j)?j.length:null;}catch(e){x.st='bad';return;}
     x.sum=fnv(x.text);
     if(known&&!(x.g in known))x.st='unknown';
     else if(known&&!known[x.g])x.st='new';
+    else if(x.sha&&SH&&SH[x.g]&&SH[x.g].sha)x.st=SH[x.g].sha===x.sha?'same':'changed';
     else if(S[x.g]===x.sum)x.st='same';
     else x.st=!known?'noconn':S[x.g]?'changed':'nocheck';
   });
   PK.items=list;
-  const LB={new:['新しい単元','入れる'],changed:['中身が変わった','入れる'],nocheck:['サーバーにある（前の記録がないので、くらべられない）','入れる'],noconn:['まだ確かめていない（サーバーにつないでから）','—'],same:['同じ（前回この画面で入れたものと同じ）','入れない'],unknown:['サーバーが知らない単元','入れない'],bad:['JSON がこわれている','入れない']};
+  const LB={new:['新しい単元','入れる'],changed:['中身が変わった（サーバーのものとちがう）','入れる'],nocheck:['サーバーにある（前の記録がないので、くらべられない）','入れる'],noconn:['まだ確かめていない（サーバーにつないでから）','—'],same:['同じ（サーバーに入っているものと同じ）','入れない'],unknown:['サーバーが知らない単元','入れない'],bad:['JSON がこわれている','入れない']};
   const cnt={};list.forEach(x=>cnt[x.st]=(cnt[x.st]||0)+1);
   const ORD=['new','changed','nocheck','noconn','same','unknown','bad'];
   $('pkres').innerHTML=ORD.filter(k=>cnt[k]).map(k=>`<details ${k==='same'?'':'open'}><summary><b>${LB[k][0]}</b>：${cnt[k]}本（${LB[k][1]}）</summary><div class="pkl">${list.filter(x=>x.st===k).map(x=>esc(x.g)+(x.n!=null?'（'+x.n+'問）':'')).join('、')}</div></details>`).join('')

@@ -2,13 +2,13 @@
 // KV はメモリのにせもの。Stripe には つながない。主な動き（料金表・管理キー・利用コード・パックの受けわたし・教科のちがい）を確かめる。
 import worker from "../server/worker.js";
 
-const kv = new Map();
+const kv = new Map(), meta = new Map();
 const env = {
   MN: {
     get: async (k) => (kv.has(k) ? kv.get(k) : null),
-    put: async (k, v) => { kv.set(k, v); },
+    put: async (k, v, o) => { kv.set(k, v); if (o && o.metadata) meta.set(k, o.metadata); else meta.delete(k); },
     delete: async (k) => { kv.delete(k); },
-    list: async ({ prefix = "" } = {}) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true }),
+    list: async ({ prefix = "" } = {}) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => (meta.has(name) ? { name, metadata: meta.get(name) } : { name })), list_complete: true }),
   },
   STRIPE_SECRET_KEY: "sk_test_dummy", STRIPE_WEBHOOK_SECRET: "whsec_test", TOKEN_SECRET: "test-token-secret", ADMIN_KEY: "test-admin", SITE_URL: "https://example.com",
 };
@@ -54,6 +54,17 @@ ok(games.length > 300, `ゲームの登録数 ${games.length}`);
 
 ok((await admin("pack/nariki", "PUT", '{"t":"test"}')).status === 200, "管理：パックを入れる");
 ok((await admin("pack/no-such-game-xyz", "PUT", "{}")).status >= 400, "登録していないゲームのパックは入れられない");
+{ // パックのハッシュ値：入れたときに記録し、一覧で返す。記録のない古いパックは fill で計算する
+  const { createHash } = await import("node:crypto");
+  const body = '{"t":"test"}', want = createHash("sha256").update(body).digest("hex");
+  const h = await admin("pack-hashes", "GET");
+  ok(h.status === 200 && h.body.hashes.nariki && h.body.hashes.nariki.sha === want, "管理：入れたパックのハッシュ値が PACKS.md と同じ計算で出る");
+  kv.set("pack:hayasa", '{"old":1}');   // 記録のない古いパック
+  const h2 = await admin("pack-hashes?fill=hayasa", "GET");
+  ok(h2.body.hashes.hayasa && h2.body.hashes.hayasa.sha === createHash("sha256").update('{"old":1}').digest("hex"), "管理：記録のない古いパックのハッシュ値も計算できる");
+  kv.delete("pack:hayasa");
+  ok((await call("/api/admin/pack-hashes")).status === 401, "管理キーなしでは ハッシュ値の一覧は見られない");
+}
 { const inf = (await admin("info", "GET")).body || { packs: {} }; ok(inf.packs.nariki === true && inf.packs["keisan-kufu"] === false, "管理：入れたパックだけが「入っている」と出る"); }
 
 const iss = await admin("issue", "POST", { subject: "shakai", period: "m1" });

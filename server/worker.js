@@ -70,6 +70,8 @@ const PRICES = {
 // 前に買った利用コード（購入したもの。手で作ったコードは対象外）を入れると、1つのコードにつき1回だけ使えます
 const CONTINUE_OFF = 20;
 // ---- 有料版のゲームと教科 ----
+// 文字列の SHA-256（16進数）。パックのハッシュ値に使う
+async function sha256hex(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 const GAMES = { "t-bunsu": "tsansu", "t-graph": "tsansu", "t-en": "tsansu", "t-sakubun": "tkokugo", "t-kotowaza": "tkokugo", "rekinarabe": "shakai", "bunkashi": "shakai", "jinko": "shakai", "monogatari": "kokugo", "setsumei": "kokugo", "zuihitsu": "kokugo", "shidokkai": "kokugo", "kijutsu": "kokugo", "setsudan": "sansu", "hayasahi": "sansu", "tsurukame": "sansu", "wasa": "sansu", "kabusoku": "sansu", "tabibito": "sansu", "shigoto": "sansu", "shokuen": "sansu", "soneki": "sansu", "kisokusei": "sansu", "jiji2027": "shakai", "senchou": "shakai", "t-ensoku": "tsansu", "t-terakoya": "tsansu", "c-eiken5drama": "ceigo", "c-eiken2drama": "ceigo", "k-itnari": "kitp", "k-shukatsu": "kbiz", "c-eiken-p2pdrama": "ceigo", "c-eiken4drama": "ceigo", "c-eiken-p2drama": "ceigo", "c-eiken3drama": "ceigo", "c-eiken3vg": "ceigo", "c-eiken-p2news": "ceigo", "c-eiken5nari": "ceigo", "c-eiken-p2pnari": "ceigo", "c-eiken4nari": "ceigo", "c-eiken-p2-nari": "ceigo", "c-eiken3-nari": "ceigo", "kishoyoho": "shakai", "kisha": "kokugo", "kenchiku": "sansu", "chishitsu": "rika", "tantei": "shikou", "tenmon": "rika", "diagram": "sansu", "kokuren": "shakai", "k-bokinari": "kboki", "t-tabi": "tchishiki", "t-omise": "tsansu", "t-sekai": "tchishiki", "t-anzen": "tchishiki", "t-gyoji": "tchishiki", "t-ikinari": "tchishiki", "t-tabemono": "tchishiki", "chocho": "shakai", "meiji-daijin": "shakai", "sengo-daijin": "shakai", "edo-hanshu": "shakai", "c-tour": "cshakai", "c-rome": "cshakai", "c-rome2": "cshakai", "nara-kokushi": "shakai", "c-shugaku": "cshakai", "shugaku": "shakai", "c-sangoku": "cshakai", "c-shinheishi": "cshakai", "c-ashigaru": "cshakai", "c-eigotabi": "ceigo", "sangyo": "shakai", "k-shinnyu": "kbiz", "kojinari": "kokugo", "c-sugakusha": "csugaku", "tencho": "sansu", "mizutabi": "rika",
   chusho: "kokugo", bungo: "kokugo", setsuzoku: "kokugo", kanji: "kokugo", shinjo: "kokugo", hyoron: "kokugo", jukugo: "kokugo", keigo: "kokugo", koji: "kokugo", hyogen: "kokugo", yoyaku: "kokugo", hantaigo: "kokugo", hinshi: "kokugo", hyakunin: "kokugo", kakariuke: "kokugo",
   kotowaza: "kokugo", sanji: "kokugo", yojikanji: "kokugo",
@@ -349,8 +351,19 @@ export default {
         if (gm && req.method === "PUT") {               // 問題データを入れる
           if (!GAMES[gm[1]]) return fail(env, req, 404, "no_game");
           const t = await req.text(); JSON.parse(t);
-          await env.MN.put("pack:" + gm[1], t);
-          return json(env, req, { ok: true, game: gm[1], bytes: t.length });
+          const sha = await sha256hex(t);   // 入れたものが最新か、PACKS.md のハッシュ値とくらべられるように、いっしょに記録する
+          await env.MN.put("pack:" + gm[1], t, { metadata: { sha, at: Date.now() } });
+          return json(env, req, { ok: true, game: gm[1], bytes: t.length, sha });
+        }
+        if (ap === "pack-hashes" && req.method === "GET") {   // サーバーに入っているパックのハッシュ値（SHA-256）
+          const out = {}; let cur;
+          do { const l = await env.MN.list({ prefix: "pack:", cursor: cur });
+            l.keys.forEach(k => { const g = k.name.slice(5), m = k.metadata || {}; out[g] = { sha: m.sha || null, at: m.at || null }; });
+            cur = l.list_complete ? null : l.cursor; } while (cur);
+          // 記録がない（この機能より前に入れた）パックは、?fill=a,b,c で 20 本までその場で計算する
+          const fill = (url.searchParams.get("fill") || "").split(",").filter(g => out[g] && !out[g].sha).slice(0, 20);
+          for (const g of fill) { const t = await env.MN.get("pack:" + g); if (t != null) { out[g].sha = await sha256hex(t); out[g].computed = true; } }
+          return json(env, req, { ok: true, hashes: out });
         }
         if (ap === "notice" && req.method === "GET") {    // いま出ている緊急のお知らせ（管理画面から見る用）
           const n = await env.MN.get("notice");
