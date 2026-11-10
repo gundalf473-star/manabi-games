@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>学習の道すじ | {{SITE_NAME}}</title>
+<meta name="description" content="中学受験の算数・国語・理科・社会を、小4・小5・小6・入試直前の4つの時期に分けて、どの単元をどの順に進めるとよいかの目安を示したページ。やった単元には印がつきます。">
+{{GA}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。時期のタブ → 毎日の習慣 → 教科ごとの単元リスト（順番つき・やった印）→ 保護者向けの使い方 */
+/* Layout: 1列。今日の日付と続けた日数 → 問題（図・4択）→ 正解と解き方 → 今月のスタンプカレンダー */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e; --accent:#d4432a;
+  --ok:#1d8150; --oksoft:#e0f1e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#c98a12; --pick:#e9eef5;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0; --accent:#f07a62;
+  --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e8b54a; --pick:#222c3a; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,38px);line-height:1.2;margin:0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--surface);background:var(--ink);border-radius:4px;padding:0 8px;margin-right:6px}
+.q{font-size:18px;font-weight:700;margin:0;white-space:pre-line}
+.ops{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
+.op:hover:not([disabled]){border-color:var(--ink)}
+.op .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pick);display:flex;align-items:center;justify-content:center;font-size:13px}
+.op.ok{border-color:var(--ok);background:var(--oksoft)}
+.op.ng{border-color:var(--ng);background:var(--ngsoft)}
+.op[disabled]{cursor:default}
+.res{border-left:4px solid var(--ok);padding:4px 0 4px 12px}
+.res.bad{border-color:var(--ng)}
+.res b{font-size:18px}
+.btn{display:inline-block;border:0;border-radius:99px;padding:9px 18px;font-weight:700;cursor:pointer;background:var(--ink);color:var(--surface);text-decoration:none}
+.btn.sub{background:var(--pick);color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:2px solid var(--rule);background:var(--surface);border-radius:99px;padding:6px 14px;font-weight:700;cursor:pointer}
+.tabs button[aria-selected="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.goal{margin:0;font-size:15px}
+.sj{display:flex;flex-direction:column;gap:6px}
+.sj h2{font-size:16px;margin:0;color:var(--ink);display:flex;align-items:center;gap:8px}
+.sj h2 small{font-weight:400;color:var(--muted);font-size:13px}
+ol.units{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;counter-reset:u}
+ol.units li{counter-increment:u}
+ol.units a{display:flex;gap:10px;align-items:center;border:1px solid var(--rule);border-radius:10px;padding:8px 12px;background:var(--surface);text-decoration:none;color:var(--fg)}
+ol.units a::before{content:counter(u);flex:none;width:24px;height:24px;border-radius:50%;background:var(--pick);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+ol.units a.done::before{content:"✓";background:var(--oksoft);color:var(--ok)}
+ol.units .nm{flex:1;min-width:0;font-weight:700}
+ol.units .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+ol.units .tip{flex:none;font-size:12px;color:var(--muted)}
+.pbar{height:8px;background:var(--pick);border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--ok)}
+.habit{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.habit a{border:1px solid var(--rule);border-radius:10px;padding:8px 12px;text-decoration:none;color:var(--fg);background:var(--surface)}
+.habit a b{display:block}
+.habit a span{font-size:12px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" style="font-weight:700;font-size:14px;text-decoration:none;color:inherit;opacity:.85">← まなびゲーム箱</a>
+    <h1>学習の道すじ</h1>
+    <p class="lead">中学受験の4教科を、どの時期に、どの順で進めるとよいかの目安です。やったことのある単元には ✓ がつきます。</p>
+  </header>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <section class="box" id="stage"></section>
+  <section class="box"><b>毎日の習慣（どの時期も）</b>
+    <div class="habit">
+      <a href="daily.html"><b>今日の1問</b><span>4教科と思考力から1問</span></a>
+      <a href="drill.html"><b>毎日の計算ドリル</b><span>5問・タイムを記録</span></a>
+      <a href="kanji.html"><b>毎日の漢字</b><span>読みと書き 5問</span></a>
+      <a href="ichibun.html"><b>毎日の一文要約</b><span>国語・書いて確かめる</span></a>
+      <a href="tokinaoshi.html" id="toki" hidden><b>まとめて解き直し</b><span>にがてを単元をまたいで</span></a>
+    </div></section>
+  <section class="box"><details><summary>保護者の方へ：このページの使い方</summary>
+    <p class="note" style="margin-top:8px">・時期は目安です。塾や学校によって習う順番はちがうので、いま習っている単元を優先してください。<br>
+    ・番号は、前の単元がわかっていると進めやすい順です。むずかしかったら、ひとつ前の時期にもどってかまいません。<br>
+    ・まず無料版の5問で、どのくらいできるかを確かめられます。くり返し練習するときは有料版（各100問など）が使えます。<br>
+    ・「なりきろう」「〜になろう」は、物語やシミュレーションで、その単元を楽しく見わたすゲームです。単元に入る前や、まとめに向いています。<br>
+    ・思考力パズルは、時期に関係なく、週に1〜2本ずつ遊ぶのがおすすめです。<br>
+    ・✓ は、この端末で遊んだ記録からつけています。記録はどこにも送りません。</p></details></section>
+  <footer><a href="index.html">← ゲーム一覧へ</a>　・　<a href="parent.html">保護者ページ</a></footer>
+</div>
+<script>
+(function(){
+window.mnTitle='学習の道すじ';
+const U=/*UNITS*/{};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rd=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
+/* 時期ごとの単元（ファイル名）。[ファイル名, ひとこと] */
+const PLAN=[
+ {id:'g4',nm:'小4',goal:'計算・ことば・身近な自然と地図。毎日の習慣をつくり、土台をかためる時期です。',S:{
+  '算数':[['keisan-kufu.html','計算を速く正確に'],['gyakusan.html','□を求める'],['tani.html','単位をそろえる'],['wasa.html','線分図に慣れる'],['tsurukame.html','面積図の入り口'],['kabusoku.html','ちがいに注目'],['kisokusei.html','きまりを見つける'],['tenkaizu.html','立体を頭の中で']],
+  '国語':[['kanji.html','読み書きの土台'],['kanyouku.html',''],['koji.html',''],['yojijukugo.html',''],['keigo.html',''],['setsuzoku.html','文と文のつながり'],['monogatari.html','気持ちを読む'],['setsumei.html','筋道を読む'],['shidokkai.html',''],['chusho.html','まとめる力'],['yoyaku.html','短くまとめる']],
+  '理科':[['shokubutsu.html',''],['dobutsu.html',''],['kankyo.html','季節と生き物'],['kisho.html',''],['tentai.html',''],['jishaku.html',''],['denki.html',''],['kigu.html','実験の基本'],['mizutabi.html','なりきり：天気と地球']],
+  '社会':[['chizukigou.html','地図の読み方'],['todofuken.html',''],['chiri-sugoroku.html','すごろくで日本一周'],['nariki.html','なりきり：歴史の人物']]}},
+ {id:'g5',nm:'小5',goal:'割合・速さ・図形、日本の地理と理科の計算。入試の中心になる単元がならぶ時期です。',S:{
+  '算数':[['wariai.html','割合の基本'],['wariai2.html',''],['soneki.html','割合の応用'],['shokuen.html','割合の応用'],['hayasa.html','速さの基本'],['tabibito.html',''],['hayasahi.html','比で解く'],['seishitsu.html',''],['baai.html',''],['kakudo.html',''],['menseki.html',''],['enshu.html',''],['rittai.html',''],['shigoto.html',''],['tokushu2.html',''],['hojin.html',''],['shiryo.html',''],['diagram.html','なりきり：速さ']],
+  '国語':[['zuihitsu.html',''],['kijutsu.html','書いて答える'],['hyoron.html','論説文のことば'],['jukugo.html',''],['sanji.html',''],['hantaigo.html',''],['hinshi.html','文法'],['kakariuke.html','文法'],['hyogen.html',''],['shinjo.html',''],['hyakunin.html',''],['kisha.html','なりきり：読解・記述']],
+  '理科':[['tekobane.html','力の計算'],['furiko.html',''],['ondo.html',''],['nensho.html',''],['yokai.html',''],['suiyoeki.html',''],['kukimizu.html',''],['hikari.html',''],['chiso.html',''],['jintaikeisan.html',''],['biseibutsu.html',''],['hakase-k.html','なりきり：化学'],['hakase-b.html','なりきり：物理']],
+  '社会':[['chikei.html',''],['kiko.html',''],['nogyo.html',''],['suisan.html',''],['kogyo.html',''],['boeki.html',''],['sekai-chizu.html',''],['kishoyoho.html','なりきり：気候'],['senchou.html','なりきり：貿易'],['sangyo.html','なりきり：産業'],['genshi.html','ここから歴史'],['asuka.html',''],['nara.html',''],['heian.html',''],['nara-kokushi.html','シミュレーション']]}},
+ {id:'g6',nm:'小6',goal:'比・図形の応用、歴史の後半と公民。これまでの単元を入試レベルにつなげる時期です。',S:{
+  '算数':[['hirei.html',''],['soji.html',''],['idou.html',''],['tenidou.html',''],['mizu.html',''],['setsudan.html',''],['tokushu-puzzle.html','特殊算の総まとめ'],['kenchiku.html','なりきり：図形']],
+  '国語':[['kotowaza.html',''],['yojikanji.html',''],['bungo.html','文学史'],['kojinari.html','なりきり：故事成語']],
+  '理科':[['rikakeisan.html','計算の総まとめ'],['jikken.html','実験の考え方'],['chishitsu.html','なりきり：大地'],['tenmon.html','なりきり：宇宙'],['ikinari.html','なりきり：生き物']],
+  '社会':[['kamakura.html',''],['muromachi.html',''],['sengoku.html',''],['edo-zenki.html',''],['edo-chuki.html',''],['edo-koki.html',''],['meiji-zenki.html',''],['meiji-koki.html',''],['taisho.html',''],['sengo.html',''],['edo-hanshu.html','シミュレーション'],['meiji-daijin.html','シミュレーション'],['sengo-daijin.html','シミュレーション'],['koumin.html','公民'],['shikumi.html','なりきり：政治・裁判'],['chocho.html','シミュレーション：地方自治'],['kokuren.html','なりきり：国際社会'],['jinko.html','']]}},
+ {id:'g7',nm:'入試直前',goal:'時事と総まとめ、にがての解き直し。新しいことより、まちがえた問題をへらす時期です。',S:{
+  '算数':[['shiryo.html','グラフの読み取り'],['tokushu-puzzle.html',''],['hayasahi.html',''],['setsudan.html','']],
+  '国語':[['kijutsu.html','記述の最終確認'],['setsumei.html',''],['monogatari.html',''],['yoyaku.html','']],
+  '理科':[['energy.html','時事'],['rikakeisan.html',''],['jikken.html','']],
+  '社会':[['jiji2027.html','時事'],['rekinarabe.html','歴史の流れ'],['bunkashi.html','文化史'],['shugaku.html','なりきり：史跡と地理'],['jinko.html','']]}}
+];
+const ORDER=['算数','国語','理科','社会'];
+const hist=rd('mn-history',[]), played=new Set((Array.isArray(hist)?hist:[]).map(e=>e&&e.f).filter(Boolean).map(f=>f.replace(/-full\.html$/,'.html')));
+let cur=rd('mn-road-tab','g4'); if(!PLAN.some(p=>p.id===cur))cur='g4';
+function render(){
+  document.getElementById('tabs').innerHTML=PLAN.map(p=>`<button role="tab" type="button" data-id="${p.id}" aria-selected="${p.id===cur}">${esc(p.nm)}</button>`).join('');
+  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.id;try{localStorage.setItem('mn-road-tab',JSON.stringify(cur));}catch(e){}render();});
+  const P=PLAN.find(p=>p.id===cur); let all=0,done=0;
+  const html=ORDER.map(sj=>{const L=(P.S[sj]||[]).filter(([f])=>U[f]);if(!L.length)return '';
+    const d=L.filter(([f])=>played.has(f)).length; all+=L.length; done+=d;
+    return `<div class="sj"><h2>${esc(sj)}<small>${d} / ${L.length}</small></h2><ol class="units">${L.map(([f,tip])=>{const u=U[f];return `<li><a href="${esc(u.url)}" class="${played.has(f)?'done':''}"><span class="nm">${esc(u.t)}<small>${esc(u.g||'')}</small></span>${tip?`<span class="tip">${esc(tip)}</span>`:''}</a></li>`;}).join('')}</ol></div>`;}).join('');
+  document.getElementById('stage').innerHTML=`<p class="goal"><b>${esc(P.nm)}</b>　${esc(P.goal)}</p><div class="pbar" aria-label="やった単元 ${done} / ${all}"><i style="width:${all?done/all*100:0}%"></i></div><p class="note">やった単元 ${done} / ${all}</p>${html}`;
+}
+render();
+if(U['__toki'])document.getElementById('toki').hidden=false;
+})();
+</script>
+</body>
+</html>
