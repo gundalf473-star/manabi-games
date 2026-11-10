@@ -329,6 +329,24 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
   fs.writeFileSync(path.join(OUT, "kanji.html"), sitePage(kanji, "kanji.html"));
   console.log(`今日の1問：${pool.length}問`);
 }
+// ---- まとめて解き直し：中学受験の有料版（4択）の「にがて」と「今日の解き直し」を、単元をまたいで解く ----
+{
+  const SUBJ_CODE = { "国語": "kokugo", "算数": "sansu", "社会": "shakai", "理科": "rika", "思考力": "shikou" };
+  const QK = { "q=>q.q": "q", "q=>q.id||q.q": "idq", "q=>q.k?q.q+'|'+q.k:q.q": "kq", "q=>(q.pid?q.pid+'：':'')+q.q": "pidq" };
+  const cat = [];
+  for (const g of list) {
+    if (!g.paid || g.course !== "juken" || !SUBJ_CODE[g.subject]) continue;
+    const src = fs.readFileSync(path.join(GAMES, ...decodeURIComponent(g.url).split("/").slice(1)), "utf8");
+    const rk = (src.match(/store\.get\('([\w-]+-p-rec)'/) || [])[1], ld = (src.match(/mnAccess\.load\('([\w-]+)'/) || (/mnAccess\.load\(ID\)/.test(src) && src.match(/const ID='([\w-]+)'/)) || [])[1];
+    const qk = QK[((src.match(/const qkey=([^;]+);/) || [])[1] || "").trim()];
+    if (!rk || !ld || !qk || !/RVID/.test(src)) continue;
+    cat.push({ id: gameId(g.file), rk, ld, qk, s: SUBJ_CODE[g.subject], sj: g.subject, t: g.title, u: g.unit, url: g.url });
+  }
+  const page = fs.readFileSync(path.join(ROOT, "tokinaoshi.html"), "utf8").replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA + HISTORY)
+    .replace("{{ACCESS}}", () => ACCESS + REVIEW).replace("/*CATALOG*/[]", () => JSON.stringify(cat).replace(/</g, "\\u003c"));
+  fs.writeFileSync(path.join(OUT, "tokinaoshi.html"), sitePage(page, "tokinaoshi.html", { noindex: true }));
+  console.log(`まとめて解き直し：${cat.length}単元`);
+}
 if (SITE_URL) {
   fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
 } else console.warn("※ site.json の siteUrl が空です。サイトマップは作りません。");
