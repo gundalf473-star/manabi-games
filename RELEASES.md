@@ -12,6 +12,7 @@
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
 | 毎日の漢字（kanji.html）を公開。低学年 国語「ことわざ・かんようくのはじめ」（t-kotowaza、50問）。どちらも辞書での確認と、公開前の確認ずみ | t-kotowaza を追加（GitHub Actions で自動デプロイ） | packs-teigaku-kotowaza.zip（t-kotowaza）を入れる | 変更なし |
+| 算数8単元（tsurukame・wasa・kabusoku・tabibito・shigoto・shokuen・soneki・kisoku、各100問）。全問を別の担当が計算で検算ずみ | 8単元を追加（GitHub Actions で自動デプロイ） | packs-sansu-8.zip を入れる | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
 
