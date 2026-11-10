@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>まとめて解き直し | {{SITE_NAME}}</title>
+<meta name="description" content="中学受験の有料版で「にがて」になった問題と「今日の解き直し」の問題を、単元をまたいでまとめて解き直すページ。記録はこの端末の中だけにあります。">
+{{GA}}
+{{ACCESS}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: 1列。ここまでの数 → 単元えらび（教科ごと）→ 問題（図・4択）→ 正解と解説 → 結果 */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --fg:#1d2b3d; --muted:#5d6a7c; --rule:#d6dde7; --ink:#1f3a6e; --accent:#d4432a;
+  --ok:#1d8150; --oksoft:#e0f1e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#c98a12; --pick:#e9eef5;
+  --display:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+  --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#10151d; --surface:#18212d; --fg:#e4e9f1; --muted:#9aa6b8; --rule:#2a3546; --ink:#8fb0f0; --accent:#f07a62;
+  --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e8b54a; --pick:#222c3a; color-scheme:dark}}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,38px);line-height:1.2;margin:0;color:var(--ink)}
+.lead{margin:4px 0 0;color:var(--muted)}
+a{color:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.streak{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.streak .n{font-family:var(--display);font-size:40px;line-height:1;color:var(--accent)}
+.streak .n small{font-size:16px;color:var(--fg);margin-left:2px}
+.streak .s{color:var(--muted);font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--surface);background:var(--ink);border-radius:4px;padding:0 8px;margin-right:6px}
+.q{font-size:18px;font-weight:700;margin:0;white-space:pre-line}
+.ops{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--rule);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
+.op:hover:not([disabled]){border-color:var(--ink)}
+.op .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pick);display:flex;align-items:center;justify-content:center;font-size:13px}
+.op.ok{border-color:var(--ok);background:var(--oksoft)}
+.op.ng{border-color:var(--ng);background:var(--ngsoft)}
+.op[disabled]{cursor:default}
+.res{border-left:4px solid var(--ok);padding:4px 0 4px 12px}
+.res.bad{border-color:var(--ng)}
+.res b{font-size:18px}
+.btn{display:inline-block;border:0;border-radius:99px;padding:9px 18px;font-weight:700;cursor:pointer;background:var(--ink);color:var(--surface);text-decoration:none}
+.btn.sub{background:var(--pick);color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px}
+.cal .h{color:var(--muted);font-weight:700}
+.cal .d{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--muted);line-height:1.1}
+.cal .d .st{font-size:18px;line-height:1}
+.cal .d.on{background:var(--oksoft);color:var(--fg)}
+.cal .d.miss{background:var(--pick);color:var(--fg)}
+.cal .d.today{outline:2px solid var(--ink)}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
+.fig{display:flex;justify-content:center;background:#fbfaf6;border:1px solid var(--rule);border-radius:10px;padding:10px}
+.fig svg{width:100%;max-width:340px;height:auto}
+.fig .gh{fill:#d9c8fb;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gw{fill:#fbfaf6;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gn{fill:none;stroke:#232a36;stroke-width:1.6;stroke-linejoin:round}
+.fig .gd{stroke-dasharray:4 3;stroke-width:1.2}
+.fig .gthin{stroke-width:1.1}
+.fig .gdot{fill:#232a36}
+.fig .gdim{stroke:#6b5a8e;stroke-width:1}
+.fig .garc{fill:none;stroke:#7c3aed;stroke-width:1.6}
+.fig .gang{font-size:14px;font-weight:700;fill:#5b21b6;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .gdt,.fig .glab{font-size:12px;font-weight:700;fill:#3a2f55;paint-order:stroke;stroke:#fbfaf6;stroke-width:3px;font-family:var(--body)}
+.fig .glab{fill:#232a36}
+.fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
+.fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
+.fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
+.subj{display:flex;flex-direction:column;gap:6px}
+.subj h2{font-size:15px;margin:6px 0 0;color:var(--ink)}
+.unit{display:flex;gap:10px;align-items:center;border:1px solid var(--rule);border-radius:10px;padding:8px 12px;background:var(--surface)}
+.unit input{width:20px;height:20px;flex:none;accent-color:var(--ink)}
+.unit .nm{flex:1;min-width:0;font-weight:700}
+.unit .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.unit .c{flex:none;font-size:13px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{border-radius:99px;padding:0 8px;font-weight:700;font-size:12px;background:var(--pick)}
+.pill.due{background:var(--oksoft);color:var(--ok)}
+.pill.wk{background:var(--ngsoft);color:var(--ng)}
+.big{font-family:var(--display);font-size:40px;line-height:1;color:var(--accent)}
+.prog{height:6px;background:var(--pick);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--ink)}
+.psg{background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:10px 12px;white-space:pre-line;font-size:15px;max-height:46vh;overflow:auto}
+.ex{white-space:pre-line}
+.sel{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sel button{border:2px solid var(--rule);background:var(--surface);border-radius:99px;padding:4px 14px;font-weight:700;cursor:pointer}
+.sel button[aria-pressed="true"]{border-color:var(--ink);background:var(--pick)}
+table.dtbl{border-collapse:collapse;font-size:14px;margin:0 auto}
+.dtbl th,.dtbl td{border:1px solid var(--rule);padding:4px 8px;text-align:center}
+.tblcap{margin:0 0 4px;font-size:13px;color:var(--muted);text-align:center}
+.tblw{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" style="font-weight:700;font-size:14px;text-decoration:none;color:inherit;opacity:.85">← まなびゲーム箱</a>
+    <h1>まとめて解き直し</h1>
+    <p class="lead">中学受験の有料版で「にがて」になった問題と、「今日の解き直し」の日が来た問題を、単元をまたいでまとめて解きます。</p>
+  </header>
+  <main id="app" class="wrap" style="gap:16px"><section class="box"><p class="note">記録を読みこんでいます…</p></section></main>
+  <footer><a href="index.html">← ゲーム一覧へ</a>　・　<a href="parent.html">保護者ページ</a>　・　記録はこの端末の中だけにあり、どこにも送りません。</footer>
+</div>
+<script>
+(function(){
+window.mnTitle='まとめて解き直し';
+const CAT=/*CATALOG*/[];
+const ORDER=['国語','算数','理科','社会','思考力'];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qhtml=s=>esc(s).replace(/(正しくないもの|あてはまらないもの)/g,'<em>$1</em>');
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+const rd=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const day=()=>{const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5);};
+const st=r=>{if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
+const QKF={q:q=>q.q,idq:q=>q.id||q.q,kq:q=>q.k?q.q+'|'+q.k:q.q,pidq:q=>(q.pid?q.pid+'：':'')+q.q};
+const tn=u=>String(u.t).replace(/\s*\d+問$/,'');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const app=document.getElementById('app');
+const GEO_OK=new Set(['poly','circ','sect','arc','path','seg','dot','lab','ra','ang','par','eq','dim','ell']);
+function geoSVG(G){
+  /* 図形の図。座標はcm、yは上向き。色つき＝gh、くりぬき＝gw */
+  const P=[]; const add=(x,y)=>P.push([x,y]);
+  const rad=a=>a*Math.PI/180;
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') e[1].forEach(p=>add(p[0],p[1]));
+    if(t==='circ'){add(e[1]-e[3],e[2]-e[3]);add(e[1]+e[3],e[2]+e[3]);}
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e; if(t==='sect')add(cx,cy); for(let a=a1;a<=a2+1e-9;a+=Math.min(15,a2-a1||15)) add(cx+r*Math.cos(rad(a)),cy+r*Math.sin(rad(a))); add(cx+r*Math.cos(rad(a2)),cy+r*Math.sin(rad(a2)));}
+    if(t==='path') e[1].forEach(c=>add(c[c.length-2],c[c.length-1]));
+    if(t==='seg'||t==='dim'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='lab'||t==='dot'||t==='ra'||t==='ang') add(e[1],e[2]);
+    if(t==='par'||t==='eq'){add(e[1],e[2]);add(e[3],e[4]);}
+    if(t==='ell'){add(e[1]-e[3],e[2]-e[4]);add(e[1]+e[3],e[2]+e[4]);}
+  });
+  const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+  const mnx=Math.min(...xs), mxx=Math.max(...xs), mny=Math.min(...ys), mxy=Math.max(...ys);
+  const W=Math.max(mxx-mnx,1), H=Math.max(mxy-mny,1), s=Math.min(236/W,160/H), pad=40, VW=320, ox=(VW-W*s)/2;
+  const X=x=>+(ox+(x-mnx)*s).toFixed(1), Y=y=>+(pad+(mxy-y)*s).toFixed(1);
+  const cls=f=>f==='h'?'gh':f==='w'?'gw':'gn';
+  const pt=(cx,cy,r,a)=>[X(cx+r*Math.cos(rad(a))),Y(cy+r*Math.sin(rad(a)))];
+  let o='';
+  G.forEach(e=>{const t=e[0];
+    if(t==='poly') o+=`<path class="${cls(e[2])}" d="M${e[1].map(p=>X(p[0])+','+Y(p[1])).join(' L')} Z"/>`;
+    if(t==='circ') o+=`<circle class="${cls(e[4])}" cx="${X(e[1])}" cy="${Y(e[2])}" r="${(e[3]*s).toFixed(1)}"/>`;
+    if(t==='sect'||t==='arc'){const [,cx,cy,r,a1,a2]=e, f=e[6], R=(r*s).toFixed(1), p1=pt(cx,cy,r,a1), p2=pt(cx,cy,r,a2), lg=(a2-a1)>180?1:0;
+      o+= t==='sect'?`<path class="${cls(f)}" d="M${X(cx)},${Y(cy)} L${p1} A${R},${R} 0 ${lg} 0 ${p2} Z"/>`:`<path class="gn" d="M${p1} A${R},${R} 0 ${lg} 0 ${p2}"/>`;}
+    if(t==='path'){ let d=''; e[1].forEach(c=>{ if(c[0]==='M')d+=`M${X(c[1])},${Y(c[2])} `; if(c[0]==='L')d+=`L${X(c[1])},${Y(c[2])} `; if(c[0]==='A'){const R=(c[1]*s).toFixed(1); d+=`A${R},${R} 0 ${c[2]} ${c[3]?0:1} ${X(c[4])},${Y(c[5])} `;} }); o+=`<path class="${cls(e[2])}" d="${d}Z"/>`; }
+    if(t==='ell'){ /* だ円（円すい・円柱の底面）。mode=1 で、向こう側の半分を点線に */
+      const [,cx,cy,rx,ry,f,mode]=e, RX=(rx*s).toFixed(1), RY=(ry*s).toFixed(1), l=[X(cx-rx),Y(cy)], r=[X(cx+rx),Y(cy)];
+      if(f) o+=`<ellipse class="${cls(f)}" style="stroke:none" cx="${X(cx)}" cy="${Y(cy)}" rx="${RX}" ry="${RY}"/>`;
+      if(mode){ o+=`<path class="gn" style="fill:none" d="M${l} A${RX},${RY} 0 0 0 ${r}"/><path class="gn gd" style="fill:none" d="M${r} A${RX},${RY} 0 0 0 ${l}"/>`; }
+      else o+=`<ellipse class="gn" style="fill:none" cx="${X(cx)}" cy="${Y(cy)}" rx="${RX}" ry="${RY}"/>`; }
+    if(t==='seg') o+=`<line class="gn${e[5]?' gd':''}" x1="${X(e[1])}" y1="${Y(e[2])}" x2="${X(e[3])}" y2="${Y(e[4])}"/>`;
+    if(t==='dot') o+=`<circle class="gdot" cx="${X(e[1])}" cy="${Y(e[2])}" r="2.6"/>`;
+    if(t==='lab') o+=`<text class="glab" x="${X(e[1])}" y="${Y(e[2])+4}" text-anchor="middle">${esc(e[3])}</text>`;
+    if(t==='ra'){const [,x,y,ux,uy,vx,vy]=e, lu=Math.hypot(ux,uy), lv=Math.hypot(vx,vy), k=7;
+      const a=[X(x)+ux/lu*k, Y(y)-uy/lu*k], b=[X(x)+ux/lu*k+vx/lv*k, Y(y)-uy/lu*k-vy/lv*k], c=[X(x)+vx/lv*k, Y(y)-vy/lv*k];
+      o+=`<path class="gn gthin" d="M${a} L${b} L${c}"/>`;}
+    if(t==='ang'){ /* 角の印：頂点のまわりの小さな弧と、その中の文字。n本の弧で「同じ角」を表す */
+      const [,vx,vy,a1,a2,txt,n]=e, span=a2-a1, base=span<35?22:span<70?17:14, cx=X(vx), cy=Y(vy);
+      for(let k=0;k<(n||1);k++){ const R=base+k*4, p1=[cx+R*Math.cos(rad(a1)),cy-R*Math.sin(rad(a1))], p2=[cx+R*Math.cos(rad(a2)),cy-R*Math.sin(rad(a2))];
+        o+=`<path class="garc" d="M${p1[0].toFixed(1)},${p1[1].toFixed(1)} A${R},${R} 0 ${span>180?1:0} 0 ${p2[0].toFixed(1)},${p2[1].toFixed(1)}"/>`; }
+      if(txt){ const am=(a1+a2)/2, D=base+(n||1)*4+(span<35?16:span<60?12:9)+(txt.length>3?6:0); o+=`<text class="gang" x="${(cx+D*Math.cos(rad(am))).toFixed(1)}" y="${(cy-D*Math.sin(rad(am))+5).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`; } }
+    if(t==='par'||t==='eq'){ const [,x1,y1,x2,y2,n]=e, sx=(X(x1)+X(x2))/2, sy=(Y(y1)+Y(y2))/2, dx=X(x2)-X(x1), dy=Y(y2)-Y(y1), L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L;
+      for(let k=0;k<(n||1);k++){ const off=(k-((n||1)-1)/2)*6, px=sx+ux*off, py=sy+uy*off;
+        if(t==='par') o+=`<path class="gn gthin" d="M${(px-ux*5-uy*5).toFixed(1)},${(py-uy*5+ux*5).toFixed(1)} L${px.toFixed(1)},${py.toFixed(1)} L${(px-ux*5+uy*5).toFixed(1)},${(py-uy*5-ux*5).toFixed(1)}"/>`;
+        else o+=`<line class="gn gthin" x1="${(px-uy*6).toFixed(1)}" y1="${(py+ux*6).toFixed(1)}" x2="${(px+uy*6).toFixed(1)}" y2="${(py-ux*6).toFixed(1)}"/>`; } }
+    if(t==='dim'){const [,x1,y1,x2,y2,txt,off]=e; const sx1=X(x1),sy1=Y(y1),sx2=X(x2),sy2=Y(y2); const dx=sx2-sx1, dy=sy2-sy1, L=Math.hypot(dx,dy)||1;
+      const nx=dy/L, ny=-dx/L, k=off*13; const a=[sx1+nx*k,sy1+ny*k], b=[sx2+nx*k,sy2+ny*k];
+      const tk=(p)=>`<line class="gdim" x1="${p[0]-nx*4}" y1="${p[1]-ny*4}" x2="${p[0]+nx*4}" y2="${p[1]+ny*4}"/>`;
+      const m=[(a[0]+b[0])/2+nx*(off>0?9:-9)*Math.sign(off||1)*0+nx*Math.sign(off||1)*9,(a[1]+b[1])/2+ny*Math.sign(off||1)*9];
+      o+=`<line class="gdim" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>${tk(a)}${tk(b)}<text class="gdt" x="${m[0].toFixed(1)}" y="${(m[1]+4).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>`;}
+  });
+  return `<div class="fig"><svg viewBox="0 0 ${VW} ${(H*s+2*pad).toFixed(0)}" role="img" aria-label="問題の図">${o}</svg></div>`;
+}
+function tblHTML(t){return `<div class="fig tblw" style="display:block">${t.cap?`<p class="tblcap">${esc(t.cap)}</p>`:''}<table class="dtbl"><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`;}
+/* この画面で出せる問題か（4択で、図は図形・表だけ） */
+function ok4(q){
+  if(!q||typeof q.q!=='string'||typeof q.a!=='string'||!Array.isArray(q.d)||q.d.length!==3||q.d.some(x=>typeof x!=='string'))return false;
+  if([q.a,...q.d].some(x=>x[0]==='§'))return false;   /* 地図記号など、選択肢が図になるもの */
+  if(q.fig){const k=Object.keys(q.fig);if(k.length!==1)return false;
+    /* 図形：ぬり方は h（色）・w（白）・なし だけ。大きな文字（lab の5つ目）もなし */
+    const FI={poly:2,circ:4,sect:6,ell:5};
+    if(k[0]==='geo')return Array.isArray(q.fig.geo)&&q.fig.geo.every(e=>Array.isArray(e)&&GEO_OK.has(e[0])&&(FI[e[0]]==null||[undefined,null,'','h','w'].includes(e[FI[e[0]]]))&&!(e[0]==='lab'&&e.length>4));
+    if(k[0]==='tbl')return q.fig.tbl&&Array.isArray(q.fig.tbl.head)&&Array.isArray(q.fig.tbl.rows)&&q.fig.tbl.rows.every(Array.isArray);
+    return false;}
+  if(q.p!=null&&(typeof q.p!=='string'||q.p.length<20))return false;   /* 短い p は、ゲームごとの特別な使い方 */
+  if(q.mode||q.w0||q.c1)return false;
+  return true;
+}
+/* 単元ごとの数 */
+function counts(){
+  const R=rd('mn-review',{})||{}, t=day();
+  return CAT.map(u=>{const rec=rd(u.rk,{})||{}, rv=(R[u.id]&&typeof R[u.id]==='object')?R[u.id]:{};
+    const due=Object.keys(rv).filter(k=>rv[k]&&rv[k].d<=t), dueS=new Set(due);
+    const weak=Object.keys(rec).filter(k=>st(rec[k])==='weak'&&!dueS.has(k));
+    return Object.assign({},u,{due,weak,n:due.length+weak.length});});
+}
+let N=rd('mn-toki-n',20); if(![10,20,30].includes(N))N=20;
+let OFF=new Set(rd('mn-toki-off',[])||[]);
+function failNote(F){if(!F||!F.length)return '';
+  /* 同じ理由はまとめて1行に。プランや期限が理由のときだけ、プランのボタンを出す */
+  const by={};F.forEach(x=>{(by[x.m]=by[x.m]||[]).push(tn(x.u));});
+  const plan=F.some(x=>x.k==='none'||x.k==='expired'||x.k==='subject');
+  return `<div style="border-left:4px solid var(--ng);padding:2px 0 2px 12px"><p style="margin:0;font-weight:700">読みこめなかった単元があります</p><ul style="margin:4px 0;padding-left:20px;font-size:14px">${Object.entries(by).map(([m,ts])=>`<li>${esc(ts.join('・'))}：${esc(m)}</li>`).join('')}</ul>${plan?'<div class="row"><a class="btn sub" href="plan.html">利用中のプラン</a><a class="btn sub" href="buy.html">料金プランを見る</a></div>':''}</div>`;}
+function home(msg){
+  const C=counts(), has=C.filter(u=>u.n>0), all=has.reduce((s,u)=>s+u.n,0), dueAll=has.reduce((s,u)=>s+u.due.length,0);
+  if(!has.length){app.innerHTML=`<section class="box">${msg?`<p style="margin:0;color:var(--ng);font-weight:700">${esc(msg)}</p>`:''}<p style="margin:0;font-weight:700">いま、解き直す問題はありません。</p>
+    <p class="note">有料版のゲームでまちがえた問題が「にがて」になり、1日後・3日後・7日後・14日後に「今日の解き直し」として出てきます。それをここで、単元をまたいでまとめて解けます。</p>
+    <div class="row"><a class="btn" href="index.html">ゲーム一覧へ</a><a class="btn sub" href="plan.html">利用中のプラン</a></div></section>`;return;}
+  const bySj={};has.forEach(u=>(bySj[u.sj]=bySj[u.sj]||[]).push(u));
+  const sjs=Object.keys(bySj).sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+  app.innerHTML=`<section class="box"><div class="row" style="align-items:baseline;gap:14px"><span class="big">${all}</span><span>問</span></div><p class="note">今日の解き直し ${dueAll}問・にがて ${all-dueAll}問（${has.length}単元）。図のある一部の問題は、この画面では出ないので、実際に出る数は少なくなることがあります。</p>
+    ${msg?`<p style="margin:0;color:var(--ng);font-weight:700">${esc(msg)}</p>`:''}${failNote(G0.failed)}
+    <div class="sel"><span style="font-weight:700">1回に</span>${[10,20,30].map(n=>`<button type="button" data-n="${n}" aria-pressed="${n===N}">${n}問</button>`).join('')}</div>
+    <p class="note">「今日の解き直し」の問題を先に、そのあと「にがて」の問題を出します。いろいろな単元がまざるようにならべます。</p>
+    <div class="row"><button class="btn" id="go">解き直しをはじめる</button></div></section>
+    <section class="box"><b>単元をえらぶ</b>${sjs.map(sj=>`<div class="subj"><h2>${esc(sj)}</h2>${bySj[sj].sort((a,b)=>b.n-a.n).map(u=>`<label class="unit"><input type="checkbox" data-id="${esc(u.id)}" ${OFF.has(u.id)?'':'checked'}><span class="nm">${esc(tn(u))}<small>${esc(u.u)}</small></span><span class="c">${u.due.length?`<span class="pill due">今日 ${u.due.length}</span>`:''}${u.weak.length?`<span class="pill wk">にがて ${u.weak.length}</span>`:''}</span></label>`).join('')}</div>`).join('')}
+    <p class="note">チェックを外した単元は出ません。図のある一部の問題（てこ・電気の回路など）は、それぞれの単元のページで解き直してください。</p></section>`;
+  app.querySelectorAll('.sel button').forEach(b=>b.onclick=()=>{N=+b.dataset.n;wr('mn-toki-n',N);app.querySelectorAll('.sel button').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  app.querySelectorAll('.unit input').forEach(c=>c.onchange=()=>{c.checked?OFF.delete(c.dataset.id):OFF.add(c.dataset.id);wr('mn-toki-off',[...OFF]);});
+  document.getElementById('go').onclick=()=>begin(has.filter(u=>!OFF.has(u.id)));
+}
+let G=null, G0={failed:[],skipped:[]};
+async function begin(units){
+  G0={failed:[],skipped:[]};
+  if(!units.length){home('単元を1つ以上えらんでください。');return;}
+  app.innerHTML='<section class="box"><p class="note">問題を読みこんでいます…</p></section>';
+  const pools=[], skipped=[], failed=[];
+  const why=e=>{const k=e&&e.error;const m=(window.mnAccess&&mnAccess.ERR)||{};
+    if(k==='none'){let live=false;try{live=mnAccess.list().some(x=>x.exp>Date.now());}catch(x){}return live?'いまのプランでは使えない教科です':'有料版のプランが見つかりません';}if(k==='subject')return 'いまのプランでは使えない教科です';return m[k]||'うまく読みこめませんでした';};
+  const order=units.sort((a,b)=>b.due.length-a.due.length||b.n-a.n);
+  /* 4単元ずつまとめて読みこむ */
+  for(let i=0;i<order.length;i+=4){
+    const part=order.slice(i,i+4);
+    const got=await Promise.all(part.map(u=>mnAccess.load(u.ld,u.s).then(d=>({u,d}),e=>({u,e}))));
+    for(const {u,d,e} of got){
+      if(e){failed.push({u,m:why(e),k:e&&e.error});continue;}
+      const arr=Array.isArray(d)?d:(d&&Array.isArray(d.QS)?d.QS:null);
+      if(!arr){failed.push({u,m:'問題データの形がちがいます'});continue;}
+      const f=QKF[u.qk], byK={};arr.forEach(q=>{try{byK[f(q)]=q;}catch(x){}});
+      const take=ks=>ks.map(k=>byK[k]).filter(Boolean);
+      const dq=take(u.due), wq=take(u.weak), good=[...dq,...wq].filter(ok4);
+      if(dq.length+wq.length>good.length)skipped.push(u);
+      const dueSet=new Set(u.due);
+      if(good.length)pools.push({u,qs:shuffle(good.filter(q=>dueSet.has(f(q)))).concat(shuffle(good.filter(q=>!dueSet.has(f(q)))))});
+    }
+    if(failed.some(x=>x.k==='net'))break;
+  }
+  G0={failed,skipped};
+  if(!pools.length){
+    home(failed.length?'この画面で出せる問題がありませんでした。':'この画面で出せる問題がありませんでした。それぞれの単元のページで解き直してください。');return;}
+  /* 今日の解き直しを先に、単元がまざるように1問ずつ順番に取る */
+  const list=[];let more=true;
+  for(const pass of ['due','weak']){more=true;while(more&&list.length<N){more=false;for(const p of pools){if(list.length>=N)break;const q=p.qs[0];if(!q)continue;const isDue=new Set(p.u.due).has(QKF[p.u.qk](q));if((pass==='due')!==isDue)continue;list.push({u:p.u,q:p.qs.shift(),due:isDue});more=true;}}}
+  G={list,i:0,score:0,res:[],skipped,failed};
+  track('level_start',{level_name:'tokinaoshi'});
+  newQ();
+}
+function newQ(){const it=G.list[G.i];G.ch=shuffle([it.q.a,...it.q.d]);G.done=false;G.pick=null;render();}
+function render(){
+  const it=G.list[G.i],q=it.q,d=G.done,f=q.fig;
+  app.innerHTML=`<section class="box"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.list.length*100}%"></i></div>
+    <div><span class="tag">${esc(it.u.sj)}</span><span class="tag" style="background:var(--muted)">${esc(tn(it.u))}</span></div><div class="note">${G.i+1} / ${G.list.length}問・${it.due?'今日の解き直し':'にがて'}</div>
+    ${q.p?`<div class="psg">${q.t?`<b>${esc(q.t)}</b>\n`:''}${esc(q.p)}</div>`:''}
+    <p class="q">${qhtml(q.q)}</p>
+    ${f&&f.geo?geoSVG(f.geo):f&&f.tbl?tblHTML(f.tbl):''}
+    <div class="ops">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'ok':c===G.pick?'ng':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエオカ'[i]}</span><span>${esc(c)}</span></button>`).join('')}</div>
+    <div id="after"></div></section>`;
+  app.querySelectorAll('.op').forEach(b=>b.onclick=()=>pick(G.ch[+b.dataset.i]));
+  if(d)explain();
+}
+function pick(c){
+  if(G.done)return;
+  const it=G.list[G.i],q=it.q,u=it.u,k=QKF[u.qk](q);
+  G.done=true;G.pick=c;G.ok=c===q.a;
+  /* それぞれのゲームと同じ記録を更新する（覚えた・にがての数と、間をあけた解き直し） */
+  const rec=rd(u.rk,{})||{},before=st(rec[k]),r=rec[k]||[0,0];r[G.ok?0:1]++;rec[k]=r;wr(u.rk,rec);
+  try{window.mnReview&&mnReview.mark(u.id,k,G.ok);}catch(e){}
+  G.newM=st(r)==='master'&&before!=='master';
+  if(G.ok)G.score++;
+  G.res.push({u,ok:G.ok});
+  track('answer_question',{category:'tokinaoshi-'+u.id,question:q.q.slice(0,90),correct:G.ok});
+  render();
+}
+function explain(){
+  const q=G.list[G.i].q,last=G.i===G.list.length-1;
+  document.getElementById('after').innerHTML=`<div class="res ${G.ok?'':'bad'}"><b style="color:${G.ok?'var(--ok)':'var(--ng)'}">${G.ok?'正解！':'ざんねん'}</b>${G.newM?'　<b style="color:var(--ok);font-size:14px">覚えた！</b>':''}<br>答え：<b>${esc(q.a)}</b></div>
+    ${q.e?`<div class="ex">${esc(q.e)}</div>`:''}
+    <div class="row"><button class="btn" id="next">${last?'結果を見る':'次の問題へ'}</button></div>`;
+  const nx=document.getElementById('next');nx.onclick=()=>{if(++G.i<G.list.length)newQ();else result();};nx.focus({preventScroll:true});
+}
+function result(){
+  const n=G.list.length,s=G.score;
+  track('level_end',{level_name:'tokinaoshi',success:s===n,score:s,total:n});
+  const by={};G.res.forEach(r=>{const o=by[r.u.id]=by[r.u.id]||{u:r.u,ok:0,n:0};o.n++;if(r.ok)o.ok++;});
+  app.innerHTML=`<section class="box"><b>結果</b><div class="row" style="align-items:baseline;gap:10px"><span class="big">${s}</span><span>/ ${n}問</span></div>
+    <p style="margin:0">${s===n?'全問正解！にがてを一気にへらせました。':s/n>=.6?'よくできました。まちがえた問題は、また日をあけて出てきます。':'まちがえた問題は、解説を読み直そう。また日をあけて出てきます。'}</p>
+    ${Object.values(by).map(o=>`<div class="unit"><span class="nm">${esc(tn(o.u))}<small>${esc(o.u.sj)}・${esc(o.u.u)}</small></span><span class="c"><span class="pill">${o.ok} / ${o.n}</span><a href="${esc(o.u.url)}">単元へ →</a></span></div>`).join('')}
+    ${G.skipped.length?`<p class="note">この画面で出せない問題がある単元：${G.skipped.map(u=>`<a href="${esc(u.url)}">${esc(tn(u))}</a>`).join('、')}。それぞれの単元で「にがて」をえらぶと解き直せます。</p>`:''}
+    ${failNote(G.failed)}
+    <div class="row"><button class="btn" id="again">つづけて解き直す</button><a class="btn sub" href="index.html">ゲーム一覧へ</a></div></section>`;
+  document.getElementById('again').onclick=()=>{G0={failed:[],skipped:[]};home();};
+}
+home();
+})();
+</script>
+</body>
+</html>
