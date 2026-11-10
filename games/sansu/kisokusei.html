@@ -1,28 +1,28 @@
-<title>歴史の並べかえクイズ</title>
+<title>規則性と数列クイズ</title>
 
-<meta name="game:subject" content="社会">
-<meta name="game:unit" content="歴史の並べかえ">
-<meta name="game:grade" content="小5〜">
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="規則性と数列">
+<meta name="game:grade" content="小4〜">
 <meta name="game:players" content="1人">
-<meta name="description" content="歴史のできごとを古い順に並べる社会クイズ。時代の流れから、年の近いできごとの順番まで、5つのレベルから1問ずつ。全5問。">
+<meta name="description" content="規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）を、5つのレベルから1問ずつの算数クイズ。全5問。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
 <style>
-/* Layout: 1列。分野の札 → 4択の問題（計算はデータの表つき）→ 正解の印と解説 → 結果と復習。水色を差し色に */
+/* Layout: 1列。レベルの札（5段階）→ 4択の問題 → 正解の印と解き方 → 結果と復習。青を差し色に */
 :root{
   --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
-  --ink:#3b2f6b; --seal:#0e7490; --sealsoft:#dcf1f6; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --ink:#3b2f6b; --seal:#1d4ed8; --sealsoft:#e0e8fb; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
   --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
   --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
   --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
-  --ink:#b3a6f0; --seal:#5cc8e0; --sealsoft:#12303a; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+  --ink:#b3a6f0; --seal:#7da2ff; --sealsoft:#1b2540; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
-  --ink:#b3a6f0; --seal:#5cc8e0; --sealsoft:#12303a; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+  --ink:#b3a6f0; --seal:#7da2ff; --sealsoft:#1b2540; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
@@ -38,7 +38,7 @@ button{font:inherit;color:inherit}
 .prog i{display:block;height:100%;background:var(--seal)}
 .nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
 .tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
-.q{white-space:pre-line;margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.q{margin:0;font-size:18px;font-weight:700;line-height:1.7}
 .q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
 .ch{display:grid;gap:8px}
 .op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
@@ -64,7 +64,7 @@ button{font:inherit;color:inherit}
 .tblcap{font-size:13px;color:var(--muted);margin:0 0 6px}
 .dtbl th,.dtbl td{border:1px solid var(--rule);padding:6px 4px;text-align:center}
 .dtbl th{background:var(--sealsoft)}
-.dtbl .rh{text-align:left;width:22%;font-size:13px}
+.dtbl .rh{text-align:left;width:55%;white-space:nowrap;font-size:13px}
 .fig .tk{font-size:11px;fill:#5d6878;stroke:none;font-family:var(--body)}
 .fig .pm{font-size:13px;fill:#232a36;stroke:none;font-weight:700}
 .fig .lb{font-size:14px;fill:#1f7a5a;stroke:none;font-weight:700;font-family:var(--body)}
@@ -110,8 +110,8 @@ button{font:inherit;color:inherit}
 
 <div class="wrap">
   <header>
-    <h1><small>社会クイズ</small>歴史の並べかえクイズ</h1>
-    <p class="lead">5つのレベルから1問ずつ。全5問。</p>
+    <h1><small>算数クイズ</small>規則性と数列クイズ</h1>
+    <p class="lead">基本から入試レベルまで、5つのレベルから1問ずつ。全5問。</p>
   </header>
   <section class="box" id="app"></section>
 </div>
@@ -121,8 +121,8 @@ button{font:inherit;color:inherit}
 (function(){
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=false;
-let QS=[{"c": "L1", "lv": 1, "q": "次のできごとを、古いものから順に並べたものは？\n① 参勤交代が制度として定められる\n② 五箇条の御誓文が出される\n③ 明との勘合貿易が始まる", "a": "③→①→②", "d": ["①→③→②", "③→②→①", "②→①→③"], "e": "古い順に、明との勘合貿易が始まる（1404年）、参勤交代が制度として定められる（1635年）、五箇条の御誓文が出される（1868年）です。"}, {"c": "L2", "lv": 1, "q": "次のできごとを、古いものから順に並べたものは？\n① 平等院鳳凰堂が建てられる\n② 墾田永年私財法が出される\n③ 大化の改新が始まる\n④ 平安京に都が移される", "a": "③→②→④→①", "d": ["②→③→④→①", "③→④→②→①", "③→②→①→④"], "e": "古い順に、大化の改新が始まる（645年）、墾田永年私財法が出される（743年）、平安京に都が移される（794年）、平等院鳳凰堂が建てられる（1053年）です。"}, {"c": "L3", "lv": 2, "q": "次のできごとを、古いものから順に並べたものは？\n① 松平定信が寛政の改革を始める\n② 鎌倉幕府がほろびる\n③ ペリーが浦賀に来航する\n④ 源頼朝が征夷大将軍になる", "a": "④→②→①→③", "d": ["②→④→①→③", "④→①→②→③", "④→②→③→①"], "e": "古い順に、源頼朝が征夷大将軍になる（1192年）、鎌倉幕府がほろびる（1333年）、松平定信が寛政の改革を始める（1787年）、ペリーが浦賀に来航する（1853年）です。"}, {"c": "L4", "lv": 2, "q": "次のできごとを、古いものから順に並べたものは？\n① 関税自主権が完全に回復する\n② 内閣制度ができる\n③ 第一次世界大戦が始まる\n④ 二・二六事件", "a": "②→①→③→④", "d": ["①→②→③→④", "②→③→①→④", "②→①→④→③"], "e": "古い順に、内閣制度ができる（1885年）、関税自主権が完全に回復する（1911年）、第一次世界大戦が始まる（1914年）、二・二六事件（1936年）です。"}, {"c": "L5", "lv": 3, "q": "次のできごとを、古いものから順に並べたものは？\n① 五・一五事件\n② 二・二六事件\n③ ポツダム宣言を受け入れ、戦争が終わる\n④ 韓国併合", "a": "④→①→②→③", "d": ["①→④→②→③", "④→②→①→③", "④→①→③→②"], "e": "古い順に、韓国併合（1910年）、五・一五事件（1932年）、二・二六事件（1936年）、ポツダム宣言を受け入れ、戦争が終わる（1945年）です。"}];
-const CATS={L1:['レベル1 基本','時代の大きな流れ（3つのできごと）'],L2:['レベル2 標準','飛鳥〜平安時代（古代）の順番'],L3:['レベル3 応用','鎌倉〜江戸時代（中世・近世）の順番'],L4:['レベル4 発展','明治〜昭和（近代・現代）の順番'],L5:['レベル5 入試','時代をまたいだ、年の近いできごとの順番']};
+let QS=[{"c": "L1", "lv": 1, "q": "今日は水曜日です。今日から74日後は何曜日？", "a": "日曜日", "d": ["月曜日", "土曜日", "火曜日"], "e": "曜日は7日でもとにもどります。74÷7＝10あまり4なので、水曜日から4日進めて日曜日です。"}, {"c": "L2", "lv": 1, "q": "1, 8, 15, … と7ずつふえる数を、1番目から17番目までたすといくつ？", "a": "969", "d": ["1082", "968", "1938"], "e": "17番目は 1＋7×16＝113。(はじめ＋おわり)×こ数÷2 で、(1＋113)×17÷2＝969です。"}, {"c": "L3", "lv": 2, "q": "マッチぼうで正方形を横一列に23こつなげてならべます（となりの正方形と辺を1本共有します）。マッチぼうは何本いる？", "a": "70本", "d": ["92本", "69本", "71本"], "e": "1こ目は4本、2こ目からは1こふえるごとに3本ずつふえます。4＋3×(23－1)＝70本です。"}, {"c": "L4", "lv": 2, "q": "1分の1, 2分の1, 2分の2, 3分の1, 3分の2, 3分の3, 4分の1, … と分数がならんでいます（約分はしません）。はじめから61番目の分数は？", "a": "11分の6", "d": ["11分の7", "12分の6", "10分の6"], "e": "分母が同じものを組にすると、分母11の組は11こ。分母10までに 1＋2＋…＋10＝55こあるので、61番目は分母11の組の6番目、11分の6です。"}, {"c": "L5", "lv": 3, "q": "4でわり切れない整数を、1, 2, 3, 5, … と小さい順にならべます。131番目の数は？", "a": "174", "d": ["175", "173", "163"], "e": "1から4までの4こごとに、わり切れない数は3こずつあります。131番目は、3こずつの組の44組目の2番目です。43組で172まで進むので、その次の2番目のわり切れない数は174です。"}];
+const CATS={L1:["レベル1 基本","くり返し・曜日・等差数列・小数のくり返し"],L2:["レベル2 標準","等差数列の和・何番目・1からの和・奇数の和"],L3:["レベル3 応用","マッチぼう・ご石・三角形・立方体"],L4:["レベル4 発展","群数列・分数の数列・数表"],L5:["レベル5 入試","差が変わる数列・前の2つの和・わり切れない数・はじめてこえる数"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -133,23 +133,23 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 let G=null, shopUrl='', course=null;
-let best=store.get(PAID?'narabe-p-best':'narabe-best',{}), rec=store.get('narabe-p-rec',{});
-const saveRec=()=>store.set('narabe-p-rec',rec);
+let best=store.get(PAID?'kisokusei-p-best':'kisokusei-best',{}), rec=store.get('kisokusei-p-rec',{});
+const saveRec=()=>store.set('kisokusei-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="narabe-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>歴史の並べかえ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。時代の流れ・古代・中世近世・近代現代・入試レベルの5つのレベル別コース。覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>時代の順</dt><dd>縄文 → 弥生 → 古墳 → 飛鳥 → 奈良 → 平安 → 鎌倉 → 室町（戦国）→ 安土桃山 → 江戸 → 明治 → 大正 → 昭和 → 平成 → 令和</dd><dt>古代</dt><dd>卑弥呼（239）→ 聖徳太子が摂政（593）→ 大化の改新（645）→ 大宝律令（701）→ 平城京（710）→ 平安京（794）→ 遣唐使停止（894）</dd><dt>中世</dt><dd>頼朝が征夷大将軍（1192）→ 承久の乱（1221）→ 元寇（1274・1281）→ 鎌倉幕府滅亡（1333）→ 応仁の乱（1467）→ 鉄砲伝来（1543）→ 本能寺の変（1582）</dd><dt>近世</dt><dd>関ヶ原（1600）→ 江戸幕府（1603）→ 島原・天草一揆（1637）→ 享保の改革（1716）→ ペリー来航（1853）→ 大政奉還（1867）</dd><dt>近代・現代</dt><dd>五箇条の御誓文（1868）→ 大日本帝国憲法（1889）→ 日清戦争（1894）→ 日露戦争（1904）→ 満州事変（1931）→ 太平洋戦争（1941）→ 日本国憲法公布（1946）→ 沖縄返還（1972）</dd><dt>並べかえのこつ</dt><dd>①まず時代を決める ②同じ時代なら「原因→結果」の順を考える（例：ペリー来航→日米和親条約→日米修好通商条約）</dd></dl>`;
+const PAIDLINK=`<a class="paid" href="kisokusei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>規則性と数列 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt>周期</dt><dd>□番目÷1組のこ数 のあまりで決まる（あまり0は組の最後）</dd><dt>等差数列</dt><dd>□番目＝はじめ＋ふえる数×(□－1)</dd><dt>等差数列の和</dt><dd>(はじめ＋おわり)×こ数÷2</dd><dt>群数列</dt><dd>組に分けて、何組目の何番目かを考える</dd></dl>`;
 
-async function decrypt(){ return mnAccess.load('narabe'); }
-function lockScreen(err){ mnAccess.lock(app,{game:'narabe',err:err,free:'narabe.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+async function decrypt(){ return mnAccess.load('kisokusei'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'kisokusei',err:err,free:'kisokusei.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
 function home(){
   G=null;
   if(PAID)return homePaid();
   app.innerHTML=`<div class="label">あそびかた</div>
     <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">年表とこつを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">規則性と数列のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
   document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
 }
@@ -159,14 +159,14 @@ function homePaid(){
   app.innerHTML=`<div class="master"><div class="tp"><span class="label" style="font-size:14px;color:var(--fg)">覚えた問題</span><span class="cnt">${cnt.master}<small> / ${QS.length}問</small></span></div>
       <div class="mbar" aria-hidden="true"><i class="m" style="width:${cnt.master/QS.length*100}%"></i><i class="w2" style="width:${cnt.weak/QS.length*100}%"></i></div>
       <div class="mleg"><span style="--c:var(--ok)">覚えた ${cnt.master}</span><span style="--c:var(--gold)">にがて ${cnt.weak}</span><span style="--c:var(--rule)">まだ ${cnt.new}</span></div></div>
-    <div class="label">分野をえらぶ（1回10問）</div>
+    <div class="label">レベルをえらぶ（1回10問）</div>
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
-      <button class="cat" data-l="all"><span class="nm">歴史まるごと</span><span class="ds">5つの分野からランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="all"><span class="nm">規則性と数列まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
       ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">年表とこつを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">規則性と数列のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
@@ -181,7 +181,7 @@ function homePaid(){
 }
 function start(list){
   G={list,i:0,score:0,miss:[],n:list.length};
-  track('level_start',{level_name:(PAID?'narabe-p-':'narabe-')+course});
+  track('level_start',{level_name:(PAID?'kisokusei-p-':'kisokusei-')+course});
   newQ();
 }
 function figSVG(f){
@@ -224,7 +224,7 @@ function figSVG(f){
 function newQ(){ const q=G.list[G.i]; G.ch=shuffle([q.a,...q.d]); G.done=false; G.pick=null; render(); }
 function render(){
   const q=G.list[G.i], d=G.done;
-  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}・${LVN[q.lv]}</span></div>
+  app.innerHTML=`<div class="top"><div class="prog" aria-hidden="true"><i style="width:${G.i/G.n*100}%"></i></div><span class="nums">${G.i+1} / ${G.n}</span><span class="tag">${CATS[q.c][0]}</span></div>
     <p class="q">${qhtml(q.q)}</p>
     ${q.fig?figSVG(q.fig):''}
     <div class="ch">${G.ch.map((c,i)=>`<button class="op ${d?(c===q.a?'right':c===G.pick?'wrong':''):''}" data-i="${i}" ${d?'disabled':''}><span class="k">${'アイウエ'[i]}</span><span>${esc(c)}</span></button>`).join('')}</div>
@@ -237,7 +237,7 @@ function pick(c){
   const q=G.list[G.i];
   G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
   if(G.ok)G.score++; else G.miss.push(q);
-  track('answer_question',{category:'narabe-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  track('answer_question',{category:'kisokusei-'+q.c,question:q.q.slice(0,90),correct:G.ok});
   render();
 }
 function explain(){
@@ -254,12 +254,12 @@ function next(){ if(++G.i<G.n)newQ(); else result(); }
 function result(){
   const n=G.n,s=G.score,r=s/n;
   const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
-  track('level_end',{level_name:(PAID?'narabe-p-':'narabe-')+course,success:s===n,score:s,total:n});
+  track('level_end',{level_name:(PAID?'kisokusei-p-':'kisokusei-')+course,success:s===n,score:s,total:n});
   const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
-  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'narabe-p-best':'narabe-best',best);}
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'kisokusei-p-best':'kisokusei-best',best);}
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
-    <p style="margin:0">${r===1?'全問正解！歴史の流れがつかめています。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'年表を見て、いつ・どこで・何が起きたかをもう一度確かめてみよう。'}</p>
+    <p style="margin:0">${r===1?'全問正解！規則性と数列はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、「同じもの」が道のり・時間・速さのどれかを確かめよう。'}</p>
     <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;

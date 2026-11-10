@@ -23,6 +23,25 @@ const admin = (path, method, body) => call("/api/admin/" + path, { method, heade
 let ng = 0;
 const ok = (cond, name) => { console.log((cond ? "ok   " : "NG   ") + name); if (!cond) ng++; };
 
+// ゲーム名（パックの名前）が重なっていないか。重なると、あとに書いたほうの教科になり、パックも上書きされる
+{
+  const fs = await import("node:fs"), path = await import("node:path");
+  const src = fs.readFileSync(new URL("../server/worker.js", import.meta.url), "utf8");
+  const body = (src.match(/const GAMES = \{([\s\S]*?)\};/) || [, ""])[1];
+  const keys = [...body.matchAll(/(?:^|[{,\s])(?:"([\w-]+)"|([A-Za-z_][\w]*))\s*:/g)].map((m) => m[1] || m[2]);
+  const dup = keys.filter((k, i) => keys.indexOf(k) !== i);
+  ok(!dup.length, "GAMES のゲーム名が重なっていない" + (dup.length ? "（" + [...new Set(dup)].join("・") + "）" : ""));
+  // ちがうページが同じパック名を読んでいないか（無料版と有料版の組は同じでよい）
+  const root = new URL("../games/", import.meta.url).pathname, seen = {};
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith(".html") ? [path.join(d, e.name)] : []);
+  for (const f of walk(root)) {
+    const t = fs.readFileSync(f, "utf8"), m = t.match(/mnAccess\.load\('([\w-]+)'/) || (/mnAccess\.load\(ID\)/.test(t) && t.match(/const ID='([\w-]+)'/)); if (!m) continue;
+    const base = f.replace(/(-full)?\.html$/, ""); (seen[m[1]] = seen[m[1]] || new Set()).add(base);
+  }
+  const clash = Object.entries(seen).filter(([, s]) => s.size > 1).map(([k]) => k);
+  ok(!clash.length, "ちがうゲームが同じパック名を使っていない" + (clash.length ? "（" + clash.join("・") + "）" : ""));
+}
+
 const plans = await call("/api/plans");
 ok(plans.status === 200 && plans.body && plans.body.prices && plans.body.periods, "料金表 /api/plans");
 ok(plans.body && plans.body.prices.shakai && plans.body.prices.teigaku, "料金表に 社会・低学年 がある");

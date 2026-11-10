@@ -133,17 +133,17 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 let G=null, shopUrl='', course=null;
-let best=store.get(PAID?'kisoku-p-best':'kisoku-best',{}), rec=store.get('kisoku-p-rec',{});
-const saveRec=()=>store.set('kisoku-p-rec',rec);
+let best=store.get(PAID?'kisokusei-p-best':'kisokusei-best',{}), rec=store.get('kisokusei-p-rec',{});
+const saveRec=()=>store.set('kisokusei-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="kisoku-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>規則性と数列 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）。</span></a>`;
+const PAIDLINK=`<a class="paid" href="kisokusei-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>規則性と数列 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）。</span></a>`;
 const TIMELINE=`<dl class="matome"><dt>周期</dt><dd>□番目÷1組のこ数 のあまりで決まる（あまり0は組の最後）</dd><dt>等差数列</dt><dd>□番目＝はじめ＋ふえる数×(□－1)</dd><dt>等差数列の和</dt><dd>(はじめ＋おわり)×こ数÷2</dd><dt>群数列</dt><dd>組に分けて、何組目の何番目かを考える</dd></dl>`;
 
-async function decrypt(){ return mnAccess.load('kisoku'); }
-function lockScreen(err){ mnAccess.lock(app,{game:'kisoku',err:err,free:'kisoku.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+async function decrypt(){ return mnAccess.load('kisokusei'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'kisokusei',err:err,free:'kisokusei.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
 function home(){
   G=null;
   if(PAID)return homePaid();
@@ -181,7 +181,7 @@ function homePaid(){
 }
 function start(list){
   G={list,i:0,score:0,miss:[],n:list.length};
-  track('level_start',{level_name:(PAID?'kisoku-p-':'kisoku-')+course});
+  track('level_start',{level_name:(PAID?'kisokusei-p-':'kisokusei-')+course});
   newQ();
 }
 function figSVG(f){
@@ -237,7 +237,7 @@ function pick(c){
   const q=G.list[G.i];
   G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
   if(G.ok)G.score++; else G.miss.push(q);
-  track('answer_question',{category:'kisoku-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  track('answer_question',{category:'kisokusei-'+q.c,question:q.q.slice(0,90),correct:G.ok});
   render();
 }
 function explain(){
@@ -254,9 +254,9 @@ function next(){ if(++G.i<G.n)newQ(); else result(); }
 function result(){
   const n=G.n,s=G.score,r=s/n;
   const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
-  track('level_end',{level_name:(PAID?'kisoku-p-':'kisoku-')+course,success:s===n,score:s,total:n});
+  track('level_end',{level_name:(PAID?'kisokusei-p-':'kisokusei-')+course,success:s===n,score:s,total:n});
   const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
-  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'kisoku-p-best':'kisoku-best',best);}
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'kisokusei-p-best':'kisokusei-best',best);}
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
     <p style="margin:0">${r===1?'全問正解！規則性と数列はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、「同じもの」が道のり・時間・速さのどれかを確かめよう。'}</p>
