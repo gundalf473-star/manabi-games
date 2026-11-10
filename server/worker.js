@@ -70,6 +70,20 @@ const PRICES = {
 // 前に買った利用コード（購入したもの。手で作ったコードは対象外）を入れると、1つのコードにつき1回だけ使えます
 const CONTINUE_OFF = 20;
 // ---- 有料版のゲームと教科 ----
+// パックの「形」：配列か、問題の数、1問ごとの項目の名前（ぜんぶの問題の項目をあわせたもの）
+function packShape(j) {
+  const arr = Array.isArray(j) ? j : (j && Array.isArray(j.QS) ? j.QS : null), keys = new Set();
+  (arr || []).forEach(x => { if (x && typeof x === "object" && !Array.isArray(x)) Object.keys(x).forEach(k => keys.add(k)); });
+  if (!arr && j && typeof j === "object") Object.keys(j).forEach(k => keys.add(k));
+  return { t: Array.isArray(j) ? "A" : "O", n: arr ? arr.length : null, k: [...keys].sort().slice(0, 40) };
+}
+// 形が同じとみなすか：配列かどうかが同じで、項目の名前が6割以上重なる（問題の数や、一部の問題にだけある項目のちがいは気にしない）
+function sameShape(a, b) {
+  if (!a || !b || a.t !== b.t) return false;
+  const A = new Set(a.k || []), B = new Set(b.k || []); if (!A.size && !B.size) return true;
+  let c = 0; A.forEach(k => { if (B.has(k)) c++; });
+  return c / (A.size + B.size - c) >= 0.6;
+}
 // 文字列の SHA-256（16進数）。パックのハッシュ値に使う
 async function sha256hex(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 const GAMES = { "t-bunsu": "tsansu", "t-graph": "tsansu", "t-en": "tsansu", "t-sakubun": "tkokugo", "t-kotowaza": "tkokugo", "rekinarabe": "shakai", "bunkashi": "shakai", "jinko": "shakai", "monogatari": "kokugo", "setsumei": "kokugo", "zuihitsu": "kokugo", "shidokkai": "kokugo", "kijutsu": "kokugo", "setsudan": "sansu", "hayasahi": "sansu", "tsurukame": "sansu", "wasa": "sansu", "kabusoku": "sansu", "tabibito": "sansu", "shigoto": "sansu", "shokuen": "sansu", "soneki": "sansu", "kisokusei": "sansu", "jiji2027": "shakai", "senchou": "shakai", "t-ensoku": "tsansu", "t-terakoya": "tsansu", "c-eiken5drama": "ceigo", "c-eiken2drama": "ceigo", "k-itnari": "kitp", "k-shukatsu": "kbiz", "c-eiken-p2pdrama": "ceigo", "c-eiken4drama": "ceigo", "c-eiken-p2drama": "ceigo", "c-eiken3drama": "ceigo", "c-eiken3vg": "ceigo", "c-eiken-p2news": "ceigo", "c-eiken5nari": "ceigo", "c-eiken-p2pnari": "ceigo", "c-eiken4nari": "ceigo", "c-eiken-p2-nari": "ceigo", "c-eiken3-nari": "ceigo", "kishoyoho": "shakai", "kisha": "kokugo", "kenchiku": "sansu", "chishitsu": "rika", "tantei": "shikou", "tenmon": "rika", "diagram": "sansu", "kokuren": "shakai", "k-bokinari": "kboki", "t-tabi": "tchishiki", "t-omise": "tsansu", "t-sekai": "tchishiki", "t-anzen": "tchishiki", "t-gyoji": "tchishiki", "t-ikinari": "tchishiki", "t-tabemono": "tchishiki", "chocho": "shakai", "meiji-daijin": "shakai", "sengo-daijin": "shakai", "edo-hanshu": "shakai", "c-tour": "cshakai", "c-rome": "cshakai", "c-rome2": "cshakai", "nara-kokushi": "shakai", "c-shugaku": "cshakai", "shugaku": "shakai", "c-sangoku": "cshakai", "c-shinheishi": "cshakai", "c-ashigaru": "cshakai", "c-eigotabi": "ceigo", "sangyo": "shakai", "k-shinnyu": "kbiz", "kojinari": "kokugo", "c-sugakusha": "csugaku", "tencho": "sansu", "mizutabi": "rika",
@@ -350,15 +364,40 @@ export default {
         const gm = ap.match(/^pack\/([a-z0-9-]+)$/);
         if (gm && req.method === "PUT") {               // 問題データを入れる
           if (!GAMES[gm[1]]) return fail(env, req, 404, "no_game");
-          const t = await req.text(); JSON.parse(t);
+          const g = gm[1], t = await req.text(); let j; try { j = JSON.parse(t); } catch (e) { return fail(env, req, 400, "bad_json"); }
           const sha = await sha256hex(t);   // 入れたものが最新か、PACKS.md のハッシュ値とくらべられるように、いっしょに記録する
-          await env.MN.put("pack:" + gm[1], t, { metadata: { sha, at: Date.now() } });
-          return json(env, req, { ok: true, game: gm[1], bytes: t.length, sha });
+          const shape = packShape(j);
+          const cur = await env.MN.getWithMetadata("pack:" + g);
+          if (cur && cur.value != null && cur.value !== t) {
+            // いま入っているものと「形」が大きくちがうときは止める（ちがうゲームのパックで上書きするのを防ぐ）。?force=1 なら入れる
+            let old = cur.metadata && cur.metadata.shape; if (!old) { try { old = packShape(JSON.parse(cur.value)); } catch (e) { old = null; } }
+            if (old && !sameShape(old, shape) && url.searchParams.get("force") !== "1") return json(env, req, { error: "shape", game: g, now: old, new: shape }, 409);
+            // 上書きする前に、いま入っているものを「1つ前」として残す
+            await env.MN.put("packprev:" + g, cur.value, { metadata: Object.assign({}, cur.metadata || {}, { shape: old || undefined, replacedAt: Date.now() }) });
+          }
+          await env.MN.put("pack:" + g, t, { metadata: { sha, at: Date.now(), shape } });
+          return json(env, req, { ok: true, game: g, bytes: t.length, sha });
+        }
+        const rm = ap.match(/^pack-restore\/([a-z0-9-]+)$/);
+        if (rm && req.method === "POST") {             // 1つ前のパックにもどす（いまのものと入れかえるので、もう一度押すと元にもどる）
+          const g = rm[1]; if (!GAMES[g]) return fail(env, req, 404, "no_game");
+          const prev = await env.MN.getWithMetadata("packprev:" + g);
+          if (!prev || prev.value == null) return fail(env, req, 404, "no_prev");
+          const cur = await env.MN.getWithMetadata("pack:" + g);
+          const pm = Object.assign({}, prev.metadata || {}); delete pm.replacedAt;
+          if (!pm.sha) pm.sha = await sha256hex(prev.value);
+          if (cur && cur.value != null) await env.MN.put("packprev:" + g, cur.value, { metadata: Object.assign({}, cur.metadata || {}, { replacedAt: Date.now() }) });
+          await env.MN.put("pack:" + g, prev.value, { metadata: Object.assign(pm, { restoredAt: Date.now() }) });
+          return json(env, req, { ok: true, game: g, sha: pm.sha });
         }
         if (ap === "pack-hashes" && req.method === "GET") {   // サーバーに入っているパックのハッシュ値（SHA-256）
           const out = {}; let cur;
           do { const l = await env.MN.list({ prefix: "pack:", cursor: cur });
-            l.keys.forEach(k => { const g = k.name.slice(5), m = k.metadata || {}; out[g] = { sha: m.sha || null, at: m.at || null }; });
+            l.keys.forEach(k => { const g = k.name.slice(5), m = k.metadata || {}; out[g] = { sha: m.sha || null, at: m.at || null, shape: m.shape || null }; });
+            cur = l.list_complete ? null : l.cursor; } while (cur);
+          cur = undefined;   // 1つ前の版（もどせるもの）
+          do { const l = await env.MN.list({ prefix: "packprev:", cursor: cur });
+            l.keys.forEach(k => { const g = k.name.slice(9), m = k.metadata || {}; if (out[g]) out[g].prev = { sha: m.sha || null, at: m.at || null, replacedAt: m.replacedAt || null }; });
             cur = l.list_complete ? null : l.cursor; } while (cur);
           // 記録がない（この機能より前に入れた）パックは、?fill=a,b,c で 20 本までその場で計算する
           const fill = (url.searchParams.get("fill") || "").split(",").filter(g => out[g] && !out[g].sha).slice(0, 20);

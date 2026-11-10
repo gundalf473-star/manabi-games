@@ -40,6 +40,7 @@ button:disabled{opacity:.4;cursor:default}
     <p class="note">渡された zip ファイルを、展開せずにそのままえらべます（いくつかまとめてえらべます）。JSON ファイルをえらぶこともできます。えらぶと中身をしらべて、「新しい単元」「中身が変わった単元」「同じなので入れない単元」に分けて見せます。</p>
     <input id="files" type="file" accept=".json,.zip,application/zip,application/json" multiple>
     <label style="display:flex;gap:6px;align-items:center;font-size:14px"><input type="checkbox" id="again" style="width:auto"> 同じものも入れ直す</label>
+    <label style="display:flex;gap:6px;align-items:center;font-size:14px"><input type="checkbox" id="force" style="width:auto"> 形がちがっても入れる（ちがうゲームのパックでないことを確かめたときだけ）</label>
     <div id="pkres" class="pkres"></div>
     <div class="row" style="flex-wrap:wrap"><button id="chk" type="button" style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">しらべる</button><button id="up" type="button" disabled style="flex:0 0 auto">入れる</button></div><pre id="o2"></pre>
     <h2 style="font-size:15px;margin-top:8px">サーバーに入っているパックのハッシュ値</h2>
@@ -98,6 +99,10 @@ const fnv=t=>{let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=
 const sums=()=>{try{return JSON.parse(ls('adm-sums')||'{}')||{};}catch(e){return {};}};
 /* SHA-256（PACKS.md・サーバーと同じ計算）と、サーバーのハッシュ値の一覧（記録のないものは 20 本ずつ計算してもらう） */
 const sha256=async t=>{if(!(window.crypto&&crypto.subtle))return '';return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('');};
+/* パックの「形」（サーバーと同じ決め方）：配列か、問題の数、項目の名前。項目が6割以上重なれば同じ形とみなす */
+const packShape=j=>{const arr=Array.isArray(j)?j:(j&&Array.isArray(j.QS)?j.QS:null),K=new Set();(arr||[]).forEach(x=>{if(x&&typeof x==='object'&&!Array.isArray(x))Object.keys(x).forEach(k=>K.add(k));});if(!arr&&j&&typeof j==='object')Object.keys(j).forEach(k=>K.add(k));return {t:Array.isArray(j)?'A':'O',n:arr?arr.length:null,k:[...K].sort().slice(0,40)};};
+const sameShape=(a,b)=>{if(!a||!b||a.t!==b.t)return false;const A=new Set(a.k||[]),B=new Set(b.k||[]);if(!A.size&&!B.size)return true;let c=0;A.forEach(k=>{if(B.has(k))c++;});return c/(A.size+B.size-c)>=0.6;};
+const shapeTxt=s=>s?((s.n!=null?s.n+'問':'')+'・項目：'+(s.k||[]).join(',')):'?';
 async function serverHashes(only,prog){
   let H=(await call('/api/admin/pack-hashes')).hashes;
   const need=Object.keys(H).filter(g=>!H[g].sha&&(!only||only.includes(g)));
@@ -110,12 +115,17 @@ $('hashes').onclick=async()=>{ $('hashes').disabled=true; $('hres').innerHTML=''
   try{ const q=$('hq').value.trim(); let H=await call('/api/admin/pack-hashes').then(d=>d.hashes);
     const gs=Object.keys(H).filter(g=>!q||g.includes(q)).sort();
     H=await serverHashes(gs,(i,n)=>show('o2h',`記録のないパックを計算しています… ${i} / ${n}`));
-    HROWS=gs.map(g=>[g,H[g].sha||'',H[g].at?new Date(H[g].at).toLocaleString('ja-JP'):'（この画面で入れる前）']);
-    $('hres').innerHTML=`<table style="border-collapse:collapse;font-size:13px;width:100%"><tr><th style="text-align:left">ゲーム</th><th style="text-align:left">SHA-256（はじめの16文字）</th><th style="text-align:left">入れた日時</th></tr>${HROWS.map(r=>`<tr><td>${esc(r[0])}</td><td title="${esc(r[1])}" style="font-family:monospace">${esc(r[1].slice(0,16))}</td><td>${esc(r[2])}</td></tr>`).join('')}</table>`;
+    const dt=t=>t?new Date(t).toLocaleString('ja-JP'):'';
+    HROWS=gs.map(g=>[g,H[g].sha||'',H[g].at?dt(H[g].at):'（この画面で入れる前）',H[g].prev?(H[g].prev.sha||''):'',H[g].prev?dt(H[g].prev.replacedAt):'']);
+    $('hres').innerHTML=`<table style="border-collapse:collapse;font-size:13px;width:100%"><tr><th style="text-align:left">ゲーム</th><th style="text-align:left">SHA-256（はじめの16文字）</th><th style="text-align:left">入れた日時</th><th style="text-align:left">1つ前の版</th></tr>${HROWS.map(r=>`<tr><td>${esc(r[0])}</td><td title="${esc(r[1])}" style="font-family:monospace">${esc(r[1].slice(0,16))}</td><td>${esc(r[2])}</td><td>${r[4]?`<span title="${esc(r[3])}" style="font-family:monospace">${esc(r[3].slice(0,8))}</span>（${esc(r[4])} に入れかえ）<button type="button" class="sub" data-restore="${esc(r[0])}" style="padding:2px 8px;margin-left:4px">1つ前にもどす</button>`:'—'}</td></tr>`).join('')}</table>`;
+    $('hres').querySelectorAll('[data-restore]').forEach(bt=>bt.onclick=async()=>{const g=bt.dataset.restore;
+      if(!confirm(g+' を1つ前の版にもどします。いま入っているものは「1つ前」に回るので、もう一度押すと元にもどせます。よろしいですか？'))return;
+      try{const d=await call('/api/admin/pack-restore/'+encodeURIComponent(g),{method:'POST',body:'{}'});await $('hashes').onclick();show('o2h',g+' を1つ前の版にもどしました（SHA-256：'+d.sha+'）。');}
+      catch(e){show('o2h','もどせませんでした：'+(e.message==='no_prev'?'1つ前の版がありません':e.message));}});
     show('o2h',`${HROWS.length}本。ハッシュ値にマウスをのせると、64文字ぜんぶが出ます。CSVで保存すると、ぜんぶの値をExcelなどでくらべられます。`); $('hcsv').disabled=!HROWS.length;
   }catch(e){ show('o2h','しらべられませんでした：'+(e.message==='not_found'||e.message==='404'?'サーバーの worker.js が古いようです。新しい worker.js を貼りかえてください。':e.message)); }
   $('hashes').disabled=false; };
-$('hcsv').onclick=()=>{ const csv='\uFEFF'+[['ゲーム','SHA-256','入れた日時'],...HROWS].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+$('hcsv').onclick=()=>{ const csv='\uFEFF'+[['ゲーム','SHA-256','入れた日時','1つ前の版のSHA-256','1つ前の版と入れかえた日時'],...HROWS].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='パックのハッシュ値_'+new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')+'.csv'; document.body.appendChild(a); a.click(); a.remove(); };
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function readPicked(){
@@ -140,32 +150,35 @@ async function check(){
   let SH=null; if(known){try{SH=await serverHashes(list.map(x=>x.g));}catch(e){SH=null;}}
   for(const x of list)x.sha=await sha256(x.text);
   list.forEach(x=>{
-    try{const j=JSON.parse(x.text);x.n=Array.isArray(j)?j.length:null;}catch(e){x.st='bad';return;}
+    try{const j=JSON.parse(x.text);x.n=Array.isArray(j)?j.length:null;x.shape=packShape(j);}catch(e){x.st='bad';return;}
     x.sum=fnv(x.text);
     if(known&&!(x.g in known))x.st='unknown';
     else if(known&&!known[x.g])x.st='new';
-    else if(x.sha&&SH&&SH[x.g]&&SH[x.g].sha)x.st=SH[x.g].sha===x.sha?'same':'changed';
+    else if(x.sha&&SH&&SH[x.g]&&SH[x.g].sha===x.sha)x.st='same';
+    else if(SH&&SH[x.g]&&SH[x.g].shape&&!sameShape(SH[x.g].shape,x.shape)){x.st='shape';x.now=SH[x.g].shape;}
+    else if(x.sha&&SH&&SH[x.g]&&SH[x.g].sha)x.st='changed';
     else if(S[x.g]===x.sum)x.st='same';
     else x.st=!known?'noconn':S[x.g]?'changed':'nocheck';
   });
   PK.items=list;
-  const LB={new:['新しい単元','入れる'],changed:['中身が変わった（サーバーのものとちがう）','入れる'],nocheck:['サーバーにある（前の記録がないので、くらべられない）','入れる'],noconn:['まだ確かめていない（サーバーにつないでから）','—'],same:['同じ（サーバーに入っているものと同じ）','入れない'],unknown:['サーバーが知らない単元','入れない'],bad:['JSON がこわれている','入れない']};
+  const LB={new:['新しい単元','入れる'],changed:['中身が変わった（サーバーのものとちがう）','入れる'],nocheck:['サーバーにある（前の記録がないので、くらべられない）','入れる'],noconn:['まだ確かめていない（サーバーにつないでから）','—'],same:['同じ（サーバーに入っているものと同じ）','入れない'],unknown:['サーバーが知らない単元','入れない'],bad:['JSON がこわれている','入れない'],shape:['形がちがう（ちがうゲームのパックかもしれません）','入れない。「形がちがっても入れる」にチェックしたときだけ入れる']};
   const cnt={};list.forEach(x=>cnt[x.st]=(cnt[x.st]||0)+1);
-  const ORD=['new','changed','nocheck','noconn','same','unknown','bad'];
-  $('pkres').innerHTML=ORD.filter(k=>cnt[k]).map(k=>`<details ${k==='same'?'':'open'}><summary><b>${LB[k][0]}</b>：${cnt[k]}本（${LB[k][1]}）</summary><div class="pkl">${list.filter(x=>x.st===k).map(x=>esc(x.g)+(x.n!=null?'（'+x.n+'問）':'')).join('、')}</div></details>`).join('')
+  const ORD=['shape','new','changed','nocheck','noconn','same','unknown','bad'];
+  $('pkres').innerHTML=ORD.filter(k=>cnt[k]).map(k=>`<details ${k==='same'?'':'open'}><summary><b>${LB[k][0]}</b>：${cnt[k]}本（${LB[k][1]}）</summary><div class="pkl">${list.filter(x=>x.st===k).map(x=>esc(x.g)+(k==='shape'?'：いま入っているもの（'+esc(shapeTxt(x.now))+'）と、えらんだもの（'+esc(shapeTxt(x.shape))+'）':x.n!=null?'（'+x.n+'問）':'')).join(k==='shape'?'<br>':'、')}</div></details>`).join('')
     +(cnt.unknown?'<p class="warn">「サーバーが知らない単元」は、Cloudflare の worker.js がまだ古いときに出ます。先に新しい worker.js を貼りかえてから、もう一度「しらべる」を押してください。</p>':'')
     +(bad.length?'<p class="warn">'+bad.map(esc).join('<br>')+'</p>':'');
-  const go=list.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same'));
+  const go=list.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same')||($('force').checked&&x.st==='shape'));
   $('up').textContent='入れる（'+go.length+'本）'; $('up').disabled=!go.length||!known;
   show('o2',`えらんだファイルの中に ${list.length}本の問題データがありました。${conn}`+(known?'':'\n入れるには、先に「1. サーバーとの接続」でつながることを確かめてください。'));
 }
-$('files').onchange=check; $('again').onchange=check; $('chk').onclick=check;
+$('files').onchange=check; $('again').onchange=check; $('force').onchange=check; $('chk').onclick=check;
 $('up').onclick=async()=>{
-  const go=PK.items.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same')); if(!go.length)return;
+  const go=PK.items.filter(x=>['new','changed','nocheck'].includes(x.st)||($('again').checked&&x.st==='same')||($('force').checked&&x.st==='shape')); if(!go.length)return;
+  if(go.some(x=>x.st==='shape')&&!confirm('形がちがうパックを入れます。いま入っているものは「1つ前」に残るので、あとでもどせます。よろしいですか？'))return;
   $('up').disabled=true; const S=sums(), out=[]; let ok=0,ng=0;
   for(let i=0;i<go.length;i++){const x=go[i];
-    try{const d=await call('/api/admin/pack/'+x.g,{method:'PUT',body:x.text});S[x.g]=x.sum;ok++;out.push('OK   '+x.g+'（'+d.bytes+'文字）');}
-    catch(e){ng++;out.push('失敗 '+x.g+'：'+(e.message==='no_game'?'サーバーが知らない単元です（worker.js を貼りかえてください）':e.message));
+    try{const d=await call('/api/admin/pack/'+x.g+($('force').checked&&(x.st==='shape'||x.st==='nocheck'||x.st==='changed')?'?force=1':''),{method:'PUT',body:x.text});S[x.g]=x.sum;ok++;out.push('OK   '+x.g+'（'+d.bytes+'文字）');}
+    catch(e){ng++;out.push('失敗 '+x.g+'：'+(e.message==='shape'?'いま入っているもの（'+shapeTxt(e.d&&e.d.now)+'）と形がちがうので止めました。ちがうゲームのパックかもしれません。確かめてから「形がちがっても入れる」で入れてください':e.message==='no_game'?'サーバーが知らない単元です（worker.js を貼りかえてください）':e.message));
       if(/fetch|network|load failed/i.test(e.message)&&ng>=3&&ok===0){out.push('','サーバーにつながらないため、止めました。「1. サーバーとの接続」で、つながるか確かめてください。');break;}}
     show('o2','入れています… '+(i+1)+' / '+go.length+'\n'+out.slice(-6).join('\n'));}
   ls('adm-sums',JSON.stringify(S));

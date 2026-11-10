@@ -12,6 +12,8 @@ for (const f of fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
   const body = fs.readFileSync(path.join(dir, f), "utf8");
   const r = await fetch(api.replace(/\/$/, "") + "/api/admin/pack/" + game, { method: "PUT", headers: { "X-Admin-Key": key, "Content-Type": "application/json" }, body });
   const d = await r.json().catch(() => ({}));
-  if (r.ok) { ok++; console.log("OK  ", game, d.bytes + "文字"); } else { ng++; console.log("失敗", game, r.status, d.error || ""); }
+  if (r.ok) { ok++; console.log("OK  ", game, d.bytes + "文字"); }
+  else if (d.error === "shape") { ng++; console.log("止めた", game, "いま入っているもの（" + (d.now.n ?? "?") + "問・" + d.now.k.join(",") + "）と形がちがいます。ちがうゲームのパックかもしれません。本当に入れかえるときは admin.html の「形がちがっても入れる」を使ってください"); }
+  else { ng++; console.log("失敗", game, r.status, d.error || ""); }
 }
 console.log(`入れたデータ ${ok}本、失敗 ${ng}本`);

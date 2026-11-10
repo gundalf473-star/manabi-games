@@ -204,6 +204,14 @@ for (const file of walk(GAMES)) {
   });
 }
 
+// 同じ名前のゲームがちがうフォルダにないか。名前が同じだと、パック（有料版の問題データ）も、子どもの記録（にがて・覚えた）も同じ場所に入って上書きされる
+{
+  const where = {};
+  for (const g of list) { const id = g.file.replace(/(-full|300)?\.html$/, ""), dir = decodeURIComponent(g.url).split("/").slice(0, -1).join("/"); (where[id] = where[id] || new Set()).add(dir); }
+  const dup = Object.entries(where).filter(([, s]) => s.size > 1);
+  if (dup.length) throw new Error("同じ名前のゲームがちがうフォルダにあります。どちらかの名前を変えてください：\n" + dup.map(([id, s]) => "  " + id + "：" + [...s].join("、")).join("\n"));
+}
+
 const order = site.subjectOrder || [];
 const rank = (s) => (order.indexOf(s) === -1 ? 999 : order.indexOf(s));
 list.sort((a, b) => rank(a.subject) - rank(b.subject) || a.subject.localeCompare(b.subject, "ja") || a.unit.localeCompare(b.unit, "ja") || a.title.localeCompare(b.title, "ja"));

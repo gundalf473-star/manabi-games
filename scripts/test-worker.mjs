@@ -6,6 +6,7 @@ const kv = new Map(), meta = new Map();
 const env = {
   MN: {
     get: async (k) => (kv.has(k) ? kv.get(k) : null),
+    getWithMetadata: async (k) => ({ value: kv.has(k) ? kv.get(k) : null, metadata: meta.get(k) || null }),
     put: async (k, v, o) => { kv.set(k, v); if (o && o.metadata) meta.set(k, o.metadata); else meta.delete(k); },
     delete: async (k) => { kv.delete(k); },
     list: async ({ prefix = "" } = {}) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => (meta.has(name) ? { name, metadata: meta.get(name) } : { name })), list_complete: true }),
@@ -64,6 +65,23 @@ ok((await admin("pack/no-such-game-xyz", "PUT", "{}")).status >= 400, "登録し
   ok(h2.body.hashes.hayasa && h2.body.hashes.hayasa.sha === createHash("sha256").update('{"old":1}').digest("hex"), "管理：記録のない古いパックのハッシュ値も計算できる");
   kv.delete("pack:hayasa");
   ok((await call("/api/admin/pack-hashes")).status === 401, "管理キーなしでは ハッシュ値の一覧は見られない");
+}
+{ // 形がちがうパックは止める・1つ前を残す・もどせる
+  const quiz = JSON.stringify([{ c: "L1", lv: 1, q: "問1", a: "あ", d: ["い", "う", "え"], e: "" }, { c: "L1", lv: 1, q: "問2", a: "か", d: ["き", "く", "け"], e: "", fig: { tbl: {} } }]);
+  const quiz2 = JSON.stringify([{ c: "L1", lv: 1, q: "問1", a: "あ", d: ["い", "う", "え"], e: "直した" }]);
+  const puzzle = JSON.stringify([{ lv: 1, cards: [3, 1, 2], best: 2 }]);
+  ok((await admin("pack/wasa", "PUT", quiz)).status === 200, "形：はじめて入れる");
+  ok((await admin("pack/wasa", "PUT", quiz2)).status === 200, "形：同じ形（問題の数や一部の項目のちがいは気にしない）なら入れられる");
+  const st = await admin("pack/wasa", "PUT", puzzle);
+  ok(st.status === 409 && st.body.error === "shape" && kv.get("pack:wasa") === quiz2, "形：形がちがうパックは止めて、上書きしない");
+  ok((await admin("pack/wasa?force=1", "PUT", puzzle)).status === 200 && kv.get("pack:wasa") === puzzle, "形：force=1 なら形がちがっても入れられる");
+  ok(kv.get("packprev:wasa") === quiz2, "1つ前：上書きする前のものを残す");
+  const hh = (await admin("pack-hashes", "GET")).body.hashes.wasa;
+  ok(hh && hh.prev && hh.prev.replacedAt, "1つ前：一覧に出る");
+  ok((await admin("pack-restore/wasa", "POST", {})).status === 200 && kv.get("pack:wasa") === quiz2 && kv.get("packprev:wasa") === puzzle, "1つ前：もどすと入れかわる（もう一度押すと元にもどる）");
+  ok((await admin("pack-restore/tsurukame", "POST", {})).status === 404, "1つ前：ないときはもどせない");
+  ok((await admin("pack/wasa", "PUT", "{こわれた")).status === 400, "こわれた JSON は入れない");
+  ["pack:wasa", "packprev:wasa"].forEach((k) => { kv.delete(k); meta.delete(k); });
 }
 { const inf = (await admin("info", "GET")).body || { packs: {} }; ok(inf.packs.nariki === true && inf.packs["keisan-kufu"] === false, "管理：入れたパックだけが「入っている」と出る"); }
 
