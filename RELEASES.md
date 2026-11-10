@@ -9,6 +9,8 @@
 
 ## まだリリースしていない変更（次のリリースでまとめて入れる）
 
+パックを入れる前に、手元の zip が最新かを [PACKS.md](PACKS.md) のハッシュ値で確かめる。
+
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
 | 毎日の漢字（kanji.html）を公開。低学年 国語「ことわざ・かんようくのはじめ」（t-kotowaza、50問）。どちらも辞書での確認と、公開前の確認ずみ | t-kotowaza を追加（GitHub Actions で自動デプロイ） | packs-teigaku-kotowaza.zip（t-kotowaza）を入れる | 変更なし |
