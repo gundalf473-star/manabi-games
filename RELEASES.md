@@ -14,9 +14,6 @@
 | 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
 |---|---|---|---|
 | 毎日の漢字（kanji.html）を公開。低学年 国語「ことわざ・かんようくのはじめ」（t-kotowaza、50問）。どちらも辞書での確認と、公開前の確認ずみ | t-kotowaza を追加（GitHub Actions で自動デプロイ） | packs-teigaku-kotowaza.zip（t-kotowaza）を入れる | 変更なし |
-| 国語の読解3単元（setsumei・zuihitsu・shidokkai、各100問）。公開前の確認と事実の検索確認ずみ | 3単元を追加（GitHub Actions で自動デプロイ） | packs-kokugo-dokkai3.zip を入れる | 変更なし |
-| 社会シミュレーション「戦後日本の大臣になろう」（sengo-daijin、全3シナリオ）。公開前の確認と事実の検索確認ずみ | sengo-daijin を追加（GitHub Actions で自動デプロイ） | packs-sengo-daijin.zip を入れる | 変更なし |
-| ITパスポート「AI・データ活用」（k-ipai、100問）。公開前の確認と事実の検索確認ずみ | k-ipai を追加（GitHub Actions で自動デプロイ） | packs-k-ipai.zip を入れる | 変更なし |
 | 管理画面で、サーバーに入っているパックのハッシュ値（SHA-256）を出せるようにした。パックを入れるとき、サーバーのものと同じかどうかもハッシュ値でくらべる。PACKS.md の値とくらべると、最新が入っているか分かる | パックを入れるときにハッシュ値も記録し、一覧を返す（GitHub Actions で自動デプロイ） | 変更なし | **新しい admin.html に入れかえる**（パソコンの admin.html を、リポジトリの server/admin.html に） |
 | 「まとめて解き直し」（tokinaoshi.html）を追加。中学受験の有料版93単元の、にがて・今日の解き直しを単元をまたいで解く。トップと学習の道すじから入れる。公開前の確認（2回）ずみ | 変更なし | 変更なし（いまのパックを使う） | 変更なし |
 | 「学習の道すじ」（roadmap.html）を追加。トップからリンク。公開前の確認ずみ | 変更なし | 変更なし | 変更なし |
@@ -32,6 +29,7 @@ worker.js は 2026-10-31 から GitHub Actions で自動で Cloudflare に入る
 
 | リリース日時 | サーバー（worker.js） | 問題データ | 管理画面 | メモ |
 |---|---|---|---|---|
+| 2026-11-10 21:07（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ） | packs-k-ipai.zip（k-ipai、100問）、packs-sengo-daijin.zip（sengo-daijin、3シナリオ）、packs-kokugo-dokkai3.zip の3本（setsumei・shidokkai・zuihitsu、各100問）を入れた。どれも「すべて入りました」を確認 | 変更なし | ITパスポート「AI・データ活用」、戦後日本の大臣になろう、国語の読解3単元。残りは t-kotowaza と思考力 narabe の入れ直し |
 | 2026-11-10 21:01（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ Deploy worker・Deploy site とも成功） | packs-c-kogo.zip（c-kogo、100問）、packs-rekinarabe.zip（rekinarabe、100問）、作り直した packs-sansu-8.zip の8本（kabusoku・kisokusei・shigoto・shokuen・soneki・tabibito・tsurukame・wasa、各100問）を入れた。どれも「すべて入りました」を確認 | 変更なし（新しい admin.html はまだ） | 中高一貫 国語「古文単語」、社会「歴史の並べかえ」の名前の変更、算数8単元。思考力の narabe の入れ直しはまだ |
 | 2026-11-08 22:37（日本時間） | bc7db08 の版（GitHub Actions の自動デプロイ Deploy worker・Deploy site とも成功） | packs-rome2.zip（c-rome2、4シナリオ）を入れた。22:37 に「1本すべて入りました」を確認 | 変更なし | 中高一貫 社会「ローマ帝国を治めよう②」（共和政のはじまりと身分闘争・ポエニ戦争と地中海・ユスティニアヌスと東ローマ・コンスタンティノープルの最後）。公開前の確認と、事実の検索確認ずみ |
 | 2026-11-08 21:54（日本時間） | 8b8f967 の版（GitHub Actions の自動デプロイ） | packs-joho-design.zip（c-joho9、100問）を入れた。21:54 に「1本すべて入りました」を確認 | 変更なし | 中高一貫 情報「情報デザイン」。公開前の確認と、全問の事実の検索確認ずみ |
@@ -43,6 +41,14 @@ worker.js は 2026-10-31 から GitHub Actions で自動で Cloudflare に入る
 | 2026-11-07 12:11（日本時間） | 7156af2 の版（GitHub Actions の自動デプロイ Deploy worker #61 で反映） | senchou を入れた。12:15 に「すべて入っています」を確認（下の表の単元すべて） | 変更なし（パソコンの admin.html は、情報・就活・資格・低学年を選べる最新版であることを 11/7 に確認） | 新作7本（遠足の計画を立てよう・寺子屋に入門しよう・英語ドラマ紙芝居 英検5級／2級・IT担当になりきろう・就活生になりきろう・貨物船の船長になりきろう）と、じゅくごクロス4コース版（無料）。7本とも公開前の確認ずみ。あわせて、これまで「まだリリースしていない変更」にあった分も、サーバーと問題データに入っていることを確認した |
 | 2026-10-29 05:56（日本時間） | fa04e4b の版（343行） | 全62本を入れ直し（「すべて入っています」を確認） | fa04e4b の版（つながらないときの理由を表示） | 独自ドメイン manabigamebako.com に切りかえ（SITE_URL も変更）。購入ページは準備中・サーバーでも決済を止めた。理科・社会の新単元、公民・都道府県の有料版、思考力2本、算数2本など 43件をまとめてリリース |
 | 2026-10-28 08:30（日本時間） | 349893f の版（274行） | kisoku・ronri・tenkai（確認後の版）。kamakura ほか全部入っていることを確認 | 349893f の版（思考力を選べる） | 思考力を別プランにした。鎌倉時代・思考力3本を追加 |
+
+### 2026-11-10 21:07 のリリースの内容
+
+| 変更 | サーバー（worker.js） | 問題データ | 管理画面 |
+|---|---|---|---|
+| 国語の読解3単元（setsumei・zuihitsu・shidokkai、各100問）。公開前の確認と事実の検索確認ずみ | 3単元を追加（GitHub Actions で自動デプロイ） | packs-kokugo-dokkai3.zip を入れる | 変更なし |
+| 社会シミュレーション「戦後日本の大臣になろう」（sengo-daijin、全3シナリオ）。公開前の確認と事実の検索確認ずみ | sengo-daijin を追加（GitHub Actions で自動デプロイ） | packs-sengo-daijin.zip を入れる | 変更なし |
+| ITパスポート「AI・データ活用」（k-ipai、100問）。公開前の確認と事実の検索確認ずみ | k-ipai を追加（GitHub Actions で自動デプロイ） | packs-k-ipai.zip を入れる | 変更なし |
 
 ### 2026-11-10 21:01 のリリースの内容
 
