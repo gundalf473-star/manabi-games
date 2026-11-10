@@ -126,7 +126,7 @@ const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])re
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
 const PAIDLINK=`<a class="paid" href="asuka-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>飛鳥時代クイズ 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。5つの分野別コース、覚えた問題の記録と、苦手だけの復習つき。</span></a>`;
-const TIMELINE=`<dl class="timeline"><dt>538年</dt><dd>百済から仏教が伝わる</dd><dt>593年</dt><dd>聖徳太子が推古天皇の摂政になる</dd><dt>603年</dt><dd>冠位十二階</dd><dt>604年</dt><dd>十七条の憲法</dd><dt>607年</dt><dd>小野妹子を遣隋使として送る・法隆寺</dd><dt>630年</dt><dd>最初の遣唐使</dd><dt>645年</dt><dd>大化の改新が始まる</dd><dt>663年</dt><dd>白村江の戦い</dd><dt>672年</dt><dd>壬申の乱</dd><dt>694年</dt><dd>藤原京に都をうつす</dd><dt>701年</dt><dd>大宝律令ができる</dd><dt>710年</dt><dd>平城京に都をうつす（飛鳥時代へ）</dd></dl>`;
+const TIMELINE=`<dl class="timeline"><dt>538年</dt><dd>百済から仏教が伝わる</dd><dt>593年</dt><dd>聖徳太子が推古天皇の摂政になる</dd><dt>603年</dt><dd>冠位十二階</dd><dt>604年</dt><dd>十七条の憲法</dd><dt>607年</dt><dd>小野妹子を遣隋使として送る・法隆寺</dd><dt>630年</dt><dd>最初の遣唐使</dd><dt>645年</dt><dd>大化の改新が始まる</dd><dt>663年</dt><dd>白村江の戦い</dd><dt>672年</dt><dd>壬申の乱</dd><dt>694年</dt><dd>藤原京に都をうつす</dd><dt>701年</dt><dd>大宝律令ができる</dd><dt>710年</dt><dd>平城京に都をうつす（奈良時代へ）</dd></dl>`;
 
 async function decrypt(pass){
   const p=JSON.parse(document.getElementById('data').textContent);

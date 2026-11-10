@@ -346,6 +346,22 @@ if (fs.existsSync(path.join(ROOT, "og.png"))) fs.copyFileSync(path.join(ROOT, "o
     .replace("{{ACCESS}}", () => ACCESS + REVIEW).replace("/*CATALOG*/[]", () => JSON.stringify(cat).replace(/</g, "\\u003c"));
   fs.writeFileSync(path.join(OUT, "tokinaoshi.html"), sitePage(page, "tokinaoshi.html", { noindex: true }));
   console.log(`まとめて解き直し：${cat.length}単元`);
+  // トップの「まとめて解き直し」のカードは、このページで出せる単元だけを数える
+  const gj = JSON.parse(fs.readFileSync(path.join(OUT, "games.json"), "utf8"));
+  gj.toki = cat.map((c) => ({ id: c.id, rk: c.rk }));
+  fs.writeFileSync(path.join(OUT, "games.json"), JSON.stringify(gj, null, 2));
+}
+// ---- 学習の道すじ：中学受験の単元を、時期ごとに順番つきで。ページの中の PLAN にあるファイル名がなければ止める ----
+{
+  const road = fs.readFileSync(path.join(ROOT, "roadmap.html"), "utf8");
+  const U = {};
+  for (const g of list) if (g.course === "juken" && !g.paid) U[g.file] = { t: g.title, url: g.url, g: g.grade };
+  const plan = (road.match(/const PLAN=\[([\s\S]*?)\n\];/) || [, ""])[1];
+  const missing = [...new Set([...plan.matchAll(/\['([\w-]+\.html)'/g)].map((m) => m[1]).filter((f) => !U[f]))];
+  if (missing.length) throw new Error("学習の道すじ：見つからない単元 " + missing.join("・"));
+  if (fs.existsSync(path.join(ROOT, "tokinaoshi.html"))) U.__toki = 1;
+  fs.writeFileSync(path.join(OUT, "roadmap.html"), sitePage(road.replaceAll("{{SITE_NAME}}", esc(site.name)).replace("{{GA}}", GA)
+    .replace("/*UNITS*/{}", () => JSON.stringify(U).replace(/</g, "\\u003c")), "roadmap.html"));
 }
 if (SITE_URL) {
   fs.writeFileSync(path.join(OUT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${SITEMAP.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
