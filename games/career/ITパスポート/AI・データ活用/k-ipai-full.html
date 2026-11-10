@@ -1,28 +1,28 @@
-<title>規則性と数列 100問</title>
+<title>AI・データ活用 100問</title>
 <meta name="game:paid" content="利用コード">
-<meta name="game:subject" content="算数">
-<meta name="game:unit" content="規則性と数列">
-<meta name="game:grade" content="小4〜">
+<meta name="game:course" content="career"><meta name="game:subject" content="ITパスポート">
+<meta name="game:unit" content="AI・データ活用">
+<meta name="game:grade" content="高校生〜社会人">
 <meta name="game:players" content="1人">
-<meta name="description" content="規則性と数列の有料版。規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）を、基本から入試レベルまで5段階×20問の全100問。">
+<meta name="description" content="AI・データ活用の有料版。機械学習とディープラーニング、生成AIとプロンプト・RAG、ハルシネーションやバイアスなどのリスク、AI事業者ガイドラインと著作権、ビッグデータと統計、事例問題まで、5段階×20問の全100問。問題はすべてオリジナルです。">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@700&family=BIZ+UDPGothic:wght@400;700&display=swap">
 <style>
-/* Layout: 1列。レベルの札（5段階）→ 4択の問題 → 正解の印と解き方 → 結果と復習。青を差し色に */
+/* Layout: 1列。レベルの札（5段階）→ 4択の問題 → 正解の印と解き方 → 結果と復習。朱色を差し色に */
 :root{
   --bg:#f2f4f8; --surface:#ffffff; --fg:#2a2520; --muted:#6a625a; --rule:#ddd6cb;
-  --ink:#3b2f6b; --seal:#1d4ed8; --sealsoft:#e0e8fb; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
+  --ink:#3b2f6b; --seal:#c2410c; --sealsoft:#fbe9df; --ok:#1d7a4c; --oksoft:#e0f0e6; --ng:#c8352d; --ngsoft:#f8e3e1; --gold:#a97c12; --pick:#efeae1;
   --display:"Dela Gothic One","Hiragino Kaku Gothic StdN",sans-serif;
   --mincho:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
   --body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
-  --ink:#b3a6f0; --seal:#7da2ff; --sealsoft:#1b2540; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#15130f; --surface:#1e1b17; --fg:#ece6dc; --muted:#a59c90; --rule:#34302a;
-  --ink:#b3a6f0; --seal:#7da2ff; --sealsoft:#1b2540; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
+  --ink:#b3a6f0; --seal:#fb923c; --sealsoft:#3a2216; --ok:#4cc184; --oksoft:#1b3326; --ng:#f07468; --ngsoft:#3a2220; --gold:#e1b44a; --pick:#28241e; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 64px}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
@@ -38,7 +38,7 @@ button{font:inherit;color:inherit}
 .prog i{display:block;height:100%;background:var(--seal)}
 .nums{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
 .tag{font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:0 6px;white-space:nowrap}
-.q{margin:0;font-size:18px;font-weight:700;line-height:1.7}
+.q{margin:0;white-space:pre-line;font-size:18px;font-weight:700;line-height:1.7}
 .q em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal)}
 .ch{display:grid;gap:8px}
 .op{border:2px solid var(--rule);background:var(--surface);border-radius:8px;padding:12px 14px;text-align:left;font-weight:700;cursor:pointer;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
@@ -110,8 +110,8 @@ button{font:inherit;color:inherit}
 
 <div class="wrap">
   <header>
-    <h1><small>算数クイズ</small>規則性と数列 100問</h1>
-    <p class="lead">基本から入試レベルまで、5つのレベルに20問ずつ。1回10問。</p>
+    <h1><small>ITパスポートクイズ</small>AI・データ活用 100問</h1>
+    <p class="lead">AIの基本・生成AI・リスクとルール・データ活用・事例問題。5つのレベルに20問ずつ。1回10問。　ITパスポート試験は独立行政法人情報処理推進機構（IPA）が実施する国家試験です。このコンテンツはIPAとは関係がなく、IPAの承認を受けたものではありません。問題はすべて試験の形式を参考にしたオリジナルで、過去問題は使っていません。</p>
   </header>
   <section class="box" id="app"></section>
 </div>
@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 /* 問題データ: c=分野, lv=難しさ（1基本 2標準 3発展）, q=問題, a=正解, d=まちがいの選択肢3つ, e=解説 */
 const PAID=true;
 let QS=[];
-const CATS={L1:["レベル1 基本","くり返し・曜日・等差数列・小数のくり返し"],L2:["レベル2 標準","等差数列の和・何番目・1からの和・奇数の和"],L3:["レベル3 応用","マッチぼう・ご石・三角形・立方体"],L4:["レベル4 発展","群数列・分数の数列・数表"],L5:["レベル5 入試","差が変わる数列・前の2つの和・わり切れない数・はじめてこえる数"]};
+const CATS={L1:["レベル1 AIの基本","機械学習・ディープラーニング・生成AI・LLM"],L2:["レベル2 生成AIの活用","プロンプト・RAG・トークン・業務での使い方"],L3:["レベル3 リスクとルール","ガイドライン・著作権・バイアス・AIへの攻撃"],L4:["レベル4 データ活用","ビッグデータ・オープンデータ・統計・分析手法"],L5:["レベル5 事例問題","場面に合った手法と対応を選ぶ"]};
 const LVN={1:'基本',2:'標準',3:'発展'};
 const app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -133,23 +133,23 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const norm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s\-ー－]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 let G=null, shopUrl='', course=null;
-let best=store.get(PAID?'kisoku-p-best':'kisoku-best',{}), rec=store.get('kisoku-p-rec',{});
-const saveRec=()=>store.set('kisoku-p-rec',rec);
+let best=store.get(PAID?'k-ipai-p-best':'k-ipai-best',{}), rec=store.get('k-ipai-p-rec',{});
+const saveRec=()=>store.set('k-ipai-p-rec',rec);
 const qkey=q=>q.q;
 const state=q=>{const r=rec[qkey(q)];if(!r)return 'new';if(r[0]>=2&&r[0]>r[1])return 'master';if(r[1]>0)return 'weak';return 'try';};
 const RVID=location.pathname.split('/').pop().replace(/(-full)?(\.html)?$/,'');
 const record=(q,ok)=>{if(!PAID)return false;window.mnReview&&mnReview.mark(RVID,qkey(q),ok);const before=state(q);const r=rec[qkey(q)]||[0,0];r[ok?0:1]++;rec[qkey(q)]=r;saveRec();return state(q)==='master'&&before!=='master';};
-const PAIDLINK=`<a class="paid" href="kisoku-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>規則性と数列 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。規則性と数列（くり返し、曜日、等差数列とその和、図形の規則、群数列、数表）。</span></a>`;
-const TIMELINE=`<dl class="matome"><dt>周期</dt><dd>□番目÷1組のこ数 のあまりで決まる（あまり0は組の最後）</dd><dt>等差数列</dt><dd>□番目＝はじめ＋ふえる数×(□－1)</dd><dt>等差数列の和</dt><dd>(はじめ＋おわり)×こ数÷2</dd><dt>群数列</dt><dd>組に分けて、何組目の何番目かを考える</dd></dl>`;
+const PAIDLINK=`<a class="paid" href="k-ipai-full.html" id="paid-link"><span class="pt">もっと練習したい人へ　<b>AI・データ活用 100問</b>（有料版）</span><span class="pd">無料版の5問もふくむ全100問。AIの基本・生成AIの活用・リスクとルール・データ活用・事例問題の5段階、各20問（すべてオリジナル）。</span></a>`;
+const TIMELINE=`<dl class="matome"><dt>ITパスポート試験とAI</dt><dd>2023年8月のシラバス改訂で生成AIの内容が加わり、2024年4月の試験から出題されている。AIは「ビジネスシステム」「法務」「セキュリティ」など、いろいろな分野で出てくる</dd><dt>機械学習の3つ</dt><dd>教師あり学習（正解つきのデータで学ぶ：分類・回帰）、教師なし学習（正解なしでグループ分けなど：クラスタリング）、強化学習（試行錯誤して報酬が大きくなるように学ぶ）</dd><dt>ディープラーニング</dt><dd>人の脳の神経のしくみをまねたニューラルネットワークを何層も重ねた機械学習。画像認識・音声認識・生成AIなどに使われる</dd><dt>生成AIの注意点</dt><dd>もっともらしい誤り（ハルシネーション）、データのかたより（バイアス）、学習した時点より後の情報がない、機密情報・個人情報の入力、著作権などの権利侵害</dd><dt>RAG</dt><dd>検索拡張生成。資料やデータベースを検索し、その内容を根拠に回答させる</dd><dt>AIへの攻撃</dt><dd>プロンプトインジェクション（不正な指示）、データポイズニング（学習データに毒を混ぜる）、敵対的攻撃（小さな細工で誤認識させる）</dd><dt>日本のルール</dt><dd>人間中心のAI社会原則（2019年）、AI事業者ガイドライン（総務省・経済産業省。2024年4月に第1.0版、2025年3月に第1.1版。AI開発者・AI提供者・AI利用者の3つの立場）、AI推進法（人工知能関連技術の研究開発及び活用の推進に関する法律。2025年6月公布、9月に全面施行）</dd><dt>著作権法第30条の4</dt><dd>AIの学習など、著作物の表現を楽しむことを目的としない利用（情報解析など）を定める。ただし著作権者の利益を不当に害する場合は対象外。生成物が既存の作品に似ていれば、侵害になることがある</dd><dt>データ活用</dt><dd>ビッグデータ、オープンデータ、メタデータ。データウェアハウス（分析用に統合して保管）・データレイク（元の形のままためる）。相関があっても因果があるとは限らない</dd><dt>ご注意</dt><dd>ITパスポート試験は独立行政法人情報処理推進機構（IPA）が実施する国家試験です。このコンテンツはIPAとは関係がなく、IPAの承認を受けたものではありません。問題はすべて試験の形式を参考にしたオリジナルで、過去問題は使っていません。</dd></dl>`;
 
-async function decrypt(){ return mnAccess.load('kisoku'); }
-function lockScreen(err){ mnAccess.lock(app,{game:'kisoku',err:err,free:'kisoku.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
+async function decrypt(){ return mnAccess.load('k-ipai'); }
+function lockScreen(err){ mnAccess.lock(app,{game:'k-ipai',err:err,free:'k-ipai.html',onOpen:async()=>{ QS=await decrypt(); home(); }}); }
 function home(){
   G=null;
   if(PAID)return homePaid();
   app.innerHTML=`<div class="label">あそびかた</div>
     <p style="margin:0">4つの中から正しいものをえらぼう。答えたあとに解説が出ます。</p>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">規則性と数列のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">AI・データ活用のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div class="row"><button class="btn go" id="go">はじめる（${QS.length}問）</button>${best.free!=null?`<span class="note">ベスト ${best.free} / ${QS.length}</span>`:''}</div>${PAIDLINK}`;
   document.getElementById('go').onclick=()=>{course='free';start(shuffle(QS));};
 }
@@ -162,11 +162,11 @@ function homePaid(){
     <div class="label">レベルをえらぶ（1回10問）</div>
     <div class="cats">${Object.entries(CATS).map(([k,[nm,ds]])=>{const m=QS.filter(q=>q.c===k&&state(q)==='master').length;const n=QS.filter(q=>q.c===k).length;
         return `<button class="cat" data-l="${k}"><span class="nm">${nm}</span><span class="ds">${ds}<br>覚えた ${m} / ${n}問</span><span class="best">${best[k]!=null?`ベスト ${best[k]}/10`:''}</span></button>`;}).join('')}
-      <button class="cat" data-l="all"><span class="nm">規則性と数列まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
+      <button class="cat" data-l="all"><span class="nm">AI・データ活用まるごと</span><span class="ds">5つのレベルからランダムに10問</span><span class="best">${best.all!=null?`ベスト ${best.all}/10`:''}</span></button>
       ${window.mnReview?(()=>{const n=QS.filter(q=>mnReview.isDue(RVID,qkey(q))).length;return `<button class="cat" data-l="review" ${n?'':'disabled'}><span class="nm">今日の解き直し</span><span class="ds">前にまちがえた問題を、日をあけてもう一度（${n}問）</span></button>`;})():''}
       <button class="cat" data-l="weak" ${weak.length?'':'disabled'}><span class="nm">にがて</span><span class="ds">まちがえたことのある問題（${weak.length}問）</span></button>
       <button class="cat" data-l="fresh" ${fresh.length?'':'disabled'}><span class="nm">まだやっていない</span><span class="ds">一度も出ていない問題（${fresh.length}問）</span></button></div>
-    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">規則性と数列のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">AI・データ活用のまとめを見る</summary><div style="margin-top:8px">${TIMELINE}</div></details>
     <div><button class="linkbtn" id="reset">記録を消す</button> <span id="resetq"></span></div>`;
   app.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{
     const l=b.dataset.l; course=l;
@@ -181,7 +181,7 @@ function homePaid(){
 }
 function start(list){
   G={list,i:0,score:0,miss:[],n:list.length};
-  track('level_start',{level_name:(PAID?'kisoku-p-':'kisoku-')+course});
+  track('level_start',{level_name:(PAID?'k-ipai-p-':'k-ipai-')+course});
   newQ();
 }
 function figSVG(f){
@@ -237,7 +237,7 @@ function pick(c){
   const q=G.list[G.i];
   G.done=true; G.pick=c; G.ok=c===q.a; G.newM=record(q,G.ok);
   if(G.ok)G.score++; else G.miss.push(q);
-  track('answer_question',{category:'kisoku-'+q.c,question:q.q.slice(0,90),correct:G.ok});
+  track('answer_question',{category:'k-ipai-'+q.c,question:q.q.slice(0,90),correct:G.ok});
   render();
 }
 function explain(){
@@ -254,12 +254,12 @@ function next(){ if(++G.i<G.n)newQ(); else result(); }
 function result(){
   const n=G.n,s=G.score,r=s/n;
   const rank=r===1?'満点':r>=.8?'特選':r>=.6?'入選':r>=.4?'佳作':'もう一歩';
-  track('level_end',{level_name:(PAID?'kisoku-p-':'kisoku-')+course,success:s===n,score:s,total:n});
+  track('level_end',{level_name:(PAID?'k-ipai-p-':'k-ipai-')+course,success:s===n,score:s,total:n});
   const bk=PAID?(CATS[course]||course==='all'?course:null):'free';
-  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'kisoku-p-best':'kisoku-best',best);}
+  if(bk&&(best[bk]==null||s>best[bk])){best[bk]=s;store.set(PAID?'k-ipai-p-best':'k-ipai-best',best);}
   app.innerHTML=`<div class="label">結果</div>
     <div class="score"><div class="big">${s}<small> / ${n}問</small></div><div class="rank">${rank}</div></div>
-    <p style="margin:0">${r===1?'全問正解！規則性と数列はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解き方を読み直して、「同じもの」が道のり・時間・速さのどれかを確かめよう。'}</p>
+    <p style="margin:0">${r===1?'全問正解！AI・データ活用はばっちりです。':r>=.6?'よくできました。まちがえた問題の解説を読み直そう。':'まちがえた問題の解説を読み直して、もう一度ちょうせんしよう。'}</p>
     <div class="row"><button class="btn go" id="again">${PAID?'分野をえらぶ':'もう一度'}</button>${G.miss.length?'<button class="btn" id="retry">まちがえた問題だけ</button>':''}</div>
     ${PAID?'':PAIDLINK}
     ${G.miss.length?`<div class="label" style="color:var(--fg)">まちがえた問題</div>${G.miss.map(q=>`<div class="rv">${esc(q.q)}<br>→ <b>${esc(q.a)}</b></div>`).join('')}`:''}`;
