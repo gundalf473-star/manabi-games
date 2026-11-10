@@ -23,7 +23,7 @@ worker.js は 2026-10-31 から GitHub Actions で自動で Cloudflare に入る
 
 | リリース日時 | サーバー（worker.js） | 問題データ | 管理画面 | メモ |
 |---|---|---|---|---|
-| 2026-11-10 22:00（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ） | 思考力「並べかえ名人」の元のパック（narabe.json、6091文字）を入れ直した。「1本すべて入りました」と、そのあと「同じ（サーバーに入っているものと同じ）」を確認。11/8 15:28 に入った社会の版（24686文字）とは別のもの | 変更なし | 11/8 から思考力「並べかえ名人」の有料版に社会のデータが入っていたのを元にもどした |
+| 2026-11-10 22:00（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ） | 思考力「並べかえ名人」の元のパック（narabe.json、6091文字）を入れ直した。「1本すべて入りました」と、そのあと「同じ（サーバーに入っているものと同じ）」を確認。11/8 15:28 に入った社会の版（24686文字）とは別のもの | 変更なし | 11/8 から思考力「並べかえ名人」の有料版に社会のデータが入っていたのを元にもどした。22:24 に有料版で正しく表示されることを確認（利用者へのお知らせは出さない） |
 | 2026-11-10 21:08（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ） | packs-teigaku-kotowaza.zip（t-kotowaza、50問）を入れた。「1本すべて入りました」を確認 | 6403ec8 の版（ハッシュ値を出せる）に入れかえた | 低学年「ことわざ・かんようくのはじめ」、毎日の漢字。残りは思考力 narabe の入れ直し |
 | 2026-11-10 21:07（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ） | packs-k-ipai.zip（k-ipai、100問）、packs-sengo-daijin.zip（sengo-daijin、3シナリオ）、packs-kokugo-dokkai3.zip の3本（setsumei・shidokkai・zuihitsu、各100問）を入れた。どれも「すべて入りました」を確認 | 変更なし | ITパスポート「AI・データ活用」、戦後日本の大臣になろう、国語の読解3単元。残りは t-kotowaza と思考力 narabe の入れ直し |
 | 2026-11-10 21:01（日本時間） | 6403ec8 の版（GitHub Actions の自動デプロイ Deploy worker・Deploy site とも成功） | packs-c-kogo.zip（c-kogo、100問）、packs-rekinarabe.zip（rekinarabe、100問）、作り直した packs-sansu-8.zip の8本（kabusoku・kisokusei・shigoto・shokuen・soneki・tabibito・tsurukame・wasa、各100問）を入れた。どれも「すべて入りました」を確認 | 変更なし（新しい admin.html はまだ） | 中高一貫 国語「古文単語」、社会「歴史の並べかえ」の名前の変更、算数8単元。思考力の narabe の入れ直しはまだ |
