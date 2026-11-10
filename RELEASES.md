@@ -16,6 +16,7 @@
 | 国語の読解3単元（setsumei・zuihitsu・shidokkai、各100問）。公開前の確認と事実の検索確認ずみ | 3単元を追加（GitHub Actions で自動デプロイ） | packs-kokugo-dokkai3.zip を入れる | 変更なし |
 | 社会シミュレーション「戦後日本の大臣になろう」（sengo-daijin、全3シナリオ）。公開前の確認と事実の検索確認ずみ | sengo-daijin を追加（GitHub Actions で自動デプロイ） | packs-sengo-daijin.zip を入れる | 変更なし |
 | ITパスポート「AI・データ活用」（k-ipai、100問）。公開前の確認と事実の検索確認ずみ | k-ipai を追加（GitHub Actions で自動デプロイ） | packs-k-ipai.zip を入れる | 変更なし |
+| 中高一貫 国語「古文単語」（c-kogo、100問）。辞書での確認と、公開前の確認（3回）ずみ | c-kogo を追加（GitHub Actions で自動デプロイ） | packs-c-kogo.zip を入れる | 変更なし |
 | **名前の重なりを直した**：社会「歴史の並べかえ」を narabe → rekinarabe に、算数「規則性と数列」を kisoku → kisokusei に変えた（思考力の「並べかえ名人」「規則性パズル」と名前が同じで、サーバーでは思考力あつかい・パックも上書きされていた）。test-worker.mjs に、名前の重なりを見つける確認を足した | rekinarabe・kisokusei を追加（GitHub Actions で自動デプロイ） | packs-rekinarabe.zip と、作り直した packs-sansu-8.zip を入れる。あわせて、11/8 に上書きされた思考力「並べかえ名人」（narabe）のパックを、元のパックから入れ直す | 変更なし |
 
 **販売を始めるとき**：`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして worker.js を貼り直し、Stripe を本番モード（sk_live）に切りかえる。
