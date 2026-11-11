@@ -22,7 +22,8 @@ function fmt(t){var d=new Date(t);return (d.getFullYear()!==new Date().getFullYe
 function left(t){var ms=t-Date.now();if(ms<=0)return '終了';var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);return d>0?'あと'+d+'日'+(d<3?h+'時間':''):h>0?'あと'+h+'時間'+m+'分':'あと'+m+'分';}
 var ERR={not_found:'この利用コードは見つかりません。文字をもう一度確かめてください。',expired:'この利用コードは、利用期間が終わっています。',revoked:'この利用コードは使えなくなっています。',
   devices:'この利用コードは、すでに3台の端末で使われています。ほかの端末で使うときは、お問い合わせください。',bad_code:'利用コードは「MN-」から始まる12文字です。',subject:'このプランでは、この教科のゲームは使えません。',
-  no_data:'問題データの準備中です。しばらくしてからもう一度ためしてください。',net:'通信できませんでした。インターネットにつながっているか確かめてください。',noapi:'有料版の販売は準備中です。'};
+  no_data:'問題データの準備中です。しばらくしてからもう一度ためしてください。',net:'通信できませんでした。インターネットにつながっているか確かめてください。',noapi:'有料版の販売は準備中です。',
+  too_many:'まちがった利用コードが続けて入力されたため、しばらく受け付けを止めています。15分ほどたってから、もう一度ためしてください。'};
 function call(path,opt){
   if(!API)return Promise.reject({error:'noapi'});
   return fetch(API.replace(/\/$/,'')+path,opt).then(function(r){return r.json().catch(function(){return {};}).then(function(d){if(!r.ok){d=d||{};d.status=r.status;throw d;}return d;});},function(){throw {error:'net'};});

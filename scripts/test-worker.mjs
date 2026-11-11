@@ -97,5 +97,23 @@ const other = await call("/api/pack/keisan-kufu", { headers: { Authorization: "B
 ok(other.status === 403, "社会のコードでは 算数のパックは読めない");
 ok((await call("/api/pack/nariki")).status === 401, "コードなしでは パックは読めない");
 
+{ // 失敗の回数制限（総当たり対策）。接続元ごとに数える
+  const from = (ip, opt = {}) => ({ ...opt, headers: { "CF-Connecting-IP": ip, "Content-Type": "application/json", ...(opt.headers || {}) } });
+  const act = (ip, c) => call("/api/activate", from(ip, { method: "POST", body: JSON.stringify({ code: c, device: "dev-rate-limit" }) }));
+  const r1 = await act("10.0.0.1", "MN-AAAA-AAAA-AAAA");
+  ok(r1.status === 404, "まちがった利用コードは 見つからない（1回目）");
+  for (let i = 0; i < 9; i++) await act("10.0.0.1", "MN-AAAA-AAAA-AAAA");
+  const r11 = await act("10.0.0.1", "MN-AAAA-AAAA-AAAA");
+  ok(r11.status === 429 && r11.body && r11.body.error === "too_many" && r11.body.retry > 0, "利用コードを10回まちがえると 受け付けを止める");
+  ok((await act("10.0.0.2", "MN-AAAA-AAAA-AAAA")).status === 404, "ほかの接続元は 止まらない");
+  const cont = await call("/api/continue", from("10.0.0.1", { method: "POST", body: JSON.stringify({ code: "MN-AAAA-AAAA-AAAA", subject: "chuko" }) }));
+  ok(cont.status === 429, "止まっている間は 継続割引の確認も受け付けない");
+
+  const adm = (ip, key) => call("/api/admin/info", from(ip, { headers: { "X-Admin-Key": key } }));
+  for (let i = 0; i < 5; i++) await adm("10.0.1.1", "wrong");
+  ok((await adm("10.0.1.1", "test-admin")).status === 429, "管理キーを5回まちがえると 正しいキーでも止める");
+  ok((await adm("10.0.1.2", "test-admin")).status === 200, "ほかの接続元からは 管理画面を使える");
+}
+
 console.log(ng ? `\n${ng} 件 NG。本番には出しません。` : "\nすべて ok");
 process.exit(ng ? 1 : 0);

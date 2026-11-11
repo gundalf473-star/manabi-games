@@ -101,6 +101,10 @@ const CONTACT_KINDS = ["有料版・利用コードについて", "お支払い�
 const MAX_DEVICES = 3;            // 1つの利用コードで使える端末の数
 const START_LIMIT = 180 * 864e5;  // 購入から使い始めるまでの期限（180日）
 const TOKEN_TTL = 7 * 864e5;      // 端末に渡す「通行証」の長さ（期限より短ければ、期限の方が優先）
+// 失敗の回数制限（総当たり対策）。同じ接続元（IP）からの「失敗」だけを数え、上限をこえたら時間枠が終わるまで受け付けない
+//   code  … 利用コードの入力（端末で使う・継続割引の確認）で「見つからない」
+//   admin … 管理画面の管理キーちがい
+const RATE_LIMITS = { code: { max: 10, win: 15 * 6e4 }, admin: { max: 5, win: 15 * 6e4 } };
 
 const enc = new TextEncoder();
 const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -110,6 +114,18 @@ async function hmac(secret, msg) {
   return new Uint8Array(await crypto.subtle.sign("HMAC", k, enc.encode(msg)));
 }
 const hex = (u8) => [...u8].map((b) => b.toString(16).padStart(2, "0")).join("");
+// 回数制限のしくみ。IP はそのまま残さず、ハッシュにして時間枠ごとのキーにする
+async function failGate(env, req, kind, now) {
+  const L = RATE_LIMITS[kind], ip = req.headers.get("CF-Connecting-IP") || "?";
+  const slot = Math.floor(now / L.win), key = `rl:${kind}:${hex(await hmac(env.TOKEN_SECRET || "x", ip)).slice(0, 16)}:${slot}`;
+  const n = Number((await env.MN.get(key)) || 0);
+  return {
+    blocked: n >= L.max,
+    retry: Math.ceil(((slot + 1) * L.win - now) / 6e4),   // あと何分で受け付けるか
+    fail: () => env.MN.put(key, String(n + 1), { expirationTtl: Math.ceil(L.win / 1000) + 600 }),
+  };
+}
+const tooMany = (env, req, g) => fail(env, req, 429, "too_many", { retry: g.retry });
 function safeEq(a, b) { if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
 
 // 利用コード：まぎらわしい文字（0/O, 1/I/L）を使わない 12文字 → MN-XXXX-XXXX-XXXX
@@ -231,7 +247,10 @@ export default {
       if (p === "/api/continue" && req.method === "POST") {
         const b = await req.json().catch(() => ({}));
         if (!CONTINUE_OFF) return fail(env, req, 400, "no_discount");
+        const g = await failGate(env, req, "code", now);
+        if (g.blocked) return tooMany(env, req, g);
         const r = await continueRec(env, b.code, b.subject);
+        if (r.error === "not_found") await g.fail();
         return r.error ? fail(env, req, r.error === "not_found" ? 404 : 400, r.error) : json(env, req, { ok: true, code: r.code, off: CONTINUE_OFF });
       }
 
@@ -291,8 +310,10 @@ export default {
         const b = await req.json().catch(() => ({}));
         const code = normCode(b.code), dev = String(b.device || "").slice(0, 64);
         if (!code || dev.length < 8) return fail(env, req, 400, "bad_code");
+        const g = await failGate(env, req, "code", now);
+        if (g.blocked) return tooMany(env, req, g);
         const rec = await getRec(env, code);
-        if (!rec) return fail(env, req, 404, "not_found");
+        if (!rec) { await g.fail(); return fail(env, req, 404, "not_found"); }
         const st = statusOf(rec, now);
         if (st === "revoked") return fail(env, req, 403, "revoked");
         if (st === "expired") return fail(env, req, 410, "expired", { exp: rec.exp || null });
@@ -351,7 +372,9 @@ export default {
       // ---- 管理用（X-Admin-Key が必要） ----
       if (p.startsWith("/api/admin/")) {
         const key = req.headers.get("X-Admin-Key") || "";
-        if (!env.ADMIN_KEY || !safeEq(key, env.ADMIN_KEY)) return fail(env, req, 401, "admin");
+        const g = await failGate(env, req, "admin", now);
+        if (g.blocked) return tooMany(env, req, g);       // 正しいキーでも、上限をこえている間は受け付けない
+        if (!env.ADMIN_KEY || !safeEq(key, env.ADMIN_KEY)) { await g.fail(); return fail(env, req, 401, "admin"); }
         const ap = p.slice("/api/admin/".length);
         if (ap === "info" && req.method === "GET") {     // 接続の確認と、問題データが入っているか
           // 1回の一覧取得でまとめて調べる（ゲームが増えても処理時間の上限をこえないように）

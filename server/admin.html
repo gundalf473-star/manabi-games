@@ -92,7 +92,7 @@ const show=(el,d)=>{ if(d&&d.exp){d.exp_jst=new Date(d.exp).toLocaleString('ja-J
 $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$('key').value.trim());
   try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
-  catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
+  catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。（5回まちがえると、15分ほど受け付けなくなります）':e.message==='too_many'?'管理キーのまちがいが続いたため、サーバーが受け付けを止めています。あと'+((e.d&&e.d.retry)||15)+'分ほどたってから、正しい管理キーでもう一度ためしてください。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
 /* 2. 問題データ：zip のままでも JSON でもえらべる。中身をしらべて「新しい・変わった・同じ・サーバーが知らない」に分け、入れるものだけ入れる */
 const PK={items:[],known:null};
 const fnv=t=>{let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(16)+'-'+t.length;};
