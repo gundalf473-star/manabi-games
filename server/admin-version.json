@@ -1,0 +1,5 @@
+{
+  "version": "2026-11-11.1",
+  "sha256": "bee7742fcaeccc199a5ca7ad205b96b753394615f945716d524b9174d672c55f",
+  "note": "admin.html を変えたら version を上げて、admin.html の ADMIN_VERSION と worker.js の ADMIN_LATEST も同じにする。sha256 は ADMIN_VERSION を空にした admin.html のハッシュ値（node scripts/test-worker.mjs が教えてくれる）"
+}

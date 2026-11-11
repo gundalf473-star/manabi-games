@@ -29,6 +29,7 @@ button:disabled{opacity:.4;cursor:default}
 <body>
 <div class="wrap">
   <h1>まなびゲーム箱 管理画面</h1>
+  <p class="note" id="ver" style="margin-top:-6px">管理画面のバージョン：<b id="vnum"></b> <span id="vstate"></span></p>
   <p class="note">このファイルはGitHubに入れず、自分のパソコンだけで使ってください。管理キーは、このパソコンのブラウザにだけ保存されます。</p>
 
   <section class="box"><h2>1. サーバーとの接続</h2>
@@ -90,9 +91,16 @@ async function call(path,opt={}){
 }
 const show=(el,d)=>{ if(d&&d.exp){d.exp_jst=new Date(d.exp).toLocaleString('ja-JP');} if(d&&d.created)d.created_jst=new Date(d.created).toLocaleString('ja-JP'); $(el).textContent=typeof d==='string'?d:JSON.stringify(d,null,2); };
 $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$('key').value.trim());
-  try{ const d=await call('/api/admin/info'); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
+  try{ const d=await call('/api/admin/info'); verState(d.adminLatest); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
   catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。（5回まちがえると、15分ほど受け付けなくなります）':e.message==='too_many'?'管理キーのまちがいが続いたため、サーバーが受け付けを止めています。あと'+((e.d&&e.d.retry)||15)+'分ほどたってから、正しい管理キーでもう一度ためしてください。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
+/* この管理画面のバージョン。admin.html を変えたら、ここと worker.js の ADMIN_LATEST と server/admin-version.json をいっしょに上げる（テストで確かめる） */
+const ADMIN_VERSION='2026-11-11.1';
+$('vnum').textContent=ADMIN_VERSION;
+const vcmp=(a,b)=>String(a).localeCompare(String(b),'en',{numeric:true});
+function verState(latest){const el=$('vstate');if(!latest){el.textContent='';return;}
+  if(vcmp(ADMIN_VERSION,latest)>=0){el.textContent='（最新です）';el.style.color='';}
+  else{el.textContent='… 新しい管理画面（'+latest+'）があります。リポジトリの server/admin.html か、送られた admin.html に入れかえてください。';el.style.color='#b3261e';el.style.fontWeight='700';}}
 /* 2. 問題データ：zip のままでも JSON でもえらべる。中身をしらべて「新しい・変わった・同じ・サーバーが知らない」に分け、入れるものだけ入れる */
 const PK={items:[],known:null};
 const fnv=t=>{let h=0x811c9dc5;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(16)+'-'+t.length;};

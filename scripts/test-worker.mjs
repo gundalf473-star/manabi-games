@@ -43,6 +43,20 @@ const ok = (cond, name) => { console.log((cond ? "ok   " : "NG   ") + name); if 
   ok(!clash.length, "ちがうゲームが同じパック名を使っていない" + (clash.length ? "（" + clash.join("・") + "）" : ""));
 }
 
+// 管理画面（admin.html）のバージョン：admin.html を変えたのにバージョンを上げていないと止める
+{
+  const fs = await import("node:fs"), { createHash } = await import("node:crypto");
+  const adm = fs.readFileSync(new URL("../server/admin.html", import.meta.url), "utf8");
+  const rec = JSON.parse(fs.readFileSync(new URL("../server/admin-version.json", import.meta.url), "utf8"));
+  const wsrc = fs.readFileSync(new URL("../server/worker.js", import.meta.url), "utf8");
+  const v = (adm.match(/const ADMIN_VERSION='([^']*)';/) || [])[1], lv = (wsrc.match(/const ADMIN_LATEST = "([^"]*)";/) || [])[1];
+  const sha = createHash("sha256").update(adm.replace(/const ADMIN_VERSION='[^']*';/, "const ADMIN_VERSION='';")).digest("hex");
+  ok(v && v === lv && v === rec.version, "admin.html・worker.js・admin-version.json のバージョンが同じ（" + v + "・" + lv + "・" + rec.version + "）");
+  ok(sha === rec.sha256, "admin.html を変えたらバージョンを上げる（admin-version.json の version を上げ、sha256 を " + sha + " にする）");
+  const info = await admin("info", "GET");
+  ok(info.body.adminLatest === lv, "管理：接続の確認で、いちばん新しい管理画面のバージョンを返す");
+}
+
 const plans = await call("/api/plans");
 ok(plans.status === 200 && plans.body && plans.body.prices && plans.body.periods, "料金表 /api/plans");
 ok(plans.body && plans.body.prices.shakai && plans.body.prices.teigaku, "料金表に 社会・低学年 がある");
