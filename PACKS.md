@@ -13,6 +13,7 @@
 
 | zip | 作った日時（日本時間） | zip の SHA-256 | 中のゲーム（json の SHA-256） |
 |---|---|---|---|
+| packs-sengoku-daimyo.zip | 2026-11-11 16:16 | `db79ced8f1185a44bea13e6cbafb8684a316ed8a83b70bed648bfd64644d9cbb` | sengoku-daimyo：`c0f7a61b4ff1bc718c2cc918eb13f6a309a5195f677359020ca405be211ae158` |
 | packs-c-kogo.zip | 2026-11-10 15:40 | `0a431f92fae117d2ca66a9af20e857939c3d5f395dbdc57c7caeb61d316077b8` | c-kogo：`7be8ca4b98daacfa81f4609cef781736c3a092685c7e05b10f69782696411282` |
 | packs-sansu-8.zip | 2026-11-10 15:39 | `4f399ca2bcd6ec899809ad3c7448eebbf2bc4321c2fe45b18ef4cad9baa9c6fa` | kabusoku：`9a8574f0c9c7ac97586d7eb9448b3461bbd6504987c7421988a997ae905b00b0`<br>kisokusei：`50e2eeea370501f4ddd0475f1e9748f502b0a477acd700c40a471c295ab1340f`<br>shigoto：`f935e0a300779aa53bf9c3ccdce0159e47209c2a5b7108d9406a0fee4e0ba378`<br>shokuen：`67cc04cf308fb85fcc20d20a2b27e90a24cb002fc9ce5aa14712c7092c0b2cc5`<br>soneki：`90bba42691a8ef1d1305a6dde4a0ec3646336a5e80cc1d787e64dc76b6f1ef87`<br>tabibito：`c01059f909a5e55d76066d101a3c500aa5c2c43703e2a24a60a374351c7e273d`<br>tsurukame：`872aeb022bfd9ac646fbc0cc1e5d7c0c06fe7070901a73e3beda8c28427d8f7a`<br>wasa：`55bde6920a3f5a3de9ededcbc697ce072d54390311e18a9c3439a7e13affb9d6` |
 | packs-rekinarabe.zip | 2026-11-10 15:39 | `c6d16dc7d8501818188bfbd462ccbaf86db38bcf92aa2a37b15c425d2fd5ace1` | rekinarabe：`435ea2d030f5fa05a67cf9d64ed1e8b48080b43405de7e29ba3f070383ee7f3c` |
