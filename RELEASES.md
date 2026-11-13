@@ -7,6 +7,10 @@
 - **問題データ**：`admin.html` で packs の JSON を入れる
 - **管理画面**：`server/admin.html` を、自分のパソコンのものと入れかえる
 
+## 販売開始
+
+- 2026-11-13：Stripe を本番（制限付きキー rk_live・本番 Webhook）に切りかえたうえで、`buy.html` の `OPEN` と `server/worker.js` の `SALES_OPEN` を `true` にして販売を開始（サーバーは GitHub Actions で自動デプロイ）。止めるときは両方を `false` に戻す
+
 ## まだリリースしていない変更（次のリリースでまとめて入れる）
 
 パックを入れる前に、手元の zip が最新かを [PACKS.md](PACKS.md) のハッシュ値で確かめる。

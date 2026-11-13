@@ -90,7 +90,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
 const A=window.mnAccess, app=document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* 販売を始めるときは true にする（サーバー server/worker.js の SALES_OPEN も true にする） */
-const OPEN=false;
+const OPEN=true;
 const yen=n=>n.toLocaleString('ja-JP')+'円';
 const q=new URLSearchParams(location.search);
 // サーバーが使えないとき（準備中）に見せる料金表。値段はサーバー（server/worker.js）の PRICES が正です

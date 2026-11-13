@@ -10,7 +10,7 @@
 //   変数           SITE_URL（例 https://xxxx.github.io/manabi）, MAIL_FROM（任意。例 まなびゲーム箱 <info@example.com>）, CONTACT_TO（任意。お問い合わせを知らせる先のメール）
 
 // ---- 販売の受付。準備中は false（購入ページの buy.html の OPEN も同じにする）----
-const SALES_OPEN = false;
+const SALES_OPEN = true;
 
 // ---- 料金表（税込・円）。ここを変えると、購入ページの表示も変わります ----
 // all（全教科）は中学受験の5教科。中高一貫コースは中学生向けの別のプランで、中学受験の全教科には入りません
