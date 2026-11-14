@@ -68,6 +68,8 @@ const games = Object.keys((st.body && st.body.packs) || {});
 ok(games.length > 300, `ゲームの登録数 ${games.length}`);
 
 ok((await admin("pack/nariki", "PUT", '{"t":"test"}')).status === 200, "管理：パックを入れる");
+{ const r = await admin("pack/nariki", "GET"); ok(r.status === 200, "管理：パックを書き出す"); }
+ok((await call("/api/admin/pack/nariki")).status === 401, "管理キーなしでは パックを書き出せない");
 ok((await admin("pack/no-such-game-xyz", "PUT", "{}")).status >= 400, "登録していないゲームのパックは入れられない");
 { // パックのハッシュ値：入れたときに記録し、一覧で返す。記録のない古いパックは fill で計算する
   const { createHash } = await import("node:crypto");

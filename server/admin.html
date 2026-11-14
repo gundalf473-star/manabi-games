@@ -47,7 +47,11 @@ button:disabled{opacity:.4;cursor:default}
     <h2 style="font-size:15px;margin-top:8px">サーバーに入っているパックのハッシュ値</h2>
     <p class="note">いまサーバーに入っているパックの SHA-256 ハッシュ値を出します。リポジトリの PACKS.md の「json の SHA-256」と同じなら、最新のパックが入っています（入れた日時も出ます）。この画面で入れる前に入れたパックは、記録がないので、ボタンを押したときに計算します（本数が多いと少し時間がかかります）。</p>
     <div class="row" style="flex-wrap:wrap"><input id="hq" placeholder="ゲーム名でしぼる（例：sansu、c-、kisoku）" style="flex:1 1 200px"><button id="hashes" type="button" style="flex:0 0 auto">ハッシュ値を出す</button><button id="hcsv" type="button" disabled style="background:var(--bg);color:var(--fg);border:1px solid var(--rule);flex:0 0 auto">CSVで保存</button></div>
-    <div id="hres" style="overflow-x:auto"></div><pre id="o2h"></pre></section>
+    <div id="hres" style="overflow-x:auto"></div><pre id="o2h"></pre>
+    <h2 style="font-size:15px;margin-top:8px">サーバーに入っているパックを書き出す</h2>
+    <p class="note">いまつないでいるサーバーから、パック（.json）をこのパソコンにダウンロードします。別のサーバー（検証用など）へ移すときに使います。書き出したら「1. サーバーとの接続」で移す先につなぎ直し、上の「問題データを入れる」で入れてください。ファイルは GitHub には上げないでください。</p>
+    <div class="row" style="flex-wrap:wrap"><input id="xq" placeholder="ゲーム名（いくつでも。例：c-eiken3-nari c-eiken-p2-nari sengoku-daimyo）" style="flex:1 1 260px"><button id="xpack" type="button" style="flex:0 0 auto">書き出す</button></div>
+    <pre id="o2x"></pre></section>
 
   <section class="box"><h2>3. 利用コードを作る（テスト・プレゼント・おわび用）</h2>
     <div class="row"><div><label for="is">教科</label><select id="is"><option value="all">全教科</option><option value="kokugo">国語</option><option value="sansu">算数</option><option value="rika">理科</option><option value="shakai">社会</option><option value="shikou">思考力</option><option value="chuko">中高一貫 全教科</option><option value="ckokugo">中高一貫 国語</option><option value="csugaku">中高一貫 数学</option><option value="ceigo">中高一貫 英語</option><option value="crika">中高一貫 理科</option><option value="cshakai">中高一貫 社会</option><option value="cjoho">中高一貫 情報</option><option value="career">就活・資格 全教科</option><option value="kspin">就活・資格 SPI非言語</option><option value="kspig">就活・資格 SPI言語</option><option value="kitp">就活・資格 ITパスポート</option><option value="kfe">就活・資格 基本情報技術者</option><option value="kstat">就活・資格 統計学</option><option value="kboki">就活・資格 簿記3級</option><option value="ktoeic">就活・資格 TOEIC英語</option><option value="kbiz">就活・資格 ビジネスマナー</option><option value="teigaku">低学年 全教科</option><option value="tsansu">低学年 算数</option><option value="tkokugo">低学年 国語</option><option value="tshikou">低学年 思考力</option><option value="tchishiki">低学年 ちしき</option></select></div>
@@ -90,12 +94,19 @@ async function call(path,opt={}){
   const d=await r.json().catch(()=>({})); if(!r.ok)throw Object.assign(new Error(d.error||r.status),{d});return d;
 }
 const show=(el,d)=>{ if(d&&d.exp){d.exp_jst=new Date(d.exp).toLocaleString('ja-JP');} if(d&&d.created)d.created_jst=new Date(d.created).toLocaleString('ja-JP'); $(el).textContent=typeof d==='string'?d:JSON.stringify(d,null,2); };
+/* パックを書き出す（ゲーム名ごとに .json をダウンロード） */
+$('xpack').onclick=async()=>{ const ids=$('xq').value.split(/[\s,、]+/).map(x=>x.trim()).filter(Boolean); if(!ids.length){show('o2x','ゲーム名を入れてください。');return;}
+  const out=[]; for(const g of ids){ try{ const r=await fetch(base()+'/api/admin/pack/'+encodeURIComponent(g),{headers:{'X-Admin-Key':$('key').value.trim()}});
+      if(!r.ok){const d=await r.json().catch(()=>({})); out.push(g+'：'+(d.error==='no_data'?'このサーバーには入っていません':d.error==='no_game'?'そのゲーム名はありません':'失敗（'+(d.error||r.status)+'）'));continue;}
+      const t=await r.text(); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'application/json'})); a.download=g+'.json'; document.body.appendChild(a); a.click(); a.remove();
+      out.push(g+'：書き出しました（'+Math.round(t.length/1024)+'KB）'); await new Promise(f=>setTimeout(f,400));
+    }catch(e){out.push(g+'：失敗（'+e.message+'）');} show('o2x',out.join('\n')); } };
 $('save').onclick=async()=>{ ls('adm-api',$('api').value.trim()); ls('adm-key',$('key').value.trim());
   try{ const d=await call('/api/admin/info'); verState(d.adminLatest); const miss=Object.entries(d.packs).filter(([k,v])=>!v).map(([k])=>k);
     show('o1',`つながりました。${d.test?'テストモード（sk_test）':'本番モード（sk_live）'}です。\nサイトのアドレス（SITE_URL）：${d.site||'（未設定）'}\n問題データ：${miss.length?'まだ入っていないもの '+miss.join('、'):'すべて入っています'}`); }
   catch(e){ show('o1', e.message==='admin'?'サーバーにはつながりましたが、管理キーがちがいます。（5回まちがえると、15分ほど受け付けなくなります）':e.message==='too_many'?'管理キーのまちがいが続いたため、サーバーが受け付けを止めています。あと'+((e.d&&e.d.retry)||15)+'分ほどたってから、正しい管理キーでもう一度ためしてください。':/fetch|network|load failed/i.test(e.message)?'つながりません。アドレスがまちがっているか、このブラウザ・ネットワークからサーバーに通信できません。\n（ファイルは、ダウンロードしたものをダブルクリックしてブラウザで開いてください。アドレス欄が file:/// で始まっていれば正しい開き方です）\nくわしい理由：'+e.message:'サーバーにはつながりましたが、エラーが返ってきました：'+e.message); } };
 /* この管理画面のバージョン。admin.html を変えたら、ここと worker.js の ADMIN_LATEST と server/admin-version.json をいっしょに上げる（テストで確かめる） */
-const ADMIN_VERSION='2026-11-11.1';
+const ADMIN_VERSION='2026-11-15.1';
 $('vnum').textContent=ADMIN_VERSION;
 const vcmp=(a,b)=>String(a).localeCompare(String(b),'en',{numeric:true});
 function verState(latest){const el=$('vstate');if(!latest){el.textContent='';return;}

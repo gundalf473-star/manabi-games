@@ -85,7 +85,7 @@ function sameShape(a, b) {
   return c / (A.size + B.size - c) >= 0.6;
 }
 // いちばん新しい管理画面（server/admin.html）のバージョン。admin.html の ADMIN_VERSION と同じにする
-const ADMIN_LATEST = "2026-11-11.1";
+const ADMIN_LATEST = "2026-11-15.1";
 // 文字列の SHA-256（16進数）。パックのハッシュ値に使う
 async function sha256hex(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 const GAMES = { "t-bunsu": "tsansu", "t-graph": "tsansu", "t-en": "tsansu", "t-sakubun": "tkokugo", "t-kotowaza": "tkokugo", "rekinarabe": "shakai", "bunkashi": "shakai", "jinko": "shakai", "monogatari": "kokugo", "setsumei": "kokugo", "zuihitsu": "kokugo", "shidokkai": "kokugo", "kijutsu": "kokugo", "setsudan": "sansu", "hayasahi": "sansu", "tsurukame": "sansu", "wasa": "sansu", "kabusoku": "sansu", "tabibito": "sansu", "shigoto": "sansu", "shokuen": "sansu", "soneki": "sansu", "kisokusei": "sansu", "jiji2027": "shakai", "senchou": "shakai", "t-ensoku": "tsansu", "t-terakoya": "tsansu", "c-eiken5drama": "ceigo", "c-eiken2drama": "ceigo", "k-itnari": "kitp", "k-shukatsu": "kbiz", "c-eiken-p2pdrama": "ceigo", "c-eiken4drama": "ceigo", "c-eiken-p2drama": "ceigo", "c-eiken3drama": "ceigo", "c-eiken3vg": "ceigo", "c-eiken-p2news": "ceigo", "c-eiken5nari": "ceigo", "c-eiken-p2pnari": "ceigo", "c-eiken4nari": "ceigo", "c-eiken-p2-nari": "ceigo", "c-eiken3-nari": "ceigo", "kishoyoho": "shakai", "kisha": "kokugo", "kenchiku": "sansu", "chishitsu": "rika", "tantei": "shikou", "tenmon": "rika", "diagram": "sansu", "kokuren": "shakai", "k-bokinari": "kboki", "t-tabi": "tchishiki", "t-omise": "tsansu", "t-sekai": "tchishiki", "t-anzen": "tchishiki", "t-gyoji": "tchishiki", "t-ikinari": "tchishiki", "t-tabemono": "tchishiki", "chocho": "shakai", "meiji-daijin": "shakai", "sengo-daijin": "shakai", "sengoku-daimyo": "shakai", "edo-hanshu": "shakai", "c-tour": "cshakai", "c-rome": "cshakai", "c-rome2": "cshakai", "nara-kokushi": "shakai", "c-shugaku": "cshakai", "shugaku": "shakai", "c-sangoku": "cshakai", "c-shinheishi": "cshakai", "c-ashigaru": "cshakai", "c-eigotabi": "ceigo", "sangyo": "shakai", "k-shinnyu": "kbiz", "kojinari": "kokugo", "c-sugakusha": "csugaku", "tencho": "sansu", "mizutabi": "rika",
@@ -402,6 +402,12 @@ export default {
           }
           await env.MN.put("pack:" + g, t, { metadata: { sha, at: Date.now(), shape } });
           return json(env, req, { ok: true, game: g, bytes: t.length, sha });
+        }
+        if (gm && req.method === "GET") {                // 問題データを書き出す（別のサーバーへ移すときなどに使う）
+          if (!GAMES[gm[1]]) return fail(env, req, 404, "no_game");
+          const t = await env.MN.get("pack:" + gm[1]);
+          if (t == null) return fail(env, req, 404, "no_data");
+          return new Response(t, { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${gm[1]}.json"`, ...cors(env, req) } });
         }
         const rm = ap.match(/^pack-restore\/([a-z0-9-]+)$/);
         if (rm && req.method === "POST") {             // 1つ前のパックにもどす（いまのものと入れかえるので、もう一度押すと元にもどる）
