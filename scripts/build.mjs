@@ -94,6 +94,11 @@ const FEEDBACK = fs.readFileSync(path.join(ROOT, "scripts", "feedback.html"), "u
 const API = (process.env.API_BASE ?? site.apiBase ?? "").trim().replace(/\/$/, "");
 const ACCESS = fs.readFileSync(path.join(ROOT, "scripts", "access.html"), "utf8").replace("__API__", () => JSON.stringify(API));
 const REVIEW = fs.readFileSync(path.join(ROOT, "scripts", "review.html"), "utf8");
+// 無料版のページで「この端末では有料版が使えます」と知らせるための、プランの記号（教科のプランと、そのコースの全教科プラン）。
+// 教科とプランの対応表は scripts/access.html のものをそのまま読む（2か所に書くと、教科を足したときにずれるため）
+const ACCESS_MAP = (name) => { const m = ACCESS.match(new RegExp("var " + name + "=(\\{[^}]*\\})")); if (!m) throw new Error("scripts/access.html に " + name + " の対応表が見つかりません（無料版の「有料版が使えます」の帯で使います）"); return Function("return " + m[1])(); };
+const PLAN_SUBJ = { juken: ACCESS_MAP("SUBJ"), chuko: ACCESS_MAP("CSUBJ"), career: ACCESS_MAP("KSUBJ"), teigaku: ACCESS_MAP("TSUBJ") };
+const planKeys = (course, subject) => { const c = PLAN_SUBJ[course] && course !== "juken" ? course : "juken", k = PLAN_SUBJ[c][subject], all = c === "juken" ? "all" : c; return k ? [k, all] : [all]; };
 
 // 運営からのお知らせ。緊急のもの（帯）は管理画面からサーバーに入れ、全ページで読みこむ。ふつうのものは notices.json に書く
 const NOTICE_TPL = fs.readFileSync(path.join(ROOT, "scripts", "notice.html"), "utf8").replace("__API__", () => JSON.stringify(API));
@@ -179,7 +184,7 @@ for (const file of walk(GAMES)) {
     const fullName = base.replace(/\.html$/i, "-full.html"), freeName = base.replace(/-full\.html$/i, ".html");
     const full = !isPaid && fs.existsSync(path.join(dir, fullName)) ? fullName : null;
     const freeRel = isPaid && fs.existsSync(path.join(dir, freeName)) ? [...rel.slice(0, -1), freeName] : rel;
-    const info = { site: site.name, title, file: base, root: "../".repeat(rel.length), full, total: full ? paidTotal(fullName) : null,
+    const info = { site: site.name, title, file: base, root: "../".repeat(rel.length), full, plans: full ? planKeys(course, subject) : null, total: full ? paidTotal(fullName) : null,
       shareUrl: SITE_URL ? pageUrl("games/" + freeRel.join("/")) : null };
     html = html.replace(/<\/head>/i, (m) => pwaTags(rel.length) + EXTRA_TPL.replace("__INFO__", () => JSON.stringify(info).replace(/</g, "\\u003c")) + m);
   }

@@ -1,6 +1,8 @@
 <script>
 /* ゲームが終わったときの「おうちの人に見せる」（結果カード）と、無料版から有料版への案内。
    ゲームが呼ぶ mnTrack の level_end を受けて、画面の下に小さな帯を出します。名前などの個人情報は使いません。
+   この端末に有料版が使えるプランがあるときは、無料版を開いたときに画面の上に「有料版が使えます」の帯を出し、
+   終わったときの案内も「有料版であそぶ」に変えます（プランを持っている人が、持っていないと かんちがい しないように）。
    あわせて、ホーム画面に追加して使えるように（サービスワーカー）登録します。 */
 (function(){
 var INFO=__INFO__, base=window.mnTrack, bar=null, last=null;
@@ -33,20 +35,42 @@ function card(r,lv){ /* 共有用の画像（1200×630）。答えは書かな�
 /* 「このゲーム、どうだった？」（ご意見）が出ているあいだは待つ */
 function whenFree(fn,n){n=n||0;var s=document.querySelector('.mnfb-sheet');if(s&&!s.hidden&&s.getAttribute('data-k')==='rate'&&n<240){setTimeout(function(){whenFree(fn,n+1);},500);return;}fn();}
 function close(){if(bar){bar.remove();bar=null;}}
+/* この端末に、このゲームの有料版が使えるプランがあるか（利用コードを入れると mn-access に入る。期限内で、教科が合うものだけ） */
+function owned(){
+  if(!INFO.full||!INFO.plans)return null;
+  try{var l=JSON.parse(localStorage.getItem('mn-access')||'[]'),now=Date.now(),best=null;if(!Array.isArray(l))return null;
+    l.forEach(function(e){if(e&&typeof e.exp==='number'&&e.exp>now&&INFO.plans.indexOf(e.s)>=0&&(!best||e.exp>best.exp))best=e;});return best;}catch(e){return null;}
+}
+function until(t){var d=new Date(t);return (d.getFullYear()!==new Date().getFullYear()?d.getFullYear()+'年':'')+(d.getMonth()+1)+'月'+d.getDate()+'日まで';}
+/* 無料版を開いたときの帯（画面の上）。ゲームを始めるか、×で消える */
+var own=null;
+function closeOwn(){if(own){own.remove();own=null;}}
+function showOwn(){
+  var e=owned(); if(!e||own||!document.body)return;
+  own=document.createElement('div');own.className='mn-ownbar';own.setAttribute('role','region');own.setAttribute('aria-label','有料版のご案内');
+  own.innerHTML='<style>.mn-ownbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(8px + env(safe-area-inset-top,0px));z-index:98;width:min(560px,calc(100vw - 20px));box-sizing:border-box;background:#1d2b45;color:#fff;border-radius:14px;padding:9px 40px 9px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px/1.5 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}'
+   +'.mn-ownbar span{flex:1;min-width:11em}.mn-ownbar small{opacity:.85}.mn-ownbar a{font-weight:700;border-radius:99px;padding:7px 14px;text-decoration:none;background:#ffd34d;color:#1d2b45;white-space:nowrap}'
+   +'.mn-ownbar button{position:absolute;top:2px;right:2px;border:0;background:none;color:#fff;opacity:.8;padding:8px 11px;font-size:18px;line-height:1;cursor:pointer}</style>'
+   +'<span><b>ここは無料版です。有料版も使えます</b><br><small>この端末のプラン：'+esc(until(e.exp))+'</small></span><a data-a="go" href="'+esc(INFO.full)+'">有料版であそぶ</a><button type="button" data-a="x" aria-label="閉じる">×</button>';
+  document.body.appendChild(own);
+  own.addEventListener('click',function(ev){var a=ev.target.closest('[data-a]');if(!a)return;if(a.getAttribute('data-a')==='x')closeOwn();else track('owned_click',{from:INFO.file,at:'top'});});
+  track('owned_view',{from:INFO.file});
+}
 function show(p){
   var r=result(p); if(!r&&!INFO.full)return; close();
   var lv=level(p.level_name); last={r:r,lv:lv};
+  var has=owned();
   bar=document.createElement('div');bar.className='mn-endbar';bar.setAttribute('role','region');bar.setAttribute('aria-label','結果のメニュー');
   bar.innerHTML='<style>.mn-endbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:98;width:min(560px,calc(100vw - 20px));box-sizing:border-box;background:#1d2b45;color:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px/1.6 "BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;display:flex;flex-direction:column;gap:8px}.mn-endbar{position:fixed}'
    +'.mn-endbar .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mn-endbar button,.mn-endbar a.b{font:inherit;font-weight:700;border:0;border-radius:99px;padding:7px 14px;cursor:pointer;text-decoration:none;display:inline-block}'
    +'.mn-endbar .p{background:#ffd34d;color:#1d2b45}.mn-endbar .s{background:rgba(255,255,255,.16);color:#fff}.mn-endbar .x{position:absolute;top:4px;right:4px;background:none;color:#fff;opacity:.8;padding:6px 9px;font-size:18px;line-height:1}.mn-endbar .r:first-of-type{padding-right:28px}'
    +'.mn-endbar .up{border-top:1px solid rgba(255,255,255,.2);padding-top:8px}.mn-endbar small{opacity:.85}</style>'
    +(r?'<div class="r"><button class="p" data-a="share">おうちの人に見せる</button><span><small>結果を画像やLINEで送れます</small></span><button class="x" data-a="x" aria-label="閉じる">×</button></div>':'')
-   +(INFO.full?'<div class="r'+(r?' up':'')+'"><span style="flex:1;min-width:12em"><b>有料版なら全'+(INFO.total||'')+'問</b><br><small>もっとたくさんの問題に挑戦できます。1日プランから使えます</small></span><a class="b p" data-a="up" href="'+esc(INFO.full)+'">有料版を見る</a>'+(r?'':'<button class="x" data-a="x" aria-label="閉じる">×</button>')+'</div>':'');
+   +(INFO.full?'<div class="r'+(r?' up':'')+'"><span style="flex:1;min-width:12em">'+(has?'<b>有料版が使えます'+(INFO.total?'（全'+INFO.total+'問）':'')+'</b><br><small>この端末にプランがあります（'+esc(until(has.exp))+'）</small>':'<b>有料版なら全'+(INFO.total||'')+'問</b><br><small>もっとたくさんの問題に挑戦できます。1日プランから使えます</small>')+'</span><a class="b p" data-a="'+(has?'own':'up')+'" href="'+esc(INFO.full)+'">'+(has?'有料版であそぶ':'有料版を見る')+'</a>'+(r?'':'<button class="x" data-a="x" aria-label="閉じる">×</button>')+'</div>':'');
   document.body.appendChild(bar);
   bar.addEventListener('click',function(ev){var a=ev.target.closest('[data-a]');if(!a)return;var k=a.getAttribute('data-a');
-    if(k==='x')close(); if(k==='share'){ev.preventDefault();openShare();} if(k==='up')track('upsell_click',{from:INFO.file});});
-  if(INFO.full)track('upsell_view',{from:INFO.file});
+    if(k==='x')close(); if(k==='share'){ev.preventDefault();openShare();} if(k==='up')track('upsell_click',{from:INFO.file}); if(k==='own')track('owned_click',{from:INFO.file,at:'end'});});
+  if(INFO.full&&!has)track('upsell_view',{from:INFO.file});
 }
 function openShare(){
   if(!last||!last.r)return; track('share_open',{from:INFO.file});
@@ -71,8 +95,9 @@ function openShare(){
   },'image/png');
 }
 window.mnTrack=function(n,p){p=p||{};try{base&&base(n,p);}catch(e){}
-  try{ if(n==='level_start')close(); if(n==='level_end')setTimeout(function(){whenFree(function(){show(p);});},950); }catch(e){} };
+  try{ if(n==='level_start'){close();closeOwn();} if(n==='level_end')setTimeout(function(){whenFree(function(){show(p);});},950); }catch(e){} };
 try{ if(/[?&]from=share/.test(location.search))track('from_share',{to:INFO.file}); }catch(e){}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showOwn);else showOwn();
 if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register(ROOT+'sw.js').catch(function(){});});}
 })();
 </script>
