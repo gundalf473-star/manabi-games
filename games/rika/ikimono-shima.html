@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="game:subject" content="理科">
+<meta name="game:unit" content="いきもの島">
+<meta name="game:grade" content="小4〜小6">
+<meta name="game:players" content="1人">
+<meta name="description" content="季節や時間、場所を考えて島の生き物をさがし、かんさつクイズに答えてつかまえる、収集・図鑑ゲーム。つかまえた生き物は、なかま分けされた図鑑といきものカードになる。">
+<title>ハコロンの いきもの島（生物）</title>
+<style>
+  :root{--bg:#eef6ea;--ink:#1f2a1c;--sub:#5d6b58;--card:#fff;--green:#3f9b4a;--green-d:#2c7436;
+    --red:#d9534f;--gold:#e8a317;--blue:#2f6fb8;--line:#d4e0cc;--night:#1d2b4a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+    -webkit-tap-highlight-color:transparent}
+  body.night{background:#16223b}
+  .wrap{max-width:520px;margin:0 auto;padding:12px 12px 56px}
+  h1{font-size:23px;margin:8px 0 4px}
+  h2{font-size:17px;margin:14px 0 6px}
+  p{line-height:1.7;margin:6px 0}
+  rt{font-size:.55em;color:#6b7a66}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+  .hidden{display:none !important}
+  .badge{display:inline-block;background:#fff3cd;color:#7a5a00;border:1px solid #f0d78a;font-size:12px;padding:2px 8px;border-radius:999px}
+  .btn{border:none;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700;background:var(--green);color:#fff;box-shadow:0 3px 0 var(--green-d)}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+  .btn.blue{background:var(--blue);box-shadow:0 3px 0 #1f4f86}
+  .btn.wide{width:100%;margin-top:10px}
+  .btn:disabled{background:#b9c4b5;box-shadow:0 3px 0 #9aa597;cursor:not-allowed}
+  .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .rules li{margin:4px 0;line-height:1.6;font-size:14px}
+  .rules{padding-left:20px;margin:6px 0}
+
+  /* 島の画面 */
+  .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .top .ttl{font-weight:800;font-size:17px}
+  .night .top .ttl,.night .lbl{color:#eaf0ff}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700}
+  .seg{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}
+  .seg button{flex:1 1 40%;border:2px solid var(--line);background:#fff;border-radius:12px;padding:9px 4px;font-size:14px;font-weight:800}
+  .seg button.on{border-color:var(--green);background:#e6f4e2;color:var(--green-d)}
+  .seg button.lock{color:#9aa596;background:#eef1ec}
+  .lbl{font-size:12px;color:var(--sub);margin-top:8px}
+  .news{display:flex;gap:10px;align-items:flex-start;background:#fffbe9;border:1px solid #f0e2a8;border-radius:14px;padding:10px 12px;margin:10px 0;font-size:14px;line-height:1.6}
+  .news .hk{font-size:30px;line-height:1}
+  .areas{display:grid;gap:10px;margin-top:8px}
+  .area{display:flex;align-items:center;gap:12px;text-align:left;border:none;border-radius:16px;padding:14px;color:#fff;font-size:17px;font-weight:800;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+  .area .em{font-size:38px;line-height:1}
+  .area small{display:block;font-size:12px;font-weight:600;opacity:.95;margin-top:2px}
+  .a-kusa{background:linear-gradient(135deg,#7cc356,#4a9c3a)}
+  .a-mori{background:linear-gradient(135deg,#4f9a5c,#2f6b45)}
+  .a-ike{background:linear-gradient(135deg,#5fb0dc,#3279b4)}
+  .night .a-kusa{background:linear-gradient(135deg,#3d6a3a,#274a2a)}
+  .night .a-mori{background:linear-gradient(135deg,#2f5a45,#1b3a2c)}
+  .night .a-ike{background:linear-gradient(135deg,#2f5f8a,#1c3c62)}
+  .area:active{transform:translateY(2px)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .tile{border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px 8px;text-align:center;font-weight:800;font-size:14px}
+  .tile .em{font-size:30px;display:block}
+  .tile small{display:block;font-weight:600;color:var(--sub);font-size:12px}
+  .tile.off{background:#eef1ec;color:#9aa596}
+
+  /* エリアの画面 */
+  .scene{border-radius:18px;padding:14px 12px;margin-top:8px;min-height:300px}
+  .s-kusa{background:linear-gradient(#bfe6f5 0,#dff3d2 38%,#9fd47e 100%)}
+  .s-mori{background:linear-gradient(#b7dcc0 0,#7fb98b 45%,#5a8f55 100%)}
+  .s-ike{background:linear-gradient(#cfeaf7 0,#9fd3ee 45%,#6fb5e0 100%)}
+  .scene.se-au{background:linear-gradient(#f7e6c6 0,#f1cf95 45%,#cda862 100%)}
+  .scene.se-wi{background:linear-gradient(#eef3f8 0,#e1e8ee 45%,#c8d2d3 100%)}
+  .night .scene{background:linear-gradient(#0f1830 0,#1d2f52 50%,#22402f 100%)}
+  .night .s-ike{background:linear-gradient(#0f1830 0,#1b2f55 50%,#1f4468 100%)}
+  .spots{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .spot{border:none;border-radius:16px;background:rgba(255,255,255,.88);padding:14px 6px;text-align:center;font-weight:800;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.14);min-height:96px}
+  .spot .em{font-size:36px;display:block;line-height:1.2}
+  .spot:active{transform:translateY(2px)}
+  .night .spot{background:rgba(235,240,255,.9)}
+  .rustle{animation:rustle .5s}
+  @keyframes rustle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+
+  /* シート */
+  #ov{position:fixed;inset:0;background:rgba(20,30,20,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  #sheet{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 14px 22px;color:var(--ink)}
+  .qhead{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);font-weight:700;margin-bottom:6px}
+  .qtext{font-size:17px;font-weight:800;line-height:1.6;margin:8px 0 10px}
+  .choices{display:grid;gap:8px}
+  .ch{border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-size:15px;font-weight:700;text-align:left;line-height:1.5}
+  .ch.ok{border-color:var(--green);background:#e6f4e2}
+  .ch.ng{border-color:var(--red);background:#fdeceb}
+  .ch:disabled{cursor:default}
+  .exp{margin-top:10px;border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.7;background:#f3f7ef}
+  .exp b.o{color:var(--green-d)} .exp b.x{color:var(--red)}
+  .meet{text-align:center}
+  .pic{width:120px;height:120px;border-radius:50%;margin:6px auto;display:flex;align-items:center;justify-content:center;background:radial-gradient(#fff,#e3f0dc);border:4px solid #cfe2c5}
+  .pic .emo{font-size:70px;line-height:1}
+  .pic svg{width:92px;height:92px}
+  .pop{animation:pop .45s ease-out}
+  @keyframes pop{0%{transform:scale(.6) rotate(-6deg);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+  .flee{animation:flee .7s ease-in forwards}
+  @keyframes flee{to{transform:translate(140px,-90px) scale(.3);opacity:0}}
+  .nm{font-size:21px;font-weight:800}
+  .cls{font-size:12px;color:var(--sub)}
+  .newtag{display:inline-block;background:var(--red);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+  table.info{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  table.info th{width:5.2em;text-align:left;color:var(--sub);font-weight:700;vertical-align:top;padding:5px 4px;border-top:1px solid #edf1ea;white-space:nowrap}
+  table.info td{padding:5px 4px;border-top:1px solid #edf1ea;line-height:1.6}
+  .fact{background:#fffbe9;border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.7;margin-top:8px}
+
+  /* 図鑑 */
+  .grp{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:10px}
+  .grp h3{font-size:15px;margin:0 0 2px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .grp .gd{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.5}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .zc{border:2px solid var(--line);border-radius:12px;background:#f8fbf6;padding:6px 2px 4px;text-align:center;font-size:10.5px;font-weight:700;min-height:82px;line-height:1.3}
+  .zc .i{height:44px;display:flex;align-items:center;justify-content:center;font-size:32px}
+  .zc .i svg{width:40px;height:40px}
+  .zc.lock{background:#eef1ec;color:#9aa596}
+  .zc.lock .i{font-size:24px;color:#b8c2b4}
+  .medal{font-size:12px;background:#fff3cd;border:1px solid #f0d78a;color:#7a5a00;border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .prog{height:10px;background:#e4ebe0;border-radius:999px;overflow:hidden;margin:6px 0}
+  .prog i{display:block;height:100%;background:var(--gold)}
+  .test{position:fixed;left:8px;bottom:8px;z-index:40;border:1px dashed #999;background:#fff;border-radius:10px;font-size:12px;padding:6px 8px;opacity:.85}
+  .foot{font-size:12px;color:var(--sub);margin-top:14px;line-height:1.6}
+  .night .foot{color:#b9c6e6}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div class="wrap">
+
+<!-- タイトル -->
+<section id="scTitle">
+  <span class="badge" id="verBadge">無料版（春の島）</span>
+  <h1>🏝️ ハコロンの いきもの島</h1>
+  <p>島の生き物をさがして、図鑑を完成させよう。<br>季節・時間・場所を考えると、見つけやすくなるよ。</p>
+  <div class="box">
+    <ol class="rules">
+      <li>草むら・<ruby>雑木林<rt>ぞうきばやし</rt></ruby>・池のどこかで、生き物をさがす。</li>
+      <li>見つけたら「かんさつクイズ」2問。<b>2問とも正解</b>でつかまえられる。</li>
+      <li>つかまえた生き物は、図鑑といきものカードになる。</li>
+      <li>あみは<b>1日<span id="netN">10</span>本</b>。なくなったら、つづきはまた明日。</li>
+      <li>🕵️ <b>「今日のさがしもの」</b>のヒントを読んで、その生き物のいる場所を<b>さいしょのタップで当てる</b>と、あみを使わずにかんさつできる（1日5回まで）。</li>
+      <li id="ruleSeason">無料版は<b>春の島</b>（14種）。夏・秋・冬の島は、有料版（理科）で遊べる。</li>
+      <li>なかまを全部そろえると「まとめ問題」。全問正解で博物館にメダルがかざられる。</li>
+    </ol>
+  </div>
+  <button class="btn wide" id="btnStart">島へ 行く</button>
+  <button class="btn ghost wide" id="btnParent">おうちの方へ</button>
+  <div id="parentBox" class="box hidden" style="margin-top:10px;font-size:13px;line-height:1.7">
+    中学受験の理科（生物）でよく出る、こん虫の育ち方・食べ物・冬ごし、こん虫ではない虫との見分け方、せきつい動物のなかま分け、花のつくりを、身近な生き物35種と、冬ごしのすがた11種でおぼえるゲームです（無料版は春の島の14種。夏・秋・冬は有料版で、記録はそのまま引きつげます）。あみは1日10本（有料版は15本。ヒントを読んで場所を当てると、1日5回まであみを使わずに遊べます）なので、1回の遊びは10〜20分ほどで終わります。まちがえた問題は、その生き物がまた出てきたときに先に出ます。記録はこの端末のブラウザの中だけに保存され、どこにも送られません。
+  </div>
+</section>
+
+<!-- 有料版のかぎ -->
+<section id="scLock" class="hidden">
+  <h1>🏝️ ハコロンの いきもの島</h1>
+  <div class="box" id="lockBox">読みこんでいます…</div>
+</section>
+
+<!-- 島 -->
+<section id="scIsland" class="hidden">
+  <div class="top">
+    <span class="ttl">🏝️ いきもの島</span>
+    <span><span class="chip" id="chNet">🥅 10</span> <span class="chip" id="chBo">🕵️ 5</span> <span class="chip" id="chZu">📖 0</span></span>
+  </div>
+  <div class="lbl">季節</div>
+  <div class="seg" id="segSeason"></div>
+  <div class="lbl">時間</div>
+  <div class="seg" id="segTime"></div>
+  <div class="news"><span class="hk">📦</span><div><b>🕵️ 今日のさがしもの</b><br><span id="newsTxt"></span></div></div>
+  <div class="areas" id="areas"></div>
+  <div class="row2">
+    <button class="tile" id="btnMuseum"><span class="em">🏛️</span>博物館（図鑑）<small id="musSub"></small></button>
+    <button class="tile off" id="btnWorld"><span class="em">🌏</span>世界のこん虫館<small>じゅんび中</small></button>
+  </div>
+  <p class="foot">※ 絵は絵文字とかんたんな図です。本物のすがたは、図鑑や外で観察してみよう。</p>
+</section>
+
+<!-- エリア -->
+<section id="scArea" class="hidden">
+  <div class="top">
+    <button class="btn ghost" id="btnBack" style="padding:8px 12px">← 島の地図</button>
+    <span><span class="chip" id="chNet2">🥅 10</span> <span class="chip" id="chBo2">🕵️ 5</span></span>
+  </div>
+  <div class="top" style="margin-top:8px"><span class="ttl" id="areaTtl"></span><span class="chip" id="areaWhen"></span></div>
+  <div class="news" id="areaHint" style="margin:8px 0 0"></div>
+  <div class="scene" id="scene"><div class="spots" id="spots"></div></div>
+  <p class="foot" id="areaFoot">生き物がいそうな場所をタップしてさがそう。さがすだけなら、あみはへらないよ。ヒントをよく読んでからタップすると、おとく。</p>
+</section>
+
+<!-- 博物館 -->
+<section id="scMuseum" class="hidden">
+  <div class="top">
+    <button class="btn ghost" id="btnBack2" style="padding:8px 12px">← 島の地図</button>
+    <span class="chip" id="chZu2">📖 0</span>
+  </div>
+  <h2>🏛️ 島の博物館（図鑑）</h2>
+  <div class="prog"><i id="zuBar" style="width:0"></i></div>
+  <div id="zukan"></div>
+  <p class="foot">つかまえた生き物のうち、「いきものカードバトル」にもいる種類は、そちらの図鑑にもカードが入ります。<span id="freeNote"></span></p>
+</section>
+
+</div>
+<div id="ov" class="hidden"><div id="sheet"></div></div>
+<button class="test" id="testBtn">🛠 テスト</button>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const track=(n,p)=>{try{window.mnTrack&&mnTrack(n,p);}catch(e){}};
+
+/* ===== ふりがな ===== */
+const RUBY={'樹液':'じゅえき','腐葉土':'ふようど','甲殻類':'こうかくるい','両生類':'りょうせいるい','魚類':'ぎょるい','鳥類':'ちょうるい',
+ '完全変態':'かんぜんへんたい','不完全変態':'ふかんぜんへんたい','雑木林':'ぞうきばやし',
+ '外来種':'がいらいしゅ','触角':'しょっかく','頭胸部':'とうきょうぶ','腹部':'ふくぶ','離弁花':'りべんか','合弁花':'ごうべんか',
+ '落葉樹':'らくようじゅ','常緑樹':'じょうりょくじゅ','針葉樹':'しんようじゅ','食物連鎖':'しょくもつれんさ','受粉':'じゅふん','花粉':'かふん',
+ '国蝶':'こくちょう','夏鳥':'なつどり','冬鳥':'ふゆどり','留鳥':'りゅうちょう','旅鳥':'たびどり','恒温動物':'こうおんどうぶつ','変温動物':'へんおんどうぶつ',
+ '冬眠':'とうみん','朽ち木':'くちき','子房':'しぼう','蒸散':'じょうさん','光合成':'こうごうせい','脱皮':'だっぴ','冬芽':'ふゆめ','超音波':'ちょうおんぱ','七草':'ななくさ','ほ乳類':'ほにゅうるい','は虫類':'はちゅうるい',
+ '卵のう':'らんのう','卵':'たまご','幼虫':'ようちゅう','成虫':'せいちゅう','種子':'しゅし','胸':'むね','腹':'はら','肺':'はい','呼吸':'こきゅう','穂':'ほ','尾':'お','巣':'す','芽':'め','甲虫':'こうちゅう','養分':'ようぶん','背骨':'せぼね','巻き貝':'まきがい','気孔':'きこう','子葉':'しよう','根毛':'こんもう','昆虫学会':'こんちゅうがっかい'};
+const RUBY_RE=new RegExp(Object.keys(RUBY).sort((a,b)=>b.length-a.length).join('|'),'g');
+function rb(t){return String(t).replace(RUBY_RE,w=>'<ruby>'+w+'<rt>'+RUBY[w]+'</rt></ruby>');}
+
+/* ===== 絵（絵文字がない生き物は、かんたんな図） ===== */
+const L=(a,b,c,d,col,w)=>'<line x1="'+a+'" y1="'+b+'" x2="'+c+'" y2="'+d+'" stroke="'+(col||'#3a2a1a')+'" stroke-width="'+(w||2)+'" stroke-linecap="round"/>';
+const E=(x,y,rx,ry,f,ex)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="'+rx+'" ry="'+ry+'" fill="'+f+'" '+(ex||'')+'/>';
+const legs=c=>L(24,30,12,24,c)+L(40,30,52,24,c)+L(23,36,10,38,c)+L(41,36,54,38,c)+L(24,42,13,52,c)+L(40,42,51,52,c);
+const svg=s=>'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+s+'</svg>';
+const wings=(f,st)=>E(20,26,13,14,f,'stroke="'+st+'" stroke-width="1.5"')+E(44,26,13,14,f,'stroke="'+st+'" stroke-width="1.5"')+E(22,45,10,10,f,'stroke="'+st+'" stroke-width="1.5"')+E(42,45,10,10,f,'stroke="'+st+'" stroke-width="1.5"');
+const SVG={
+ kabuto:svg(legs()+E(32,41,15,17,'#5a3418')+L(32,26,32,57,'#3a2010',1.5)+E(32,23,9,7,'#3a2010')+'<path d="M32 19V7M32 8l-6-5M32 8l6-5" stroke="#3a2010" stroke-width="4" fill="none" stroke-linecap="round"/>'),
+ kuwagata:svg(legs()+E(32,43,13,16,'#2b1d14')+L(32,29,32,58,'#111',1.5)+'<rect x="22" y="20" width="20" height="11" rx="4" fill="#2b1d14"/><path d="M25 21C17 15 19 6 27 4M39 21C47 15 45 6 37 4" stroke="#2b1d14" stroke-width="4" fill="none" stroke-linecap="round"/>'),
+ semi:svg(L(26,26,17,19,'#3a2a1a')+L(38,26,47,19,'#3a2a1a')+L(24,32,13,31,'#3a2a1a')+L(40,32,51,31,'#3a2a1a')+L(25,40,15,47,'#3a2a1a')+L(39,40,49,47,'#3a2a1a')+E(19,40,8,20,'rgba(196,150,90,.6)','stroke="#8a6a3a" transform="rotate(12 19 40)"')+E(45,40,8,20,'rgba(196,150,90,.6)','stroke="#8a6a3a" transform="rotate(-12 45 40)"')+E(32,35,10,18,'#5b4630')+E(32,19,11,6,'#4a3826')+E(23,18,3,3,'#222')+E(41,18,3,3,'#222')),
+ tonbo:svg(E(17,24,15,5,'rgba(190,225,240,.8)','stroke="#7aa0b0"')+E(47,24,15,5,'rgba(190,225,240,.8)','stroke="#7aa0b0"')+E(18,34,14,5,'rgba(190,225,240,.8)','stroke="#7aa0b0"')+E(46,34,14,5,'rgba(190,225,240,.8)','stroke="#7aa0b0"')+'<rect x="30" y="16" width="4" height="44" rx="2" fill="#a9bfcc"/>'+E(32,27,5,8,'#8aa3b3')+E(32,12,6,5,'#6f8d5a')+L(30,22,25,15,'#444',1.5)+L(34,22,39,15,'#444',1.5)+L(29,27,23,30,'#444',1.5)+L(35,27,41,30,'#444',1.5)+L(30,31,25,39,'#444',1.5)+L(34,31,39,39,'#444',1.5)),
+ kamakiri:svg(L(30,31,16,40,'#4d8a26')+L(34,31,48,40,'#4d8a26')+L(30,35,15,56,'#4d8a26')+L(34,35,49,56,'#4d8a26')+E(32,47,7,14,'#6fae3a')+'<rect x="30" y="18" width="4" height="19" fill="#5c9a2f"/><path d="M25 11h14l-7 9z" fill="#6fae3a"/><path d="M31 23L20 16L14 27M33 23L44 16L50 27" stroke="#4d8a26" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+E(27,12,2,2,'#222')+E(37,12,2,2,'#222')),
+ amenbo:svg('<g fill="none" stroke="#8fc3de" stroke-width="1.5"><circle cx="8" cy="14" r="5"/><circle cx="56" cy="14" r="5"/><circle cx="8" cy="54" r="5"/><circle cx="56" cy="54" r="5"/></g>'+L(31,28,8,14,'#4a3a2a',1.5)+L(33,28,56,14,'#4a3a2a',1.5)+L(31,34,8,54,'#4a3a2a',1.5)+L(33,34,56,54,'#4a3a2a',1.5)+L(31,22,25,11,'#4a3a2a',1.5)+L(33,22,39,11,'#4a3a2a',1.5)+'<rect x="29.5" y="16" width="5" height="30" rx="2.5" fill="#4a3a2a"/>'),
+ hotaru:svg(E(32,53,13,10,'rgba(250,238,90,.55)')+legs('#222')+E(32,39,10,15,'#1e1e1e')+L(32,26,32,53,'#444',1.2)+E(32,23,9,6,'#e2574c')+E(32,54,6,4,'#f5ea5a')),
+ dango:svg(L(14,47,11,52,'#5d656f')+L(22,49,20,55,'#5d656f')+L(30,50,30,56,'#5d656f')+L(38,50,40,56,'#5d656f')+L(46,47,49,53,'#5d656f')+L(18,48,16,54,'#5d656f')+L(26,50,25,56,'#5d656f')+L(34,50,35,56,'#5d656f')+L(42,49,44,55,'#5d656f')+L(50,44,54,49,'#5d656f')+'<path d="M8 44C8 28 20 22 34 22s24 8 24 20c0 4-2 6-6 6H14c-4 0-6-1-6-4z" fill="#7c8590"/>'+L(20,25,19,48,'#5d656f',1.5)+L(28,23,27,48,'#5d656f',1.5)+L(36,22,36,48,'#5d656f',1.5)+L(44,24,45,48,'#5d656f',1.5)+L(51,29,52,47,'#5d656f',1.5)+L(10,36,3,30,'#5d656f',1.5)),
+ mijinko:svg('<path d="M24 18L10 8M12 9l-5 6M12 9l7-2M24 19L12 26" stroke="#5a9a8a" stroke-width="2" fill="none" stroke-linecap="round"/>'+E(35,35,16,20,'rgba(200,228,236,.85)','stroke="#5a9a8a" stroke-width="2"')+E(30,20,3,3,'#222')+'<path d="M33 26c6 4 6 16 2 22" stroke="#7fb36a" stroke-width="3" fill="none" stroke-linecap="round"/>'+E(42,32,3,3,'#e6c98a')+E(43,40,3,3,'#e6c98a')+L(40,54,46,62,'#5a9a8a',2)),
+ aburana:svg(L(32,38,32,62,'#4d8a26',3)+L(32,52,22,46,'#4d8a26',3)+E(32,12,7,9,'#f6d21f','stroke="#c9a400"')+E(32,36,7,9,'#f6d21f','stroke="#c9a400"')+E(20,24,9,7,'#f6d21f','stroke="#c9a400"')+E(44,24,9,7,'#f6d21f','stroke="#c9a400"')+E(32,24,4,4,'#8fb53a')),
+ tsubaki:svg(E(14,48,12,6,'#2f6b3a','transform="rotate(-30 14 48)"')+E(50,48,12,6,'#2f6b3a','transform="rotate(30 50 48)"')+[0,72,144,216,288].map(a=>'<ellipse cx="32" cy="17" rx="11" ry="13" fill="#d8344a" stroke="#a81f33" transform="rotate('+a+' 32 30)"/>').join('')+E(32,30,7,7,'#f4d23a','stroke="#c9a400"')),
+ akatonbo:svg(E(17,24,15,5,'rgba(245,225,200,.85)','stroke="#b98"')+E(47,24,15,5,'rgba(245,225,200,.85)','stroke="#b98"')+E(18,34,14,5,'rgba(245,225,200,.85)','stroke="#b98"')+E(46,34,14,5,'rgba(245,225,200,.85)','stroke="#b98"')+'<rect x="30" y="16" width="4" height="44" rx="2" fill="#d8402a"/>'+E(32,27,5,8,'#b9552f')+E(32,12,6,5,'#8a3a22')+L(30,22,25,15,'#444',1.5)+L(34,22,39,15,'#444',1.5)+L(29,27,23,30,'#444',1.5)+L(35,27,41,30,'#444',1.5)+L(30,31,25,39,'#444',1.5)+L(34,31,39,39,'#444',1.5)),
+ onamomi:svg([0,30,60,90,120,150,180,210,240,270,300,330].map(a=>'<line x1="32" y1="12" x2="32" y2="5" stroke="#5f7a2a" stroke-width="2" stroke-linecap="round" transform="rotate('+a+' 32 34)"/><path d="M32 5l3 2" stroke="#5f7a2a" stroke-width="1.5" fill="none" transform="rotate('+a+' 32 34)"/>').join('')+E(32,34,14,19,'#9bb955','stroke="#5f7a2a" stroke-width="1.5"')),
+ icho:svg(L(32,60,32,40,'#b08a1a',3)+'<path d="M32 42C14 38 7 24 11 12c8 4 15 4 21 1c6 3 13 3 21-1c4 12-3 26-21 30z" fill="#f2cf3a" stroke="#c9a400" stroke-width="1.5"/><path d="M32 13v10" stroke="#c9a400" stroke-width="1.5"/>'),
+ sanagi:svg(L(10,58,52,8,'#8a6a3a',4)+'<path d="M31 13c8 3 11 13 8 25c-2 8-6 14-10 17c-3-6-6-14-6-24c0-9 3-15 8-18z" fill="#9cc56a" stroke="#5c7a3a" stroke-width="1.5"/>'+L(24,31,38,25,'#fff',1.5)),
+ sanagi2:svg(L(10,58,52,8,'#8a6a3a',4)+'<path d="M31 13c8 3 11 13 8 25c-2 8-6 14-10 17c-3-6-6-14-6-24c0-9 3-15 8-18z" fill="#b89a6a" stroke="#7a5f3a" stroke-width="1.5"/>'+L(24,31,38,25,'#fff',1.5)),
+ ransou:svg(L(14,60,46,4,'#a08a55',4)+E(32,30,13,17,'#dcc9a0','stroke="#a58f60" stroke-width="1.5"')+L(24,24,40,24,'#b9a57a',1.2)+L(22,30,42,30,'#b9a57a',1.2)+L(24,36,40,36,'#b9a57a',1.2)),
+ grub:svg('<path d="M44 16C24 9 11 26 16 41s21 16 31 6" stroke="#b9a67c" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M44 16C24 9 11 26 16 41s21 16 31 6" stroke="#f6eed8" stroke-width="12" fill="none" stroke-linecap="round"/>'+E(46,17,6,6,'#b5651d')+L(38,22,40,28,'#8a5a2a')+L(33,24,34,30,'#8a5a2a')+L(28,28,29,34,'#8a5a2a')),
+ imomushi:svg(E(32,52,26,5,'#c9a56a')+'<path d="M12 42c8-8 26-10 40-4" stroke="#7d6b3c" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M12 42c8-8 26-10 40-4" stroke="#a8935a" stroke-width="9" fill="none" stroke-linecap="round"/>'+L(51,34,55,26,'#7d6b3c',2.5)+L(54,37,60,31,'#7d6b3c',2.5)),
+ yago:svg(legs('#5a4a2a')+E(32,38,9,18,'#8a7a50')+L(32,24,32,54,'#5a4a2a',1.2)+L(26,34,38,34,'#5a4a2a',1)+L(26,42,38,42,'#5a4a2a',1)+E(32,17,9,6,'#7a6a45')+E(25,15,3,3,'#222')+E(39,15,3,3,'#222')+L(29,55,27,61,'#5a4a2a')+L(32,56,32,62,'#5a4a2a')+L(35,55,37,61,'#5a4a2a')),
+ rosette:svg([0,45,90,135,180,225,270,315].map(a=>'<ellipse cx="32" cy="17" rx="6" ry="15" fill="#5fa544" stroke="#3f7a2f" transform="rotate('+a+' 32 34)"/>').join('')+E(32,34,5,5,'#3f7a2f')),
+ fuyume:svg(L(6,58,56,10,'#7a5a3a',5)+E(22,36,5,9,'#b07a3a','stroke="#7a5a3a" transform="rotate(-20 22 36)"')+E(40,30,5,9,'#b07a3a','stroke="#7a5a3a" transform="rotate(70 40 30)"')+E(57,7,5,8,'#b07a3a','stroke="#7a5a3a" transform="rotate(45 57 7)"')),
+ monshiro:svg(wings('#ffffff','#9aa39a')+E(18,24,2.5,2.5,'#333')+E(46,24,2.5,2.5,'#333')+'<path d="M9 16l6-3-2 7zM55 16l-6-3 2 7z" fill="#555"/><rect x="30.7" y="18" width="2.6" height="32" rx="1.3" fill="#444"/>'+L(32,18,26,9,'#444',1.2)+L(32,18,38,9,'#444',1.2)),
+ ageha:svg(wings('#f6e9a0','#222')+L(10,22,29,22,'#222',2)+L(11,29,29,28,'#222',2)+L(54,22,35,22,'#222',2)+L(53,29,35,28,'#222',2)+L(14,16,27,17,'#222',2)+L(50,16,37,17,'#222',2)+E(22,50,3,3,'#3b6fd0')+E(42,50,3,3,'#3b6fd0')+E(26,52,2,2,'#e2702c')+E(38,52,2,2,'#e2702c')+L(18,53,14,61,'#222',3)+L(46,53,50,61,'#222',3)+'<rect x="30.7" y="16" width="2.6" height="34" rx="1.3" fill="#222"/>'+L(32,16,26,7,'#222',1.2)+L(32,16,38,7,'#222',1.2))
+};
+function icon(c){return c.svg?SVG[c.svg]:'<span class="emo">'+c.em+'</span>';}
+
+/* ===== 場所 ===== */
+const SEASONS={sp:'🌸 春',su:'🌻 夏',au:'🍂 秋',wi:'⛄ 冬'};
+const SN={sp:'春',su:'夏',au:'秋',wi:'冬'};
+const TIMES={d:'☀️ 昼',n:'🌙 夜'};
+const AREAS=[
+ {id:'kusa',n:'草むらと畑',em:'🌾',spots:[
+   {id:'hatake',n:'キャベツと アブラナの畑',em:'🥬'},{id:'mikan',n:'ミカンの木',em:'🍊'},
+   {id:'hana',n:'野原の花',em:'🌼'},{id:'ha',n:'草の葉・くき・根もと',em:'🌿'},{id:'aida',n:'草と草の あいだ',em:'🕸️'}]},
+ {id:'mori',n:'雑木林',em:'🌳',spots:[
+   {id:'jueki',n:'クヌギの樹液',em:'🍯'},{id:'miki',n:'木のみき',em:'🪵'},
+   {id:'ochiba',n:'落ち葉・石の下',em:'🍂'},{id:'miage',n:'木を見上げる',em:'🌳'}]},
+ {id:'ike',n:'池と田んぼ',em:'💧',spots:[
+   {id:'suimen',n:'池の水面',em:'💧'},{id:'naka',n:'水の中・水草',em:'🌱'},
+   {id:'kishi',n:'岸の草',em:'🌾'},{id:'doro',n:'田んぼのどろ',em:'🟤'},{id:'ogawa',n:'きれいな小川',em:'🏞️'}]}
+];
+
+/* ===== なかま（図鑑のページ） ===== */
+const GROUPS=[
+ {id:'A',n:'こん虫（完全変態）',d:'卵→幼虫→さなぎ→成虫 と育つ。さなぎの時期がある。'},
+ {id:'B',n:'こん虫（不完全変態）',d:'卵→幼虫→成虫 と育つ。さなぎにならない。'},
+ {id:'C',n:'こん虫ではない 小さな生き物',d:'あしの数や体の分かれ方が、こん虫（あし6本・頭/胸/腹）とちがう。'},
+ {id:'D',n:'せきつい動物',d:'背骨がある動物。魚類・両生類・鳥類など。'},
+ {id:'E',n:'植物',d:'花のつくりや、種子の運ばれ方、冬のこし方をくらべよう。'},
+ {id:'F',n:'秋の島の生き物',d:'鳴く虫、赤トンボ、実や種子、は虫類・ほ乳類。秋に見られる生き物。'},
+ {id:'G',n:'冬の島の生き物',d:'冬にわたってくる鳥、冬にさく花、春をまつ芽。'},
+ {id:'W',n:'冬のすがた',d:'春・夏に見つけた生き物は、冬をどんなすがたでこしているかな。'}
+];
+
+/* ===== 生き物（問題はすべてオリジナル。無料版のページには春の14種だけ） =====
+   ss:見られる季節  t:時間（d昼 n夜）  card:いきものカードバトルと同じカードのID */
+const Q=(q,a,w,e)=>({q,a,w,e});
+/* 無料版に入れるのは 春の島の14種だけ。夏・秋・冬の生き物と「冬のすがた」、まとめ問題は 有料パック（ikimono-shima）に入っている */
+const CR=[
+ {"id": "monshiro", "n": "モンシロチョウ", "svg": "monshiro", "card": "monshiro", "g": "A", "cls": "こん虫・チョウのなかま", "area": "kusa", "spot": "hatake", "ss": ["sp", "su", "au"], "t": "d", "grow": "卵→幼虫→さなぎ→成虫（完全変態）", "food": "幼虫：キャベツなどアブラナ科の葉／成虫：花のみつ", "home": "畑や野原", "winter": "さなぎ", "f": "メスは、幼虫が食べるアブラナ科の植物の葉に卵を1つずつ産む。", "hint": "キャベツ畑の上を、白いチョウがひらひら飛んでいるらしい。", "q": [{"q": "モンシロチョウの幼虫が食べるのは、どの植物の葉？", "a": "キャベツやアブラナ", "w": ["ミカンやサンショウ", "クヌギやコナラ", "イネやススキ"], "e": "モンシロチョウの幼虫（アオムシ）は、キャベツ・アブラナ・ダイコンなど、アブラナ科の植物の葉を食べるよ。"}, {"q": "モンシロチョウが育つ順として正しいのはどれ？", "a": "卵→幼虫→さなぎ→成虫", "w": ["卵→幼虫→成虫", "卵→さなぎ→幼虫→成虫", "卵→成虫→さなぎ"], "e": "チョウはさなぎの時期がある完全変態。卵→幼虫→さなぎ→成虫の順に育つよ。"}, {"q": "モンシロチョウは、どのすがたで冬をこす？", "a": "さなぎ", "w": ["卵", "幼虫", "成虫"], "e": "モンシロチョウは、さなぎのすがたで冬をこすよ。アゲハも同じ。"}]},
+ {"id": "namiageha", "n": "ナミアゲハ", "svg": "ageha", "card": "namiageha", "g": "A", "cls": "こん虫・チョウのなかま", "area": "kusa", "spot": "mikan", "ss": ["sp", "su", "au"], "t": "d", "grow": "卵→幼虫→さなぎ→成虫（完全変態）", "food": "幼虫：ミカンやサンショウなどミカン科の葉／成虫：花のみつ", "home": "庭や畑、林のふち", "winter": "さなぎ", "f": "小さい幼虫は白と黒のもようで、鳥のふんに似ている。大きくなると緑色になる。", "hint": "ミカンの木のまわりに、黄色と黒の大きなチョウが来ているらしい。", "q": [{"q": "ナミアゲハの幼虫が食べるのは、どの植物の葉？", "a": "ミカンやサンショウ", "w": ["キャベツやアブラナ", "エノキ", "クワ"], "e": "アゲハの幼虫は、ミカン・サンショウ・カラタチなど、ミカン科の植物の葉を食べるよ。"}, {"q": "ナミアゲハは、どのすがたで冬をこす？", "a": "さなぎ", "w": ["卵", "幼虫", "成虫"], "e": "アゲハは、さなぎのすがたで冬をこすよ。"}, {"q": "チョウの成虫の口は、どんな形をしている？", "a": "ストローのような細長い管", "w": ["かむための大きなあご", "なめるためのブラシ", "さすための短い針"], "e": "チョウの成虫の口は細長い管で、ふだんはうずまきのように巻いている。のばして花のみつをすうよ。"}]},
+ {"id": "nanahoshi", "n": "ナナホシテントウ", "em": "🐞", "card": "nanahoshi", "g": "A", "cls": "こん虫・甲虫のなかま", "area": "kusa", "spot": "ha", "ss": ["sp"], "t": "d", "grow": "卵→幼虫→さなぎ→成虫（完全変態）", "food": "幼虫も成虫もアブラムシ", "home": "アブラムシのいる草や野菜", "winter": "成虫（落ち葉の下などに集まる）", "f": "赤い前ばねに黒い点が7つある。幼虫と成虫で食べ物が同じ。", "hint": "アブラムシのついた草の葉に、赤くて丸い虫がいるらしい。", "q": [{"q": "ナナホシテントウが食べるものは？", "a": "アブラムシ", "w": ["草の葉", "花のみつ", "樹液"], "e": "ナナホシテントウは、幼虫も成虫もアブラムシを食べるよ。"}, {"q": "ナナホシテントウは、どのすがたで冬をこす？", "a": "成虫", "w": ["卵", "幼虫", "さなぎ"], "e": "テントウムシは成虫のすがたで、落ち葉の下や草の根もとに集まって冬をこすよ。"}, {"q": "ナナホシテントウの育ち方として正しいのはどれ？", "a": "卵→幼虫→さなぎ→成虫", "w": ["卵→幼虫→成虫", "卵→さなぎ→成虫", "卵→成虫"], "e": "テントウムシはカブトムシと同じ甲虫のなかまで、さなぎになる完全変態だよ。"}]},
+ {"id": "mitsubachi", "n": "ミツバチ", "em": "🐝", "g": "A", "cls": "こん虫・ハチのなかま", "area": "kusa", "spot": "hana", "ss": ["sp"], "t": "d", "grow": "卵→幼虫→さなぎ→成虫（完全変態）", "food": "花のみつ・花粉", "home": "花のさく野原や畑（巣でくらす）", "winter": "成虫（巣の中で集まる）", "f": "はねは4まい。花の場所を、ダンスでなかまに知らせる。", "hint": "野原の花のまわりを、ブンブン飛び回る虫がいるらしい。", "q": [{"q": "ミツバチが花から花へ飛び回ることは、植物にとってどんな役に立っている？", "a": "花粉が運ばれて受粉できる", "w": ["葉の虫を食べてもらえる", "根に水が運ばれる", "種子を遠くへ運んでもらえる"], "e": "ミツバチの体についた花粉がめしべにつくことで、受粉が行われるよ。虫が花粉を運ぶ花を「虫ばい花」というよ。"}, {"q": "ミツバチのはねは、ぜんぶで何まい？", "a": "4まい", "w": ["2まい", "6まい", "8まい"], "e": "ハチのはねは4まい。ハエ・アブ・カのはねは2まいだよ。"}, {"q": "ミツバチは、みつのある花の場所を、どうやってなかまに知らせる？", "a": "巣の中でダンスをする", "w": ["大きな声で鳴く", "花に色をつける", "はねを光らせる"], "e": "ミツバチは、巣の中で8の字をえがくようなダンスをして、花のある方向やきょりを知らせるよ。"}]},
+ {"id": "tanpopo", "n": "タンポポ", "em": "🌼", "g": "E", "cls": "植物・キクのなかま", "area": "kusa", "spot": "hana", "ss": ["sp"], "t": "d", "grow": "種子→芽→花→種子（わた毛）", "food": "日光を受けて、葉で養分をつくる", "home": "日当たりのよい野原や道ばた", "winter": "葉を地面に広げたすがた（ロゼット）", "f": "1つの花に見えるのは、小さな花がたくさん集まったもの。", "hint": "野原に、黄色い花がさいているらしい。わた毛もあるかも。", "q": [{"q": "タンポポの種子は、どうやって遠くへ運ばれる？", "a": "わた毛で風に運ばれる", "w": ["動物に食べられて運ばれる", "水に流されて運ばれる", "はじけて飛ぶ"], "e": "タンポポの種子にはわた毛がついていて、風に乗って遠くまで運ばれるよ。"}, {"q": "タンポポは、どんなすがたで冬をこす？", "a": "葉を地面に広げたすがた", "w": ["種子だけになる", "葉をすべて落とした木のすがた", "球根"], "e": "タンポポは葉を地面にぺったり広げた「ロゼット」のすがたで冬をこすよ。日光をたくさん受け、寒い風をさけられる。"}, {"q": "タンポポの「1つの花」に見えるものは、じつは何？", "a": "小さな花がたくさん集まったもの", "w": ["大きな花びらが1まいだけのもの", "葉が黄色く色づいたもの", "小さな実がたくさん集まったもの"], "e": "タンポポの花は、小さな花がたくさん集まってできているよ。小さな花1つ1つに、おしべとめしべがある。"}]},
+ {"id": "aburana", "n": "アブラナ", "svg": "aburana", "g": "E", "cls": "植物・アブラナのなかま", "area": "kusa", "spot": "hatake", "ss": ["sp"], "t": "d", "grow": "秋に芽を出す→春に花→種子", "food": "日光を受けて、葉で養分をつくる", "home": "畑や川の土手", "winter": "葉を広げた小さな株", "f": "「菜の花」ともよばれる。花びら4まい・がく4まい・おしべ6本・めしべ1本。種子から油がとれる。", "hint": "畑のはしに、黄色い花がたくさんさいているらしい。", "q": [{"q": "アブラナの花びらは何まい？", "a": "4まい", "w": ["3まい", "5まい", "6まい"], "e": "アブラナの花びらは4まいで、十字の形にならんでいるよ。がくも4まい。"}, {"q": "アブラナのおしべは何本？", "a": "6本", "w": ["4本", "5本", "10本"], "e": "アブラナのおしべは6本。そのうち4本が長く、2本が短いよ。めしべは1本。"}, {"q": "アブラナのように、花びらが1まいずつはなれている花を何という？", "a": "離弁花", "w": ["合弁花", "お花", "め花"], "e": "花びらが1まいずつはなれている花を離弁花、アサガオのように花びらがくっついている花を合弁花というよ。"}]},
+ {"id": "dangomushi", "n": "ダンゴムシ", "svg": "dango", "card": "dangomushi", "g": "C", "cls": "甲殻類（エビ・カニのなかま）", "area": "mori", "spot": "ochiba", "ss": ["sp", "su", "au"], "t": "dn", "grow": "卵→子ども→おとな（脱皮して大きくなる）", "food": "落ち葉やかれた植物", "home": "落ち葉や石の下のしめった所", "winter": "土や落ち葉の下でじっとしている", "f": "さわると体を丸める。落ち葉を食べて、土にかえすはたらきをしている。", "hint": "落ち葉や石の下の、しめった所に、丸くなる生き物がいるらしい。", "q": [{"q": "ダンゴムシのあしは、ぜんぶで何本？", "a": "14本", "w": ["6本", "8本", "10本"], "e": "ダンゴムシのあしは14本（7対）。こん虫は6本なので、ダンゴムシはこん虫ではないよ。"}, {"q": "ダンゴムシは、どの生き物のなかま？", "a": "エビやカニ", "w": ["カブトムシ", "クモ", "ミミズ"], "e": "ダンゴムシは、エビやカニと同じ甲殻類のなかまだよ。"}, {"q": "ダンゴムシがおもに食べるものは？", "a": "落ち葉やかれた植物", "w": ["生きている虫", "花のみつ", "木の根のしる"], "e": "ダンゴムシは落ち葉などを食べ、細かくして土にかえすはたらきをしているよ。"}]},
+ {"id": "kunugi", "n": "クヌギ", "em": "🌳", "g": "E", "cls": "植物・ブナのなかま", "area": "mori", "spot": "miage", "ss": ["sp", "su", "au"], "t": "dn", "grow": "どんぐり→芽→木→花→どんぐり", "food": "日光を受けて、葉で養分をつくる", "home": "雑木林", "winter": "葉がかれ、冬芽で春をまつ", "f": "みきから出る樹液に、カブトムシやクワガタが集まる。実は丸いどんぐり。", "hint": "雑木林で木を見上げると、どんぐりのなる大きな木があるらしい。", "q": [{"q": "クヌギの実は、何とよばれている？", "a": "どんぐり", "w": ["まつぼっくり", "くり", "くるみ"], "e": "クヌギの実は、丸くて大きなどんぐりだよ。コナラやカシの実もどんぐり。"}, {"q": "クヌギは、秋に葉が茶色くかれ、春に新しい葉を出す。このような木を何という？", "a": "落葉樹", "w": ["常緑樹", "針葉樹", "水草"], "e": "秋から冬に葉がかれて、春に新しい葉を出す木を落葉樹というよ。サクラやイチョウも落葉樹。"}, {"q": "次のうち、クヌギの樹液に集まらないこん虫はどれ？", "a": "モンシロチョウ", "w": ["カブトムシ", "ノコギリクワガタ", "オオムラサキ"], "e": "モンシロチョウの成虫は花のみつをすうよ。カブトムシ・クワガタ・オオムラサキは樹液に集まる。"}]},
+ {"id": "medaka", "n": "メダカ", "em": "🐟", "card": "medaka", "g": "D", "cls": "魚類", "area": "ike", "spot": "naka", "ss": ["sp", "su", "au"], "t": "d", "grow": "卵→子メダカ→おとな", "food": "ミジンコなどの小さな生き物", "home": "池や小川、田んぼ", "winter": "水の底でじっとしている", "f": "オスは背びれに切れこみがあり、しりびれが平行四辺形に近い。", "hint": "池の水草のあいだを、小さな魚が群れで泳いでいるらしい。", "q": [{"q": "メダカのオスの見分け方として正しいのはどれ？", "a": "背びれに切れこみがある", "w": ["背びれに切れこみがない", "しりびれが小さい", "はらが大きくふくれている"], "e": "オスは背びれに切れこみがあり、しりびれが大きくて平行四辺形に近い形だよ。"}, {"q": "メダカのメスは、卵をどこに産みつける？", "a": "水草", "w": ["水面", "どろの中", "石の上の空気中"], "e": "メダカのメスは、はらにつけた卵を水草に産みつけるよ。"}, {"q": "メダカは、体のどこで呼吸している？", "a": "えら", "w": ["肺", "皮ふだけ", "口の中"], "e": "魚はえらで呼吸するよ。水にとけている酸素を、えらで取り入れている。"}]},
+ {"id": "amagaeru", "n": "ニホンアマガエル", "em": "🐸", "g": "D", "cls": "両生類", "area": "ike", "spot": "kishi", "ss": ["sp", "su", "au"], "t": "dn", "grow": "卵→オタマジャクシ→カエル", "food": "小さな虫", "home": "田んぼや池のまわりの草", "winter": "土の中や落ち葉の下で冬眠", "f": "まわりの色に合わせて、体の色が緑や茶色に変わる。", "hint": "岸の草の葉の上に、緑色の小さな生き物がいるらしい。", "q": [{"q": "オタマジャクシのときは、おもにどこで呼吸している？", "a": "えら", "w": ["肺", "はね", "口だけ"], "e": "カエルの子ども（オタマジャクシ）はえらで呼吸し、おとなになると肺と皮ふで呼吸するよ。"}, {"q": "オタマジャクシがカエルになるとき、先に出てくるあしはどっち？", "a": "後ろあし", "w": ["前あし", "4本同時", "あしは出ない"], "e": "オタマジャクシは、先に後ろあしが出て、次に前あしが出るよ。そのあと尾が短くなる。"}, {"q": "カエルは、どのなかまの動物？", "a": "両生類", "w": ["魚類", "鳥類", "こん虫"], "e": "カエルやイモリは両生類。子どものときは水の中、おとなになると陸でもくらせるよ。"}]},
+ {"id": "tsubame", "n": "ツバメ", "em": "🐦", "g": "D", "cls": "鳥類", "area": "ike", "spot": "doro", "ss": ["sp"], "t": "d", "grow": "卵→ひな→おとな", "food": "飛んでいる虫", "home": "人家ののき先などに巣を作る", "winter": "南の国へわたる", "f": "春に南の国から日本へ来て子育てをし、秋に南へ帰るわたり鳥。", "hint": "田んぼに、どろを集めに来る鳥がいるらしい。巣を作るのかな。", "q": [{"q": "ツバメのように、春に南の国から来て、秋に帰っていく鳥を何という？", "a": "夏鳥", "w": ["冬鳥", "留鳥", "旅鳥"], "e": "春から夏に日本で子育てをして、秋に南へ帰る鳥を夏鳥というよ。冬に来るハクチョウなどは冬鳥。"}, {"q": "ツバメの巣は、おもに何で作られている？", "a": "どろとかれ草", "w": ["木のえだだけ", "小石", "羽毛だけ"], "e": "ツバメは、どろとかれ草をまぜて、家ののき先などに巣を作るよ。"}, {"q": "鳥の体温について正しいのはどれ？", "a": "まわりの温度が変わっても、ほぼ一定", "w": ["まわりの温度といっしょに変わる", "昼だけ高くなる", "水の中でだけ一定"], "e": "鳥類とほ乳類は、まわりの温度が変わっても体温をほぼ一定にたもてる恒温動物だよ。"}]},
+ {"id": "mijinko", "n": "ミジンコ", "svg": "mijinko", "g": "C", "cls": "甲殻類（エビ・カニのなかま）", "area": "ike", "spot": "naka", "ss": ["sp"], "t": "d", "grow": "卵→子ども→おとな（脱皮して大きくなる）", "food": "水中の小さな緑色の生き物など", "home": "池や田んぼの水の中", "winter": "じょうぶな卵", "f": "大きさは1〜2mmほど。けんび鏡で見ると、体がすき通っている。メダカなどのえさになる。", "hint": "池の水の中に、ぴょんぴょん動く小さな点が見えるらしい。水草の近くの水をすくってみよう。", "q": [{"q": "ミジンコは、どの生き物のなかま？", "a": "エビやカニ", "w": ["こん虫", "クモ", "貝"], "e": "ミジンコは、エビやカニと同じ甲殻類のなかまだよ。"}, {"q": "ミジンコがおもに食べるものは？", "a": "水中の小さな緑色の生き物", "w": ["メダカなどの小さな魚", "水草の根やくき", "池の底の落ち葉だけ"], "e": "ミジンコは、ミカヅキモなど、光合成をする小さな生き物（植物プランクトン）を食べるよ。"}, {"q": "池の中の「食べる・食べられる」のつながり（たとえば、ミジンコがメダカに食べられる）を何という？", "a": "食物連鎖", "w": ["光合成", "蒸散", "冬眠"], "e": "生き物どうしの「食べる・食べられる」のつながりを食物連鎖というよ。"}]},
+ {"id": "amenbo", "n": "アメンボ", "svg": "amenbo", "g": "B", "cls": "こん虫・カメムシのなかま", "area": "ike", "spot": "suimen", "ss": ["sp", "su", "au"], "t": "d", "grow": "卵→幼虫→成虫（不完全変態）", "food": "水面に落ちた虫の体のしる", "home": "池や小川の水面", "winter": "成虫（落ち葉の下など）", "f": "あしの先の細かい毛が水をはじくので、水面にうかんで動ける。", "hint": "池の水面を、すいすいすべる虫がいるらしい。", "q": [{"q": "アメンボが水面にうかんでいられるのはなぜ？", "a": "あしの先の細かい毛が水をはじくから", "w": ["体の中に空気のふくろがあるから", "はねで水面をたたいているから", "あしが水底についているから"], "e": "アメンボのあしの先には細かい毛がたくさんあり、水をはじくので、しずまないよ。"}, {"q": "アメンボが食べるものは？", "a": "水面に落ちた虫の体のしる", "w": ["水面にうかぶ水草の葉", "水の中にいるミジンコ", "岸にさく花のみつ"], "e": "アメンボは、水面に落ちた虫にはりのような口をさして、体のしるをすうよ。"}, {"q": "アメンボのあしは、ぜんぶで何本？", "a": "6本", "w": ["4本", "8本", "10本"], "e": "アメンボはこん虫なので、あしは6本。カメムシのなかまだよ。"}]},
+ {"id": "sakura", "n": "サクラ（ソメイヨシノ）", "em": "🌸", "g": "G", "cls": "植物・バラのなかま", "area": "mori", "spot": "miage", "ss": ["sp", "wi"], "t": "d", "grow": "冬芽→春に花→葉→秋に葉が落ちる", "food": "日光を受けて、葉で養分をつくる", "home": "公園や学校、川の土手", "winter": "葉を落とし、冬芽で春をまつ", "f": "花びらは5まいで、1まいずつはなれている。夏のうちに次の年の芽をつくっている。", "hint": "林で木を見上げると、春は花でいっぱい、冬はえだの先に芽をつけた木があるらしい。", "q": [{"q": "冬のサクラのえだについている、春に花や葉になる芽を何という？", "a": "冬芽", "w": ["子葉", "根毛", "気孔"], "e": "春に花や葉になる芽を冬芽というよ。うろこのようなものにつつまれて、寒さやかんそうから守られている。"}, {"q": "サクラの花びらは何まい？", "a": "5まい", "w": ["4まい", "6まい", "8まい"], "e": "サクラの花びらは5まいで、1まいずつはなれている離弁花だよ。アブラナは4まい。"}, {"q": "ソメイヨシノは、春にどんな順で花と葉が出る？", "a": "花がさいてから、葉が出る", "w": ["葉がしげってから、花がさく", "葉が出るだけで、花はさかない", "花と葉が、夏に同時に出る"], "e": "ソメイヨシノは、葉が出る前に花がさくよ。花が散るころに葉が出てくる。"}]}
+];
+/* 図鑑のならび順と、有料版でふえるカードの場所（名前や問題は入れない） */
+const ORDER=["monshiro","namiageha","nanahoshi","mitsubachi","batta","ookamakiri","koganegumo","tanpopo","aburana","hechima","kabuto","nokogiri","semi","oomurasaki","dangomushi","kunugi","medaka","amagaeru","tsubame","mijinko","amenbo","zarigani","shiokara","genji","koorogi","akiakane","jorougumo","susuki","onamomi","icho","kanahebi","koumori","hakucho","tsubaki","sakura","w-monshiro","w-namiageha","w-nanahoshi","w-ookamakiri","w-kabuto","w-oomurasaki","w-kunugi","w-shiokara","w-amagaeru","w-tanpopo","w-amenbo"];
+const STUB=[{"id":"batta","g":"B"},{"id":"ookamakiri","g":"B"},{"id":"koganegumo","g":"C"},{"id":"hechima","g":"E"},{"id":"kabuto","g":"A"},{"id":"nokogiri","g":"A"},{"id":"semi","g":"B"},{"id":"oomurasaki","g":"A"},{"id":"zarigani","g":"C"},{"id":"shiokara","g":"B"},{"id":"genji","g":"A"},{"id":"koorogi","g":"F"},{"id":"akiakane","g":"F"},{"id":"jorougumo","g":"F"},{"id":"susuki","g":"F"},{"id":"onamomi","g":"F"},{"id":"icho","g":"F"},{"id":"kanahebi","g":"F"},{"id":"koumori","g":"F"},{"id":"hakucho","g":"G"},{"id":"tsubaki","g":"G"},{"id":"w-monshiro","g":"W"},{"id":"w-namiageha","g":"W"},{"id":"w-nanahoshi","g":"W"},{"id":"w-ookamakiri","g":"W"},{"id":"w-kabuto","g":"W"},{"id":"w-oomurasaki","g":"W"},{"id":"w-kunugi","g":"W"},{"id":"w-shiokara","g":"W"},{"id":"w-amagaeru","g":"W"},{"id":"w-tanpopo","g":"W"},{"id":"w-amenbo","g":"W"}];
+function addPack(P){
+  if(!P||!Array.isArray(P.cr)||!Array.isArray(P.wf))throw {error:'no_data'};
+  P.cr.forEach(c=>{if(!byId[c.id])CR.push(c);});
+  P.wf.forEach(w=>{const p=CR.find(c=>c.id===w.of);if(!p||CR.some(c=>c.id==='w-'+w.of))return;
+    CR.push({id:'w-'+w.of,n:w.n,mask:w.mask,svg:w.svg,em:w.em,g:'W',cls:p.n+'の 冬のすがた',area:p.area,spot:w.spot,ss:['wi'],t:'d',wf:true,of:w.of,st:w.st,f:w.f,hint:w.hint,
+      q:[w.wq].concat(p.q.filter(x=>!/冬をこす/.test(x.q)))});});
+  Object.assign(SUMMARY,P.summary||{});
+  CR.sort((a,b)=>ORDER.indexOf(a.id)-ORDER.indexOf(b.id));
+  CR.forEach(c=>byId[c.id]=c);
+  packReady=true;
+  const sb=$('btnStart');if(sb){sb.disabled=false;sb.textContent='島へ 行く';}
+}
+const byId={}; CR.forEach(c=>byId[c.id]=c);
+
+/* ===== なかまの まとめ問題 ===== */
+/* 無料版は「せきつい動物」（春だけでそろう）のまとめ問題だけ */
+const SUMMARY={
+ D:[{"q":"一生、えらで呼吸する動物はどれ？","a":"メダカ","w":["ニホンアマガエル","ツバメ","ヒト"],"e":"魚類は一生えらで呼吸するよ。カエルは子どものときだけえら、おとなは肺と皮ふで呼吸する。"},{"q":"まわりの温度が変わると体温も変わる動物（変温動物）の組み合わせはどれ？","a":"メダカとニホンアマガエル","w":["メダカとツバメ","ニホンアマガエルとツバメ","ツバメとヒト"],"e":"魚類・両生類・は虫類は変温動物。鳥類とほ乳類は、体温がほぼ一定の恒温動物だよ。"},{"q":"かたいからのある卵を、陸に産む動物はどれ？","a":"ツバメ","w":["メダカ","ニホンアマガエル","どれも産まない"],"e":"鳥類は、かたいからのある卵を陸に産むよ。魚類や両生類の卵にはからがなく、水の中に産む。"}]
+};
+
+/* ===== 記録（この端末のブラウザの中だけ） ===== */
+const PAID=false;   /* 有料版（ikimono-shima-full.html）は true。ちがいは この行と head の meta・タイトルだけ */
+let packReady=!PAID;
+const FULL='ikimono-shima-full.html', FREE='ikimono-shima.html';
+const KEY='mn-ikimono-shima-v1', CARD_KEY='manabi_ikimono_cards_v1', NETS=PAID?15:10, SUMMER_NEED=8, AU_NEED=16, WI_NEED=28, BONUS_MAX=5;
+let S={v:1,day:'',nets:NETS,days:0,caught:{},fled:{},qs:{},medals:{},summer:false,tOk:0,tAll:0,tCatch:0,bonus:0,lost:'',ended:false,openAll:false};
+let storeOK=true, season='sp', time='d', curArea=null, started=false;
+function today(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function load(){try{const v=localStorage.getItem(KEY);if(v){const o=JSON.parse(v);if(o&&o.v===1)S=Object.assign(S,o);}}catch(e){storeOK=false;}
+  if(S.day!==today()){S.day=today();newDay();save();}
+  /* 無料版から有料版に来た日は、その日のうちに ふえた分（5本）のあみを足す */
+  else if((S.cap||10)<NETS){S.nets+=NETS-(S.cap||10);S.cap=NETS;S.ended=false;save();}}
+function checkDay(){if(S.day===today())return false;S.day=today();newDay();save();return true;}
+function newDay(){S.nets=NETS;S.cap=NETS;S.days++;S.tOk=0;S.tAll=0;S.tCatch=0;S.bonus=0;S.lost='';S.ended=false;}
+function save(){if(!storeOK)return;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){storeOK=false;}}
+function addCard(c){if(!c.card)return;try{const o=JSON.parse(localStorage.getItem(CARD_KEY)||'{}')||{};o[c.card]=(o[c.card]||0)+1;localStorage.setItem(CARD_KEY,JSON.stringify(o));}catch(e){}}
+const nCaught=()=>CR.filter(c=>S.caught[c.id]).length;
+const total=()=>CR.length+(PAID?0:STUB.length);
+const nSpring=()=>CR.filter(c=>c.ss.includes('sp')&&S.caught[c.id]).length;
+const unlocked=s=>s==='sp'||PAID&&(S.openAll||(s==='su'?S.summer:nCaught()>=(s==='au'?AU_NEED:WI_NEED)));
+const nightOK=()=>season==='su'||season==='au';
+const dn=c=>(c.wf&&!S.caught[c.id])?c.mask:c.n;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ===== 画面の切りかえ ===== */
+function show(id){['scTitle','scIsland','scArea','scMuseum','scLock'].forEach(s=>$(s).classList.toggle('hidden',s!==id));
+  document.body.classList.toggle('night',time==='n'&&id!=='scTitle'&&id!=='scMuseum');window.scrollTo(0,0);}
+function openSheet(html){$('sheet').innerHTML=html;$('ov').classList.remove('hidden');$('sheet').scrollTop=0;}
+function closeSheet(){$('ov').classList.add('hidden');$('sheet').innerHTML='';}
+function msg(html,btn,cb){openSheet('<div style="font-size:15px;line-height:1.8">'+html+'</div><button class="btn wide" id="mOk">'+(btn||'OK')+'</button>');
+  $('mOk').onclick=()=>{closeSheet();cb&&cb();};}
+
+/* ===== 有料版の案内（無料版だけ） ===== */
+function paidInfo(lead){
+  openSheet('<div style="font-size:15px;line-height:1.8">'+(lead||'')+'<b>夏・秋・冬の島</b>は、有料版（理科）で遊べるよ。<br>夜のカブトムシ、秋の鳴く虫、冬のすがた…。図鑑は ぜんぶで '+total()+'まい。<br><span style="font-size:13px;color:var(--sub)">いまの図鑑とあみは、そのまま つづきから使えるよ。おうちの人に きいてみてね。</span></div>'+
+    '<a class="btn wide" style="display:block;text-align:center;text-decoration:none" href="'+FULL+'">有料版を ひらく</a><button class="btn ghost wide" id="cl">とじる</button>');
+  $('cl').onclick=closeSheet;
+}
+
+/* ===== 島 ===== */
+function here(c){return c.ss.includes(season)&&c.t.includes(time);}
+/* 今日のさがしもの：にげた生き物 → まだ図鑑にいない生き物 の順 */
+function target(){
+  const pool=CR.filter(here);
+  const fled=pool.filter(c=>S.fled[c.id]);
+  if(fled.length)return fled[0];
+  const un=pool.filter(c=>!S.caught[c.id]);
+  return un.length?un[(S.days+un.length)%un.length]:null;
+}
+const bonusLeft=()=>Math.max(0,BONUS_MAX-S.bonus);
+function chance(){const t=target();return !!t&&bonusLeft()>0&&S.lost!==t.id;}
+function canContinue(){return S.nets>0||chance();}
+function bonusLine(){
+  const t=target();
+  if(!t)return '';
+  if(bonusLeft()<=0)return '<br><span style="font-size:12px;color:var(--sub)">🕵️ きょうの「めいたんてい」は5回つかったよ。</span>';
+  if(S.lost===t.id)return '<br><span style="font-size:12px;color:var(--sub)">🕵️ このさがしものは、さいしょのタップを外してしまった。つかまえると、次のさがしものが出るよ。</span>';
+  return '<br><span style="font-size:12px;color:#7a5a00"><b>🕵️ めいたんていチャンス！</b> この生き物のいる場所を、さいしょのタップで当てると、あみを使わずにかんさつできる（きょう あと'+bonusLeft()+'回）。</span>';
+}
+function newsText(){
+  const pool=CR.filter(here), t=target();
+  if(t)return (S.fled[t.id]?'前ににげた<b>'+dn(t)+'</b>が、また来ているらしいよ。<br>':'')+rb(t.hint)+bonusLine();
+  if(!pool.length) return 'この時間は、生き物が見つけにくいみたい。季節や時間を変えてみよう。';
+  const left=CR.filter(c=>!S.caught[c.id]).length;
+  if(!PAID)return '春の島の生き物は、ぜんぶ図鑑に入ったよ！ 夏・秋・冬の島は、有料版で遊べるよ。';
+  return left?'この季節・時間の生き物は、ぜんぶ図鑑に入ったよ！ 季節や時間を変えてみよう。':(Object.keys(S.medals).length>=GROUPS.length?'図鑑もメダルも、ぜんぶそろったね！ おめでとう！':'島の生き物を、ぜんぶ図鑑に入れたね！ 博物館で「まとめ問題」にちょうせんしよう。');
+}
+function renderIsland(){
+  checkDay();
+  if(!unlocked(season)){season='sp';}
+  if(!nightOK())time='d';
+  $('chNet').textContent='🥅 あみ '+S.nets+'本';
+  $('chBo').textContent='🕵️ あと'+bonusLeft()+'回';
+  $('chZu').textContent='📖 '+nCaught()+'/'+total();
+  const lockTxt=k=>k==='su'?'春を あと'+Math.max(0,SUMMER_NEED-nSpring())+'種':'図鑑 あと'+Math.max(0,(k==='au'?AU_NEED:WI_NEED)-nCaught())+'種';
+  $('segSeason').innerHTML=['sp','su','au','wi'].map(k=>'<button data-s="'+k+'" class="'+(season===k?'on':'')+(unlocked(k)?'':' lock')+'">'+(unlocked(k)?SEASONS[k]:'🔒 '+SN[k]+'（'+(PAID?lockTxt(k):'有料版')+'）')+'</button>').join('');
+  $('segTime').innerHTML='<button data-t="d" class="'+(time==='d'?'on':'')+'">☀️ 昼</button>'+
+    '<button data-t="n" class="'+(time==='n'?'on':'')+(nightOK()?'':' lock')+'">'+(nightOK()?'🌙 夜':PAID?'🔒 夜（夏と秋だけ）':'🔒 夜（有料版）')+'</button>';
+  $('segSeason').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.s;
+    if(!PAID&&k!=='sp'){paidInfo(S.summer?'':'春の生き物を'+SUMMER_NEED+'種つかまえると、夏の島がひらくよ（いまは '+nSpring()+'種）。<br>');return;}
+    if(!unlocked(k)){msg(k==='su'?'夏の島へ行くには、春の生き物を<b>'+SUMMER_NEED+'種</b>つかまえよう。<br>いまは '+nSpring()+'種。':SN[k]+'の島へ行くには、図鑑を<b>'+(k==='au'?AU_NEED:WI_NEED)+'種</b>にしよう。<br>いまは '+nCaught()+'種。');return;}
+    season=k; if(!nightOK())time='d'; show('scIsland'); renderIsland();});
+  $('segTime').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    if(b.dataset.t==='n'&&!nightOK()){if(PAID)msg('夜のたんけんは、夏と秋にできるよ。');else paidInfo('夜のたんけんは、夏と秋にできるよ。<br>');return;}
+    time=b.dataset.t; show('scIsland'); renderIsland();});
+  $('newsTxt').innerHTML=newsText();
+  $('areas').innerHTML=AREAS.map(a=>{
+    const all=CR.filter(c=>c.area===a.id), got=all.filter(c=>S.caught[c.id]).length;
+    return '<button class="area a-'+a.id+'" data-a="'+a.id+'"><span class="em">'+a.em+'</span><span>'+rb(a.n)+'<small>図鑑 '+got+' / '+all.length+'種</small></span></button>';}).join('');
+  $('areas').querySelectorAll('button').forEach(b=>b.onclick=()=>openArea(b.dataset.a));
+  const ready=GROUPS.filter(g=>groupDone(g.id)&&!S.medals[g.id]).length;
+  $('musSub').textContent=ready?'まとめ問題に ちょうせんできる！':'メダル '+Object.keys(SUMMARY).filter(g=>S.medals[g]).length+' / '+Object.keys(SUMMARY).length;
+}
+
+/* ===== エリア ===== */
+function openArea(id){curArea=AREAS.find(a=>a.id===id);renderArea();show('scArea');}
+function renderArea(){
+  checkDay();
+  const a=curArea;
+  $('chNet2').textContent='🥅 あみ '+S.nets+'本';
+  $('chBo2').textContent='🕵️ あと'+bonusLeft()+'回';
+  $('areaHint').innerHTML='<span class="hk">🕵️</span><div><b>今日のさがしもの</b><br>'+newsText()+'</div>';
+  $('areaTtl').innerHTML=a.em+' '+rb(a.n);
+  $('areaWhen').textContent=SEASONS[season]+'・'+TIMES[time];
+  $('scene').className='scene s-'+a.id+' se-'+season;
+  $('spots').innerHTML=a.spots.map(s=>'<button class="spot" data-s="'+s.id+'"><span class="em">'+s.em+'</span>'+rb(s.n)+'</button>').join('');
+  $('spots').querySelectorAll('button').forEach(b=>b.onclick=()=>{b.classList.remove('rustle');void b.offsetWidth;b.classList.add('rustle');setTimeout(()=>explore(b.dataset.s),380);});
+}
+function explore(spotId){
+  if(checkDay()){renderArea();}
+  const list=CR.filter(c=>c.area===curArea.id&&c.spot===spotId);
+  const now=list.filter(here);
+  /* めいたんてい：さがしものがこのエリアにいるとき、さいしょのタップで当たりかどうかを決める */
+  const t=target();let note='';
+  if(t&&t.area===curArea.id&&chance()){
+    if(t.spot===spotId){meet(t,true);return;}
+    S.lost=t.id;save();renderArea();
+    note='<div class="exp" style="margin:0 0 10px">🕵️ さがしものは、ここではなかった…。<br>ヒントをもう一度読んで、さがしてみよう（今回は、あみを使うよ）。</div>';
+  }
+  if(!now.length){
+    let h='いまは、何もいないみたい。';
+    if(list.some(c=>c.ss.includes(season)&&!c.t.includes(time))) h+='<br>'+(time==='d'?'🌙 夜に来ると、何かいるかも。':'☀️ 昼に来ると、何かいるかも。');
+    else{const os=['sp','su','au','wi'].filter(k=>k!==season&&list.some(c=>c.ss.includes(k)));if(os.length)h+='<br>'+os.map(k=>SEASONS[k]).join('・')+'に来ると、何かいるらしい。';}
+    msg(note+h,'ほかの場所をさがす');return;
+  }
+  const fled=now.filter(c=>S.fled[c.id]), un=now.filter(c=>!S.caught[c.id]);
+  const pool=fled.length?fled:(un.length?un:now);
+  meet(pool[Math.floor(Math.random()*pool.length)],false,note);
+}
+function meet(c,free,note){
+  const got=S.caught[c.id];
+  openSheet((note||'')+(free?'<div class="exp" style="margin:0 0 10px;background:#fff3cd"><b>🕵️ めいたんてい！</b> ヒントの場所を、さいしょのタップで当てた。<b>あみを使わずに</b>かんさつできるよ。</div>':'')+
+    '<div class="meet"><div class="qhead"><span>🔍 見つけた！</span><span>'+SEASONS[season]+'・'+TIMES[time]+'</span></div>'+
+    '<div class="pic pop">'+icon(c)+'</div><div class="nm">'+rb(dn(c))+(got?'':'<span class="newtag">まだ図鑑にいない</span>')+'</div>'+
+    '<div class="cls">'+(c.wf&&!got?'だれかの 冬のすがた':rb(c.cls))+(got?'　図鑑ずみ（'+got+'回）':'')+'</div>'+
+    '<p style="font-size:14px">かんさつクイズ2問に、2問とも正解するとつかまえられるよ。</p></div>'+
+    (free?'<button class="btn wide" id="go">かんさつする（🕵️ あみは へらない）</button>'
+     :S.nets>0?'<button class="btn wide" id="go">かんさつする（🥅 あみ1本）</button>'
+     :'<div class="exp">きょうのあみは、もうないよ。'+(chance()?'<br>🕵️ 「今日のさがしもの」の場所を当てれば、まだかんさつできる。':'つづきは、また明日。')+'</div>')+
+    '<button class="btn ghost wide" id="no">やめておく</button>');
+  $('no').onclick=closeSheet;
+  if($('go'))$('go').onclick=()=>startQuiz(c,free);
+}
+
+/* ===== かんさつクイズ ===== */
+function pickQ(c){
+  const rank=i=>{const s=S.qs[c.id+'-'+i];return s==='ng'?0:(s==='ok'?2:1);};
+  let ix=shuffle(c.q.map((_,i)=>i)).sort((a,b)=>rank(a)-rank(b));
+  if(c.wf)ix=[0].concat(ix.filter(i=>i!==0));   /* 冬のすがたは「これは何？」を必ず出す */
+  return ix.slice(0,2);
+}
+function askQ(head,q,done){
+  const opts=shuffle([q.a].concat(q.w));
+  openSheet('<div class="qhead">'+head+'</div><div class="qtext">'+rb(q.q)+'</div><div class="choices">'+
+    opts.map((o,i)=>'<button class="ch" data-i="'+i+'">'+rb(o)+'</button>').join('')+'</div><div id="after"></div>');
+  $('sheet').querySelectorAll('.ch').forEach(b=>b.onclick=()=>{
+    const ok=opts[+b.dataset.i]===q.a;
+    $('sheet').querySelectorAll('.ch').forEach(x=>{x.disabled=true;if(opts[+x.dataset.i]===q.a)x.classList.add('ok');});
+    if(!ok)b.classList.add('ng');
+    $('after').innerHTML='<div class="exp"><b class="'+(ok?'o':'x')+'">'+(ok?'⭕ 正解！':'❌ ざんねん… 正解は「'+rb(q.a)+'」')+'</b><br>'+rb(q.e)+'</div><button class="btn wide" id="nx">つぎへ</button>';
+    $('nx').onclick=()=>done(ok);
+    $('nx').scrollIntoView({block:'nearest'});
+  });
+}
+function startQuiz(c,free){
+  if(checkDay()){closeSheet();renderArea();msg('日付が変わったよ。あみと「めいたんてい」がもどった。もう一度さがしてみよう。');return;}
+  if(!free&&S.nets<=0)return;
+  if(!started){started=true;track('level_start',{level_name:'いきもの島 '+SN[season]});}
+  if(free)S.bonus++;else S.nets--;
+  save();
+  const idx=pickQ(c),name0=dn(c),before=nCaught();let okAll=true,n=0;
+  const next=()=>{
+    if(n>=idx.length)return finish();
+    const i=idx[n],q=c.q[i];
+    askQ('<span>🔎 かんさつクイズ '+(n+1)+' / 2</span><span>'+rb(name0)+'</span>',q,ok=>{
+      S.qs[c.id+'-'+i]=ok?'ok':'ng';S.tAll++;if(ok)S.tOk++;else okAll=false;save();
+      track('answer_question',{category:GROUPS.find(g=>g.id===c.g).n,question:c.n+'：'+q.q,correct:ok});
+      n++;next();});
+  };
+  const finish=()=>{
+    if(okAll){
+      const isNew=!S.caught[c.id];
+      S.caught[c.id]=(S.caught[c.id]||0)+1;delete S.fled[c.id];S.tCatch++;addCard(c);
+      let extra='';
+      if(!S.summer&&nSpring()>=SUMMER_NEED){S.summer=true;extra+=PAID?'<div class="exp">🌻 <b>夏の島</b>へ行けるようになった！ 夏は、夜のたんけんもできるよ。</div>':'<div class="exp">🌸 春の生き物を<b>'+SUMMER_NEED+'種</b>あつめた！ 夏・秋・冬の島は、有料版で遊べるよ。春の島は、このまま ぜんぶ集められる。<br><a href="'+FULL+'" style="font-weight:800;color:var(--green-d)">有料版を ひらく →</a></div>';}
+      const after=nCaught();
+      [['au',AU_NEED],['wi',WI_NEED]].forEach(x=>{if(PAID&&!S.openAll&&before<x[1]&&after>=x[1])extra+='<div class="exp">'+SEASONS[x[0]]+'の島へ行けるようになった！'+(x[0]==='wi'?' 冬は、春・夏の生き物の「冬のすがた」をさがそう。':' 秋は、夜のたんけんもできるよ。')+'</div>';});
+      if(isNew&&groupDone(c.g)&&!S.medals[c.g])extra+='<div class="exp">🏛️ 「'+rb(GROUPS.find(g=>g.id===c.g).n)+'」が全部そろった！ 博物館で、まとめ問題にちょうせんできるよ。</div>';
+      save();
+      openSheet('<div class="qhead"><span>🎉 つかまえた！</span><span>図鑑 '+nCaught()+' / '+total()+'</span></div>'+cardHTML(c,isNew)+
+        (c.card?'<p style="font-size:12px;color:var(--sub)">🃏 「いきものカードバトル」の図鑑にも、このカードが入ったよ。</p>':'')+extra+
+        '<button class="btn wide" id="ok">'+(canContinue()?'たんけんを つづける':'きょうは ここまで')+'</button>');
+    }else{
+      S.fled[c.id]=1;save();
+      openSheet('<div class="meet"><div class="qhead"><span>💨 '+(c.wf?'見うしなった…':'にげられた…')+'</span><span>'+name0+'</span></div><div class="pic"><div class="flee">'+icon(c)+'</div></div>'+
+        '<p style="font-size:15px;line-height:1.8">2問とも正解しないと、つかまえられないよ。<br>'+(c.wf?'同じ場所で、また見つけられる。':name0+'は、また同じ場所に来る。')+'<b>まちがえた問題がもう一度出る</b>から、解説をおぼえておこう。</p></div>'+
+        '<button class="btn wide" id="ok">'+(canContinue()?'たんけんを つづける':'きょうは ここまで')+'</button>');
+    }
+    $('ok').onclick=()=>{closeSheet();renderArea();if(!canContinue()&&!S.ended)endDay();};
+  };
+  next();
+}
+function endDay(){
+  S.ended=true;save();
+  track('level_end',{level_name:'いきもの島',success:true,score:S.tOk,total:S.tAll});started=false;
+  msg('🌇 <b>きょうのたんけんは、おしまい。</b><br>きょう つかまえた回数：'+S.tCatch+'回<br>クイズの正解：'+S.tOk+' / '+S.tAll+'問<br><br>あみと「めいたんてい」は、明日になるとまた使えるよ。博物館の図鑑は、いつでも見られる。目を休めて、また明日！','島の地図へ',()=>{show('scIsland');renderIsland();});
+}
+
+/* ===== 図鑑 ===== */
+function groupDone(g){return !!SUMMARY[g]&&CR.filter(c=>c.g===g).every(c=>S.caught[c.id]);}
+function whenText(c){return c.ss.map(s=>SN[s]).join('・')+'／'+(c.t==='dn'?'昼も夜も':c.t==='n'?'夜':'昼');}
+function cardHTML(c,isNew){
+  const a=AREAS.find(x=>x.id===c.area),sp=a.spots.find(s=>s.id===c.spot);
+  if(c.wf){const p=byId[c.of];
+    return '<div class="meet"><div class="pic pop">'+icon(c)+'</div><div class="nm">'+rb(c.n)+(isNew?'<span class="newtag">NEW!</span>':'')+'</div><div class="cls">'+rb(c.cls)+'</div></div>'+
+     '<table class="info"><tr><th>生き物</th><td>'+p.n+'（'+rb(p.cls)+'）</td></tr><tr><th>冬ごし</th><td><b>'+rb(c.st)+'</b></td></tr>'+
+     '<tr><th>育ち方</th><td>'+rb(p.grow)+'</td></tr><tr><th>島では</th><td>'+rb(a.n)+'の「'+rb(sp.n)+'」／冬</td></tr></table>'+
+     '<div class="fact">💡 '+rb(c.f)+'</div>';}
+  return '<div class="meet"><div class="pic pop">'+icon(c)+'</div><div class="nm">'+rb(c.n)+(isNew?'<span class="newtag">NEW!</span>':'')+'</div><div class="cls">'+rb(c.cls)+'</div></div>'+
+   '<table class="info"><tr><th>育ち方</th><td>'+rb(c.grow)+'</td></tr><tr><th>食べ物</th><td>'+rb(c.food)+'</td></tr>'+
+   '<tr><th>すみか</th><td>'+rb(c.home)+'</td></tr>'+(c.winter?'<tr><th>冬ごし</th><td>'+rb(c.winter)+'</td></tr>':'')+
+   '<tr><th>島では</th><td>'+rb(a.n)+'の「'+rb(sp.n)+'」／'+whenText(c)+'</td></tr></table>'+
+   '<div class="fact">💡 '+rb(c.f)+(c.id==='zarigani'?'<br>⚠️ 飼っているザリガニを、池や川にぜったいに放さないこと。':'')+'</div>';
+}
+function renderMuseum(){
+  $('chZu2').textContent='📖 '+nCaught()+'/'+total();
+  $('zuBar').style.width=Math.round(nCaught()/total()*100)+'%';
+  $('zukan').innerHTML=GROUPS.map(g=>{
+    const list=CR.filter(c=>c.g===g.id),done=groupDone(g.id),md=S.medals[g.id],nStub=PAID?0:STUB.filter(x=>x.g===g.id).length;
+    return '<div class="grp"><h3><span>'+rb(g.n)+'</span>'+(md?'<span class="medal">🏅 メダル</span>':'<span class="medal" style="background:#eef1ec;border-color:#d5dbd1;color:#6b7a66">'+list.filter(c=>S.caught[c.id]).length+' / '+(list.length+nStub)+'</span>')+'</h3>'+
+      '<div class="gd">'+rb(g.d)+'</div><div class="grid">'+
+      list.map(c=>S.caught[c.id]?'<button class="zc" data-c="'+c.id+'"><div class="i">'+icon(c)+'</div>'+rb(c.n)+'</button>'
+        :'<button class="zc lock" data-c="'+c.id+'"><div class="i">？</div>？？？</button>').join('')+
+      '<button class="zc lock" data-p="1"><div class="i">🔒</div>有料版</button>'.repeat(nStub)+'</div>'+
+      (done&&!md?'<button class="btn blue wide" data-g="'+g.id+'">🏅 まとめ問題に ちょうせん（3問）</button>':'')+'</div>';}).join('')+
+    (PAID&&Object.keys(S.medals).length===GROUPS.length?'<div class="grp" style="text-align:center;background:#fffbe9"><div style="font-size:40px">🏛️🎉</div><b>島の博物館が かんせい！</b><p style="font-size:14px">'+CR.length+'の図鑑カードと、'+GROUPS.length+'このメダルがそろったよ。</p></div>':'');
+  $('zukan').querySelectorAll('.zc').forEach(b=>b.onclick=()=>{
+    if(b.dataset.p){paidInfo('このカードは、夏・秋・冬の島で見つかるよ。<br>');return;}
+    const c=byId[b.dataset.c];
+    if(S.caught[c.id]){openSheet(cardHTML(c,false)+'<button class="btn ghost wide" id="cl">とじる</button>');}
+    else{const a=AREAS.find(x=>x.id===c.area);
+      openSheet('<div class="meet"><div class="pic" style="font-size:54px;color:#b8c2b4">？</div><div class="nm">？？？</div><div class="cls">'+(c.wf?'だれかの 冬のすがた':rb(c.cls))+'</div></div>'+
+       '<div class="exp">🔍 さがすヒント<br>'+rb(c.hint)+'<br>（'+rb(a.n)+'／'+whenText(c)+'）</div><button class="btn ghost wide" id="cl">とじる</button>');}
+    $('cl').onclick=closeSheet;});
+  $('zukan').querySelectorAll('button[data-g]').forEach(b=>b.onclick=()=>summaryQuiz(b.dataset.g));
+}
+function summaryQuiz(gid){
+  const g=GROUPS.find(x=>x.id===gid),qs=SUMMARY[gid];let n=0,ok=0;
+  const next=()=>{
+    if(n>=qs.length){
+      if(ok===qs.length){S.medals[gid]=1;save();msg('🏅 <b>全問正解！</b><br>「'+rb(g.n)+'」のメダルが、博物館にかざられたよ。','図鑑へ',renderMuseum);}
+      else msg('正解は '+ok+' / '+qs.length+'問。<br>メダルは全問正解でもらえるよ。図鑑のカードを読み直して、もう一度ちょうせんしよう。','図鑑へ',renderMuseum);
+      return;}
+    const q=qs[n];
+    askQ('<span>🏅 まとめ問題 '+(n+1)+' / '+qs.length+'</span><span>'+g.n+'</span>',q,r=>{
+      if(r)ok++;track('answer_question',{category:'まとめ：'+g.n,question:q.q,correct:r});n++;next();});
+  };next();
+}
+
+/* ===== ボタン ===== */
+$('btnStart').onclick=()=>{if(!packReady)return;show('scIsland');renderIsland();if(!storeOK)msg('このブラウザでは記録を保存できないみたい。とじると、図鑑が消えてしまうよ。');};
+$('btnParent').onclick=()=>$('parentBox').classList.toggle('hidden');
+$('btnBack').onclick=()=>{show('scIsland');renderIsland();};
+$('btnBack2').onclick=()=>{show('scIsland');renderIsland();};
+$('btnMuseum').onclick=()=>{renderMuseum();show('scMuseum');};
+$('btnWorld').onclick=()=>msg('🌏 <b>世界のこん虫館</b>は、じゅんび中。<br>ヘラクレスオオカブトなど、外国の生き物を温室で観察できるようになる予定だよ。<br><span style="font-size:13px;color:var(--sub)">外国の生き物は、日本の野山にはいないので、島の外には出さないよ。</span>');
+$('ov').onclick=e=>{if(e.target===$('ov')&&$('mOk'))$('mOk').click();};
+
+/* ===== 🛠 テスト（テストサイトでだけ出る。本番では上の head のしくみでボタンが出ない） ===== */
+$('testBtn').onclick=()=>{
+  const v=prompt('🛠 テスト（テストサイトだけ）\n1：つぎの日へ（あみ・めいたんていを もとにもどす）\n2：ぜんぶの季節をひらく\n3：ぜんぶ つかまえたことにする\n4：記録をぜんぶ消す\n5：春・夏の24種だけ つかまえたことにする','');
+  if(v==='1'){newDay();}
+  else if(v==='2'){S.summer=true;S.openAll=true;}
+  else if(v==='3'){CR.forEach(c=>{S.caught[c.id]=S.caught[c.id]||1;});S.summer=true;}
+  else if(v==='5'){CR.filter(c=>'ABCDE'.includes(c.g)).forEach(c=>{S.caught[c.id]=S.caught[c.id]||1;});S.summer=true;}
+  else if(v==='4'){try{localStorage.removeItem(KEY);}catch(e){}location.reload();return;}
+  else return;
+  save();closeSheet();show('scIsland');renderIsland();
+};
+
+/* ===== 有料版：問題データ（パック）をサーバーから受け取る ===== */
+function lockScreen(err){
+  show('scLock');
+  if(!window.mnAccess){$('lockBox').textContent='有料版は、サイトの上で開いてください。';return;}
+  mnAccess.lock($('lockBox'),{game:'ikimono-shima',err:err,free:FREE,onOpen:async()=>{addPack(await mnAccess.load('ikimono-shima'));show('scTitle');}});
+}
+if(PAID){
+  $('verBadge').textContent='有料版（春・夏・秋・冬）';
+  $('netN').textContent=NETS;
+  $('btnStart').disabled=true;$('btnStart').textContent='読みこみ中…';
+  $('ruleSeason').innerHTML=rb('図鑑がふえると、夏・秋・冬の島へ行ける。冬は「冬のすがた」（さなぎ・卵・幼虫など）をさがそう。');
+  (async()=>{try{if(!window.mnAccess)throw {error:'none'};addPack(await mnAccess.load('ikimono-shima'));}catch(e){lockScreen(e);}})();
+}else{
+  $('freeNote').textContent=' 🔒 のカードは、有料版（夏・秋・冬の島）で見つかります。';
+}
+
+load();
+/* ページを開いたまま次の日になったとき：もどってきたら あみを もどす */
+document.addEventListener('visibilitychange',()=>{if(document.hidden||!checkDay())return;
+  if(!$('scIsland').classList.contains('hidden'))renderIsland();else if(!$('scArea').classList.contains('hidden')&&$('ov').classList.contains('hidden'))renderArea();});
+</script>
+</body>
+</html>
