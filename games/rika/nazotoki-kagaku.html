@@ -409,6 +409,7 @@ $('stage').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
 function gain(n){if(!ev[n].have){ev[n].have=1;newEv.add(n);$('talkText').innerHTML+='<br><span class="ok">📒 証拠「'+ev[n].name+'」を 手に入れた！</span>';}}
 
 function newGame(){
+  $('btnQuit').classList.remove('hidden');
   ev=JSON.parse(JSON.stringify(EV0));for(const k in ev)ev[k].have=0;ev[1].have=1;
   FLOW=locked(epNo)?EP.FLOW0.concat([{t:'lock'}]):EP.FLOW;
   newEv=new Set();gauge=5;mistakes=0;miss=new Set();flags={};firstTry=true;step=0;started=true;
@@ -425,6 +426,7 @@ function run(){
 
 /* ---------- 無料版は ここまで ---------- */
 function freeEnd(){
+  $('btnQuit').classList.add('hidden');  // 画面の中に 大きな「タイトルへ」が あるので、下の 小さい ほうは かくす
   setStage('hikari','つづきは 有料版');$('talkName').textContent='ヒカリ';$('talkName').style.background=P.hikari.col;
   $('talkText').innerHTML='手がかりは そろった。ここから 先は <b>有料版</b>で、証言の おかしい ところを 見つけて なぞを 解こう！';$('talkNext').classList.add('hidden');$('talk').classList.remove('tap');
   track('free_end',{level_name:'nazotoki-kagaku-ep'+epNo});
@@ -573,6 +575,7 @@ function reasonOK(){
 
 /* ---------- エンディング ---------- */
 function ending(){
+  $('btnQuit').classList.add('hidden');  // 画面の中に 大きな「タイトルへ」が あるので、下の 小さい ほうは かくす
   const stars=mistakes<=1?3:mistakes<=4?2:1;
   const badges=['🔬 新人たんてい部員'];if(firstTry)badges.push('⚡ 一発突破');
   const sv=loadSave();sv.clear=1;sv.best=Math.max(sv.best||0,stars);sv.badges=Array.from(new Set([...(sv.badges||[]),...badges]));
