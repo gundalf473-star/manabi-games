@@ -93,6 +93,55 @@ button{font:inherit;color:inherit}
 .howto{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font-size:14px}
 footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:12px}
 .ctabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:4px;overflow-x:auto}.ctabs a{flex:1 0 auto;text-align:center;font-size:14px;font-weight:700;line-height:1.3;color:var(--muted);text-decoration:none;padding:7px 8px;border-radius:9px;white-space:nowrap}.ctabs a small{display:block;font-size:11px;font-weight:400;opacity:.85}.ctabs a[aria-current]{background:var(--ink);color:var(--surface)}.ctabs a:hover:not([aria-current]){color:var(--fg);background:var(--bg)}@media (max-width:360px){.ctabs{gap:2px;padding:3px}.ctabs a{font-size:13px;padding:6px 3px}.ctabs a small{font-size:10px}}
+/* はじめての人むけ「まずは この3本」と、あそび方の たな */
+.picks{display:flex;flex-direction:column;gap:10px}
+.picks .ph{margin:0;font-family:var(--display);font-weight:500;font-size:22px;color:var(--ink);line-height:1.35}
+.picks .ps{margin:0;font-size:13px;color:var(--muted)}
+.pk{background:var(--surface);border:2px solid var(--c);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pk .k{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--c)}
+.pk .k i{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;background:var(--c);color:var(--surface);display:grid;place-items:center;font-size:14px}
+.pk h3{margin:0;font-family:var(--display);font-weight:500;font-size:20px;line-height:1.35;overflow-wrap:anywhere}
+.pk p{margin:0;font-size:14px;color:var(--muted);flex:1}
+.pk .gr{font-size:12px;color:var(--muted)}
+.pk a.go{display:block;text-align:center;background:var(--c);color:var(--surface);font-weight:700;text-decoration:none;border-radius:10px;padding:10px 14px;font-size:16px}
+.pk.hero{border-width:3px;padding:16px 18px}
+.pk.hero h3{font-size:clamp(24px,6vw,30px)}
+.pk.hero .mid{display:flex;align-items:center;gap:14px}
+.pk.hero .mid p{flex:1;min-width:0;font-size:15px;color:var(--fg)}
+.pk.hero a.go{font-size:19px;padding:14px 16px;border-radius:12px}
+/* はじめての人（遊んだ記録がない端末）には、上をつめて「いますぐ あそぶ」を最初の画面に入れる */
+body.first{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+body.first .wrap{gap:12px}
+body.first h1{font-size:clamp(24px,6vw,44px)}
+body.first h1 img{width:44px;height:32px}
+body.first .hako{display:none!important}
+body.first .topnav{margin-top:0}
+body.first .picks{gap:8px}
+body.first .pk.hero{padding:12px 14px;gap:6px}
+body.first .pk.hero h3{font-size:clamp(22px,5.6vw,30px)}
+.phw{display:flex;align-items:center;gap:10px}
+.phw img{flex:none}
+.pk .k .gr{margin-left:auto;font-weight:400}
+@media (max-width:600px){body.first .lead{display:none}body.first .picks .ph{font-size:19px}}
+.pk2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.demo{position:relative;width:136px;height:56px;flex:none}
+.demo b{position:absolute;top:4px;width:48px;height:48px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff}
+.demo .a{left:0;background:#2667d6;animation:demoa 3.4s infinite}
+.demo .b{right:0;background:#1d8150;animation:demob 3.4s infinite}
+.demo .c{left:34px;width:68px;background:#d4432a;font-size:20px;opacity:0;animation:democ 3.4s infinite}
+@keyframes demoa{0%,28%{transform:none;opacity:1}44%,92%{transform:translateX(44px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes demob{0%,28%{transform:none;opacity:1}44%,92%{transform:translateX(-44px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes democ{0%,40%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}58%,90%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.demo b{animation:none}}
+.jump{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.jump a{border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:14px;font-weight:700;color:var(--fg);text-decoration:none}
+.shelf{scroll-margin-top:12px}
+.shelf .gh h2{color:var(--ink)}.shelf .gh{border-bottom-color:var(--ink);flex-wrap:wrap}
+.more{display:flex;align-items:center;justify-content:center;text-align:center;border:2px dashed var(--rule);background:transparent;border-radius:10px;padding:14px 16px;font-weight:700;color:var(--ink);cursor:pointer;min-height:64px}
+.more:hover{border-color:var(--ink)}
+.quizrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.quizrow .more{border-style:solid;border-color:var(--c);color:var(--c);flex-direction:column;gap:2px}
+.quizrow .more small{font-weight:400;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
@@ -100,15 +149,19 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
   <header>
     <h1 style="display:flex;align-items:center;gap:12px"><picture style="flex:none;display:flex"><source srcset="logo-dark.svg" media="(prefers-color-scheme: dark)"><img src="logo.svg" alt="" width="58" height="42"></picture>{{SITE_NAME}}</h1>
     <p class="lead">{{SITE_DESCRIPTION}}</p>
-    <div class="hako" style="display:flex;align-items:center;gap:10px;margin:12px 0 0"><img src="img/hakoron/wave.svg" alt="案内役のハコロン" width="64" height="64" style="flex:none"><p style="margin:0;background:var(--surface,#fff);color:var(--fg);border:2px solid var(--rule,#d6dde7);border-radius:14px;padding:8px 12px;font-size:14px;line-height:1.6;font-weight:700">ぼくはハコロン。きょうは どのゲームで あそぶ？ 無料のゲームから ためしてみよう！</p></div>
-    <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a><button class="inst" id="inst" hidden>ホーム画面に追加</button></nav>
+    <div class="hako" style="display:flex;align-items:center;gap:10px;margin:12px 0 0"><img src="img/hakoron/wave.svg" alt="案内役のハコロン" width="64" height="64" style="flex:none"><p style="margin:0;background:var(--surface,#fff);color:var(--fg);border:2px solid var(--rule,#d6dde7);border-radius:14px;padding:8px 12px;font-size:14px;line-height:1.6;font-weight:700">ぼくはハコロン。きょうは どのゲームで あそぶ？ はじめてなら、下の 3本から ためしてみよう！</p></div>
+    <nav class="topnav"><a href="news.html" id="newslink">お知らせ</a><a href="buy.html">料金プラン</a><a href="plan.html">利用コードを入れる</a><a href="parent.html">保護者ページ</a><a href="roadmap.html">学習の道すじ</a><button class="inst" id="inst" hidden>ホーム画面に追加</button></nav>
     <div class="howto" id="howto" hidden></div>
   </header>
   <nav class="ctabs" aria-label="コース"><a id="teigakuentry" href="teigaku/index.html" hidden>低学年<small>小1〜3</small></a><a href="index.html" aria-current="page">中学受験<small>小4〜6</small></a><a id="chukoentry" href="chuko/index.html" hidden>中高一貫<small>中学生</small></a><a id="careerentry" href="career/index.html" hidden>就活・資格<small>大学生〜</small></a></nav>
-  <a class="roadlink" href="roadmap.html" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0 0;padding:12px 16px;border-radius:12px;background:#1f3a6e;color:#fff;font-weight:700;text-decoration:none;font-size:16px">🧭 学習の道すじ（小4・小5・小6・入試直前に、なにをやる？）</a>
+  <section class="picks" id="picks" hidden></section>
   <a class="mixlink" href="mix.html?c=juken" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0 0;padding:12px 16px;border-radius:12px;background:#d4432a;color:#fff;font-weight:700;text-decoration:none;font-size:16px">🎲 無料ゲームをおまかせで次々あそぶ</a>
   <section id="minebox"><div class="mine2" id="mine2" style="margin:0 0 12px"></div><div class="mine" id="mine"></div></section>
-  <section>
+  <section id="modebox" hidden>
+    <div class="label">えらびかた</div>
+    <div class="subjects" id="modes"></div>
+  </section>
+  <section id="subjbox">
     <div class="label">教科</div>
     <div class="subjects" id="subjects"></div>
   </section>
@@ -154,14 +207,78 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     'ishitori.html':'対戦・作戦','rittai7.html':'対戦・作戦','flow.html':'プログラミング','lamp.html':'プログラミング','robot.html':'プログラミング','narabe.html':'プログラミング'};
   units.forEach(u=>{if(u.subject==='思考力')u.cat=CAT6.includes(u.unit)?u.unit:(CATMAP[u.k]||'論理・推理');});
   const catOf=u=>u.cat||u.unit, ALLU=units;
-  let subj=decodeURIComponent(location.hash.slice(1))||'すべて', unit='すべて';
+  /* ── はじめての人むけ：「まずは この3本」と「あそび方の たな」 ──
+     PICKS … いちばん上に大きく出す3本（1本目が「いますぐ あそぶ」の大きなボタン）。file は -full を取った名前。
+     STYLES … あそび方の たな。files に書いたゲームと、test に当てはまるゲームがならぶ。
+     新しいゲームを たなに入れるときは、files に1行足す（rpg- や nazotoki- で始まる名前は自動で入る）。
+     どの たなにも入らないゲームは「復習・力だめし（クイズ）」として、教科の一覧から開く。 */
+  const PICKS=[
+    {k:'kiriyoku-slide.html',kind:'すぐ あそべる',copy:'37と 63を ぶつけると 100！ きりのいい数を つくる スライドパズル。',btn:'▶ いますぐ あそぶ',demo:1},
+    {k:'rpg-kotoba.html',kind:'じっくり ぼうけん',copy:'ことわざ・慣用句・四字熟語で まものと たたかう RPG。',btn:'ぼうけんに 出る →'},
+    {k:'ikimono-shima.html',kind:'あつめる',copy:'季節と 場所を 考えて 生き物を さがし、図鑑を うめていこう。',btn:'島に 行く →'},
+    /* ここから下は「控え」。上の3本のどれかが まだ公開されていないとき、かわりに出る */
+    {k:'kotowaza-slide.html',kind:'ことばの パズル',copy:'ことわざの ことばを すべらせて つなげる スライドパズル。',btn:'あそんでみる →'},
+    {k:'rika-slide.html',kind:'理科の パズル',copy:'理科の ことばを すべらせて つなげる スライドパズル。',btn:'あそんでみる →'}];
+  const STYLES=[
+    {id:'rpg',icon:'⚔️',name:'RPGで ぼうけん',sub:'問題に答えて まものと たたかう',test:u=>/^rpg-/.test(u.k)||u.unit==='ぼうけんRPG'},
+    {id:'atsumeru',icon:'🦋',name:'あつめる・そだてる',sub:'図鑑や カードを ふやしていく',files:['ikimono-shima.html','card-battle-seibutsu.html']},
+    {id:'puzzle',icon:'🧩',name:'パズル',sub:'みじかい時間で 何回でも',files:['kiriyoku-slide.html','jukugo-slide.html','jukugo-drop.html','kanyouku-slide.html','kotowaza-slide.html','nakama-slide.html','rika-slide.html','shakai-slide.html','puzzle-bushu.html','tenkaizu.html'],more:'思考力'},
+    {id:'nazotoki',icon:'🔍',name:'なぞとき',sub:'証言の「おかしいところ」を 見つける',test:u=>/^nazotoki-/.test(u.k)},
+    {id:'chizu',icon:'🗺️',name:'すごろく・国とり・作戦',sub:'地図の上で 考えて すすむ',files:['owner-sugoroku.html','kunitori-5.html','gunshi-hayasa1.html','yosei-hayasa1.html','chiri-sugoroku.html','sekai-sugoroku.html']},
+    {id:'taisen',icon:'🤝',name:'ふたりで 対戦',sub:'おうちの人や 友だちと',test:u=>/2人/.test(u.players)&&u.subject!=='思考力'}];
+  STYLES.forEach(st=>{const fs=st.files||[];st.units=units.filter(u=>fs.includes(u.k)||(st.test&&st.test(u)));
+    st.units.sort((a,b)=>{const i=fs.indexOf(a.k),j=fs.indexOf(b.k);return (i<0?99:i)-(j<0?99:j);});});
+  const SHELVES=STYLES.filter(st=>st.units.length), inShelf=new Set(); SHELVES.forEach(st=>st.units.forEach(u=>inShelf.add(u.k)));
+  const hasStyle=SHELVES.length>0;
+  const h0=decodeURIComponent(location.hash.slice(1));
+  let subj=h0||'すべて', unit='すべて';
   if(subj!=='すべて'&&!subjects.includes(subj))subj='すべて';
+  let mode=(hasStyle&&subj==='すべて'&&h0!=='教科')?'style':'subject';
+  const setHash=()=>history.replaceState(null,'',mode==='style'?location.pathname:'#'+encodeURIComponent(subj==='すべて'?'教科':subj));
+  const cardHTML=(u,on)=>`<div class="card">
+          <span class="tags"><span class="tag">${esc(u.unit)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${on}" title="いちばん上の「わたしの単元」に入れる">${on?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
+          <div class="meta">${u.grade?`<span>${esc(u.grade)}</span>`:''}${u.players?`<span>${esc(u.players)}</span>`:''}</div>
+          <div class="btns">${u.free?`<a href="${u.free.url}">${u.paid?'無料であそぶ':'あそぶ →'}</a>`:''}${u.paid?`<a class="p" href="${u.paid.url}">有料版（全問）</a>`:''}</div></div>`;
+  const goSubject=s=>{mode='subject';subj=s;unit='すべて';setHash();render();document.getElementById('modebox').scrollIntoView({block:'start'});};
+  /* まずは この3本 */
+  (function(){
+    const ps=PICKS.map(p=>({p,u:UM[p.k]})).filter(x=>x.u&&(x.u.free||x.u.paid)).slice(0,3); if(!ps.length)return;
+    const box=document.getElementById('picks');
+    const first=!hist.length, gr=u=>`<span class="gr">${esc(u.subject)}${u.grade?'・'+esc(u.grade):''}・無料</span>`;
+    const one=({p,u},i)=>{const g=u.free||u.paid;
+      return `<div class="pk${i===0?' hero':''}" style="--c:${color(u.subject)}"><span class="k"><i>${i+1}</i>${esc(p.kind)}${i===0?gr(u):''}</span><h3>${esc(u.title.replace(/[（(][^（()）]*(しさくばん|試作版)[^（()）]*[）)]\s*$/,''))}</h3>${i===0?`<div class="mid">${p.demo?'<div class="demo" aria-hidden="true"><b class="a">37</b><b class="b">63</b><b class="c">100</b></div>':''}<p>${esc(p.copy)}</p></div>`:`<p>${esc(p.copy)}</p>`}${i===0?'':gr(u)}<a class="go" href="${g.url}" data-pick="${esc(u.k)}">${esc(p.btn)}</a></div>`;};
+    box.innerHTML=`<div class="phw">${first?'<img src="img/hakoron/wave.svg" alt="案内役のハコロン" width="46" height="46">':''}<div><h2 class="ph">はじめての人は、まず この${ps.length}本</h2><p class="ps">どれも 無料。おすと すぐ はじまるよ。</p></div></div>${one(ps[0],0)}${ps.length>1?`<div class="pk2">${ps.slice(1).map((x,i)=>one(x,i+1)).join('')}</div>`:''}`;
+    box.hidden=false;
+    box.querySelectorAll('a.go').forEach(a=>a.addEventListener('click',()=>{try{window.mnTrack&&mnTrack('pick_click',{pick:a.dataset.pick});}catch(e){}}));
+    /* もう遊んだことがある人には、「わたしの単元」を先に見せる */
+    if(!first){const m=document.getElementById('minebox');m.after(box);}
+    /* はじめての人には、上をつめる（説明文とハコロンのふきだしをしまい、お知らせ・料金プランなどのボタンは3本の下へ） */
+    else{document.body.classList.add('first');box.after(document.querySelector('.topnav'),document.getElementById('howto'));}
+  })();
 
+  function renderStyle(){
+    const L=document.getElementById('list');
+    const quiz=subjects.map(s=>[s,units.filter(u=>u.subject===s&&!inShelf.has(u.k)).length]).filter(x=>x[1]&&x[0]!=='思考力');
+    L.innerHTML=`<nav class="jump" aria-label="あそび方">${SHELVES.map(st=>`<a href="#" data-j="${st.id}">${st.icon} ${esc(st.name)}</a>`).join('')}${quiz.length?'<a href="#" data-j="quiz">📝 復習・力だめし</a>':''}</nav>`
+      +SHELVES.map(st=>`<section class="group shelf" id="shelf-${st.id}"><div class="gh"><h2>${st.icon} ${esc(st.name)}</h2><span>${esc(st.sub)}・${st.units.length}本</span></div>
+        <div class="grid">${st.units.map(u=>`<div style="--c:${color(u.subject)};display:contents">${cardHTML(u,favIdx(u.k)>=0).replace('<span class="tag">','<span class="tag">'+esc(u.subject)+'・')}</div>`).join('')}${st.more&&subjects.includes(st.more)?`<button type="button" class="more" data-s="${esc(st.more)}">${esc(st.more)}パズル ${units.filter(u=>u.subject===st.more).length}本を 見る →</button>`:''}</div></section>`).join('<div style="height:16px"></div>')
+      +(quiz.length?`<div style="height:16px"></div><section class="group shelf" id="shelf-quiz"><div class="gh"><h2>📝 復習・力だめし（クイズ）</h2><span>単元ごとに 問題を といて たしかめる</span></div>
+        <div class="quizrow">${quiz.map(([s,n])=>`<button type="button" class="more" style="--c:${color(s)}" data-s="${esc(s)}">${esc(s)}<small>${n}本 →</small></button>`).join('')}</div></section>`:'');
+    L.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
+    L.querySelectorAll('.more').forEach(b=>b.onclick=()=>goSubject(b.dataset.s));
+    L.querySelectorAll('.jump a').forEach(a=>a.onclick=e=>{e.preventDefault();const t=document.getElementById('shelf-'+a.dataset.j);t&&t.scrollIntoView({behavior:'smooth',block:'start'});});
+  }
   function render(){
+    const MB=document.getElementById('modebox'), M=document.getElementById('modes');
+    MB.hidden=!hasStyle;
+    if(hasStyle){M.innerHTML=[['style','🎮 あそび方で えらぶ'],['subject','📚 教科で えらぶ']].map(([m,t])=>`<button class="subj" aria-pressed="${m===mode}" data-m="${m}">${t}</button>`).join('');
+      M.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{if(b.dataset.m===mode)return;mode=b.dataset.m;if(mode==='style'){subj='すべて';unit='すべて';}setHash();render();});}
+    document.getElementById('subjbox').hidden=mode==='style';
+    if(mode==='style'){document.getElementById('unitbox').hidden=true;renderStyle();return;}
     const S=document.getElementById('subjects');
     S.innerHTML=['すべて',...subjects].map(s=>{const n=s==='すべて'?units.length:units.filter(u=>u.subject===s).length;
       return `<button class="subj" style="--c:${s==='すべて'?'var(--ink)':color(s)}" aria-pressed="${s===subj}" data-s="${esc(s)}">${s==='すべて'?'':'<span class="sw"></span>'}${esc(s)}<span class="n">${n}</span></button>`;}).join('');
-    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;unit='すべて';history.replaceState(null,'',subj==='すべて'?location.pathname:'#'+encodeURIComponent(subj));render();});
+    S.querySelectorAll('.subj').forEach(b=>b.onclick=()=>{subj=b.dataset.s;unit='すべて';if(hasStyle)setHash();else history.replaceState(null,'',subj==='すべて'?location.pathname:'#'+encodeURIComponent(subj));render();});
 
     const ub=document.getElementById('unitbox'), U=document.getElementById('units');
     if(subj==='すべて'){ub.hidden=true;}
@@ -178,10 +295,7 @@ footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);paddin
     L.innerHTML= shown.length? groups.map(s=>{
       let us=shown.filter(u=>u.subject===s); if(s==='思考力')us=us.slice().sort((a,b)=>CAT6.indexOf(a.cat)-CAT6.indexOf(b.cat));
       return `<section class="group" style="--c:${color(s)}"><div class="gh"><h2>${esc(s)}</h2><span>${us.length}本</span></div>
-        <div class="grid">${us.map((u,i)=>{const on=favIdx(u.k)>=0;return (u.cat&&(i===0||us[i-1].cat!==u.cat)?`<h3 class="cath">${esc(u.cat)}<span>${us.filter(x=>x.cat===u.cat).length}本</span></h3>`:'')+`<div class="card">
-          <span class="tags"><span class="tag">${esc(u.unit)}</span>${isNew(u)?'<span class="tag new">NEW</span>':''}<button type="button" class="starb" data-k="${esc(u.k)}" aria-pressed="${on}" title="いちばん上の「わたしの単元」に入れる">${on?'★':'☆'} わたしの単元</button></span><h3>${esc(u.title)}</h3><p>${esc(u.desc)}</p>
-          <div class="meta">${u.grade?`<span>${esc(u.grade)}</span>`:''}${u.players?`<span>${esc(u.players)}</span>`:''}</div>
-          <div class="btns">${u.free?`<a href="${u.free.url}">${u.paid?'無料であそぶ':'あそぶ →'}</a>`:''}${u.paid?`<a class="p" href="${u.paid.url}">有料版（全問）</a>`:''}</div></div>`;}).join('')}</div></section>`;
+        <div class="grid">${us.map((u,i)=>{const on=favIdx(u.k)>=0;return (u.cat&&(i===0||us[i-1].cat!==u.cat)?`<h3 class="cath">${esc(u.cat)}<span>${us.filter(x=>x.cat===u.cat).length}本</span></h3>`:'')+cardHTML(u,on);}).join('')}</div></section>`;
     }).join('<div style="height:16px"></div>') : '<p class="empty">この単元のゲームはまだありません。</p>';
     L.querySelectorAll('.starb').forEach(b=>b.onclick=()=>toggleFav(b.dataset.k));
   }
