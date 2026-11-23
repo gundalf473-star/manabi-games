@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="算数">
+<meta name="game:unit" content="計算のくふう">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="2048がたの スライドパズル「きりよくスライド」の 有料版。無料版の 9ステージに、分配法則・25×12＝100×3・小数・分数・百分率・3.14 を くわえた 全22ステージ。">
+<title>きりよくスライド 全22ステージ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#f4efe4;color:#22304a;font-family:'M PLUS Rounded 1c','Hiragino Maru Gothic ProN','Noto Sans JP',sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{max-width:460px;margin:0 auto;padding:10px 10px 28px}
+h1{font-size:30px;margin:14px 0 2px;text-align:center;letter-spacing:.04em}
+.proto{text-align:center;font-size:13px;color:#8a5a00;background:#ffe9b0;border-radius:99px;padding:2px 12px;display:table;margin:4px auto 12px}
+.hidden{display:none!important}
+button{font-family:inherit;font-weight:800;color:inherit;cursor:pointer;touch-action:manipulation}
+.big{display:block;width:100%;font-size:18px;padding:11px 10px;margin:9px 0;border:3px solid #22304a;border-radius:14px;background:#fff;box-shadow:0 4px 0 #22304a;text-align:left}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #22304a}
+.big small{display:block;font-size:12px;font-weight:500;color:#5b6780}
+a.big{color:#22304a;text-decoration:none}
+.big.lock{background:#ece6d8;color:#7a8296;border-color:#b3ab99;box-shadow:0 4px 0 #b3ab99}
+.big.lock small{color:#8a8f9c}
+.big.paidlink{background:#fff3c9;border-color:#c98f12;box-shadow:0 4px 0 #c98f12}
+.big .op{display:inline-block;min-width:30px;text-align:center;border-radius:8px;color:#fff;margin-right:8px;padding:0 6px}
+.op.p{background:#1f7a8c}.op.m{background:#d9772b}.op.d{background:#7a5cd0}
+details{margin:10px 0;background:#e9e1cf;border-radius:16px;padding:2px 10px}
+summary{list-style:none;display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;padding:11px 2px;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'▶';font-size:12px}
+details[open] summary::before{content:'▼'}
+summary span{flex:1}
+summary small{display:block;font-size:12px;font-weight:500;color:#5b6780}
+summary em{font-style:normal;font-size:13px;background:#fff;border-radius:99px;padding:2px 10px;white-space:nowrap}
+.demo span.w{width:66px;height:56px;flex-direction:column;line-height:1.1;font-size:17px}
+.demo s{text-decoration:none;font-size:11px;border-radius:99px;padding:0 7px;color:#fff}
+.demo .g s{color:#4a3200;padding:0}
+.rule{background:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.75;margin:10px 0}
+.demo{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:18px;margin:6px 0 2px}
+.demo span{display:inline-flex;align-items:center;justify-content:center;width:52px;height:44px;border-radius:10px;background:#2b4a7a;color:#fff}
+.demo span.g{background:#f2b632;color:#4a3200}
+#goalLine{font-weight:800;font-size:16px;text-align:center;background:#22304a;color:#fff;border-radius:12px;padding:7px 8px;margin:4px 0 8px}
+/* 文の とちゅうで 切らない（空白の ところだけで 折り返す）＋ 行の 長さを そろえる */
+#goalLine,#card,.rule{word-break:keep-all;overflow-wrap:anywhere;text-wrap:balance}
+#goalLine b{color:#ffd76a;font-size:20px}
+#hud{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:15px;padding:0 2px}
+#hud b{font-size:22px}
+#bar{height:12px;background:#d9d2c2;border-radius:99px;overflow:hidden;margin:5px 0 9px}
+#barin{height:100%;width:0;background:#f2b632;border-radius:99px;transition:width .25s}
+#board{position:relative;width:100%;aspect-ratio:1/1;background:#cfc6b2;border-radius:16px;touch-action:none;overflow:hidden}
+#board.no{animation:shake .25s}
+#bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)}
+#bg div{margin:4px;border-radius:11px;background:#e3dccb}
+#layer{position:absolute;inset:0}
+.tile{position:absolute;left:0;top:0;width:25%;height:25%;padding:4px;transition:transform .13s ease-out}
+.tile .in{position:relative;width:100%;height:100%;border-radius:11px;background:#2b4a7a;box-shadow:inset 0 -5px 0 #1b3256;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;padding-bottom:5px;line-height:1}
+.in.d1,.in.d2{font-size:min(10vw,46px)}
+.in.d3{font-size:min(8vw,36px)}
+.in.d4{font-size:min(6.4vw,29px)}
+.in.d5{font-size:min(5.5vw,25px)}
+.in.d6{font-size:min(4.7vw,21px)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;font-size:min(7.4vw,33px);line-height:1.08}
+.fr b:first-child{border-bottom:3px solid #fff;padding:0 7px 1px}
+.in.dm{flex-direction:column;gap:3px;padding-bottom:6px}
+.in.dm.d1,.in.dm.d2{font-size:min(8vw,36px)}
+.in.dm.d3{font-size:min(6.6vw,30px)}
+.in.dm.d4{font-size:min(5.6vw,25px)}
+.tile .in.ax{background:#1f7a8c;box-shadow:inset 0 -5px 0 #165867}
+.demo span.ax{background:#1f7a8c}
+.demo s.mp{background:#fff;color:#22304a}
+.in u{text-decoration:none}
+.in s{text-decoration:none;font-size:min(4.3vw,18px);border-radius:99px;padding:2px 10px;color:#fff}
+s.m0{background:#d9772b}s.m1{background:#1f9a6c}s.m2{background:#c2417a}s.m3{background:#7a5cd0}s.mp{background:#fff;color:#22304a}
+.tile.new .in{animation:pop .2s ease-out}
+.tile.gold{z-index:3}
+.tile.gold .in{background:#f2b632;box-shadow:inset 0 -5px 0 #c98f12;color:#4a3200;animation:gold .45s ease-out;padding-bottom:14px}
+.tile.gold i{position:absolute;left:0;right:0;bottom:7px;text-align:center;font-style:normal;font-size:min(3.1vw,13px);white-space:nowrap}
+.tile.hint .in{animation:hint .5s 3;outline:4px solid #f2b632}
+@keyframes pop{from{transform:scale(.3);opacity:.3}}
+@keyframes gold{0%{transform:scale(.6)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+@keyframes hint{50%{transform:scale(1.1);filter:brightness(1.3)}}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#card{min-height:58px;background:#fff;border-radius:14px;margin:10px 0 8px;padding:8px 12px;font-size:16px;line-height:1.5;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800}
+#card em{font-style:normal;color:#b3541a;font-size:21px}
+#card em.sm{font-size:16px}
+#pad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+#pad button{font-size:22px;padding:8px 0;border:2px solid #22304a;border-radius:11px;background:#fff}
+#row{display:flex;gap:8px}
+#row button{flex:1;font-size:15px;padding:9px 4px;border:2px solid #22304a;border-radius:11px;background:#fff}
+#btnTest{background:#6a1b9a!important;color:#fff!important;border-color:#6a1b9a!important}
+#testPanel{background:#efe3f6;border-radius:12px;padding:8px;margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+#testPanel button{font-size:13px;padding:6px 8px;border:2px solid #6a1b9a;border-radius:9px;background:#fff}
+.res{text-align:center;font-size:17px;font-weight:800;line-height:1.7}
+.res em{font-style:normal;font-size:40px;display:block;line-height:1.2}
+.q{background:#fff;border-radius:14px;padding:14px 12px;margin:10px 0;text-align:center}
+.q .ex{font-size:30px;font-weight:800;margin:8px 0 4px;letter-spacing:.02em}
+.q .ex.sm{font-size:25px}
+.q .why{font-size:15px;line-height:1.7;min-height:54px;margin-top:8px}
+.q .why b{color:#b3541a}
+#choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#choices button{font-size:22px;padding:12px 4px;border:3px solid #22304a;border-radius:12px;background:#fff}
+#choices button.ok{background:#bfe8c8}
+#choices button.ng{background:#f6c4bf}
+#list{background:#fff;border-radius:14px;padding:6px 12px;margin:10px 0;font-size:15px;line-height:1.9;text-align:center}
+#list span{display:inline-block;margin:0 7px;white-space:nowrap}
+.best{font-size:13px;color:#5b6780;text-align:center}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+<section id="title">
+  <h1>きりよくスライド</h1>
+  <div class="rule">
+    ゆびで なぞると、数の タイルが ぜんぶ いっしょに すべるよ。<br>
+    <b>きりのいい数になる ペア</b>を ぶつけると、がったい！
+    <div class="demo"><span>37</span>＋<span>63</span>→<span class="g">100</span></div>
+    <div class="demo"><span>25</span>×<span>4</span>→<span class="g">100</span></div>
+    分配法則・小数・分数・3.14 の ステージも あるよ。<br>
+    ペアに ならない タイルは たまっていく。いっぱいに なる前に きりのいい数を つくろう。
+  </div>
+  <div id="paidNote"></div>
+  <div id="stages"></div>
+</section>
+
+<section id="lock" class="hidden">
+  <h1>きりよくスライド</h1>
+  <div class="rule" id="lockBox"></div>
+</section>
+
+<section id="play" class="hidden">
+  <div id="goalLine"></div>
+  <div id="hud"><span>つくった数 <b id="made">0</b> / <span id="goal"></span></span><span id="combo"></span><span>手数 <b id="moves">0</b></span></div>
+  <div id="bar"><div id="barin"></div></div>
+  <div id="board"><div id="bg"></div><div id="layer"></div></div>
+  <div id="card"></div>
+  <div id="pad"><button data-d="0">←</button><button data-d="2">↑</button><button data-d="3">↓</button><button data-d="1">→</button></div>
+  <div id="row"><button id="btnHint">💡 ヒント</button><button id="btnQuit">やめる</button><button id="btnTest">🛠 テスト</button></div>
+  <div id="testPanel" class="hidden">
+    <button data-t="near">あと1こで クリア</button>
+    <button data-t="fill">ばんめんを いっぱいに</button>
+  </div>
+</section>
+
+<section id="review" class="hidden">
+  <h1 style="font-size:24px">くふうで 計算！</h1>
+  <div class="best" id="rvNo"></div>
+  <div class="q"><div id="rvLead"></div><div class="ex" id="rvEx"></div><div class="why" id="rvWhy"></div></div>
+  <div id="choices"></div>
+  <button class="big hidden" id="rvNext" style="text-align:center">つぎへ ▶</button>
+</section>
+
+<section id="result" class="hidden">
+  <div class="res" id="resTxt"></div>
+  <div id="list"></div>
+  <div class="best" id="resBest"></div>
+  <button class="big" id="btnNextStage" style="text-align:center">つぎの ステージへ</button>
+  <a class="big lock hidden" id="resPaid" style="text-align:center">🔒 すぐ 次の ステージは 有料版で あそべます</a>
+  <button class="big" id="btnAgain" style="text-align:center">もう一度</button>
+  <button class="big" id="btnBack" style="text-align:center">ステージを えらぶ</button>
+</section>
+</div>
+
+<script>
+// ---- core ----
+// ステージ：op は + か ×、t は「きりのいい数」、vals は出てくる数。
+// ms があるステージは分配法則：タイルは「37×8」の形で、同じ かける数（m）どうしで 前の数が あわせて t（diff なら ちがいが t でも）になると がったい
+const range=(a,b,s)=>{const r=[];for(let x=a;x<=b;x+=s)r.push(x);return r;};
+const tenth=a=>a.map(x=>x/10);
+// paid:true の ステージは 有料版。出てくる数などの 中身は ここには 書かず、サーバーの パック（kiriyoku-slide）から 受け取る
+const STAGES=[
+  {id:1,op:'+',t:[10],vals:range(1,9,1),goal:12,name:'あわせて 10',sub:'1〜9 の数'},
+  {id:2,op:'+',t:[100],vals:range(5,95,5),goal:12,name:'あわせて 100',sub:'5とび の数（25と75 など）'},
+  {id:3,op:'+',t:[100],vals:range(11,89,1),goal:12,name:'あわせて 100 ・ どんな数でも',sub:'37と63 など'},
+  {id:4,op:'×',t:[10,100],vals:[2,5,4,25,20,50],goal:12,name:'かけて 10・100',sub:'2×5、25×4 など'},
+  {id:5,op:'×',t:[10,100,1000],vals:[2,5,4,25,20,50,8,125,40,250,200,500],goal:15,name:'かけて 10・100・1000',sub:'125×8、250×4 など'},
+  {id:6,op:'+',t:[1000],vals:range(105,895,5),goal:12,name:'あわせて 1000',sub:'375と625 など（上級）'},
+  {id:7,op:'+',t:[10],vals:range(1,9,1),ms:[4,6,7],goal:10,name:'まとめて 10',sub:'3×7 と 7×7 → 10×7'},
+  {id:11,op:'+',t:[100],vals:[99,101],ms:[3,4,6,7,8],split:true,goal:10,name:'分けて 計算 99・101',sub:'99×7 と 700−7 → 693'},
+  {id:14,op:'+',t:[1,10],vals:tenth(range(1,9,1)).concat(tenth(range(11,89,1))),goal:12,name:'小数 あわせて 1・10',sub:'0.3と0.7、3.7と6.3 など'},
+  {id:8,paid:true,name:'まとめて 100',sub:'25×8 と 75×8 → 100×8'},
+  {id:9,paid:true,name:'まとめて 100 ・ どんな数でも',sub:'37×8 と 8×63 → 100×8（じゅんばんが ぎゃくの ことも）'},
+  {id:10,paid:true,name:'たしても ひいても 100',sub:'137×6 と 37×6 → 100×6（上級・色の 手がかり なし）'},
+  {id:12,paid:true,name:'分けて 計算 98・102・999 も',sub:'98×4 と 400−8、999×6 と 6000−6（上級）'},
+  {id:13,paid:true,name:'分けて かける 25・125',sub:'25×12 と 100×3 → 300'},
+  {id:15,paid:true,name:'小数 かけて 1・10・100',sub:'0.25×4、1.25×8、12.5×8 など'},
+  {id:16,paid:true,name:'小数と 分数の ペア',sub:'0.125 と 8分の1、0.75 と 4分の3（上級）'},
+  {id:17,paid:true,name:'分数 あわせて 1',sub:'7分の3 と 7分の4 など（同じ 分母）'},
+  {id:18,paid:true,name:'分数 あわせて 1 ・ ちがう分母も',sub:'2分の1 と 4分の2、3分の1 と 6分の4 など（上級）'},
+  {id:19,paid:true,name:'百分率と 分数の ペア',sub:'25% と 4分の1、12.5% と 8分の1'},
+  {id:20,paid:true,name:'3.14 の かけ算',sub:'3.14×6 と 18.84'},
+  {id:21,paid:true,name:'3.14 で まとめる',sub:'4×3.14 と 6×3.14 → 10×3.14 ＝ 31.4（上級）'},
+  {id:22,paid:true,name:'小数と 分数の ペア ・ チャレンジ',sub:'0.0625 と 16分の1 も（0.625 と まちがえないで）'}
+].sort((a,b)=>a.id-b.id);
+// ---- ペアを つくる しくみ（中身の ならびは パックから もらう）----
+// match のステージ：q と a が「同じ 大きさ」の ペア。札は [大きい字, 小さい札] か ['F',分子,分母]（分数）
+// kake：25×12 ＝ 25×4×3 ＝ 100×3（かけ算を 分けて、きりのいい数を 先に つくる）。list は [もとの数, 分ける数, きりのいい数, [のこりの数…]]
+function kakePairs(list){const r=[];list.forEach(([b,f,R,ks])=>ks.forEach(k=>{const n=f*k,g=R*k;
+  r.push({q:[''+b,'×'+n],a:[''+R,'×'+k],g:g,eq:b+'×'+n,long:b+'×'+n+' ＝ '+b+'×'+f+'×'+k+' ＝ '+R+'×'+k+' ＝ '+g,short:b+'×'+n+'＝'+R+'×'+k+'＝'+g,
+    hint:n+' は '+f+'×'+k+'。'+b+'×'+f+' ＝ '+R+' を 先に つくろう',
+    quiz:()=>({ex:b+'×'+n,ans:g,ds:[R*(k+1),R*(k-1),g*10,g/10],why:n+' ＝ '+f+'×'+k+' と 分ける → '+b+'×'+f+'×'+k+' ＝ '+R+'×'+k+' ＝ <b>'+g+'</b>'})});}));return r;}
+// frac：小数と 分数（0.125 ＝ 1/8）。list は [小数, 分子, 分母, (ヒント)]
+function fracPairs(L){return L.map(([d,n,e,h])=>({
+  q:[''+d],a:['F',n,e],g:n+'/'+e,eq:''+d,long:d+' ＝ '+n+'/'+e+'（'+e+'分の'+n+'）',short:d+'＝'+n+'/'+e,hint:h||d+' を 分数に すると '+n+'/'+e+'（'+e+'分の'+n+'）',
+  quiz:pick=>{const k=pick([2,3,4,5,6]),w=e*k,ans=n*k;
+    return{ex:d+'×'+w,ans,ds:[ans*10,ans+1,ans-1,w,ans+2],why:d+' ＝ '+n+'/'+e+'（'+e+'分の'+n+'）だから → '+w+'÷'+e+(n>1?'×'+n+' ＝ '+k+'×'+n:'')+' ＝ <b>'+ans+'</b>'};}}));}
+// 分数 あわせて 1（frac は [分子,分母] の ならび。タイルは v＝分子、m＝分母）
+const fracItems=ds=>{const r=[];ds.forEach(d=>{for(let n=1;n<d;n++)r.push([n,d]);});return r;};
+// pct：百分率と 分数（25% ＝ 1/4）。list は [百分率, 分子, 分母]
+function pctPairs(L){return L.map(([p,n,e])=>({
+  q:[p+'%'],a:['F',n,e],g:n+'/'+e,eq:p+'%',long:p+'% ＝ '+p/100+' ＝ '+n+'/'+e+'（'+e+'分の'+n+'）',short:p+'%＝'+n+'/'+e,hint:p+'% は 小数で '+p/100+'。分数に すると '+n+'/'+e+'（'+e+'分の'+n+'）',
+  quiz:pick=>{const base=e*pick([5,10,20,30]),u=base/e,ans=u*n;
+    return{ex:base+' の '+p+'%',ans,ds:[n>1?u:ans*2,ans*10,ans+5,ans-5,ans+10],why:p+'% ＝ '+n+'/'+e+'（'+e+'分の'+n+'）だから → '+base+'÷'+e+(n>1?'×'+n+' ＝ '+u+'×'+n:'')+' ＝ <b>'+ans+'</b>'};}}));}
+// pi：3.14 の かけ算（3.14×6 ＝ 18.84）。list は かける数
+function piPairs(ks){return ks.map(k=>{const g=Math.round(314*k)/100,w=Math.round(14*k)/100;
+  return{q:['3.14','×'+k],a:[''+g],g:g,eq:'3.14×'+k,long:'3.14×'+k+' ＝ '+g,short:'3.14×'+k+'＝'+g,hint:'3×'+k+' ＝ '+3*k+'、0.14×'+k+' ＝ '+w+'。あわせると？',
+    quiz:()=>({ex:'3.14×'+k,ans:g,ds:[3.14*(k+1),3.14*(k-1),g+1,g-0.1],why:'3×'+k+' ＝ '+3*k+'、0.14×'+k+' ＝ '+w+' → '+3*k+' ＋ '+w+' ＝ <b>'+g+'</b>'})};});}
+const GEN={kake:kakePairs,frac:fracPairs,pct:pctPairs,pi:piPairs};
+const ready=st=>!!st&&!!st.op;   // 中身が そろっていて あそべる ステージか
+// パック（有料ステージの 中身）を ステージに 入れる
+function applyPack(pack){
+  const S=pack&&pack.stages;if(!S)throw{error:'no_data'};
+  STAGES.forEach(st=>{const p=S[st.id];if(!st.paid||!p)return;const o=Object.assign({},p);
+    if(o.match)o.match=GEN[o.match.kind](o.match.list);
+    if(o.frac)o.frac=fracItems(o.frac.dens);
+    Object.assign(st,o);});
+}
+// 「99×7」を 分けた式の 部品：きりのいい数 B、ずれ d
+function splitParts(v,m){const B=v>500?1000:100,d=Math.abs(v-B);return{B,d,sg:v<B?'−':'＋',big:B*m,small:d*m};}
+function makeCore(st,rnd){
+  rnd=rnd||Math.random;
+  const D=!!st.ms,T=st.t[0];
+  const R3=x=>Math.round(x*1000)/1000;   // 小数の ごさを 消す
+  const calc=(a,b)=>R3(st.op==='+'?a+b:a*b);
+  function isPair(a,b){
+    if(st.match)return a.p===b.p&&a.k!==b.k;
+    if(st.frac)return a.v*b.m+b.v*a.m===a.m*b.m;
+    if(st.split)return a.m===b.m&&a.v===b.v&&a.k!==b.k;
+    if(D){if(a.m!==b.m)return false;return a.v+b.v===T||(!!st.diff&&Math.abs(a.v-b.v)===T);}
+    return st.t.includes(calc(a.v,b.v));
+  }
+  const pick=a=>a[Math.floor(rnd()*a.length)];
+  const partners=a=>st.frac?st.frac.filter(f=>isPair(a,{v:f[0],m:f[1]})).map(f=>({v:f[0],m:f[1]})):st.match?[{p:a.p,k:a.k==='q'?'a':'q'}]:st.split?[{v:a.v,m:a.m,k:a.k==='q'?'a':'q'}]:st.vals.filter(p=>isPair(a,{v:p,m:a.m})).map(p=>({v:p,m:a.m}));
+  const randItem=()=>st.frac?(f=>({v:f[0],m:f[1]}))(pick(st.frac)):st.match?{p:Math.floor(rnd()*st.match.length),k:pick(['q','a'])}:({v:pick(st.vals),m:D?pick(st.ms):0,k:st.split?pick(['q','a']):''});
+  // がったいした 金色タイルの 中身（x が かべがわ）
+  function fuse(x,y){
+    if(st.match){const P=st.match[x.p];return{v:P.g,m:1,eq:P.eq,long:P.long,short:P.short};}
+    if(st.frac){const gcd=(p,q)=>q?gcd(q,p%q):p,L=x.m*y.m/gcd(x.m,y.m),fx=x.v+'/'+x.m,fy=y.v+'/'+y.m;
+      return{v:1,m:1,eq:fx+'＋'+fy,long:fx+' ＋ '+fy+(x.m!==y.m?' ＝ '+x.v*L/x.m+'/'+L+' ＋ '+y.v*L/y.m+'/'+L:'')+' ＝ '+L+'/'+L+' ＝ 1',short:fx+'＋'+fy+'＝1'};}
+    if(st.split){const v=x.v,m=x.m,P=splitParts(v,m),r=v*m;
+      return{v:r,m,eq:v+'×'+m,long:v+'×'+m+' ＝ ('+P.B+P.sg+P.d+')×'+m+' ＝ '+P.big+' '+P.sg+' '+P.small+' ＝ '+r,short:v+'×'+m+'＝'+P.big+P.sg+P.small+'＝'+r};}
+    if(!D){const v=calc(x.v,y.v),sg=st.op==='+'?'＋':'×';return{v,m:0,eq:x.v+sg+y.v,long:x.v+' '+sg+' '+y.v+' ＝ '+v,short:x.v+sg+y.v+'＝'+v};}
+    const sub=x.v+y.v!==T,hi=sub?Math.max(x.v,y.v):x.v,lo=sub?Math.min(x.v,y.v):y.v,m=x.m,sg=sub?'−':'＋';
+    const TM=R3(T*m);return{v:TM,m,eq:T+'×'+m,long:hi+'×'+m+' '+sg+' '+lo+'×'+m+' ＝ ('+hi+sg+lo+')×'+m+' ＝ '+T+'×'+m+' ＝ '+TM,short:hi+'×'+m+sg+lo+'×'+m+'＝'+TM};
+  }
+  let cells=new Array(16).fill(null),nid=1;
+  // 動かす向き 0左 1右 2上 3下。かべがわから 順に ならべた マスの番号
+  function lines(d){const L=[];for(let k=0;k<4;k++){const a=[];for(let j=0;j<4;j++){
+    a.push(d===0?k*4+j:d===1?k*4+3-j:d===2?j*4+k:(3-j)*4+k);}L.push(a);}return L;}
+  function sim(src,d){
+    const out=src.slice();let moved=false;const merges=[];
+    for(const idx of lines(d)){
+      const o=[];
+      for(const i of idx){const t=src[i];if(!t)continue;const last=o[o.length-1];
+        if(last&&!last.gold&&!t.gold&&isPair(last,t)){
+          const g=Object.assign({id:0,gold:true,from:[last,t]},fuse(last,t));
+          o[o.length-1]=g;merges.push(g);
+        }else o.push(t);}
+      idx.forEach((i,k)=>{const n=o[k]||null;if(n!==src[i])moved=true;out[i]=n;});
+    }
+    return{cells:out,moved,merges};
+  }
+  function move(d){const r=sim(cells,d);if(!r.moved)return r;r.merges.forEach(g=>g.id=nid++);cells=r.cells;return r;}
+  function clearGold(){const gone=[];cells=cells.map(t=>{if(t&&t.gold){gone.push(t.id);return null;}return t;});return gone;}
+  const plain=()=>cells.filter(t=>t&&!t.gold);
+  function lonely(){const p=plain();return p.filter(t=>!p.some(u=>u!==t&&isPair(t,u)));}
+  function put(it,i){const t={id:nid++,v:it.v||0,m:it.m||0,k:it.k||'q',p:it.p,sw:!!st.swap&&rnd()<0.5,gold:false};cells[i]=t;return t;}
+  function spawn(force){
+    const empty=[];cells.forEach((t,i)=>{if(!t)empty.push(i);});
+    if(!empty.length)return null;
+    const lo=lonely(),n=plain().length;
+    // ひとりぼっちの タイルが いるときは、その あいぼうを 出しやすくする（こんでいるほど 出やすい）
+    const p=force?1:n>=9?1:n>=6?0.85:0.7;
+    const it=lo.length&&rnd()<p?pick(partners(pick(lo))):randItem();
+    const i=pick(empty);return{t:put(it,i),i};
+  }
+  function canMove(){for(let d=0;d<4;d++)if(sim(cells,d).moved)return true;return false;}
+  // ヒント：ペアを さがす。1手で ぶつけられる ペアが あれば、それを 先に
+  function hint(){
+    for(let d=0;d<4;d++){const r=sim(cells,d);if(r.merges.length)return{pair:r.merges[0].from,dir:d};}
+    const p=plain();
+    for(const a of p)for(const b of p)if(a!==b&&isPair(a,b))return{pair:[a,b],dir:-1};
+    return null;
+  }
+  function reset(){cells=new Array(16).fill(null);spawn();spawn(true);spawn();}
+  // くふうの 計算問題
+  function quiz(){
+    let ex,ans,ds,why;
+    const fin=()=>{if(typeof ans!=='string')ds=ds.map(R3).filter((x,i,r)=>x>0&&x!==ans&&r.indexOf(x)===i).slice(0,3);
+      const ch=[ans].concat(ds);for(let i=ch.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[ch[i],ch[j]]=[ch[j],ch[i]];}
+      return{ex,ans,choices:ch,why};};
+    if(st.frac){ // 3/8 ＋ □ ＝ 1
+      const a=randItem(),ps=partners(a),other=ps.filter(p=>p.m!==a.m),b=pick(other.length?other:ps),S=t=>t.v+'/'+t.m;
+      const wrong=st.frac.map(f=>({v:f[0],m:f[1]})).filter(t=>!isPair(a,t));ds=[];
+      while(ds.length<3){const w=S(pick(wrong));if(!ds.includes(w))ds.push(w);}
+      ex=S(a)+' ＋ □';ans=S(b);why=fuse(a,b).long;
+      // 答えが 約分できるときは ひとこと そえる
+      const gcd=(p,q)=>q?gcd(q,p%q):p,g=gcd(b.v,b.m);if(g>1)why+='<br>（'+S(b)+' は 約分すると '+b.v/g+'/'+b.m/g+'）';
+      const r=fin();r.full=S(a)+' ＋ □ ＝ 1';return r;}
+    if(st.match){const q=pick(st.match).quiz(pick);ex=q.ex;ans=q.ans;ds=q.ds;why=q.why;return fin();}
+    let a,b;do{a=randItem();b=pick(partners(a));}while(a.v===b.v&&st.vals.length>2&&!st.split);
+    if(st.split){ // 99×7 → 700 − 7
+      const v=a.v,m=a.m,P=splitParts(v,m);ans=v*m;ex=v+'×'+m;
+      ds=[v<P.B?P.big+P.small:P.big-P.small,P.big,ans+10,ans-10,ans+100];
+      why=v+' ＝ '+P.B+' '+P.sg+' '+P.d+' と 分ける → '+P.B+'×'+m+' '+P.sg+' '+P.d+'×'+m+' ＝ '+P.big+' '+P.sg+' '+P.small+' ＝ <b>'+ans+'</b>';
+    }else if(D&&st.ms.length===1){ // 7×3.14 ＋ 13×3.14 → (7＋13)×3.14
+      const m=st.ms[0],S=pick([10,20,30]);let x;do{x=1+Math.floor(rnd()*(S-1));}while(x*2===S);
+      ans=R3(S*m);ex=x+'×'+m+' ＋ '+(S-x)+'×'+m;ds=[(S+10)*m,(S-10)*m,(S+20)*m,ans*10];
+      why='同じ <b>×'+m+'</b> で まとめる → ('+x+'＋'+(S-x)+')×'+m+' ＝ <b>'+S+'×'+m+'</b> ＝ <b>'+ans+'</b>';
+    }else if(D){ // 37×8 ＋ 63×8 → 同じ ×8 で まとめる
+      const f=fuse(a,b),m=a.m;ans=f.v;ds=[T*(m+1),T*(m-1),ans*10];
+      ex=f.long.split(' ＝ ')[0];
+      why='同じ <b>×'+m+'</b> で まとめる → '+f.long.split(' ＝ ')[1]+' ＝ <b>'+T+'×'+m+'</b> ＝ <b>'+ans+'</b>';
+    }else{ // ペアの あいだに 1つ 数を はさむ
+      const R=calc(a.v,b.v);let c;
+      if(st.op==='+'){
+        do{c=pick(st.vals);}while(c===a.v||c===b.v);
+        ans=R3(R+c);const s=R/10;ds=[ans+s,ans-s,ans+(s===1?2:s/10),ans+2*s];
+        why=a.v+' ＋ '+b.v+' ＝ <b>'+R+'</b> を 先に → '+R+' ＋ '+c+' ＝ <b>'+ans+'</b>';
+      }else{
+        c=pick([3,6,7,9,11,12]);ans=R3(R*c);ds=[ans*10,R*(c+1),R*(c-1),R*(c+2)];
+        why=a.v+' × '+b.v+' ＝ <b>'+R+'</b> を 先に → '+R+' × '+c+' ＝ <b>'+ans+'</b>';
+      }
+      const sg=st.op==='+'?' ＋ ':' × ';ex=a.v+sg+c+sg+b.v;
+    }
+    return fin();
+  }
+  return{get cells(){return cells;},set cells(c){cells=c;},isPair,partners,sim,move,clearGold,spawn,lonely,canMove,hint,reset,quiz,put};
+}
+
+// ---- 画面 ----
+const $=id=>document.getElementById(id);
+const KEY='manabi-kiriyoku-slide-proto-1';
+const GAME='kiriyoku-slide',PAID=/-full(\.html)?$/.test(location.pathname);   // ○○-full.html が 有料版（中身は 同じ プログラム）
+const IDLE_HINT=15000;
+function track(n,p){try{if(window.mnTrack)mnTrack(n,p);}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return{};}}
+function putSave(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+let core,stage,els=new Map(),busy=false,playing=false,made,moves,combo,eqs,idleT,rv;
+const layer=$('layer');
+$('bg').innerHTML='<div></div>'.repeat(16);
+function show(id){['title','play','review','result','lock'].forEach(s=>$(s).classList.toggle('hidden',s!==id));window.scrollTo(0,0);}
+// ステージの まとまり（a〜b ばんの ステージ）。ステージえらびで 折りたたむ
+const GROUPS=[
+  {a:1,b:6,h:'ペアを 見つける',s:'あわせて・かけて きりのいい数・小3〜'},
+  {a:7,b:10,h:'分配法則 ①　まとめて 計算',s:'同じ かける数で まとめる・小4〜',demo:'<div class="demo"><span class="w">37<s class="m0">×8</s></span>＋<span class="w">63<s class="m0">×8</s></span>→<span class="g w">800<s>100×8</s></span></div>'},
+  {a:11,b:12,h:'分配法則 ②　分けて 計算',s:'99 を 100−1 と 見る・小4〜',demo:'<div class="demo"><span class="w">99<s class="mp">×7</s></span>と<span class="w ax">700<s class="mp">−7</s></span>→<span class="g w">693<s>99×7</s></span></div>'},
+  {a:13,b:13,h:'かけ算を 分ける',s:'25×12 を 25×4×3 と 見る・小4〜',demo:'<div class="demo"><span class="w">25<s class="mp">×12</s></span>と<span class="w ax">100<s class="mp">×3</s></span>→<span class="g w">300<s>25×12</s></span></div>'},
+  {ids:[14,15,16,22,17,18],h:'小数・分数',s:'0.25×4＝1、0.125＝8分の1、分数 あわせて 1・小4〜5'},
+  {a:19,b:19,h:'割合',s:'25% ＝ 4分の1・小5〜'},
+  {a:20,b:21,h:'円周率 3.14',s:'3.14 の かけ算を おぼえる・まとめる・小5〜'}
+];
+const no=id=>ORDER.indexOf(id)+1;   // 画面に 出す ステージ番号（ならび順の 1〜22。中の id や パックの 番号とは べつ）
+const byId=id=>STAGES.find(st=>st.id===id);
+const nextId=()=>{for(let i=ORDER.indexOf(stage.id)+1;i<ORDER.length;i++)if(ready(byId(ORDER[i])))return ORDER[i];return 0;};
+const inGroup=(g,id)=>g.ids?g.ids.includes(id):id>=g.a&&id<=g.b;
+const groupStages=g=>g.ids?g.ids.map(i=>STAGES.find(st=>st.id===i)):STAGES.filter(st=>inGroup(g,st.id));
+const ORDER=[].concat(...GROUPS.map(g=>groupStages(g).map(st=>st.id)));   // 画面に ならぶ順（「つぎの ステージへ」も この順）
+function showTitle(){
+  playing=false;clearTimeout(idleT);
+  const s=loadSave();
+  const rec=s.rec||{},cur=stage?stage.id:(ORDER.find(i=>!rec[i]&&ready(byId(i)))||ORDER[0]);
+  const nPaid=STAGES.filter(st=>st.paid).length;
+  $('paidNote').innerHTML=PAID?'<div class="proto" style="background:#d8efe0;color:#1c5a36">🔓 有料版：全'+STAGES.length+'ステージ</div>'
+    :'<a class="big paidlink" href="'+GAME+'-full.html">🔓 有料版は 全'+STAGES.length+'ステージ<small>🔒 の '+nPaid+'ステージ（分配法則・小数・分数・割合・3.14）も あそべます</small></a>';
+  $('stages').innerHTML=GROUPS.map(g=>{
+    const sts=groupStages(g),n=sts.filter(st=>rec[st.id]).length;
+    return '<details'+(inGroup(g,cur)?' open':'')+'><summary><span>'+g.h+'<small>'+g.s+'</small></span><em>'+(n===sts.length?'✅ ':'')+n+' / '+sts.length+'</em></summary>'+(g.demo||'')+
+      sts.map(st=>{const r=rec[st.id];
+        if(!ready(st))return '<a class="big lock" href="'+GAME+'-full.html">🔒　'+no(st.id)+'　'+st.name+'<small>'+st.sub+'　｜　有料版</small></a>';
+        return '<button class="big" data-s="'+st.id+'"><span class="op '+(st.match||st.ms?'d':st.op==='+'?'p':'m')+'">'+(st.match?'＝':st.split?'✂':st.ms?'( )':st.op==='+'?'＋':'×')+'</span>'+no(st.id)+'　'+st.name+
+          '<small>'+st.sub+(r?'　｜　'+'★'.repeat(r.star)+'☆'.repeat(3-r.star)+'　さいしょう '+r.moves+'手':'')+'</small></button>';}).join('')+'</details>';}).join('');
+  show('title');
+}
+$('stages').onclick=e=>{const b=e.target.closest('button[data-s]');if(b)start(+b.dataset.s);};
+function tgt(){return stage.t.join('・');}
+function start(id){
+  const st0=byId(id);if(!ready(st0))return;
+  stage=st0;core=makeCore(stage);core.reset();
+  made=0;moves=0;combo=0;eqs=[];busy=false;playing=true;
+  layer.innerHTML='';els.clear();
+  core.cells.forEach((t,i)=>{if(t)addEl(t,i,'new');});
+  $('goalLine').innerHTML=stage.goalText?stage.goalText:stage.split?'<b>99×7</b> と <b>700−7</b> のように、同じ 答えの 2まいを ぶつけよう':stage.ms?'<b>同じ ×□</b> どうしで、'+(stage.diff?'あわせて か ちがいが':'あわせて')+' <b>'+tgt()+'</b> の 2まいを ぶつけよう'
+    :(stage.op==='+'?'あわせて':'かけて')+' <b>'+tgt()+'</b> に なる 2まいを ぶつけよう';
+  $('goal').textContent=stage.goal;$('testPanel').classList.add('hidden');
+  say('ゆびで なぞるか、やじるしで うごかそう。');
+  hud();show('play');idle();
+  track('level_start',{level_name:'kiriyoku-slide-'+id});
+}
+function pos(el,i){el.style.transform='translate('+(i%4)*100+'%,'+(i>>2)*100+'%)';}
+function addEl(t,i,cls){
+  const d=document.createElement('div');d.className='tile '+(cls||'');
+  let isA=!t.gold&&stage.split&&t.k==='a',big=isA?splitParts(t.v,t.m).big:t.v,two=!!t.m&&!t.gold;
+  if(!t.gold&&stage.frac){two=false;big='12';}
+  if(!t.gold&&stage.match){const a=stage.match[t.p][t.k];isA=t.k==='a';two=a.length===2;big=a[0]==='F'?'12':a[0];}
+  d.innerHTML='<div class="in d'+String(big).length+(two?' dm':'')+(isA?' ax':'')+'">'+label(t)+'</div>';
+  pos(d,i);layer.appendChild(d);els.set(t.id,d);
+}
+function part(a){return a[0]==='F'?'<span class="fr"><b>'+a[1]+'</b><b>'+a[2]+'</b></span>':a.length===2?'<u>'+a[0]+'</u><s class="mp">'+a[1]+'</s>':a[0];}
+function label(t){
+  if(t.gold)return t.v+'<i>'+t.eq+'</i>';
+  if(stage.frac)return part(['F',t.v,t.m]);
+  if(stage.match)return part(stage.match[t.p][t.k]);
+  if(!t.m)return ''+t.v;
+  if(stage.split){if(t.k==='a'){const P=splitParts(t.v,t.m);return '<u>'+P.big+'</u><s class="mp">'+P.sg+P.small+'</s>';}
+    return '<u>'+t.v+'</u><s class="mp">×'+t.m+'</s>';}
+  const pill='<s class="'+(stage.plain?'mp':'m'+stage.ms.indexOf(t.m))+'">'+(t.sw?t.m+'×':'×'+t.m)+'</s>';
+  return t.sw?pill+'<u>'+t.v+'</u>':'<u>'+t.v+'</u>'+pill;
+}
+function dropEl(id){const e=els.get(id);if(e){e.remove();els.delete(id);}}
+function say(h){$('card').innerHTML='<div>'+h+'</div>';}
+function hud(){$('made').textContent=made;$('moves').textContent=moves;$('barin').style.width=Math.min(100,made/stage.goal*100)+'%';
+  $('combo').textContent=combo>=2?'🔥 れんぞく '+combo:'';}
+function idle(){clearTimeout(idleT);if(playing)idleT=setTimeout(()=>{if(playing&&!busy)hint(true);},IDLE_HINT);}
+function clearHint(){layer.querySelectorAll('.hint').forEach(e=>e.classList.remove('hint'));}
+function doMove(d){
+  if(!playing||busy)return;
+  clearHint();
+  const r=core.move(d);
+  if(!r.moved){const b=$('board');b.classList.remove('no');void b.offsetWidth;b.classList.add('no');return;}
+  busy=true;moves++;idle();const c0=core;   // c0：この手を 打ったときの ゲーム（やめたり 始め直したら 後の処理を しない）
+  core.cells.forEach((t,i)=>{if(!t)return;if(t.gold)t.from.forEach(f=>{const e=els.get(f.id);if(e)pos(e,i);});else pos(els.get(t.id),i);});
+  setTimeout(()=>{
+    if(!playing||core!==c0)return;
+    core.cells.forEach((t,i)=>{if(t&&t.gold&&!els.has(t.id)){t.from.forEach(f=>dropEl(f.id));addEl(t,i,'gold');}});
+    if(r.merges.length){
+      made+=r.merges.length;combo++;
+      r.merges.forEach(g=>eqs.push(g.short));
+      say(r.merges.map(g=>'<em'+(g.m?' class="sm"':'')+'>'+g.long+'</em>').join('<br>')+(r.merges.length>1?'<br>ダブル！':''));
+    }else combo=0;
+    const n=core.spawn();if(n)addEl(n.t,n.i,'new');
+    hud();
+    setTimeout(()=>{
+      if(!playing||core!==c0)return;
+      core.clearGold().forEach(dropEl);busy=false;
+      if(made>=stage.goal)return toReview();
+      if(!core.canMove())finish(false);
+    },r.merges.length?430:0);
+  },140);
+}
+function hint(auto){
+  if(!playing||busy)return;
+  const h=core.hint();clearHint();
+  if(!h){say('いまは ペアが ないみたい。うごかして あたらしい タイルを まとう。');idle();return;}
+  h.pair.forEach(t=>{const e=els.get(t.id);if(e)e.classList.add('hint');});
+  const A=h.pair[0],B=h.pair[1],sg=stage.op==='+'?' ＋ ':' × ';
+  const nm=t=>{if(stage.frac)return t.m+'分の'+t.v;if(stage.match){const a=stage.match[t.p][t.k];return a[0]==='F'?a[2]+'分の'+a[1]:a.join('');}if(!t.m)return t.v;if(stage.split&&t.k==='a'){const P=splitParts(t.v,t.m);return P.big+P.sg+P.small;}return t.sw?t.m+'×'+t.v:t.v+'×'+t.m;};
+  const SP=stage.split?splitParts(A.v,A.m):null;
+  const ask=stage.frac?(A.m===B.m?'分母が 同じ。分子を たすと '+A.m+' に なるね':'分母を そろえて たして みよう'):stage.match?stage.match[A.p].hint:SP?A.v+' は '+SP.B+' より '+SP.d+(SP.sg==='−'?' 小さい':' 大きい')+'。'+SP.B+'×'+A.m+(SP.sg==='−'?' から ':' に ')+SP.d+'×'+A.m+(SP.sg==='−'?' を ひく':' を たす'):A.m?'同じ ×'+A.m+(stage.diff&&A.v+B.v!==stage.t[0]?' で、ちがいが '+stage.t[0]:'')+' だね。ならべて ぶつけよう':A.v+sg+B.v+' は いくつ？ ならべて ぶつけよう';
+  say('💡 <em>'+nm(A)+'</em> と <em>'+nm(B)+'</em> が ペア！'+(h.dir>=0?'　'+['←','→','↑','↓'][h.dir]+' に うごかすと ぶつかるよ':'<br>'+ask));
+  idle();
+}
+// ---- 入力 ----
+let sx=null,sy=null;
+const bd=$('board');
+bd.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;try{bd.setPointerCapture(e.pointerId);}catch(_){}});
+bd.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+  if(Math.max(Math.abs(dx),Math.abs(dy))<22)return;
+  doMove(Math.abs(dx)>Math.abs(dy)?(dx<0?0:1):(dy<0?2:3));});
+bd.addEventListener('pointercancel',()=>{sx=null;});
+document.addEventListener('keydown',e=>{const d={ArrowLeft:0,ArrowRight:1,ArrowUp:2,ArrowDown:3}[e.key];
+  if(d===undefined||$('play').classList.contains('hidden'))return;e.preventDefault();doMove(d);});
+$('pad').onclick=e=>{const b=e.target.closest('[data-d]');if(b)doMove(+b.dataset.d);};
+$('btnHint').onclick=()=>hint(false);
+$('btnQuit').onclick=showTitle;
+$('btnTest').onclick=()=>$('testPanel').classList.toggle('hidden');
+$('testPanel').onclick=e=>{const t=e.target.dataset.t;if(!t||busy)return;
+  if(t==='near'){made=stage.goal-1;hud();}
+  if(t==='fill'){ // ペアに ならない 同じ数で うめる → 手づまりの 画面を 確かめる
+    const fi=stage.frac&&stage.frac.find(x=>2*x[0]!==x[1]),m=fi?fi[1]:stage.ms?stage.ms[0]:0,v=fi?fi[0]:stage.match?0:stage.vals.find(x=>!core.isPair({v:x,m},{v:x,m}));
+    core.cells=new Array(16).fill(null);layer.innerHTML='';els.clear();
+    for(let i=0;i<16;i++)addEl(core.put({v,m,p:0},i),i,'');
+    if(!core.canMove())finish(false);}
+};
+// ---- おさらい（くふうの計算 3問）----
+function toReview(){
+  playing=false;clearTimeout(idleT);
+  rv={n:0,ok:0};show('review');nextQ();
+}
+function nextQ(){
+  rv.seen=rv.seen||[];let q,n=0;do{q=core.quiz();}while(rv.seen.includes(q.full||q.ex)&&++n<40);
+  rv.seen.push(q.full||q.ex);rv.q=q;rv.done=false;
+  $('rvNo').textContent='ステージクリア！ さいごに '+(rv.n+1)+' / 3 問';
+  $('rvLead').textContent=stage.lead?stage.lead:stage.split?'きりのいい数と ずれに 分けると…':stage.ms?'同じ かける数で まとめると…':'ペアを 先に 計算すると…';
+  $('rvEx').textContent=rv.q.full||rv.q.ex+' ＝ ？';$('rvEx').classList.toggle('sm',!!stage.ms||!!stage.match);$('rvWhy').innerHTML='';$('rvNext').classList.add('hidden');
+  $('choices').innerHTML=rv.q.choices.map(c=>'<button data-c="'+c+'">'+c+'</button>').join('');
+}
+$('choices').onclick=e=>{const b=e.target.closest('[data-c]');if(!b||rv.done)return;rv.done=true;
+  const ok=b.dataset.c===String(rv.q.ans);if(ok)rv.ok++;
+  [...$('choices').children].forEach(x=>{if(x.dataset.c===String(rv.q.ans))x.classList.add('ok');else if(x===b)x.classList.add('ng');});
+  $('rvWhy').innerHTML=(ok?'⭕ せいかい！':'❌ おしい！')+'<br>'+rv.q.why;
+  $('rvNext').classList.remove('hidden');};
+$('rvNext').onclick=()=>{rv.n++;if(rv.n<3)nextQ();else finish(true);};
+// ---- けっか ----
+function finish(clear){
+  playing=false;clearTimeout(idleT);
+  const s=loadSave();s.rec=s.rec||{};let star=0;
+  if(clear){
+    star=rv.ok===3?3:rv.ok===2?2:1;
+    const o=s.rec[stage.id];
+    s.rec[stage.id]={star:Math.max(star,o?o.star:0),moves:Math.min(moves,o?o.moves:9999)};putSave(s);
+    $('resTxt').innerHTML='<em>'+'★'.repeat(star)+'☆'.repeat(3-star)+'</em>ステージ '+no(stage.id)+' クリア！<br>'+moves+'手で '+stage.goal+'こ つくった<br>くふうの計算 '+rv.ok+' / 3 問 せいかい';
+    $('resBest').textContent='さいしょうの 手数：'+s.rec[stage.id].moves+'手（少ないほど すごい）';
+  }else{
+    $('resTxt').innerHTML='<em>🧱</em>ばんめんが いっぱい！<br>'+made+'こ つくれたよ（あと '+(stage.goal-made)+'こ）<br><span style="font-size:14px;font-weight:500">ペアを 見つけてから うごかすのが コツ。💡ヒントも つかってね。</span>';
+    $('resBest').textContent='';
+  }
+  const uniq=[...new Set(eqs)];
+  $('list').innerHTML=uniq.length?'<b>つくった ペア</b><br>'+uniq.map(x=>'<span>'+x+'</span>').join(''):'';
+  $('list').classList.toggle('hidden',!uniq.length);
+  $('btnNextStage').classList.toggle('hidden',!clear||!nextId());
+  const nx=byId(ORDER[ORDER.indexOf(stage.id)+1]);$('resPaid').classList.toggle('hidden',!clear||!nx||ready(nx));
+  show('result');
+  track('level_end',{level_name:'kiriyoku-slide-'+stage.id,score:made,success:!!clear});
+}
+$('btnNextStage').onclick=()=>start(nextId());
+$('btnAgain').onclick=()=>start(stage.id);
+$('btnBack').onclick=showTitle;
+$('resPaid').href=GAME+'-full.html';
+// ---- 有料版：利用コードを 確かめて、パックを 受け取ってから 始める ----
+function lockScreen(err){
+  show('lock');
+  if(!window.mnAccess){$('lockBox').textContent='有料版は、サイトの 上で ひらいて ください。';return;}
+  mnAccess.lock($('lockBox'),{game:GAME,err:err,free:GAME+'.html',onOpen:async()=>{applyPack(await mnAccess.load(GAME));showTitle();}});
+}
+if(PAID){
+  show('lock');$('lockBox').textContent='よみこみ中…';
+  (window.mnAccess?mnAccess.load(GAME):Promise.reject({error:'net'})).then(p=>{applyPack(p);showTitle();}).catch(lockScreen);
+}else showTitle();
+</script>
+</body>
+</html>
