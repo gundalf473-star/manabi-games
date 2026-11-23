@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="理科">
+<meta name="game:unit" content="推理・矛盾さがし">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="【有料版】証言の「おかしいところ」を理科の知識で見つけて、証拠を見せる推理ゲーム「なぞとき科学クラブ」（全3話）。第1話は無料、第2話・第3話は有料版。植物・月と太陽・もののとけ方・星の動き・光と音・水よう液。">
+<title>なぞとき科学クラブ 有料版</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#e4efe8;color:#24304a;font-family:'M PLUS Rounded 1c','Hiragino Maru Gothic ProN','Noto Sans JP',sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:480px;margin:0 auto;padding:10px 10px 30px;min-height:100vh}
+.hidden{display:none!important}
+button{font-family:inherit;font-weight:800;color:inherit;cursor:pointer;touch-action:manipulation}
+h1{font-size:27px;margin:16px 0 2px;text-align:center;line-height:1.3}
+.sub{text-align:center;font-size:16px;font-weight:800;color:#0b6b5d;margin:2px 0 4px}
+.proto{text-align:center;font-size:13px;color:#8a5a00;background:#ffe9b0;border-radius:99px;padding:2px 12px;display:table;margin:6px auto 12px}
+.big{display:block;width:100%;font-size:18px;padding:12px 10px;margin:9px 0;border:3px solid #24304a;border-radius:14px;background:#fff;box-shadow:0 4px 0 #24304a}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #24304a}
+.big small{display:block;font-size:12px;font-weight:500;color:#5b6780}
+.big.on{background:#24304a;color:#fff}
+.box{background:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.75;margin:10px 0}
+#hud{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px;margin-bottom:8px}
+#gauge{letter-spacing:2px;font-size:19px}
+#hud button{font-size:14px;padding:5px 10px;border:2px solid #24304a;border-radius:10px;background:#fff}
+#stage{background:#1d4b50;border-radius:16px;min-height:150px;padding:14px 12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:14px;position:relative}
+.face{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#fff;border:4px solid #fff;flex:none}
+#stageInfo{font-size:14px;line-height:1.5}
+#stageInfo b{font-size:18px;display:block}
+#place{position:absolute;left:10px;top:8px;font-size:12px;opacity:.85}
+#talk{background:#fff;border:3px solid #24304a;border-radius:14px;margin-top:10px;padding:10px 14px 26px;min-height:120px;position:relative;font-size:17px;line-height:1.75}
+#talkName{display:inline-block;background:#24304a;color:#fff;border-radius:8px;padding:0 10px;font-size:14px;margin-bottom:4px}
+#talkNext{position:absolute;right:12px;bottom:4px;font-size:13px;color:#0b6b5d;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+#talk.tap{cursor:pointer}
+.stmt{display:block;width:100%;text-align:left;font-size:16px;line-height:1.6;padding:10px 12px;margin:7px 0;border:2px solid #9aa3b8;border-radius:12px;background:#fff;font-weight:500}
+.stmt .no{font-weight:800;color:#0b6b5d;margin-right:6px}
+.stmt.sel{border:3px solid #d6453d;background:#fff4f2}
+#acts{display:flex;gap:8px;margin-top:6px}
+#acts button{flex:1;font-size:16px;padding:11px 4px;border:3px solid #24304a;border-radius:12px;background:#fff;box-shadow:0 3px 0 #24304a}
+#acts .shout{background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 3px 0 #a32b25}
+#acts button:disabled{opacity:.35}
+.tip{font-size:13px;color:#5b6780;text-align:center;margin:6px 0}
+#modal{position:fixed;inset:0;background:rgba(20,26,40,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+#sheet{background:#f8f4ea;width:100%;max-width:480px;max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 14px 24px}
+#sheet h2{font-size:19px;margin:2px 0 8px}
+.ev{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #c9c1ae;border-radius:12px;padding:9px 10px;margin:8px 0;text-align:left;width:100%;font-weight:500;font-size:14px;line-height:1.6}
+.ev .ic{font-size:28px;line-height:1}
+.ev b{font-size:15px;display:block}
+.ev.pick{border-color:#24304a}
+.ev.new{border-color:#d6453d}
+.quote{background:#fffbe9;border-left:5px solid #c9a227;padding:6px 10px;border-radius:6px;margin:4px 0;font-size:15px}
+.tmpl{font-size:16px;line-height:2.1;background:#fff;border-radius:12px;padding:10px 12px}
+.blank{display:inline-block;min-width:4.5em;border-bottom:3px solid #24304a;text-align:center;font-weight:800;color:#0b6b5d;padding:0 4px;margin:0 2px;cursor:pointer}
+.blank.cur{background:#ffe9b0}
+.blank input{font-family:inherit;font-size:16px;width:7.5em;border:2px solid #24304a;border-radius:8px;padding:2px 6px}
+.cards{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.cards button{font-size:15px;padding:8px 10px;border:2px solid #24304a;border-radius:10px;background:#fff}
+.cards button.used{opacity:.3}
+.cards button.glow{background:#ffe9b0;border-color:#d6453d;animation:hint .6s infinite alternate}
+@keyframes hint{to{transform:scale(1.08)}}
+#stage{cursor:pointer}
+.choice{display:block;width:100%;text-align:left;font-size:15px;line-height:1.6;padding:10px 12px;margin:7px 0;border:2px solid #24304a;border-radius:12px;background:#fff;font-weight:500}
+.ok{color:#1f7a3c;font-weight:800}.ng{color:#d6453d;font-weight:800}
+#shout{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:30;pointer-events:none}
+#shout span{background:#d6453d;color:#fff;font-size:44px;font-weight:800;padding:12px 26px;border-radius:16px;border:5px solid #fff;transform:rotate(-6deg);box-shadow:0 8px 0 #7a1c18;animation:pop .5s ease-out}
+@keyframes pop{from{transform:scale(.3) rotate(-20deg);opacity:0}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.res{text-align:center;font-size:17px;font-weight:800;line-height:1.8}
+.stars{font-size:40px;color:#e0a500;text-align:center}
+.badge{display:inline-block;background:#24304a;color:#fff;border-radius:99px;padding:3px 12px;margin:3px;font-size:14px}
+#btnTest{background:#6a1b9a!important;color:#fff!important;border-color:#6a1b9a!important}
+#testPanel{background:#efe3f6;border-radius:12px;padding:8px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+#testPanel button{font-size:13px;padding:6px 8px;border:2px solid #6a1b9a;border-radius:9px;background:#fff}
+.place{display:flex;align-items:center;gap:10px;text-align:left}
+.place .ic{font-size:30px}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+
+<!-- タイトル -->
+<section id="title">
+  <h1>なぞとき科学クラブ</h1>
+  <div class="box" style="padding-bottom:4px">
+    <b>話を えらんでね</b>
+    <div id="epList"></div>
+  </div>
+  <div class="box">
+    <span id="epIntro"></span><br>
+    証言の中の<b>おかしいところ</b>を 理科の 知識で 見つけて、<b>証拠</b>を 見せよう。<br>
+    <span style="font-size:13px;color:#5b6780" id="epTags"></span>
+  </div>
+  <div class="box" style="padding-bottom:4px">
+    <b>理由の書き方を えらんでね</b>
+    <button class="big lvbtn" data-lv="1">初級<small>理由を 3つから えらぶ</small></button>
+    <button class="big lvbtn" data-lv="2">中級<small>ことばカードを ならべて 理由を作る</small></button>
+    <button class="big lvbtn" data-lv="3">上級<small>理由の 大事なことばを 自分で書く</small></button>
+  </div>
+  <div class="box hidden" id="freeNote" style="font-size:14px;background:#fff7dc">この 話は、無料では <b>事件の はじまりと 調査まで</b>の おためしです。証言の なぞときは <a href="nazotoki-kagaku-full.html" style="color:#0b6b5d;font-weight:800">有料版</a>で あそべます。</div>
+  <button class="big" id="btnStart" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">調査を はじめる（おためし）</button>
+  <button class="big hidden" id="btnReview">📁 見のがしファイル<small id="reviewN"></small></button>
+  
+  <div class="tip" id="bestLine"></div>
+</section>
+
+<!-- ゲーム -->
+<section id="play" class="hidden">
+  <div id="hud"><span>信頼 <span id="gauge"></span></span><span><button id="btnEv">📒 証拠ノート</button></span></div>
+  <div id="stage"><span id="place"></span><div class="face" id="face"></div><div id="stageInfo"></div></div>
+  <div id="talk"><div id="talkName"></div><div id="talkText"></div><div id="talkNext">▼ タップ</div></div>
+  <div id="area"></div>
+  <div style="display:flex;gap:8px;margin-top:14px"><button class="big" id="btnQuit" style="font-size:14px;padding:8px">タイトルへ</button><button class="big" id="btnTest" style="font-size:14px;padding:8px">🛠 テスト</button></div>
+  <div id="testPanel" class="hidden">
+    <button data-t="t1">証言1へ</button><button data-t="t2">証言2へ</button><button data-t="t3a">証言3前半へ</button><button data-t="t3b">証言3後半へ</button><button data-t="end">エンディングへ</button><button data-t="ans">こたえを見る</button><button data-t="miss">見のがし全部に</button><button data-t="reset">記録を消す</button>
+  </div>
+</section>
+
+<!-- 有料版の かぎ -->
+<section id="lock" class="hidden">
+  <h1>なぞとき科学クラブ</h1>
+  <div class="box" id="lockBox"></div>
+</section>
+
+<!-- 見のがしファイル -->
+<section id="review" class="hidden">
+  <h1 style="font-size:24px">📁 見のがしファイル</h1>
+  <div id="revBody"></div>
+  <button class="big" id="btnRevBack">タイトルへ</button>
+</section>
+
+</div>
+<div id="modal" class="hidden"><div id="sheet"></div></div>
+<div id="shout" class="hidden"><span id="shoutText">そこだ！</span></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY0='manabi-nazotoki-kagaku-ep';
+function track(n,p){try{if(window.mnTrack)mnTrack(n,p);}catch(e){}}
+function loadSave(n){n=n||epNo;try{let s=localStorage.getItem(KEY0+n);if(s===null)s=localStorage.getItem('manabi-nazotoki-kagaku'+n+'-proto-1');return JSON.parse(s)||{};}catch(e){return{};}}
+function putSave(s){try{localStorage.setItem(KEY0+epNo,JSON.stringify(s));}catch(e){}}
+
+/* ---------- 話ごとのデータ（第2話・第3話の 証言などは 有料版で サーバーの パックから 受け取る） ---------- */
+const PAID=/-full(\.html)?$/.test(location.pathname);   // nazotoki-kagaku-full.html が 有料版（中身は 同じ プログラム）
+const EPS={};
+EPS[1]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  hikari:{name:'ヒカリ',sub:'6年・科学クラブ部長',ch:'光',col:'#1f7a8c'},
+  riku:{name:'リク',sub:'5年・きのうの当番',ch:'陸',col:'#5a7d2a'},
+  mei:{name:'メイ',sub:'6年・月の観察係',ch:'芽',col:'#9c4f96'},
+  sota:{name:'ソウタ',sub:'4年・新入部員',ch:'颯',col:'#d9772b'},
+  sensei:{name:'森川先生',sub:'科学クラブの先生',ch:'森',col:'#6b5b45'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const MAP='<svg viewBox="0 0 300 172" style="width:100%;height:auto;background:#fff;border:1px solid #c9c1ae;border-radius:8px;margin-top:4px" font-family="sans-serif" font-weight="bold">'
+ +'<text x="150" y="13" font-size="11" text-anchor="middle" fill="#24304a">北</text><path d="M150 16 l-4 8 h8z" fill="#24304a"/>'
+ +'<text x="8" y="92" font-size="11" fill="#24304a">西</text><text x="282" y="92" font-size="11" fill="#24304a">東</text>'
+ +'<rect x="24" y="48" width="40" height="70" fill="#bfe3f5" stroke="#24304a"/><text x="44" y="87" font-size="10" text-anchor="middle" fill="#24304a">プール</text>'
+ +'<rect x="70" y="30" width="110" height="100" fill="#f3e7c4" stroke="#24304a"/><text x="125" y="52" font-size="11" text-anchor="middle" fill="#24304a">校庭</text>'
+ +'<path d="M112 88 v-16 h26 v16" fill="none" stroke="#24304a" stroke-width="2"/><text x="125" y="102" font-size="9" text-anchor="middle" fill="#24304a">鉄棒</text>'
+ +'<rect x="70" y="138" width="110" height="24" fill="#cfe8c0" stroke="#24304a"/><text x="125" y="154" font-size="10" text-anchor="middle" fill="#24304a">花だん</text>'
+ +'<rect x="190" y="30" width="38" height="100" fill="#e6ecf7" stroke="#24304a"/><text x="209" y="78" font-size="10" text-anchor="middle" fill="#24304a">理科室</text>'
+ +'<rect x="228" y="30" width="12" height="100" fill="#fff" stroke="#24304a"/><text x="234" y="84" font-size="8" text-anchor="middle" fill="#5b6780" transform="rotate(90 234 84)">ろうか</text>'
+ +'<rect x="240" y="30" width="38" height="100" fill="#e6ecf7" stroke="#24304a"/><text x="259" y="78" font-size="10" text-anchor="middle" fill="#24304a">準備室</text>'
+ +'<line x1="190" y1="50" x2="190" y2="110" stroke="#1e88e5" stroke-width="5"/><line x1="278" y1="50" x2="278" y2="110" stroke="#1e88e5" stroke-width="5"/>'
+ +'<line x1="196" y1="148" x2="214" y2="148" stroke="#1e88e5" stroke-width="5"/><text x="218" y="152" font-size="10" fill="#24304a">＝ 窓</text>'
+ +'</svg>';
+const EV0={
+  1:{ic:'💎',name:'結晶の記録カード',where:'最初から',text:'<div class="quote">ミョウバンの 結晶（科学クラブ 作）<br>重さ 24g　置き場所：理科準備室の たな</div>きのうの 午後4時には、たなに あった（ヒカリが 見ている）。'},
+  2:{ic:'🗺',name:'校舎の見取り図',where:'ろうかの けいじ板',text:'理科室の 窓は 西がわ（校庭向き）だけ。準備室の 窓は 東がわだけ。プールは 校庭の 西に ある。'+MAP},
+  3:{ic:'🌺',name:'リクの観察カード',where:'リク',text:'<div class="quote">午後5時　アサガオ<br>花が 大きく ひらいている。花の 色は 青むらさき。</div>花の 絵が ていねいに かいてある。'},
+  4:{ic:'📗',name:'植物図鑑のメモ',where:'理科室の本だな',text:'<div class="quote">アサガオ：夏から 秋に さく。朝 早くに 花が ひらき、晴れた 日は 昼ごろには しぼむ。</div>'},
+  5:{ic:'🌕',name:'けいじ「月の動き」',where:'理科室のかべ',text:'<div class="quote">満月：夕方 東から のぼる → 真夜中 南の空 → 明け方 西に しずむ</div>きのうの 月は 満月だった。'},
+  6:{ic:'☀️',name:'かげの観察ポスター',where:'ろうかの けいじ板',text:'<div class="quote">かげは 太陽の 反対がわに できる。<br>朝：太陽は 東 → かげは 西へ 長い<br>正午：太陽は 南 → かげは 北へ 短い<br>夕方：太陽は 西 → かげは 東へ 長い</div>3年生の 作品。'},
+  7:{ic:'🧪',name:'つくえの上のビーカー',where:'理科準備室',text:'とうめいな 液が、300の 目もりまで 入っている。<div class="quote">ビーカーの ラベル：からの 重さ 120g</div>'},
+  8:{ic:'⚖️',name:'ビーカーの重さ',where:'電子てんびん',text:'<div class="quote">からの ビーカー 120g ＋ 水 300g ＝ 420g の はず。<br>はかった 重さ：444g</div>（お湯も 水 300gとして 考える。）'}
+};
+
+/* ---------- 証言 ---------- */
+const T={
+ t1:{who:'riku',rev:'t1',title:'証言1　5時は 花だんに いた',
+  stmts:['きのうは ぼくが 当番でした。5時に 水やりを して、準備室の かぎを しめる 係です。','午後5時ちょうど、花だんで アサガオに 水を やりました。','そのとき、アサガオの 花が 大きく ひらいて いたので、観察カードに かきました。','それから 準備室の かぎを しめて 帰りました。あやしい人は 見ていません。'],
+  press:{
+   0:[['me','かぎは 何時に しめたの？'],['riku','5時……すぎ、です。たぶん。']],
+   1:[['me','水やりは 一人で？'],['riku','はい。花だんには ぼくしか いませんでした。'],['me','きのうの 天気は？'],['riku','一日中 よく 晴れて、暑かったです。']],
+   2:[['me','その カード、見せて？'],['riku','これです。ちゃんと「午後5時」って 書いてあるでしょ。','get3']],
+   3:[['me','かぎは たしかに しめた？'],['riku','し、しめましたよ！']]
+  },
+  ans:{s:2,ev:[4]},
+  near:{'1-4':{lines:[['hikari','おしい！ 水やりは 夕方でも できるよ。'],['hikari','図鑑と 合わないのは、花の ようすを 話している 文だ。']]},
+   '2-3':{lines:[['hikari','カードには たしかに「午後5時」と 書いてある。'],['hikari','でも その 時こくに、花は ひらいて いるかな？ アサガオの きまりが 分かる 証拠を 見せよう。']]}},
+  hint:'アサガオの 花は、一日の うち いつ ひらいて、いつ しぼむ？',
+  reason:{
+   tmpl:'アサガオの 花は【0】に ひらいて【1】ごろには しぼむので、午後5時に 花が 大きく ひらいて いたと いうのは おかしい。',
+   blanks:[['朝','あさ'],['昼','ひる','正午']],
+   cards:['朝','昼','夕方','夜','冬','つぼみ'],
+   choices:['アサガオの 花は 水を やると すぐに とじるので、水やりの あとに 大きく ひらいて いるのは おかしいから。','アサガオの 花は 朝に ひらいて 昼ごろには しぼむので、午後5時に 大きく ひらいて いるのは おかしいから。','アサガオの 花は 夜に ならないと ひらかないので、午後5時に 大きく ひらいて いるのは おかしいから。'],ci:1,
+   explain:'アサガオは 朝 早くに 花が ひらき、晴れて 暑い 日は 昼ごろには しぼみます（すずしい 日や 雨の 日は、もう少し 長く さいて いる ことも あります）。夕方から ひらくのは オシロイバナ、マツヨイグサ、ユウガオなど。花が ひらく 時こくは、植物に よって ちがいます。'
+  },
+  after:[['riku','……ごめんなさい。カードは きのうの 朝に かいたんです。時こくだけ、あとで 書きました。'],['riku','本当は 4時半に 水やりだけ して 帰りました。見たい テレビが あって……。かぎを しめるのを わすれました。'],['hikari','じゃあ 準備室は、夕方 ずっと 開いて いたんだ。'],['riku','帰るとき、理科室に メイ先輩が 残って いました。月の 観察を するって。'],['hikari','メイに 話を 聞こう。']]
+ },
+ t2:{who:'mei',rev:'t2',title:'証言2　理科室から 出ていない',
+  stmts:['きのうは 満月だったから、先生に お願いして 6時すぎまで 残って いたの。','午後6時ごろ、理科室の 窓から、のぼってきた ばかりの 満月を 観察したわ。','わたしは ずっと 理科室に いて、一歩も 外に 出ていない。','だから、準備室の ことは 何も 知らないの。'],
+  press:{
+   0:[['me','先生も いっしょに？'],['mei','先生は 職員室。6時15分に むかえに 来て くれたわ。']],
+   1:[['me','満月は どんなふうに 見えた？'],['mei','低い ところに あって、大きくて 赤っぽかった。のぼる ところを ちゃんと 見たのよ。']],
+   2:[['me','ろうかにも 出てない？'],['mei','……出てないわ。']]
+  },
+  ans:{s:1,ev:[5,2]},
+  near:{'2-5':{lines:[['hikari','そう、「ずっと 理科室に いた」が あやしいね。'],['hikari','その もとに なっている、観察の 話の ほうを つこう。']]},
+   '2-2':{lines:[['hikari','そう、「ずっと 理科室に いた」が あやしいね。'],['hikari','その もとに なっている、観察の 話の ほうを つこう。']]}},
+  hint:'満月は 夕方、どの 方角から のぼる？ 理科室の 窓は どっち向き？',
+  reason:{
+   tmpl:'満月は 夕方【0】の 空から のぼるが、理科室の 窓は【1】がわにしか ないので、理科室から のぼる 満月は 見えない。',
+   blanks:[['東','ひがし'],['西','にし']],
+   cards:['東','西','南','北','真上','三日月'],
+   choices:['満月は 真夜中に ならないと のぼらないので、午後6時ごろに のぼる 満月が 見えるのは おかしいから。','満月は 夕方 東から のぼるのに、理科室の 窓は 西がわにしか ないので、のぼる 満月は 見えないから。','満月は 夕方 南から のぼるのに、理科室の 窓は 西がわにしか ないので、のぼる 満月は 見えないから。'],ci:1,
+   explain:'満月は、地球から 見て 太陽の 反対がわに あります。だから、太陽が 西に しずむ 夕方に 東から のぼり、真夜中に 南の空、明け方に 西へ しずみます。のぼる 満月が 見えるのは、東向きの 窓が ある 準備室です。'
+  },
+  after:[['mei','……その とおり。準備室の 東の 窓から 見たの。かぎが 開いて いたから、つい。'],['mei','でも 結晶には さわってない！ わたしが 入った 6時には、もう たなに 結晶は なかったわ。'],['mei','つくえの 上に、あの ビーカーが 置いて あっただけ。さわると まだ 少し あたたかかった。'],['mei','そういえば 5時すぎに、4年の ソウタくんが ろうかを 走って いくのを 見たわ。'],['hikari','ソウタは 校庭に いるはずだ。行こう。']]
+ },
+ t3a:{who:'sota',rev:'t3',title:'証言3　5時は 校庭に いた（前半）',
+  stmts:['きのうの 5時ごろ？ ぼくは 校庭で 鉄棒の 練習を してました。','夕日が まぶしかったです。太陽は プールの ほうに ありました。','ぼくの かげが、プールの ほうへ 長ーく のびて いたのを おぼえてます。','だから 5時ごろは ずっと 校庭です。準備室には 行ってません。'],
+  press:{
+   0:[['me','だれかと いっしょ？'],['sota','ひ、一人です。']],
+   1:[['me','まぶしかったのは たしか？'],['sota','はい。プールの ほうを 向くと、目を 開けて いられませんでした。']],
+   2:[['me','かげは 本当に プールの ほう？'],['sota','え、えっと……はい。そう おぼえてます。']]
+  },
+  ans:{s:2,ev:[6]},
+  near:{'2-2':{lines:[['hikari','いいね。見取り図では、プールは 校庭の 西だ。'],['hikari','じゃあ 夕方の かげは どっちへ のびる？ その きまりが 分かる 証拠を 見せよう。']]},
+   '1-6':{lines:[['hikari','夕方の 太陽が 西（プールの ほう）に あるのは、ポスターの とおりだね。'],['hikari','太陽が プールの ほうなら、かげは どっちへ のびるはず？']]},
+   '1-2':{lines:[['hikari','夕方の 太陽が 西（プールの ほう）に あるのは 正しいよ。'],['hikari','太陽が プールの ほうなら、かげは どっちへ のびるはず？']]}},
+  hint:'かげは、太陽に 対して どっちがわに できる？',
+  reason:{
+   tmpl:'かげは 太陽の【0】がわに できる。夕方の 太陽は 西に あるので、かげは【1】へ のびる。西の プールの ほうへ のびたと いうのは おかしい。',
+   blanks:[['反対','はんたい','逆','ぎゃく'],['東','ひがし']],
+   cards:['反対','同じ','東','西','南','北'],
+   choices:['夕方は 太陽が 低くて かげが できないので、かげが 長く のびて いたと いうのは おかしいから。','かげは 太陽の 反対がわに できるので、夕方の かげは 東へ のびるはず。西の プールの ほうへ のびるのは おかしいから。','かげは 一日中 いつも 北へ のびるので、西の プールの ほうへ のびて いたと いうのは おかしいから。'],ci:1,
+   explain:'かげは 太陽の 反対がわに できます。太陽は 東→南→西と 動くので、かげは 西→北→東と 動きます。太陽と かげが 同じ プールの ほうに あることは ありません。'
+  },
+  after:[['sota','……ごめんなさい。校庭に いたのは うそです。5時ごろ、準備室に いました。'],['hikari','準備室で 何が あったのか、話して くれる？']]
+ },
+ t3b:{who:'sota',rev:'t4',title:'証言3　結晶は 消えた（後半）',needEv:8,
+  stmts:['たなの ほこりを ふこうと して、結晶を ゆかに 落として しまったんです。','よごれたから、ビーカーに ポットの お湯を 300の 目もりまで 入れて、結晶を つけて おきました。','下校の 放送が 鳴ったので、そのまま 帰りました。今朝 見たら、結晶は 消えて いました。','ビーカーの 中は とうめいな ただの 水です。何も 入って いません。だれかが 結晶を 持って いったんだ！'],
+  press:{
+   0:[['me','結晶は われた？'],['sota','われては いません。ほこりが ついた だけです。']],
+   1:[['me','どうして お湯に？'],['sota','お湯の ほうが、よごれが よく 落ちると 思って……。']],
+   2:[['me','帰るとき、結晶は 見えた？'],['sota','はい。ビーカーの 底に ありました。少し 小さく なった 気も したけど……。']],
+   3:[['me','ビーカーの 重さを、はかって みても いい？'],['sensei','では、電子てんびんに のせて みましょう。'],['nar','電子てんびんの 表示は……444g。','get8']]
+  },
+  ans:{s:3,ev:[8]},
+  near:{'3-7':{lines:[['hikari','そう、見た目は とうめいな 水だね。'],['hikari','見た目では 分からない ことを、ほかの 方法で 調べられないかな？ ④を ききこみ して みよう。']]},
+   '3-1':{lines:[['hikari','結晶の 重さは 24g。この 数は、きっと あとで 使える。'],['hikari','ビーカーの ほうも 調べたいね。④を ききこみ して みよう。']]}},
+  hint:'とけて 見えなく なっても、なくならない ものは 何だろう？',
+  noEvHint:'まだ 決め手が ないね。ビーカーの 中身を、見た目 いがいの 方法で 調べよう。④を ききこみ して みて。',
+  reason:{
+   tmpl:'ものは 水に とけて 見えなく なっても【0】は なくならない。ビーカーは 420gの はずが 444gで、結晶と 同じ【1】g 重いので、結晶は お湯に とけたと 考えられる。',
+   blanks:[['重さ','おもさ','質量'],['24','２４','二十四']],
+   cards:['重さ','色','におい','24','120','300'],
+   choices:['水は 一晩で じょう発 して へるので、ビーカーが 24g 重いのは、だれかが 水を 足したからだと 考えられるから。','とけて 見えなく なっても 重さは なくならない。ビーカーが 結晶と 同じ 24g 重いので、結晶は お湯に とけたと 考えられるから。','ミョウバンは とけると 重さが なくなる。ビーカーが 24g 重いのは、ほこりが 入ったからだと 考えられるから。'],ci:1,
+   explain:'ものが 水に とけると、目に 見えないほど 小さな つぶに なって、水の 中に 広がります。とうめいに 見えても、とけた ものの 重さは そのまま 残ります。<br>水の 重さ ＋ とかした ものの 重さ ＝ 水よう液の 重さ（300＋24＝324g）'
+  },
+  after:[]
+ }
+};
+
+const FLOW=[
+ {t:'talk',place:'発表会の朝・理科準備室',lines:[['hikari','たいへん！ 発表会で 見せる ミョウバンの 結晶が、たなから 消えてる！'],['nar','📒 証拠ノートに「結晶の記録カード」が 入った。'],['sensei','きのうの 午後4時には、たしかに ありましたね。'],['hikari','きのうの 夕方、学校に 残って いた 科学クラブの 部員は 3人。話を 聞いて みよう。'],['hikari','科学クラブの きまり、おぼえてる？'],['hikari','「おかしい」と 言うときは、かならず 証拠を そえる！']]},
+ {t:'inv'},
+ {t:'talk',place:'花だんの前',lines:[['hikari','リク、きのうの 当番の ことを くわしく 話して。'],['riku','は、はい……。']]},
+ {t:'test',id:'t1'},
+ {t:'test',id:'t2'},
+ {t:'talk',place:'校庭',lines:[['hikari','ソウタ、きのうの 夕方の ことを 聞かせて。'],['sota','ぼ、ぼくは 何も 知りません！']]},
+ {t:'test',id:'t3a'},
+ {t:'test',id:'t3b'},
+ {t:'talk',place:'理科準備室',lines:[['sota','じゃあ、結晶は ぼくが とかしちゃったんだ……。ごめんなさい。こわくて 言えませんでした。'],['sensei','ミョウバンは、20℃の 水 100gには 約11gしか とけませんが、60℃の 水 100gには 約57gも とけます。お湯に つけたので、どんどん とけたんですね。'],['sensei','水が 300gも あるので、冷めても とけた ままだったんです。'],['sensei','ソウタさん、お湯を 使う ときは、かならず 先生を よんで くださいね。やけどを すると たいへんです。'],['sensei','でも だいじょうぶ。この 水よう液の 水を じょう発 させれば、ミョウバンは また 結晶に なって 出てきますよ。'],['riku','ぼくも、かぎの こと ごめんなさい。観察カードも、見た その ときに 書くように します。'],['mei','わたしも、だまって 準備室に 入って ごめんなさい。'],['hikari','それなら 発表の テーマを 変えよう！ 「消えた 結晶の なぞ ―とけても 重さは 消えない―」'],['hikari','きみの おかげで、なぞが とけたよ。ありがとう！']]},
+ {t:'end'}
+];
+const INV={req:['jun','rika','roka'],places:[
+ ['jun','🚪','理科準備室','結晶が あった たな',[['hikari','たなの 上に あった 結晶が ない……。'],['nar','つくえの 上に、ビーカーが 一つ 置いて ある。','get7'],['hikari','ただの 水みたいだね。だれかの かたづけ わすれかな。']]],
+ ['rika','🔬','理科室','かべの けいじと 本だな',[['nar','かべに「月の動き」の けいじが ある。','get5'],['nar','本だなの 植物図鑑に、メモが はさんで ある。','get4']]],
+ ['roka','🗺','ろうかの けいじ板','見取り図と ポスター',[['nar','校舎の 見取り図が はって ある。','get2'],['nar','となりに、3年生の「かげの観察」ポスターも ある。','get6']]]
+]};
+
+/* ---------- 見のがしファイルの類題 ---------- */
+const REV={
+ t1:{tag:'花のひらく時こく',q:'つぎの うち、夕方から 花が ひらく 植物は どれ？',opts:['アサガオ','オシロイバナ','タンポポ'],ci:1,ex:'オシロイバナは 夕方に ひらきます。アサガオは 朝に ひらいて 昼ごろ しぼみ、タンポポは 昼間に ひらきます。'},
+ t2:{tag:'月の動き',q:'夕方、西の 空の 低い ところに 見える 月は どれ？',opts:['満月','三日月','下弦の月'],ci:1,ex:'三日月は 夕方、西の 空に 見えて、まもなく しずみます。満月は 夕方、東から のぼります。'},
+ t3:{tag:'太陽とかげ',q:'正午ごろ、地面に まっすぐ 立てた ぼうの かげは、どの 方角へ のびる？（日本で）',opts:['南','北','東'],ci:1,ex:'正午ごろ 太陽は 南に あるので、かげは 反対の 北へ のびます。かげの 長さは 一日で いちばん 短く なります。'},
+ t4:{tag:'もののとけ方',q:'水 100gに 食塩 20gを ぜんぶ とかした。できた 食塩水の 重さは？',opts:['100g','120g','80g'],ci:1,ex:'とけて 見えなく なっても、重さは なくなりません。100＋20＝120g です。'}
+};
+
+let FLOW0=FLOW;const GAME=null;let SUM='① アサガオの 花は 朝に ひらき、昼ごろには しぼむ。<br>② 満月は 夕方 東から のぼり、真夜中に 南、明け方に 西へ しずむ。<br>③ かげは 太陽の 反対がわに できる（夕方の かげは 東へ のびる）。<br>④ ものは 水に とけて 見えなく なっても、重さは なくならない。';
+
+return {no:1,name:'消えた結晶',intro:'発表会の朝。科学クラブが 作った ミョウバンの 結晶が、理科準備室の たなから 消えていた！',tags:'理科：アサガオ（植物）・満月の動き・太陽とかげ・もののとけ方\u3000／\u3000小5〜',clear:'消えた結晶の なぞを 解いた！',
+  P,EV0,INV,GAME,FLOW0,get T(){return T;},set T(v){T=v;},get REV(){return REV;},set REV(v){REV=v;},get SUM(){return SUM;},set SUM(v){SUM=v;},get FLOW(){return FLOW;},set FLOW(v){FLOW=v;}};
+})();
+EPS[2]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  hikari:{name:'ヒカリ',sub:'6年・科学クラブ部長',ch:'光',col:'#1f7a8c'},
+  aoi:{name:'アオイ',sub:'5年・さつえい係',ch:'葵',col:'#3d7fb8'},
+  daichi:{name:'ダイチ',sub:'6年・合宿の班長',ch:'大',col:'#5a7d2a'},
+  yui:{name:'ユイ',sub:'4年・虫が大好き',ch:'結',col:'#d9772b'},
+  sensei:{name:'森川先生',sub:'科学クラブの先生',ch:'森',col:'#6b5b45'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const PHOTO='<svg viewBox="0 0 300 190" style="width:100%;height:auto;background:#0f1b33;border-radius:8px;margin-top:4px" font-family="sans-serif" font-weight="bold"><path d="M163.7 112.4 A40 40 0 0 0 143.1 110.6 L152.1 103.6 A40 40 0 0 0 122.7 159.9" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M197.5 110.1 A62 62 0 0 0 171.2 91.7 L180.2 84.7 A62 62 0 0 0 97.2 137.6" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M142.7 66.3 A84 84 0 0 0 101.8 81.2 L110.8 74.2 A84 84 0 0 0 105.0 207.3" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M203.0 58.2 A106 106 0 0 0 150.0 44.0 L159.0 37.0 A106 106 0 0 0 56.6 170.4" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M106.2 29.7 A128 128 0 0 0 51.9 67.7 L60.9 60.7 A128 128 0 0 0 104.9 259.0" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M258.8 99.3 A120 120 0 0 0 218.8 51.7 L227.8 44.7 A120 120 0 0 0 46.2 102.0" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M150 150 L203.0 58.2 M150 150 L150.0 44.0" stroke="#ffd54f" stroke-width="1" stroke-dasharray="3 3"/><rect x="0" y="166" width="300" height="24" fill="#060b16"/><text x="150" y="182" font-size="9" fill="#8fa0c0" text-anchor="middle">地面（林の かげ）</text><circle cx="150" cy="150" r="3" fill="#ffd54f"/><text x="150" y="163" font-size="10" fill="#ffd54f" text-anchor="middle">北極星</text><text x="168" y="118" font-size="11" fill="#ffd54f">30°</text><text x="6" y="14" font-size="10" fill="#cfd8ea">北の空（午後8時〜明け方）</text></svg>';
+const EV0={
+  1:{ic:'📷',name:'星の写真',where:'最初から',text:'北の 空を 午後8時から とりつづけた 写真。星の 線は、北極星を 中心に 30度ぶん 回った ところで、がくっと 折れて いる。'+PHOTO},
+  2:{ic:'📘',name:'合宿のしおり',where:'観察広場',text:'<div class="quote">午後8:00　星の 写真の さつえい開始（観察広場・カメラは 北向き）<br>午後8:30〜9:30　となり町の 花火大会（丘の 上から 遠くに 見える）<br>午後9:30　消灯<br>※カメラの 足もとに、目じるしの ランタンを 一晩中 つけて おく。</div>'},
+  3:{ic:'⭐',name:'星の動きのメモ',where:'食堂の黒板',text:'<div class="quote">北の 空の 星は、北極星を 中心に、時計の 針と 反対向きに、1時間に 約15度 回る。北極星は ほとんど 動かない。</div>'},
+  4:{ic:'⚡',name:'理科ノート「光と音」',where:'テント',text:'<div class="quote">光は 一しゅんで とどく。音は 1秒間に 約340m 進む。<br>遠くの 花火や かみなりは、光が 先に 見えて、音が あとから 聞こえる。</div>'},
+  5:{ic:'🌌',name:'星座早見のメモ',where:'食堂の黒板',text:'<div class="quote">夏の 夜 8〜9時ごろ、南の 低い 空には さそり座（赤い 星 アンタレス）。<br>オリオン座は 冬の 星座。夏の 夜10時ごろは、まだ のぼって いない。</div>'},
+  6:{ic:'🪲',name:'こん虫図鑑のメモ',where:'テント',text:'<div class="quote">カブトムシ：夜に 活動する。クヌギや コナラの 樹液に 集まる。夜、明かりに 飛んで くる ことも 多い。</div>'}
+};
+
+/* ---------- 証言・見のがしファイル・まとめ（有料ぶん）は ページに 書かず、サーバーの パックから 受け取る ---------- */
+const GAME='nazotoki-kagaku2';   // ○○-full.html が 有料版（中身は 同じ プログラム）
+let T={},REV={},SUM='';
+const FLOW0=[{"t":"talk","place":"夏合宿の朝・観察広場","lines":[["hikari","たいへん！ 一晩 かけて とった 星の 写真が、おかしな ことに なってる！"],["nar","📒 証拠ノートに「星の写真」が 入った。"],["sensei","星の 線が、とちゅうで 折れて いますね。カメラが 動いたのでしょう。"],["hikari","だれかが カメラに ぶつかったんだ。いつ、だれが？"],["hikari","科学クラブの きまりは、おぼえてるね。"],["hikari","「おかしい」と 言うときは、かならず 証拠を そえる！"]]},{"t":"inv"}];
+let FLOW=FLOW0.concat([{t:'lock'}]);
+const INV={"req":["hiroba","kokuban","tent"],"places":[["hiroba","🔭","観察広場","カメラと 三きゃく",[["hikari","三きゃくの 足が 1本、ずれてる。やっぱり だれかが ぶつかったんだ。"],["nar","足もとには、目じるしの ランタンが ついた ままだ。"],["nar","合宿の しおりを 見直した。","get2"]]],["kokuban","📝","食堂の 黒板","きのうの 星の 授業",[["nar","先生の 板書が のこって いる。","get3"],["nar","はしに、星座早見の メモも はって ある。","get5"]]],["tent","⛺","テント","理科ノートと 図鑑",[["nar","自分の 理科ノートを ひらいた。","get4"],["nar","ユイの こん虫図鑑に、メモが はさんで ある。","get6"]]]]};
+
+
+return {no:2,name:'折れた 星の 線',intro:'夏合宿の朝。一晩 かけて とった 星の 写真の 線が、とちゅうで 折れて いた！ カメラに ぶつかったのは だれ？',tags:'理科：星の動き・光と音・季節の星座・こん虫\u3000／\u3000小5〜',clear:'折れた 星の 線の なぞを 解いた！',
+  P,EV0,INV,GAME,FLOW0,get T(){return T;},set T(v){T=v;},get REV(){return REV;},set REV(v){REV=v;},get SUM(){return SUM;},set SUM(v){SUM=v;},get FLOW(){return FLOW;},set FLOW(v){FLOW=v;}};
+})();
+EPS[3]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  hikari:{name:'ヒカリ',sub:'6年・科学クラブ部長',ch:'光',col:'#1f7a8c'},
+  kai:{name:'カイ',sub:'6年・ショーの司会',ch:'海',col:'#3d7fb8'},
+  nana:{name:'ナナ',sub:'5年・道具係',ch:'菜',col:'#9c4f96'},
+  ren:{name:'レン',sub:'4年・新入部員',ch:'蓮',col:'#d9772b'},
+  sensei:{name:'森川先生',sub:'科学クラブの先生',ch:'森',col:'#6b5b45'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const SW=(c,t)=>'<span style="display:inline-block;background:'+c+';color:#fff;border-radius:6px;padding:0 8px;margin:1px 2px;font-weight:800">'+t+'</span>';
+const EV0={
+  1:{ic:'🟣',name:'色が変わった液',where:'最初から',text:'ショーで 使う ムラサキキャベツ液。重そうを ごく 少し とかして、弱い アルカリ性に して ある。<div class="quote">けさ 8時（先生が 作った とき）：'+SW('#1f9a94','青緑')+'<br>いま（9時半）：'+SW('#6a3fa0','むらさき')+'</div>'},
+  2:{ic:'🎨',name:'色見本カード',where:'実験のつくえ',text:'ムラサキキャベツ液の 色の 変わり方。<div class="quote">酸性：'+SW('#d6334f','赤')+SW('#e0609a','ピンク')+'<br>中性：'+SW('#6a3fa0','むらさき')+'<br>アルカリ性：'+SW('#1f9a94','青緑')+SW('#2e8b57','緑')+SW('#b59a00','黄')+'</div>'},
+  3:{ic:'📄',name:'リトマス紙の表',where:'実験のつくえ',text:'<div class="quote">酸性：青色リトマス紙が 赤に 変わる<br>中性：どちらの 紙も 変わらない<br>アルカリ性：赤色リトマス紙が 青に 変わる</div>'},
+  4:{ic:'📓',name:'理科ノート「二酸化炭素」',where:'理科ノート',text:'<div class="quote">・空気より 重い（約1.5倍）<br>・ものを 燃やす はたらきが ない<br>・水に 少し とける。とけた 液（炭酸水）は 酸性<br>・ドライアイスは、二酸化炭素が 固体に なった もの</div>'},
+  5:{ic:'🧊',name:'理科ノート「氷と水」',where:'理科ノート',text:'<div class="quote">水は こおると 体積が 約1.1倍に ふえる。だから 氷は 水に うく。</div>'},
+  6:{ic:'📦',name:'白い箱',where:'流しのとなりのつくえ',text:'発泡スチロールの 箱。ふたが 少し 開いて いた。<div class="quote">ラベル：ドライアイス（約−78℃）。すでで さわらない こと。</div>'}
+};
+
+/* ---------- 証言・見のがしファイル・まとめ（有料ぶん）は ページに 書かず、サーバーの パックから 受け取る ---------- */
+const GAME='nazotoki-kagaku3';   // ○○-full.html が 有料版（中身は 同じ プログラム）
+let T={},REV={},SUM='';
+const FLOW0=[{"t":"talk","place":"科学まつりの朝・理科室","lines":[["hikari","たいへん！ ショーで 使う ムラサキキャベツ液の 色が、変わって しまってる！"],["nar","📒 証拠ノートに「色が変わった液」が 入った。"],["sensei","けさ 8時に わたしが 作った ときは、きれいな 青緑色でしたよ。重そうを 少し とかして、弱い アルカリ性に して あったんです。"],["hikari","けさ、理科室で じゅんびを して いた 部員は 3人。話を 聞いて みよう。"],["hikari","科学クラブの きまりは、もう 分かるね。"],["hikari","「おかしい」と 言うときは、かならず 証拠を そえる！"]]},{"t":"inv"}];
+let FLOW=FLOW0.concat([{t:'lock'}]);
+const INV={"req":["tsukue","hako","note"],"places":[["tsukue","🧪","実験の つくえ","色が 変わった 液",[["hikari","けさは 青緑色だったのに、むらさきに なってる……。"],["nar","つくえには、色見本カードが 置いて ある。","get2"],["nar","リトマス紙の 箱に、色の 変わり方の 表が ついて いる。","get3"]]],["hako","📦","白い 箱","流しの となりの つくえ",[["nar","発泡スチロールの 白い 箱。ふたが 少し 開いて いる。","get6"],["hikari","ショーの けむりに 使う ドライアイスだ。水に 入れると、白い もやが たくさん 出る。"],["hikari","中身が へってる 気が する。"]]],["note","📓","理科ノート","これまでの まとめ",[["nar","「二酸化炭素」の ページを ひらいた。","get4"],["nar","「氷と水」の ページも 見つけた。","get5"]]]]};
+
+
+return {no:3,name:'色が 変わった 魔法の水',intro:'科学まつりの朝。ショーで 使う 青緑色の 液が、むらさきに 変わって いた！ いったい 何が 起きた？',tags:'理科：リトマス紙・二酸化炭素・氷と水・水よう液の性質\u3000／\u3000小5〜',clear:'色が 変わった 魔法の水の なぞを 解いた！',
+  P,EV0,INV,GAME,FLOW0,get T(){return T;},set T(v){T=v;},get REV(){return REV;},set REV(v){REV=v;},get SUM(){return SUM;},set SUM(v){SUM=v;},get FLOW(){return FLOW;},set FLOW(v){FLOW=v;}};
+})();
+let EP,P,EV0,T,FLOW,INV,REV,SUM,GAME,epNo=1;
+function setEp(n){epNo=n;EP=EPS[n];({P,EV0,T,FLOW,INV,REV,SUM,GAME}=EP);}
+function locked(n){return !PAID&&!!EPS[n].GAME;}
+function applyPack(n,p){if(!p||!p.T||!p.flow)throw{error:'no_data'};const e=EPS[n];e.T=p.T;e.REV=p.REV||{};e.SUM=p.sum||'';e.FLOW=e.FLOW0.concat(p.flow);}
+setEp(1);
+
+/* ---------- 状態 ---------- */
+let lv=2,step,ev,newEv,gauge,mistakes,miss,flags,firstTry,sel,cur,queue,onDone,started=false;
+/* ---------- 選択肢の ならび順を 毎回 まぜる（正解の 場所が いつも 同じに ならないように） ---------- */
+function shuf(n){const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){['title','play','review','lock'].forEach(s=>$(s).classList.toggle('hidden',s!==id));window.scrollTo(0,0);}
+function drawGauge(){$('gauge').textContent='●'.repeat(gauge)+'○'.repeat(5-gauge);}
+function setStage(who,place,extra){
+  const p=P[who]||P.nar;$('place').textContent=place||'';
+  $('face').style.background=p.col;$('face').textContent=p.ch||'🔬';
+  $('stageInfo').innerHTML=(p.name?'<b>'+p.name+'</b>'+p.sub:'<b>なぞとき科学クラブ</b>')+(extra?'<br>'+extra:'');
+}
+let curPlace='';
+/* 会話を順に出す */
+function say(lines,done){queue=lines.slice();onDone=done;
+  $('area').innerHTML='<button class="big" id="sayNext" style="background:#24304a;color:#fff">つぎへ ▶</button>';
+  $('sayNext').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+  nextLine();}
+function nextLine(){
+  if(!queue.length){$('talk').classList.remove('tap');$('talkNext').classList.add('hidden');if($('sayNext'))$('area').innerHTML='';const d=onDone;onDone=null;if(d)d();return;}
+  const [who,text,act]=queue.shift();const p=P[who]||P.nar;
+  $('talkName').textContent=p.name||'ナレーション';$('talkName').style.background=p.col;
+  $('talkText').innerHTML=text;$('talk').classList.add('tap');$('talkNext').classList.remove('hidden');
+  if(who!=='me'&&who!=='nar')setStage(who,curPlace);
+  if(act&&act.startsWith('get'))gain(+act.slice(3));
+}
+$('talk').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+$('stage').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+function gain(n){if(!ev[n].have){ev[n].have=1;newEv.add(n);$('talkText').innerHTML+='<br><span class="ok">📒 証拠「'+ev[n].name+'」を 手に入れた！</span>';}}
+
+function newGame(){
+  ev=JSON.parse(JSON.stringify(EV0));for(const k in ev)ev[k].have=0;ev[1].have=1;
+  FLOW=locked(epNo)?EP.FLOW0.concat([{t:'lock'}]):EP.FLOW;
+  newEv=new Set();gauge=5;mistakes=0;miss=new Set();flags={};firstTry=true;step=0;started=true;
+  track('level_start',{level_name:'nazotoki-kagaku-ep'+epNo+'-lv'+lv});show('play');drawGauge();run();
+}
+function run(){
+  const s=FLOW[step];$('area').innerHTML='';$('testPanel').classList.add('hidden');
+  if(s.t==='talk'){curPlace=s.place;setStage('hikari',s.place);say(s.lines,()=>{step++;run();});}
+  else if(s.t==='inv')investigate();
+  else if(s.t==='test')testimony(s.id);
+  else if(s.t==='end')ending();
+  else if(s.t==='lock')freeEnd();
+}
+
+/* ---------- 無料版は ここまで ---------- */
+function freeEnd(){
+  setStage('hikari','つづきは 有料版');$('talkName').textContent='ヒカリ';$('talkName').style.background=P.hikari.col;
+  $('talkText').innerHTML='手がかりは そろった。ここから 先は <b>有料版</b>で、証言の おかしい ところを 見つけて なぞを 解こう！';$('talkNext').classList.add('hidden');$('talk').classList.remove('tap');
+  track('free_end',{level_name:'nazotoki-kagaku-ep'+epNo});
+  $('area').innerHTML='<a class="big" href="nazotoki-kagaku-full.html" style="text-align:center;text-decoration:none;background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">🔓 つづきは 有料版で<small style="color:#fff">証言3人・指摘4回・見のがしファイルつき</small></a>'
+   +'<button class="big" id="goEp1">第1話　消えた結晶<small>さいごまで 無料で あそべます</small></button>'
+   +'<button class="big" id="goTitle">タイトルへ</button>';
+  $('goTitle').onclick=()=>{started=false;titleInit();};
+  $('goEp1').onclick=()=>{setEp(1);started=false;titleInit();};
+}
+
+/* ---------- 調査 ---------- */
+function investigate(){
+  curPlace='調査';setStage('hikari','調査パート');
+  const seen=new Set();const ready=()=>INV.req.every(r=>seen.has(r));
+  const draw=()=>{
+    $('talkName').textContent='ヒカリ';$('talkName').style.background=P.hikari.col;
+    $('talkText').innerHTML=ready()?'よし、手がかりが そろってきた。証言を 聞きに 行こう！':'証拠を 集めよう。どこを 調べる？';
+    $('talkNext').classList.add('hidden');
+    $('area').innerHTML=INV.places.map(x=>'<button class="big place" data-p="'+x[0]+'"><span class="ic">'+x[1]+'</span><span>'+x[2]+(seen.has(x[0])?' ✅':'')+'<small>'+x[3]+'</small></span></button>').join('')
+      +(ready()?'<button class="big" id="goTest" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">証言を 聞きに 行く</button>':'');
+    $('area').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const x=INV.places.find(p=>p[0]===b.dataset.p);curPlace=x[2];$('area').innerHTML='';say(x[4],()=>{seen.add(x[0]);draw();});});
+    if($('goTest'))$('goTest').onclick=()=>{step++;run();};
+  };
+  draw();
+}
+function gainQuiet(n){if(!ev[n].have){ev[n].have=1;newEv.add(n);}}
+
+/* ---------- 証言 ---------- */
+function testimony(id){
+  cur=T[id];cur.id=id;sel=-1;cur.wrongN=0;cur.reasonN=0;curPlace=cur.title;setStage(cur.who,cur.title,'');
+  $('talkName').textContent=P[cur.who].name;$('talkName').style.background=P[cur.who].col;
+  $('talkText').innerHTML='<b>'+cur.title+'</b><br><span style="font-size:14px">おかしいと思う文を タップして、「ききこみ」か「証拠を 見せる」を えらぼう。</span>';
+  $('talkNext').classList.add('hidden');$('talk').classList.remove('tap');
+  drawStmts();
+}
+function drawStmts(){
+  $('area').innerHTML=cur.stmts.map((s,i)=>'<button class="stmt'+(i===sel?' sel':'')+'" data-i="'+i+'"><span class="no">'+'①②③④'[i]+'</span>'+s+'</button>').join('')
+   +'<div id="acts"><button id="aPress" '+(sel<0?'disabled':'')+'>🔍 ききこみ</button><button id="aShout" class="shout" '+(sel<0?'disabled':'')+'>📒 証拠を 見せる</button></div>';
+  $('area').querySelectorAll('.stmt').forEach(b=>b.onclick=()=>{sel=+b.dataset.i;drawStmts();});
+  $('aPress').onclick=()=>press();$('aShout').onclick=()=>openEv(true);
+}
+function press(){
+  const lines=(cur.press&&cur.press[sel])||[['me','もう少し くわしく 教えて。'],[cur.who,'それ以上の ことは 知らないよ。']];
+  $('area').innerHTML='';say(lines,()=>{testimonyKeep();});
+}
+function testimonyKeep(){
+  $('talkName').textContent=P[cur.who].name;$('talkName').style.background=P[cur.who].col;
+  $('talkText').innerHTML='<b>'+cur.title+'</b><br><span style="font-size:14px">'+(cur.lastHint?'💡 '+cur.lastHint:'ほかの文も 調べてみよう。')+'</span>';drawStmts();
+}
+
+/* 証拠ノート */
+function openEv(pick){
+  const list=Object.keys(ev).filter(k=>ev[k].have);
+  $('sheet').innerHTML='<h2>📒 証拠ノート'+(pick?'<span style="font-size:14px;font-weight:500">　見せる 証拠を えらぼう</span>':'')+'</h2>'
+   +list.map(k=>'<button class="ev'+(pick?' pick':'')+(newEv.has(+k)?' new':'')+'" data-k="'+k+'"><span class="ic">'+ev[k].ic+'</span><span><b>'+ev[k].name+(newEv.has(+k)?' 🆕':'')+'</b>'+ev[k].text+'</span></button>').join('')
+   +'<button class="big" id="evClose">とじる</button>';
+  $('modal').classList.remove('hidden');
+  $('evClose').onclick=()=>{$('modal').classList.add('hidden');newEv.clear();};
+  if(pick)$('sheet').querySelectorAll('.ev').forEach(b=>b.onclick=()=>{$('modal').classList.add('hidden');newEv.clear();present(+b.dataset.k);});
+}
+$('btnEv').onclick=()=>openEv(false);
+
+function present(k){
+  const key=sel+'-'+k;
+  const S=[].concat(cur.ans.s);
+  if(S.includes(sel)&&cur.ans.ev.includes(k)){shout(()=>afterHit());return;}
+  if(cur.near&&cur.near[key]){const n=cur.near[key];if(n.flag)flags[n.flag]=1;$('area').innerHTML='';say(n.lines,testimonyKeep);return;}
+  // まちがい
+  firstTry=false;mistakes++;miss.add(cur.rev);
+  gauge--;drawGauge();$('app').classList.add('shake');setTimeout(()=>$('app').classList.remove('shake'),400);
+  let h=cur.hint;
+  if(cur.special){if(cur.special[key])h=cur.special[key];else if(cur.special[String(sel)])h=cur.special[String(sel)];}
+  const noEv=cur.needEv&&!ev[cur.needEv].have;if(noEv)h=cur.noEvHint;
+  cur.wrongN=(cur.wrongN||0)+1;
+  if(!noEv){
+    if(cur.wrongN>=3)h='ヒント：'+'①②③④'[S[0]]+'の文に、「'+ev[cur.ans.ev[0]].name+'」を 見せてみよう！';
+    else if(cur.wrongN>=2)h=h+'<br>ヒント：あやしいのは '+'①②③④'[S[0]]+'の文だよ。';
+  }
+  $('area').innerHTML='';
+  if(gauge<=0){say([['nar','（話が かみ合わなく なって しまった。）'],['hikari','信頼が なくなってしまった……。もう一度、この証言から やり直そう。']],()=>{gauge=5;drawGauge();testimony(cur.id);});return;}
+  cur.lastHint=h;say([['nar','（'+P[cur.who].name+'は、ふしぎそうな 顔を して いる。）'],['hikari',h]],testimonyKeep);
+}
+function shout(fn){$('area').innerHTML='';$('shoutText').textContent='そこだ！';$('shout').classList.remove('hidden');setTimeout(()=>{$('shout').classList.add('hidden');fn();},900);}
+function afterHit(){reasonQ();}
+
+/* ---------- 理由文 ---------- */
+function reasonQ(){
+  const r=cur.reason;const mode=cur.reasonChoiceOnly?1:lv;
+  $('talkName').textContent='ヒカリ';$('talkName').style.background=P.hikari.col;
+  $('talkText').innerHTML='いいぞ！ じゃあ、<b>なぜ おかしいのか</b> 発表できるように まとめよう。';$('talkNext').classList.add('hidden');
+  if(mode===1){
+    $('area').innerHTML=shuf(r.choices.length).map(i=>'<button class="choice" data-i="'+i+'">'+r.choices[i]+'</button>').join('');
+    $('area').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      if(+b.dataset.i===r.ci)reasonOK();else{reasonNG();b.disabled=true;b.style.opacity=.35;}});
+    return;
+  }
+  const parts=r.tmpl.split(/【(\d)】/);let fill=r.blanks.map(()=>null),curB=0,glow=null;
+  const draw=()=>{
+    let h='<div class="tmpl">';
+    parts.forEach((p,i)=>{if(i%2===0)h+=p;else{const b=+p;
+      if(mode===2)h+='<span class="blank'+(b===curB?' cur':'')+'" data-b="'+b+'">'+(fill[b]||'　')+'</span>';
+      else h+='<span class="blank"><input data-b="'+b+'" value="'+(fill[b]||'')+'" placeholder="？"></span>';}});
+    h+='</div>';
+    if(mode===2)h+='<div class="cards">'+r.cards.map(c=>'<button data-c="'+c+'" class="'+(fill.includes(c)?'used':'')+(c===glow?' glow':'')+'">'+c+'</button>').join('')+'</div>';
+    h+='<button class="big" id="rOK">これで 決まり！</button>';
+    $('area').innerHTML=h;
+    if(mode===2){
+      $('area').querySelectorAll('.blank').forEach(s=>s.onclick=()=>{const b=+s.dataset.b;if(fill[b]){fill[b]=null;}curB=b;draw();});
+      $('area').querySelectorAll('.cards button').forEach(c=>c.onclick=()=>{if(fill.includes(c.dataset.c))return;fill[curB]=c.dataset.c;const n=fill.indexOf(null);curB=n<0?curB:n;draw();});
+    }else{
+      $('area').querySelectorAll('input').forEach(inp=>inp.oninput=()=>{fill[+inp.dataset.b]=inp.value;});
+    }
+    $('rOK').onclick=()=>{
+      if(fill.some(f=>!f||!String(f).trim())){$('talkText').innerHTML='まだ 空いている ところが あるよ。';return;}
+      const norm=s=>String(s).replace(/[\s　「」、。]/g,'').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-65248));
+      // 数字の 穴は「数が ぴったり 同じ」ときだけ 正解（150 や 12 を 15・2 と まちがえない）。漢数字も 同じ
+      const hit=(f,a,i)=>{if(mode===2)return f===a;f=norm(f);a=norm(a);if((r.ng&&r.ng[i]||[]).some(x=>f.includes(x)))return false;
+        if(/^\d+$/.test(a)){const m=f.match(/\d+/g)||[];return m.length===1&&m[0]===a;}
+        if(/^[一二三四五六七八九十百]+$/.test(a)){const m=f.match(/[一二三四五六七八九十百]+/g)||[];return m.length===1&&m[0]===a;}
+        return f.includes(a);};
+      const ok=r.blanks.every((alts,i)=>alts.some(a=>hit(fill[i],a,i)));
+      if(ok){reasonOK();return;}
+      const bad=r.blanks.map((alts,i)=>!alts.some(a=>hit(fill[i],a,i)));
+      reasonNG();cur.reasonN=(cur.reasonN||0)+1;
+      if(cur.reasonN>=3){fill=r.blanks.map(a=>a[0]);draw();$('talkText').innerHTML='<span class="ng">こたえは こうだよ。</span>文を 読んでから「これで 決まり！」を おしてね。';glow=null;return;}
+      bad.forEach((b,i)=>{if(b)fill[i]=null;});curB=fill.indexOf(null);if(curB<0)curB=0;
+      glow=cur.reasonN>=2?r.blanks[curB][0]:null;draw();
+      $('talkText').innerHTML='<span class="ng">ちがっていた らんを 空にしたよ。</span>入る ことばを えらびなおそう。'+(glow?'<br>ヒント：光っている カードを 入れてみよう。':'')+(mode===3&&glow?'<br>ヒント：「'+glow+'」と 書いてみよう。':'');
+    };
+  };
+  draw();
+}
+function reasonNG(){
+  firstTry=false;mistakes++;miss.add(cur.rev);
+  gauge=Math.max(1,gauge-1);drawGauge();
+  $('talkText').innerHTML='<span class="ng">うーん、理由としては 少し ちがうかも。</span><br>もう一度 えらんでみよう。';
+}
+function reasonOK(){
+  const r=cur.reason;
+  $('talkText').innerHTML='<span class="ok">◎ ばっちり！</span><br><span style="font-size:15px">'+r.explain+'</span>';
+  $('talkNext').classList.add('hidden');
+  $('area').innerHTML='<button class="big" id="rNext">つぎへ</button>';
+  $('rNext').onclick=()=>{$('area').innerHTML='';say(cur.after,()=>{step++;run();});};
+  if(!cur.after.length){$('rNext').onclick=()=>{step++;run();};}
+}
+
+/* ---------- エンディング ---------- */
+function ending(){
+  const stars=mistakes<=1?3:mistakes<=4?2:1;
+  const badges=['🔬 新人たんてい部員'];if(firstTry)badges.push('⚡ 一発突破');
+  const sv=loadSave();sv.clear=1;sv.best=Math.max(sv.best||0,stars);sv.badges=Array.from(new Set([...(sv.badges||[]),...badges]));
+  sv.miss=Array.from(new Set([...(sv.miss||[]),...miss]));putSave(sv);
+  track('level_end',{level_name:'nazotoki-kagaku-ep'+epNo+'-lv'+lv,score:stars,success:true});
+  setStage('hikari','第'+EP.no+'話 クリア');$('talkName').textContent='第'+EP.no+'話　解決！';$('talkName').style.background='#d6453d';
+  $('talkText').innerHTML=EP.clear;$('talkNext').classList.add('hidden');
+  $('area').innerHTML='<div class="stars">'+'★'.repeat(stars)+'☆'.repeat(3-stars)+'</div>'
+   +'<div class="res">まちがえた回数：'+mistakes+'回<br>'+badges.map(b=>'<span class="badge">'+b+'</span>').join('')+'</div>'
+   +'<div class="box"><b>きょう 使った 理科の きまり</b><br>'+SUM+'</div>'
+   +(miss.size?'<button class="big" id="goRev">📁 見のがしファイルで ふくしゅう（'+miss.size+'）</button>':'')
+   +(EPS[epNo+1]?'<button class="big" id="goNext" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">つぎの 話へ ▶<small style="color:#fff">第'+(epNo+1)+'話　'+EPS[epNo+1].name+(locked(epNo+1)?'（おためし）':'')+'</small></button>':'')
+   +'<button class="big" id="goTitle">タイトルへ</button>';
+  if($('goRev'))$('goRev').onclick=()=>openReview();
+  $('goTitle').onclick=()=>{started=false;titleInit();};
+  if($('goNext'))$('goNext').onclick=()=>{setEp(epNo+1);started=false;titleInit();};
+}
+
+/* ---------- 見のがしファイル ---------- */
+function openReview(){
+  const sv=loadSave();const ids=(sv.miss||[]).filter(k=>REV[k]);show('review');
+  if(!ids.length){$('revBody').innerHTML='<div class="box">見のがしは ありません。すばらしい！</div>';return;}
+  let i=0;
+  const q=()=>{const r=REV[ids[i]];
+    $('revBody').innerHTML='<div class="box"><span class="badge">'+r.tag+'</span>　'+(i+1)+' / '+ids.length+'<br>'+r.q+'</div>'+shuf(r.opts.length).map(j=>'<button class="choice" data-j="'+j+'">'+r.opts[j]+'</button>').join('')+'<div id="revMsg"></div>';
+    $('revBody').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      if(+b.dataset.j===r.ci){const s=loadSave();s.miss=(s.miss||[]).filter(x=>x!==ids[i]);putSave(s);
+        $('revMsg').innerHTML='<div class="box"><span class="ok">◎ 正解！ ファイルから 消えたよ。</span><br>'+r.ex+'</div><button class="big" id="revNext">'+(i+1<ids.length?'つぎへ':'おわり')+'</button>';
+        $('revNext').onclick=()=>{i++;if(i<ids.length)q();else{$('revBody').innerHTML='<div class="box">ふくしゅう おわり！</div>';}};
+      }else{$('revMsg').innerHTML='<div class="box"><span class="ng">ちがうよ。</span>もう一度 考えてみよう。</div>';}
+    });};
+  q();
+}
+$('btnReview').onclick=openReview;
+$('btnRevBack').onclick=()=>titleInit();
+
+/* ---------- タイトル ---------- */
+function titleInit(){
+  show('title');const sv=loadSave();
+  $('epList').innerHTML=Object.keys(EPS).map(n=>{const s=loadSave(+n),e=EPS[n],on=+n===epNo;
+    const tag=PAID?'':e.GAME?' <span class="badge" style="background:#8a5a00;font-size:12px">有料</span>':' <span class="badge" style="background:#1f7a3c;font-size:12px">無料</span>';
+    return '<button class="big epbtn'+(on?' on':'')+'" data-ep="'+n+'">第'+n+'話　'+e.name+tag+'<small>'+(s.clear?'クリアずみ　'+'★'.repeat(s.best||1):locked(+n)?'無料は 調査まで（おためし）':'まだ あそんでいない')+'</small></button>';}).join('');
+  $('epList').querySelectorAll('.epbtn').forEach(b=>b.onclick=()=>{setEp(+b.dataset.ep);titleInit();});
+  $('epIntro').textContent=EP.intro;$('epTags').textContent=EP.tags;
+  $('freeNote').classList.toggle('hidden',!locked(epNo));
+  $('btnStart').textContent='第'+epNo+'話の 調査を はじめる'+(locked(epNo)?'（おためし）':'');
+  document.querySelectorAll('.lvbtn').forEach(b=>b.classList.toggle('on',+b.dataset.lv===lv));
+  const n=(sv.miss||[]).filter(k=>REV[k]).length;
+  $('btnReview').classList.toggle('hidden',!n);$('reviewN').textContent=n?n+'問 のこっている':'';
+  $('bestLine').textContent=sv.clear?'クリアずみ　最高 '+'★'.repeat(sv.best||1)+'　称号：'+(sv.badges||[]).join('・'):'';
+}
+document.querySelectorAll('.lvbtn').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;titleInit();});
+$('btnStart').onclick=newGame;
+$('btnQuit').onclick=()=>{started=false;titleInit();};
+
+/* ---------- テスト用 ---------- */
+$('btnTest').onclick=()=>$('testPanel').classList.toggle('hidden');
+$('testPanel').onclick=e=>{const t=e.target.dataset.t;if(!t)return;
+  const go=id=>{for(const k in ev)ev[k].have=1;$('modal').classList.add('hidden');step=FLOW.findIndex(s=>s.id===id||s.t===id);run();};
+  if(t==='ans'){if(cur&&T[cur.id]){$('talkText').innerHTML='🛠 こたえ：文'+[].concat(cur.ans.s).map(i=>'①②③④'[i]).join('か')+' × 証拠'+cur.ans.ev.join('・');}return;}
+  if(t==='miss'){const s=loadSave();s.miss=Object.keys(REV);putSave(s);$('talkText').innerHTML='🛠 見のがしファイルに 全部 入れた';return;}
+  if(t==='reset'){putSave({});$('talkText').innerHTML='🛠 記録を消した';return;}
+  if(t==='end'){step=FLOW.length-1;run();return;}
+  go(t);
+};
+
+/* ---- 有料版：利用コードを 確かめて、第2話・第3話の パックを 受け取ってから 始める ---- */
+const PACK_EPS=Object.keys(EPS).filter(n=>EPS[n].GAME).map(Number);
+async function loadPacks(){const ps=await Promise.all(PACK_EPS.map(n=>mnAccess.load(EPS[n].GAME)));PACK_EPS.forEach((n,i)=>applyPack(n,ps[i]));setEp(epNo);}
+function lockScreen(err){
+  show('lock');
+  if(!window.mnAccess){$('lockBox').textContent='有料版は、サイトの 上で ひらいて ください。';return;}
+  mnAccess.lock($('lockBox'),{game:'nazotoki-kagaku',err:err,free:'nazotoki-kagaku.html',onOpen:async()=>{await loadPacks();titleInit();}});
+}
+if(PAID){
+  show('lock');$('lockBox').textContent='よみこみ中…';
+  (window.mnAccess?loadPacks():Promise.reject({error:'net'})).then(()=>titleInit()).catch(lockScreen);
+}else{$('btnTest').classList.add('hidden');titleInit();}
+</script>
+</body>
+</html>
