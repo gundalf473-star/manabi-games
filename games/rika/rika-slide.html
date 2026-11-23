@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="game:subject" content="理科">
+<meta name="game:unit" content="生物・化学・地学・スライドパズル">
+<meta name="game:grade" content="小4〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="スライドパズル「りかスライド」。盤面を スライドして、同じ なかまの 生き物・植物・水よう液を ぶつけて 合体、実験器具と 名前・星と 星座の ペアを ぶつけて 消す。生き物のなかま 5ステージと、植物・人のからだ・水よう液・実験器具・星と星座の 最初の ステージが あそべる 無料版（10ステージ）。">
+<title>りかスライド</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+  :root{
+    --bg:#f3efe4; --ink:#2b2a33; --sub:#6b6875; --board:#cdbfa6; --cell:#ded3bd;
+    --a:#fffaf0; --b:#dcefff; --g:#fff1c9; --accent:#2f7d5b; --accent2:#d9643a; --line:#b7a98c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic","Noto Sans JP",system-ui,sans-serif;}
+  body{display:flex;justify-content:center;overscroll-behavior:none}
+  #app{width:100%;max-width:460px;padding:10px 12px 20px}
+  h1{font-size:22px;margin:6px 0 2px;letter-spacing:.04em}
+  h1 small{font-size:12px;color:var(--sub);font-weight:normal;margin-left:6px}
+  .lead{font-size:13px;color:var(--sub);margin:0 0 10px;line-height:1.6}
+  .hidden{display:none !important}
+  button{font:inherit;color:inherit;cursor:pointer}
+
+  /* ステージ一覧 */
+  .subhead{font-size:16px;margin:16px 2px 8px;padding-left:8px;border-left:6px solid var(--accent)}
+  .group{background:#fff;border-radius:14px;padding:10px 12px 12px;margin-bottom:10px;box-shadow:0 2px 0 var(--line)}
+  .group h2{font-size:15px;margin:0 0 2px}
+  .group p{font-size:12px;color:var(--sub);margin:0 0 8px;line-height:1.5}
+  .stages{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .stagebtn{border:2px solid var(--line);background:var(--a);border-radius:10px;padding:8px 8px;text-align:left;font-size:13px;line-height:1.35}
+  .stagebtn b{display:block;font-size:14px}
+  .stagebtn span{font-size:11px;color:var(--sub)}
+  .stagebtn.cleared{border-color:var(--accent);background:#eaf6ef}
+  .stagebtn:active{transform:translateY(1px)}
+  a.stagebtn{display:block;text-decoration:none;color:#7a8296}
+  .figs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 4px;text-align:center}
+  .fig svg{width:36px;height:36px;display:block;margin:0 auto}
+  .fig i{font-style:normal;font-size:9px;letter-spacing:-.02em;line-height:1.25;display:block;white-space:nowrap}
+  div.stagebtn{color:#7a8296}
+  .stagebtn.lock{background:#ece6d8;border-color:#b3ab99}
+  .paid{display:block;text-align:center;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-weight:800;font-size:15px;text-decoration:none;color:var(--ink);background:#fff3c9;border:2px solid #c98f12;box-shadow:0 3px 0 #c98f12}
+  .paid small{display:block;font-weight:500;font-size:12px}
+  .paid.on{background:#d8efe0;border-color:#1c5a36;box-shadow:none;color:#1c5a36;font-size:13px;padding:4px 12px}
+  #lockBox{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;font-size:15px}
+
+  /* プレイ画面 */
+  .topbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .topbar .title{flex:1;font-weight:bold;font-size:15px;line-height:1.3}
+  .iconbtn{border:2px solid var(--line);background:#fff;border-radius:10px;padding:6px 10px;font-size:13px}
+  .stats{display:flex;gap:6px;margin-bottom:6px}
+  .stat{flex:1;background:#fff;border-radius:10px;padding:4px 8px;font-size:11px;color:var(--sub);text-align:center}
+  .stat b{display:block;font-size:17px;color:var(--ink)}
+  #banner{min-height:44px;background:#fff;border-radius:10px;padding:6px 10px;font-size:14px;line-height:1.45;
+    display:flex;align-items:center;justify-content:center;text-align:center;margin-bottom:8px;border:2px solid transparent}
+  #banner.hit{border-color:var(--accent);background:#eaf6ef}
+  #banner.done{border-color:var(--accent2);background:#fff0e8;font-weight:bold}
+  #boardwrap{position:relative;width:100%;aspect-ratio:1/1;background:var(--board);border-radius:14px;touch-action:none;user-select:none}
+  .cellbg{position:absolute;background:var(--cell);border-radius:9px}
+  .tile{position:absolute;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;font-weight:bold;line-height:1.15;transition:transform .12s ease-out;box-shadow:0 2px 0 rgba(0,0,0,.18);
+    overflow:hidden;padding:3px;will-change:transform;word-break:break-all}
+  .tile.a{background:var(--a)} .tile.b{background:var(--b)} .tile.g{background:var(--g)}
+  .tile.gm{background:#ffd27a}
+  .tile.new{animation:pop .16s ease-out}
+  .tile.bye{animation:bye .28s ease-in forwards;z-index:5}
+  .tile svg{width:78%;height:auto;max-height:78%;display:block}
+  .tile.flag svg{width:86%;border:1px solid #999;border-radius:2px}
+  .tile .cnt{font-size:.62em;color:#7a4b00;font-weight:normal;margin-top:2px}
+  .tile .ch{display:block;line-height:1.15}
+  .tile .ch+.cnt{font-size:1em;margin:1px 0;font-weight:bold}
+  .tile .mem{font-size:.42em;color:#5d4a1f;font-weight:normal;line-height:1.2;margin-top:1px}
+  @keyframes pop{from{scale:.3;opacity:.2}to{scale:1;opacity:1}}
+  @keyframes bye{0%{scale:1}40%{scale:1.18;filter:brightness(1.15)}100%{scale:.2;opacity:0}}
+  .hint{font-size:12px;color:var(--sub);text-align:center;margin:8px 0 0;line-height:1.6}
+  .pad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,44px);gap:5px;justify-content:center;margin-top:8px}
+  .pad button{border:2px solid var(--line);background:#fff;border-radius:10px;font-size:18px}
+  .pad .u{grid-column:2;grid-row:1}.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
+
+  /* かさねる画面 */
+  #overlay{position:fixed;inset:0;background:rgba(40,36,30,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+  .card{background:#fff;border-radius:16px;padding:16px 16px 14px;width:100%;max-width:400px;max-height:92vh;overflow:auto}
+  .card h3{margin:0 0 6px;font-size:18px}
+  .card p{margin:0 0 10px;font-size:14px;line-height:1.6}
+  .big{display:block;width:100%;border:0;background:var(--accent);color:#fff;border-radius:12px;padding:11px;font-size:16px;font-weight:bold;margin-top:8px}
+  .big.sub{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .qbox{background:var(--bg);border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;text-align:center;min-height:92px;font-size:22px;line-height:1.3;font-weight:bold;margin-bottom:8px}
+  .qbox svg{height:76px;width:auto}
+  .qbox.flag svg{border:1px solid #999}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .choice{border:2px solid var(--line);background:var(--a);border-radius:10px;padding:10px 6px;font-size:14px;font-weight:bold;line-height:1.3}
+  .choice.ok{border-color:var(--accent);background:#d9f0e2}
+  .choice.ng{border-color:var(--accent2);background:#ffe1d6}
+  .list{max-height:38vh;overflow:auto;font-size:13px;line-height:1.7;background:var(--bg);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+  #btnMix{display:block;margin:10px auto 0;border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:bold}
+  #btnMix.pulse{background:var(--accent2);border-color:var(--accent2);color:#fff;animation:mixpulse 1s infinite}
+  @keyframes mixpulse{50%{transform:scale(1.06)}}
+  #btnTest{display:block;margin:12px auto 0;background:#7a4fd0;color:#fff;border:none;border-radius:999px;padding:8px 16px;font-size:13px}
+  .tile.flag img{width:86%;height:auto;border:1px solid #999;border-radius:2px;display:block}
+  .qbox img{height:76px;width:auto;border:1px solid #999}
+  .src{font-size:11px;color:var(--sub);line-height:1.6;margin:10px 2px 0}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+  <!-- ステージ一覧 -->
+  <div id="menu">
+    <h1>りかスライド<small>中学受験コース・理科</small></h1>
+    <p class="lead">ブロックを スライドさせて、なかまや ペアを ぶつけよう。ぜんぶ 消せたら クリア！（生物・化学・地学）</p>
+    <div id="paidNote"></div>
+    <div id="groups"></div>
+    <p class="src">実験器具の図は このゲームで かいた ものです。</p>
+  </div>
+
+  <!-- 有料版：利用コードの 確認 -->
+  <div id="lock" class="hidden">
+    <h1 id="lockH1">りかスライド</h1>
+    <div id="lockBox"></div>
+  </div>
+
+  <!-- プレイ画面 -->
+  <div id="play" class="hidden">
+    <div class="topbar">
+      <button class="iconbtn" id="backBtn">← もどる</button>
+      <div class="title" id="stageTitle"></div>
+      <button class="iconbtn" id="soundBtn">🔊</button>
+      <button class="iconbtn" id="retryBtn">やりなおす</button>
+    </div>
+    <div class="stats">
+      <div class="stat">手数<b id="sMoves">0</b></div>
+      <div class="stat">のこり<b id="sLeft">0</b></div>
+      <div class="stat">ベスト<b id="sBest">-</b></div>
+    </div>
+    <div id="banner"></div>
+    <div id="boardwrap"></div>
+    <div class="pad">
+      <button class="u" data-d="up">▲</button><button class="l" data-d="left">◀</button>
+      <button class="d" data-d="down">▼</button><button class="r" data-d="right">▶</button>
+    </div>
+    <button id="btnMix">🔀 まぜる +2手</button>
+    <p class="hint" id="hint"></p>
+    <button id="btnTest">🛠 テスト（あと 1回で クリア）</button>
+  </div>
+</div>
+<div id="overlay" class="hidden"><div class="card" id="card"></div></div>
+
+<script>
+'use strict';
+/* =========================================================
+   データ
+   ========================================================= */
+/* ステージの 中身。paid:true（🔒）の ステージの 中身は ここには 書かず、有料版が サーバーの パックから 受け取る（groups か pairs が 入る） */
+const GROUPS = [
+  { sub:"生物", title:"① 生き物のなかま", desc:"同じ なかまの 生き物を ぶつけて 合体。ぜんぶ そろうと 完成！", stages:[
+    {"id":"a1","name":"魚類・両生類・は虫類","type":"group","pool":["魚類","両生類","は虫類","鳥類","ほ乳類"],"groups":{"魚類":["メダカ","フナ","サケ","マグロ","サメ","ウナギ"],"両生類":["アマガエル","ヒキガエル","イモリ","サンショウウオ"],"は虫類":["ヤモリ","トカゲ","ヘビ","カメ","ワニ"]}},
+    {"id":"a2","name":"は虫類・鳥類・ほ乳類","type":"group","pool":["魚類","両生類","は虫類","鳥類","ほ乳類"],"groups":{"は虫類":["ヤモリ","トカゲ","ヘビ","カメ","ワニ"],"鳥類":["ペンギン","ツバメ","ニワトリ","ダチョウ","ハト"],"ほ乳類":["クジラ","イルカ","コウモリ","ウサギ","ネズミ","ヒト"]}},
+    {"id":"a3","name":"せきつい動物 5なかま","type":"group","groups":{"魚類":["メダカ","フナ","サケ","マグロ","サメ","ウナギ"],"両生類":["アマガエル","ヒキガエル","イモリ","サンショウウオ"],"は虫類":["ヤモリ","トカゲ","ヘビ","カメ","ワニ"],"鳥類":["ペンギン","ツバメ","ニワトリ","ダチョウ","ハト"],"ほ乳類":["クジラ","イルカ","コウモリ","ウサギ","ネズミ","ヒト"]}},
+    {"id":"a4","name":"背骨のない 動物","type":"group","groups":{"こん虫":["チョウ","カブトムシ","トンボ","バッタ","アリ","セミ"],"クモ類":["クモ","ダニ","サソリ"],"甲かく類":["エビ","カニ","ザリガニ","ダンゴムシ","ミジンコ"],"多足類":["ムカデ","ヤスデ","ゲジ"],"なん体動物":["イカ","タコ","アサリ","カタツムリ"]}},
+    {"id":"a5","name":"こん虫の 育ち方","type":"group","groups":{"完全変態":["チョウ","カブトムシ","ハチ","アリ","ハエ","カ"],"不完全変態":["バッタ","トンボ","セミ","カマキリ","コオロギ","ゴキブリ"]}}
+  ]},
+  { title:"② 植物", desc:"同じ なかまの 植物を ぶつけて 合体。さいごは つくりと はたらきの ペア。", stages:[
+    {"id":"p1","name":"単子葉類・双子葉類","type":"group","groups":{"単子葉類":["イネ","トウモロコシ","ユリ","チューリップ","ススキ","ツユクサ"],"双子葉類":["アサガオ","ヒマワリ","アブラナ","タンポポ","エンドウ","サクラ"]}},
+    {"id":"p2","name":"植物の なかま分け","type":"group","paid":true},
+    {"id":"p3","name":"合弁花・離弁花","type":"group","paid":true},
+    {"id":"p4","name":"お花・め花","type":"group","paid":true},
+    {"id":"p5","name":"種子の 養分","type":"group","paid":true},
+    {"id":"p6","name":"冬ごしの すがた","type":"group","paid":true},
+    {"id":"p7","name":"食べている 部分","type":"group","paid":true},
+    {"id":"p8","name":"つくりと はたらき","type":"pair","ask":"は どれ？","paid":true}
+  ]},
+  { title:"③ 人のからだ", desc:"器官の なかまを ぶつけて 合体。ペアの ステージは、名前と はたらきを ぶつけて 消そう。", stages:[
+    {"id":"j1","name":"器官の なかま","type":"group","groups":{"消化に かかわる":["口","食道","胃","小腸","大腸"],"呼吸に かかわる":["気管","気管支","肺","肺ほう"],"血液の じゅんかん":["心臓","動脈","静脈","毛細血管"],"にょうを つくって 出す":["じん臓","輸にょう管","ぼうこう"]}},
+    {"id":"j2","name":"臓器の はたらき","type":"pair","ask":"の はたらきは？","paid":true},
+    {"id":"j3","name":"消化液・消化こうそ","type":"pair","ask":"が 消化するのは？","paid":true},
+    {"id":"j4","name":"消化と 吸収","type":"pair","ask":"→ どれ？","paid":true},
+    {"id":"j5","name":"血液と 血管","type":"pair","ask":"の はたらきは？","paid":true},
+    {"id":"j6","name":"心臓の 部屋と 血管","type":"pair","ask":"は どれ？","paid":true},
+    {"id":"j7","name":"動脈血・静脈血","type":"group","paid":true},
+    {"id":"j8","name":"目・耳・骨と 筋肉","type":"pair","ask":"は どれ？","paid":true}
+  ]},
+  { sub:"化学", title:"④ 水よう液", desc:"同じ 性質の 水よう液を ぶつけて 合体。ペアの ステージは、色のちがう ペアを ぶつけて 消そう。", stages:[
+    {"id":"b1","name":"酸性・中性・アルカリ性","type":"group","groups":{"酸性":["塩酸","炭酸水","酢","ホウ酸水","レモンの しる"],"中性":["食塩水","砂糖水","アルコール水"],"アルカリ性":["水酸化ナトリウム水よう液","アンモニア水","石灰水","重そう水","せっけん水"]}},
+    {"id":"b2","name":"とけているのは 固体・液体・気体","type":"group","paid":true},
+    {"id":"b3","name":"色の変化と 性質","type":"pair","ask":"のは 何性？","paid":true},
+    {"id":"b4","name":"とけている もの","type":"pair","ask":"に とけているのは？","paid":true},
+    {"id":"b5","name":"発生する 気体","type":"pair","ask":"で 発生する 気体は？","paid":true}
+  ]},
+  { title:"⑤ 実験器具", desc:"器具の 図と 名前、器具や 薬品と 使いみちを ぶつけよう。", stages:[
+    {"id":"k1","name":"ガラスの 器具","type":"pair","ask":"の 名前は？","pairs":[{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 9l4-2h23M14 7v31a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7\"/><path d=\"M27 16h7M29 22h5M27 28h7\" stroke-width=\"1.8\"/><\/svg>"},"b":{"t":"ビーカー"},"say":"この 器具は「ビーカー」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 5h12M20 5v32a4 4 0 0 0 8 0V5\"/><path d=\"M20 24h8\" stroke-width=\"1.8\"/><\/svg>"},"b":{"t":"試験管"},"say":"この 器具は「試験管」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 5h10M21 5v12L9 39a2.6 2.6 0 0 0 2.3 4h25.4A2.6 2.6 0 0 0 39 39L27 17V5\"/><path d=\"M14 31h20\" stroke-width=\"1.8\"/><\/svg>"},"b":{"t":"三角フラスコ"},"say":"この 器具は「三角フラスコ」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 5h10M21 5v14.4a13 13 0 1 0 6 0V5\"/><path d=\"M12 33h24\" stroke-width=\"1.8\"/><\/svg>"},"b":{"t":"丸底フラスコ"},"say":"この 器具は「丸底フラスコ」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17 5h12M19 5v35M29 5v35M13 43h22l-4-3H17z\"/><path d=\"M24 10h5M26 14h3M24 18h5M26 22h3M24 26h5M26 30h3M24 34h5\" stroke-width=\"1.6\"/><\/svg>"},"b":{"t":"メスシリンダー"},"say":"この 器具は「メスシリンダー」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 8h34L27 25v13l-6 5V25z\"/><\/svg>"},"b":{"t":"ろうと"},"say":"この 器具は「ろうと」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 19h38a19 15 0 0 1-38 0z\"/><path d=\"M5 19l-2-3\"/><\/svg>"},"b":{"t":"蒸発皿"},"say":"この 器具は「蒸発皿」"},{"a":{"svg":"<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"24\" cy=\"8.5\" rx=\"5\" ry=\"5.5\"/><path d=\"M22 14v8a4 5 0 0 0 0 9v11l2 4 2-4V31a4 5 0 0 0 0-9v-8\"/><\/svg>"},"b":{"t":"こまごめピペット"},"say":"この 器具は「こまごめピペット」"}]},
+    {"id":"k2","name":"熱する・はかる・見る","type":"pair","ask":"の 名前は？","paid":true},
+    {"id":"k3","name":"使いみち","type":"pair","ask":"の 使いみちは？","pick":10,"paid":true},
+    {"id":"k4","name":"まとめ（12組）","type":"pair","ask":"の 名前は？","pick":12,"paid":true}
+  ]},
+  { sub:"地学", title:"⑥ 星と星座", desc:"星と、その星がある 星座を ぶつけよう。なかまの ステージは、同じ なかまを ぶつけて 合体。", stages:[
+    {"id":"h1","name":"夏と 冬の 星","type":"pair","ask":"が ある 星座は？","pairs":[{"a":{"t":"ベガ"},"b":{"t":"こと座"},"say":"ベガ は こと座"},{"a":{"t":"アルタイル"},"b":{"t":"わし座"},"say":"アルタイル は わし座"},{"a":{"t":"デネブ"},"b":{"t":"はくちょう座"},"say":"デネブ は はくちょう座"},{"a":{"t":"アンタレス"},"b":{"t":"さそり座"},"say":"アンタレス は さそり座"},{"a":{"t":"シリウス"},"b":{"t":"おおいぬ座"},"say":"シリウス は おおいぬ座"},{"a":{"t":"プロキオン"},"b":{"t":"こいぬ座"},"say":"プロキオン は こいぬ座"},{"a":{"t":"ベテルギウス"},"b":{"t":"オリオン座"},"say":"ベテルギウス は オリオン座"},{"a":{"t":"リゲル"},"b":{"t":"オリオン座"},"say":"リゲル は オリオン座"}]},
+    {"id":"h2","name":"春・秋・冬の 星と 北極星","type":"pair","ask":"が ある 星座は？","paid":true},
+    {"id":"h3","name":"春・夏・冬の 大三角","type":"group","paid":true},
+    {"id":"h4","name":"季節の 星座","type":"group","paid":true},
+    {"id":"h5","name":"星の 色","type":"group","paid":true},
+    {"id":"h6","name":"まとめ（12組）","type":"pair","ask":"が ある 星座は？","pick":12,"paid":true}
+  ]}
+];
+
+/* ---- 無料版と 有料版（rika-slide-full.html）は 同じ プログラム。有料版だけが パックを 受け取って 🔒 の ステージを 開く ---- */
+const GAME_ID='rika-slide';
+const PAID=!!document.querySelector('meta[name="game:paid"]');
+const ready=(s)=>!!(s&&(s.groups||s.pairs||s.chain));
+const isStr=(x)=>typeof x==='string'&&x.length>0;
+function okGroups(o){ const k=o&&typeof o==='object'&&!Array.isArray(o)?Object.keys(o):[]; return k.length>0&&k.every(n=>Array.isArray(o[n])&&o[n].length>1&&o[n].every(isStr)); }
+function okPairs(a){ return Array.isArray(a)&&a.length>1&&a.every(p=>p&&p.a&&p.b&&isStr(p.b.t)&&(isStr(p.a.t)||isStr(p.a.svg))&&isStr(p.say)); }
+function applyPack(pack){
+  const P=pack&&pack.stages; if(!P||typeof P!=='object') throw {error:'no_data'};
+  GROUPS.forEach(g=>g.stages.forEach(s=>{
+    const p=P[s.id]; if(!s.paid||!p) return;
+    if(s.type==='group'&&okGroups(p.groups)) s.groups=p.groups;
+    if(s.type==='pair'&&okPairs(p.pairs)) s.pairs=p.pairs;
+  }));
+}
+
+/* =========================================================
+   ほぞん（こわれても 遊べるように try で かこむ）
+   ========================================================= */
+const SAVE_KEY='manabi_rika_slide_v1';
+let save={best:{},sound:true};
+try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null'); if(s&&typeof s==='object') save=Object.assign(save,s); }catch(e){}
+function persist(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }catch(e){} }
+
+/* =========================================================
+   音
+   ========================================================= */
+let actx=null;
+function beep(freqs,dur){
+  if(!save.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    let t=actx.currentTime;
+    freqs.forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(actx.destination);
+      const st=t+i*(dur||0.08);
+      g.gain.setValueAtTime(0.0001,st); g.gain.exponentialRampToValueAtTime(0.15,st+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,st+(dur||0.08)+0.06);
+      o.start(st); o.stop(st+(dur||0.08)+0.08);
+    });
+  }catch(e){}
+}
+
+/* =========================================================
+   ゲーム本体
+   ========================================================= */
+const N=4;
+const $=(id)=>document.getElementById(id);
+const shuffle=(a)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let G=null;   // いまのゲーム
+let uid=1;
+
+function findStage(id){ for(const g of GROUPS) for(const s of g.stages) if(s.id===id) return {g,s}; return null; }
+
+function startStage(id){
+  closeCard();
+  const fs0=findStage(id); if(!fs0||!ready(fs0.s)) return;   // ない id・🔒 の ステージは 始めない
+  const {g,s}=fs0;
+  G={stage:s, group:g, grid:[...Array(N)].map(()=>Array(N).fill(null)), pool:[], moves:0, idle:0, over:false, busy:false, els:{}, usedPairs:[]};
+  G.groups = s.groups || null;
+  G.suffix = (s.suffix!==undefined)? s.suffix : '';
+  if(s.type==='group'){
+    Object.keys(G.groups).forEach(r=>G.groups[r].forEach(p=>G.pool.push({kind:'group',group:r,members:[p]})));
+    G.total=G.pool.length;
+  }else if(s.type==='chain'){
+    s.chain.forEach((c,i)=>G.pool.push({kind:'chain',lo:i,hi:i}));
+    G.total=G.pool.length;
+  }else{
+    let ps=s.pick?shuffle(s.pairs).slice(0,s.pick):s.pairs.slice();
+    G.usedPairs=ps;
+    ps.forEach((p)=>{ G.pool.push({kind:'pair',ans:p.b.t,side:'a',face:p.a,say:p.say}); G.pool.push({kind:'pair',ans:p.b.t,side:'b',face:p.b,say:p.say}); });
+    G.total=G.pool.length;
+  }
+  G.pool=shuffle(G.pool);
+  $('menu').classList.add('hidden'); $('play').classList.remove('hidden');
+  $('stageTitle').textContent=g.title+'　'+s.name;
+  $('hint').textContent='スワイプ・やじるしキー・下のボタンで うごかす。'+(s.type==='group'
+    ? '同じ なかまが ぶつかると 合体するよ。'
+    : s.type==='chain' ? 'じゅんばんが となりあう ものを、先の ほうが 左か 上に なるように ぶつけると つながるよ。'
+    : '色のちがう ペアが ぶつかると 消えるよ。');
+  buildBoard();
+  setBanner(s.type==='group'?'同じ なかまを ぶつけよう':s.type==='chain'?'先の ほうを 左か 上に して、となりどうしを つなげよう':'ペアを 見つけて ぶつけよう','');
+  for(let i=0;i<4;i++) spawn(true);
+  updateStats();
+}
+
+function buildBoard(){
+  const w=$('boardwrap'); w.innerHTML='';
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const d=document.createElement('div'); d.className='cellbg';
+    place(d,r,c,false); w.appendChild(d);
+  }
+}
+// 盤の大きさ（%）で位置を決める
+const GAP=2.4, CELL=(100-GAP*(N+1))/N;
+function place(el,r,c,asTransform){
+  el.style.width=CELL+'%'; el.style.height=CELL+'%';
+  if(asTransform){
+    el.style.left='0'; el.style.top='0';
+    const x=(GAP+c*(CELL+GAP))/CELL*100, y=(GAP+r*(CELL+GAP))/CELL*100;
+    el.style.transform=`translate(${x}%,${y}%)`;
+  }else{
+    el.style.left=(GAP+c*(CELL+GAP))+'%'; el.style.top=(GAP+r*(CELL+GAP))+'%';
+  }
+}
+// 文字の はば（半角は 0.55字ぶん）
+function vlen(s){ let n=0; for(const ch of s) n+= /[\x20-\x7e]/.test(ch)?0.55:1; return n; }
+// タイルに 入るように 行を分ける。もどり値：{html, font}
+function fitText(text){
+  const n=vlen(text);
+  const lines = n<=5.2?1 : n<=10?2 : n<=18?3 : 4;
+  let rows=[text], wrapped=false;
+  // 空白・＋・見えない 切れ目（\u200b：長い ことばの 中に データで 入れてある）で 分ける
+  const toks=(text.match(/[^ ＋\u200b]*[ ＋\u200b]?/g)||[]).map(x=>x.replace(/\u200b/g,'')).filter(x=>x!=='');
+  const tokMax=Math.max(...toks.map(x=>vlen(x.trim())));
+  if(lines>1 && toks.length>1 && tokMax<=7.2){
+    // 空白や ＋ の ところで 切る：行数が lines+1（4行まで）に おさまる、いちばん せまい はばを さがす
+    const maxL=Math.min(4,lines+1);
+    for(let W=tokMax; W<=n+1 && !wrapped; W+=0.25){
+      const r=[]; let cur='';
+      toks.forEach(tk=>{ if(cur && vlen((cur+tk).trim())>W){ r.push(cur.trim()); cur=tk; } else cur+=tk; });
+      if(cur.trim()) r.push(cur.trim());
+      if(r.length<=maxL){ rows=r; wrapped=true; }
+    }
+  }
+  if(lines>1 && !wrapped){
+    const per=n/lines; rows=[]; let cur='', w=0; const chars=[...text];
+    chars.forEach((ch,i)=>{
+      const cw=/[\x20-\x7e]/.test(ch)?0.55:1;
+      const next=chars[i+1];
+      cur+=ch; w+=cw;
+      // 行のあたまに 来てはいけない字の前では 切らない
+      if(w>=per-0.01 && rows.length<lines-1 && next && !/[ー・、。ゃゅょっャュョッァィゥェォ々〜)）]/.test(next)){ rows.push(cur); cur=''; w=0; }
+    });
+    if(cur) rows.push(cur);
+  }
+  const widest=Math.max(...rows.map(vlen));
+  const cap=[8.4,5.6,4.4,3.6][rows.length-1]||3.4;
+  const size=Math.min(cap,19.2/widest);
+  return {html:rows.join('<br>'), font:'calc('+size.toFixed(2)+' * min(92vw, 436px) / 100)'};
+}
+function chainLabel(t){
+  const c=G.stage.chain;
+  if(t.lo===t.hi) return c[t.lo].t;
+  return c[t.lo].t+'〜'+c[t.hi].t;
+}
+function faceHTML(t){
+  if(t.kind==='group'){
+    if(t.members.length===1){ const f=fitText(t.members[0]); return {cls:'g',html:f.html,font:f.font}; }
+    const tot=G.groups[t.group].length;
+    const short=t.members.map(m=>m.replace(/[都府県]$/,'')).join('・');
+    const f=fitText(t.group);
+    return {cls:'gm',html:`${f.html}<span class="cnt">${t.members.length} / ${tot}</span>`+(G.suffix==='地方'?`<span class="mem">${short}</span>`:''),font:f.font};
+  }
+  if(t.kind==='chain'){
+    if(t.lo===t.hi){ const f=fitText(G.stage.chain[t.lo].t); return {cls:'g',html:f.html,font:f.font}; }
+    const c=G.stage.chain, f=fitText(c[t.lo].t);
+    const f2=fitText(c[t.hi].t);
+    return {cls:'gm',html:`<span class="ch">${c[t.lo].t}</span><span class="cnt">↓ ${t.hi-t.lo+1} / ${c.length}</span><span class="ch">${c[t.hi].t}</span>`,font:'calc(2.9 * min(92vw, 436px) / 100)'};
+  }
+  if(t.face.img) return {cls:t.side+' flag',html:'<img src="'+t.face.img+'" alt="" draggable="false">',font:''};
+  if(t.face.svg) return {cls:t.side,html:t.face.svg,font:''};
+  const f=fitText(t.face.t);
+  return {cls:t.side,html:f.html,font:f.font};
+}
+function makeEl(t,r,c,isNew){
+  const el=document.createElement('div');
+  const f=faceHTML(t);
+  el.className='tile '+f.cls+(isNew?' new':'');
+  el.innerHTML=f.html; if(f.font) el.style.fontSize=f.font;
+  place(el,r,c,true);
+  $('boardwrap').appendChild(el); G.els[t.id]=el;
+  return el;
+}
+function refreshEl(t){
+  const el=G.els[t.id]; if(!el) return;
+  const f=faceHTML(t); el.className='tile '+f.cls; el.innerHTML=f.html; el.style.fontSize=f.font||'';
+}
+
+function boardTiles(){ const a=[]; for(let r=0;r<N;r++)for(let c=0;c<N;c++) if(G.grid[r][c]) a.push(G.grid[r][c]); return a; }
+function emptyCells(){ const a=[]; for(let r=0;r<N;r++)for(let c=0;c<N;c++) if(!G.grid[r][c]) a.push([r,c]); return a; }
+function canMerge(x,y){
+  if(!x||!y||x.done||y.done||x.kind!==y.kind) return false;
+  if(x.kind==='pair') return x.ans===y.ans && x.side!==y.side;
+  if(x.kind==='chain') return x.hi+1===y.lo || y.hi+1===x.lo;
+  return x.group===y.group;
+}
+
+// 向きつきの判定：near は かべに近い方。年表つなぎは「古い方が 左か 上」のときだけ つながる
+function canMergeDir(near,far,dir){
+  if(!canMerge(near,far)) return false;
+  if(near.kind!=='chain') return true;
+  const first=(dir==='left'||dir==='up')?near:far, second=(first===near)?far:near;
+  return first.hi+1===second.lo;
+}
+// 次に出すブロックを選ぶ：相手のいないブロックが たまりすぎないようにする
+function pickFromPool(){
+  if(!G.pool.length) return null;
+  const on=boardTiles();
+  let idx=-1;
+  if(G.stage.type==='pair'){
+    const orphans=on.filter(t=>!on.some(u=>u!==t&&canMerge(t,u)));
+    if(orphans.length>=3 || emptyCells().length<=5){
+      const cand=[]; G.pool.forEach((p,i)=>{ if(orphans.some(o=>canMerge(o,p))) cand.push(i); });
+      if(cand.length) idx=cand[Math.floor(Math.random()*cand.length)];
+    }
+  }else if(G.stage.type==='chain'){
+    // つなげられる 組が 盤面に ないときは、いまある ブロックの となりを 出しやすくする
+    const any=on.some(t=>on.some(u=>u!==t&&canMerge(t,u)));
+    if(!any && on.length && Math.random()<0.7){
+      const cand=[]; G.pool.forEach((p,i)=>{ if(on.some(o=>canMerge(o,p))) cand.push(i); });
+      if(cand.length) idx=cand[Math.floor(Math.random()*cand.length)];
+    }
+  }else{
+    const groups=[...new Set(on.map(t=>t.group))];
+    if(groups.length>=3 || emptyCells().length<=5){
+      const cand=[]; G.pool.forEach((p,i)=>{ if(groups.includes(p.group)) cand.push(i); });
+      if(cand.length) idx=cand[Math.floor(Math.random()*cand.length)];
+    }
+  }
+  if(idx<0) idx=Math.floor(Math.random()*G.pool.length);
+  return G.pool.splice(idx,1)[0];
+}
+function spawn(){
+  const e=emptyCells(); if(!e.length) return false;
+  const t=pickFromPool(); if(!t) return false;
+  t.id=uid++;
+  const [r,c]=e[Math.floor(Math.random()*e.length)];
+  G.grid[r][c]=t; makeEl(t,r,c,true);
+  return true;
+}
+
+function setBanner(text,cls){ const b=$('banner'); b.textContent=text; b.className=cls||''; }
+function leftCount(){
+  if(G.stage.type==='pair') return (G.pool.length+boardTiles().length)/2;
+  if(G.stage.type==='chain') return Math.max(0,G.pool.length+boardTiles().length-1);
+  // のこりの地方の数
+  const s=new Set(G.pool.map(p=>p.group)); boardTiles().forEach(t=>s.add(t.group)); return s.size;
+}
+function updateStats(){
+  $('sMoves').textContent=G.moves;
+  $('sLeft').textContent=leftCount()+(G.stage.type==='pair'?'組':G.stage.type==='chain'?'回':G.suffix==='地方'?'地方':'なかま');
+  const b=save.best[G.stage.id]; $('sBest').textContent=b?b+'手':'-';
+  $('btnMix').classList.toggle('pulse', G.idle>=4);
+}
+
+const DIRS={left:[0,-1],right:[0,1],up:[-1,0],down:[1,0]};
+function move(dir){
+  if(!G||G.over||G.busy) return;
+  const [dr,dc]=DIRS[dir];
+  let moved=false, reverseHit=false; const gone=[]; const msgs=[];
+  const newGrid=[...Array(N)].map(()=>Array(N).fill(null));
+  for(let i=0;i<N;i++){
+    // かべ側から順に ならべる
+    const line=[];
+    for(let k=0;k<N;k++){
+      const r = dr===0? i : (dr<0? k : N-1-k);
+      const c = dc===0? i : (dc<0? k : N-1-k);
+      if(G.grid[r][c]) line.push({t:G.grid[r][c],r,c});
+    }
+    const out=[];
+    line.forEach(item=>{
+      const prev=out[out.length-1];
+      if(prev && !prev.merged && canMergeDir(prev.t,item.t,dir)){
+        prev.merged=true; prev.eat=item.t;
+      }else{
+        if(prev && !prev.merged && item.t.kind==='chain' && canMerge(prev.t,item.t)) reverseHit=true;
+        out.push({t:item.t});
+      }
+      item.slot=out.length-1;
+    });
+    out.forEach((o,k)=>{
+      const r = dr===0? i : (dr<0? k : N-1-k);
+      const c = dc===0? i : (dc<0? k : N-1-k);
+      o.r=r; o.c=c; newGrid[r][c]=o.t;
+    });
+    line.forEach(item=>{
+      const o=out[item.slot];
+      if(item.r!==o.r||item.c!==o.c) moved=true;
+      place(G.els[item.t.id],o.r,o.c,true);
+    });
+    out.forEach(o=>{
+      if(!o.merged) return;
+      moved=true;
+      const keep=o.t, eat=o.eat;
+      gone.push(eat);
+      if(keep.kind==='pair'){
+        keep.done=true; gone.push(keep); msgs.push({text:(keep.side==='a'?keep:eat).say,cls:'hit'});
+      }else if(keep.kind==='chain'){
+        const c=G.stage.chain, first=keep.lo<eat.lo?keep:eat, second=first===keep?eat:keep;
+        const A=c[first.hi], B=c[second.lo];
+        keep.lo=Math.min(keep.lo,eat.lo); keep.hi=Math.max(keep.hi,eat.hi);
+        if(keep.lo===0 && keep.hi===c.length-1){
+          keep.done=true; gone.push(keep);
+          msgs.push({text:'年表 完成！ '+c[0].t+' から '+c[c.length-1].t+' まで',cls:'done'});
+        }else{
+          keep.changed=true;
+          msgs.push({text:`${A.y?A.y+' ':''}${A.t} → ${B.y?B.y+' ':''}${B.t}`,cls:'hit'});
+        }
+      }else{
+        keep.members=keep.members.concat(eat.members);
+        const tot=G.groups[keep.group].length;
+        if(keep.members.length===tot){
+          keep.done=true; gone.push(keep);
+          const all=G.groups[keep.group].map(m=>m.replace(/[都府県]$/,'')).join('・');
+          msgs.push({text:`${keep.group}${G.suffix} 完成！ `+(all.length<=34?all:''),cls:'done'});
+        }else{
+          keep.changed=true;
+          msgs.push({text:`${keep.group}${G.suffix} ${keep.members.length} / ${tot}`,cls:'hit'});
+        }
+      }
+    });
+  }
+  if(!moved) return;
+  G.grid=newGrid; G.moves++; G.busy=true;
+  G.idle = msgs.length ? 0 : G.idle+1;
+  if(msgs.length){
+    const m=msgs.find(x=>x.cls==='done')||msgs[msgs.length-1]; setBanner(m.text,m.cls);
+    beep(m.cls==='done'?[523,659,784,1047]:[660,880]);
+  }else if(reverseHit){
+    setBanner('じゅんばんが ぎゃく！ 古い ほうを 左か 上に して ぶつけよう','');
+  }
+  setTimeout(()=>{
+    // 合体したあとの見た目に なおす
+    gone.forEach(t=>{
+      const el=G.els[t.id]; if(!el) return;
+      if(t.done && t.kind){ el.classList.add('bye'); setTimeout(()=>el.remove(),280); }
+      else el.remove();
+      delete G.els[t.id];
+    });
+    for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+      const t=G.grid[r][c]; if(!t) continue;
+      if(t.done) G.grid[r][c]=null;
+      else if(t.changed){ t.changed=false; refreshEl(t); G.els[t.id].classList.add('new'); }
+    }
+    spawn();
+    updateStats();
+    G.busy=false;
+    checkEnd();
+    if(!G.over && !G.pool.length && !mergeReachable(G.grid)) reshuffle();
+  },125);
+}
+
+/* ---- 行きづまり対策 ----
+   新しいブロックが出なくなったあと、どう動かしても ぶつけられない形
+   （例：2×2で ペアが ななめ同士）になることがある。そのときは 自動で ならべかえる。 */
+function simSlide(grid,dir){
+  const [dr,dc]=DIRS[dir]; let merged=false, moved=false;
+  const ng=[...Array(N)].map(()=>Array(N).fill(null));
+  for(let i=0;i<N;i++){
+    const out=[]; let lastMerged=false;
+    for(let k=0;k<N;k++){
+      const r = dr===0? i : (dr<0? k : N-1-k), c = dc===0? i : (dc<0? k : N-1-k);
+      const t=grid[r][c]; if(!t) continue;
+      if(out.length && !lastMerged && canMergeDir(out[out.length-1],t,dir)){ merged=true; lastMerged=true; }
+      else{ if(out.length!==k) moved=true; out.push(t); lastMerged=false; }
+    }
+    out.forEach((t,k)=>{
+      const r = dr===0? i : (dr<0? k : N-1-k), c = dc===0? i : (dc<0? k : N-1-k);
+      ng[r][c]=t;
+    });
+  }
+  return {g:ng,merged,moved};
+}
+function mergeReachable(grid){
+  const key=(g)=>g.map(row=>row.map(t=>t?t.id:0).join(',')).join('/');
+  const seen=new Set([key(grid)]); const q=[grid]; let guard=0;
+  while(q.length && guard++<4000){
+    const g=q.shift();
+    for(const d in DIRS){
+      const s=simSlide(g,d);
+      if(s.merged) return true;
+      if(s.moved){ const k=key(s.g); if(!seen.has(k)){ seen.add(k); q.push(s.g); } }
+    }
+  }
+  return false;
+}
+function reshuffle(msg){
+  const tiles=boardTiles(); if(tiles.length<2) return;
+  let ng=null;
+  for(let n=0;n<80;n++){
+    const cells=shuffle([...Array(N*N).keys()]).slice(0,tiles.length);
+    ng=[...Array(N)].map(()=>Array(N).fill(null));
+    tiles.forEach((t,i)=>{ ng[Math.floor(cells[i]/N)][cells[i]%N]=t; });
+    if(mergeReachable(ng)) break;
+  }
+  G.grid=ng;
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){ const t=G.grid[r][c]; if(t) place(G.els[t.id],r,c,true); }
+  setBanner(msg||'ぶつけられない形に なったので、ならべかえたよ','');
+}
+// 「まぜる」ボタン：盤面の ブロックを ならべかえる（手数 +2）。いっぱいで うごかせないときも 使える
+function mixBoard(){
+  if(!G||G.busy||boardTiles().length<2) return;
+  G.over=false; G.moves+=2; G.idle=0;
+  reshuffle('盤面を まぜたよ（+2手）');
+  beep([440,554,659],0.05);
+  updateStats();
+}
+// 「食べられた」側は done ではないので すぐ消す。上の gone 処理で区別するための印
+function checkEnd(){
+  const on=boardTiles();
+  if(!G.pool.length && on.length===0){ G.over=true; setTimeout(showClear,350); return; }
+  if(emptyCells().length===0){
+    for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+      const t=G.grid[r][c];
+      if(c+1<N&&canMergeDir(t,G.grid[r][c+1],'left')) return;
+      if(r+1<N&&canMergeDir(t,G.grid[r+1][c],'up')) return;
+    }
+    G.over=true; setTimeout(showStuck,300);
+  }
+}
+
+/* =========================================================
+   クリア・おさらい
+   ========================================================= */
+function openCard(html){ $('card').innerHTML=html; $('overlay').classList.remove('hidden'); }
+function closeCard(){ $('overlay').classList.add('hidden'); }
+function showStuck(){
+  beep([330,262],0.12);
+  openCard(`<h3>うごかせなくなった…</h3><p>ブロックが いっぱいに なりました。まぜると つづけられるよ。</p>
+    <button class="big" id="mixBtn">🔀 まぜて つづける（+2手）</button><button class="big sub" id="againBtn">さいしょから</button><button class="big sub" id="menuBtn">ステージを えらぶ</button>`);
+  $('mixBtn').onclick=()=>{closeCard();mixBoard();};
+  $('againBtn').onclick=()=>{closeCard();startStage(G.stage.id);};
+  $('menuBtn').onclick=()=>{closeCard();showMenu();};
+}
+function buildQuiz(){
+  const s=G.stage, qs=[];
+  if(s.type==='group'){
+    const mine=Object.keys(G.groups);
+    // えらぶ なかまが 4つに 足りないときは、同じ種類の ほかの なかまから 足す
+    const pool=s.pool||mine;
+    if(mine.length<=2){
+      const order=shuffle(mine), bag={}; mine.forEach(r=>bag[r]=shuffle(G.groups[r]));
+      for(let k=0;k<3;k++){
+        const r=order[k%order.length], a=bag[r][Math.floor(k/order.length)%bag[r].length];
+        const oth=shuffle([].concat(...mine.filter(x=>x!==r).map(x=>G.groups[x]))).slice(0,3);
+        qs.push({q:{t:'「'+r+G.suffix+'」'},ask:'は どれ？',ans:a,choices:shuffle([a,...oth])});
+      }
+      return qs;
+    }
+    const items=shuffle([].concat(...mine.map(r=>G.groups[r].map(p=>({p,r}))))).slice(0,3);
+    items.forEach(({p,r})=>{
+      const others=shuffle(pool.filter(x=>x!==r)).slice(0,3);
+      qs.push({q:{t:p},ask:G.suffix==='地方'?'は 何地方？':'は どの なかま？',ans:r+G.suffix,choices:shuffle([r,...others]).map(x=>x+G.suffix)});
+    });
+  }else if(s.type==='chain'){
+    const c=s.chain;
+    shuffle([...Array(c.length-1).keys()]).slice(0,3).forEach(i=>{
+      const others=shuffle(c.map((x,k)=>k).filter(k=>k!==i&&k!==i+1)).slice(0,3).map(k=>c[k].t);
+      qs.push({q:{t:c[i].t},ask:'の すぐ あとは どれ？',ans:c[i+1].t,choices:shuffle([c[i+1].t,...others])});
+    });
+  }else{
+    const ps=shuffle(G.usedPairs).slice(0,3);
+    const labels=[...new Set(s.pairs.map(p=>p.b.t))];
+    const qfit=(t)=>t;
+    ps.forEach(p=>{
+      const others=shuffle(labels.filter(x=>x!==p.b.t)).slice(0,3);
+      qs.push({q:p.a,ask:s.ask||'の 相手は どれ？',ans:p.b.t,choices:shuffle([p.b.t,...others])});
+    });
+  }
+  return qs;
+}
+function showClear(){
+  beep([523,659,784,1047,1319],0.1);
+  const id=G.stage.id, prev=save.best[id];
+  const isBest=!prev||G.moves<prev;
+  if(isBest){ save.best[id]=G.moves; persist(); }
+  openCard(`<h3>クリア！</h3><p>${G.moves}手で クリアしました。${isBest&&prev?'ベスト こうしん！':''}<br>さいごに おさらいを 3問。</p>
+    <button class="big" id="quizBtn">おさらいへ</button>`);
+  $('quizBtn').onclick=()=>runQuiz(buildQuiz(),0,0);
+}
+function runQuiz(qs,i,score){
+  if(i>=qs.length){
+    let list='';
+    if(G.stage.type==='group') list=Object.keys(G.groups).map(r=>`<b>${r}${G.suffix}</b>：`+G.groups[r].map(m=>m.replace(/[都府県]$/,'')).join('・')).join('<br>');
+    else if(G.stage.type==='chain') list=G.stage.chain.map(c=>(c.y?c.y+'　':'')+c.t).join('<br>');
+    else if(G.usedPairs[0].a.t) list=G.usedPairs.map(p=>`${p.a.t} ― ${p.b.t}`).join('<br>');
+    else if(G.usedPairs[0].a.svg) list='<div class="figs">'+G.usedPairs.map(p=>'<span class="fig">'+p.a.svg+'<i>'+p.b.t+'</i></span>').join('')+'</div>';
+    openCard(`<h3>おさらい：${qs.length}問中 ${score}問 正解</h3><p>${score===qs.length?'ぜんぶ 正解！ かんぺき。':'まちがえた ところを もういちど 見ておこう。'}</p>
+      ${list?'<div class="list">'+list+'</div>':''}
+      <button class="big" id="againBtn">もういちど あそぶ</button><button class="big sub" id="menuBtn">ステージを えらぶ</button>
+      ${(!PAID&&GROUPS.some(g=>g.stages.some(x=>!ready(x))))?'<a class="paid" style="margin:10px 0 0" href="'+GAME_ID+'-full.html">🔒 つづきの ステージは 有料版で あそべます</a>':''}`);
+    $('againBtn').onclick=()=>{closeCard();startStage(G.stage.id);};
+    $('menuBtn').onclick=()=>{closeCard();showMenu();};
+    return;
+  }
+  const q=qs[i];
+  const qh=q.q.img?'<img src="'+q.q.img+'" alt="">':(q.q.svg?q.q.svg:q.q.t);
+  openCard(`<h3>おさらい ${i+1} / ${qs.length}</h3>
+    <div class="qbox">${qh}</div><p>${q.ask}</p>
+    <div class="choices">${q.choices.map((c,k)=>`<button class="choice" data-k="${k}">${c}</button>`).join('')}</div>`);
+  let answered=false;
+  $('card').querySelectorAll('.choice').forEach(b=>{
+    b.onclick=()=>{
+      if(answered) return; answered=true;
+      const ok=q.choices[+b.dataset.k]===q.ans;
+      b.classList.add(ok?'ok':'ng');
+      $('card').querySelectorAll('.choice').forEach(x=>{ if(q.choices[+x.dataset.k]===q.ans) x.classList.add('ok'); });
+      beep(ok?[784,1047]:[294,247],0.09);
+      setTimeout(()=>runQuiz(qs,i+1,score+(ok?1:0)),ok?700:1500);
+    };
+  });
+}
+
+/* =========================================================
+   メニュー・入力
+   ========================================================= */
+function showMenu(){
+  G=null; $('play').classList.add('hidden'); $('menu').classList.remove('hidden');
+  const all=GROUPS.reduce((n,g)=>n+g.stages.length,0), nLock=GROUPS.reduce((n,g)=>n+g.stages.filter(s=>!ready(s)).length,0);
+  $('paidNote').innerHTML = PAID ? '<div class="paid on">🔓 有料版：全'+all+'ステージ'+(nLock?'（'+nLock+'ステージは じゅんび中）':'')+'</div>'
+    : nLock ? '<a class="paid" href="'+GAME_ID+'-full.html">🔓 有料版は 全'+all+'ステージ<small>🔒 の '+nLock+'ステージも あそべます</small></a>' : '';
+  const box=$('groups'); box.innerHTML='';
+  GROUPS.forEach(g=>{
+    if(g.sub){ const hd=document.createElement('h2'); hd.className='subhead'; hd.textContent=g.sub; box.appendChild(hd); }
+    const d=document.createElement('div'); d.className='group';
+    d.innerHTML=`<h2>${g.title}</h2><p>${g.desc}</p><div class="stages"></div>`;
+    g.stages.forEach((s,i)=>{
+      if(!ready(s)){   // 🔒 中身が まだ ない（無料版では 有料の ステージ）
+        const a=document.createElement(PAID?'div':'a'); a.className='stagebtn lock'; if(!PAID) a.href=GAME_ID+'-full.html';
+        a.innerHTML=`<b>🔒 ${i+1}. ${s.name}</b><span>${PAID?'じゅんび中':'有料版で あそべます'}</span>`;
+        d.querySelector('.stages').appendChild(a); return;
+      }
+      const b=document.createElement('button'); const best=save.best[s.id];
+      b.className='stagebtn'+(best?' cleared':'');
+      b.innerHTML=`<b>${best?'★ ':''}${i+1}. ${s.name}</b><span>${best?'ベスト '+best+'手':'まだ クリアしていない'}</span>`;
+      b.onclick=()=>startStage(s.id);
+      d.querySelector('.stages').appendChild(b);
+    });
+    box.appendChild(d);
+  });
+}
+$('backBtn').onclick=showMenu;
+$('retryBtn').onclick=()=>{ if(G) startStage(G.stage.id); };
+$('btnMix').onclick=mixBoard;
+function drawSound(){ $('soundBtn').textContent=save.sound?'🔊':'🔇'; }
+$('soundBtn').onclick=()=>{ save.sound=!save.sound; persist(); drawSound(); };
+drawSound();
+document.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>move(b.dataset.d));
+window.addEventListener('keydown',e=>{
+  const m={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'}[e.key];
+  if(m && G && $('overlay').classList.contains('hidden')){ e.preventDefault(); move(m); }
+});
+(function(){
+  const w=$('boardwrap'); let sx=0,sy=0,on=false;
+  w.addEventListener('pointerdown',e=>{on=true;sx=e.clientX;sy=e.clientY;});
+  window.addEventListener('pointerup',e=>{
+    if(!on) return; on=false;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<18) return;
+    move(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));
+  });
+  window.addEventListener('pointercancel',()=>{on=false;});
+})();
+// テストボタン：テストサイトで開いたときだけ出る。あと 1組（1なかま）で クリアに する
+$('btnTest').onclick=function(){
+  if(!G||G.over||G.busy) return;
+  boardTiles().forEach(t=>{ G.els[t.id].remove(); delete G.els[t.id]; });
+  G.grid=[...Array(N)].map(()=>Array(N).fill(null));
+  let keep;
+  if(G.stage.type==='pair'){ const p=G.usedPairs[G.usedPairs.length-1]; keep=[{kind:'pair',ans:p.b.t,side:'a',face:p.a,say:p.say},{kind:'pair',ans:p.b.t,side:'b',face:p.b,say:p.say}]; }
+  else if(G.stage.type==='chain'){ const n=G.stage.chain.length; keep=[{kind:'chain',lo:0,hi:n-2},{kind:'chain',lo:n-1,hi:n-1}]; }
+  else{ const r=Object.keys(G.groups)[0], m=G.groups[r]; keep=[{kind:'group',group:r,members:m.slice(0,m.length-1)},{kind:'group',group:r,members:m.slice(m.length-1)}]; }
+  G.pool=[];
+  [[0,0],[3,3]].forEach(([r,c],i)=>{ const t=keep[i]; t.id=uid++; G.grid[r][c]=t; makeEl(t,r,c,true); });
+  updateStats();
+};
+window.__game={ get G(){return G;}, move:move, start:startStage };   // 自動テスト用
+
+// ---- 有料版：利用コードを 確かめて、パックを 受け取ってから 始める ----
+function openGame(){ $('lock').classList.add('hidden'); showMenu(); }
+function lockScreen(err){
+  $('menu').classList.add('hidden'); $('play').classList.add('hidden'); $('lock').classList.remove('hidden');
+  if(!window.mnAccess){ $('lockBox').textContent='有料版は、サイトの 上で ひらいて ください。'; return; }
+  mnAccess.lock($('lockBox'),{game:GAME_ID,err:err,free:GAME_ID+'.html',onOpen:function(){
+    return mnAccess.load('rika-slide').then(function(p){ applyPack(p); openGame(); });
+  }});
+}
+if(PAID){
+  $('menu').classList.add('hidden'); $('lock').classList.remove('hidden'); $('lockBox').textContent='よみこみ中…';
+  (window.mnAccess?mnAccess.load('rika-slide'):Promise.reject({error:'net'}))
+    .then(function(p){ applyPack(p); openGame(); }).catch(lockScreen);
+}else showMenu();
+</script>
+</body>
+</html>

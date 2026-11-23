@@ -13,6 +13,7 @@
 
 | zip | 作った日時（日本時間） | zip の SHA-256 | 中のゲーム（json の SHA-256） |
 |---|---|---|---|
+| packs-rika-slide.zip | 2026-11-23 17:50 | `3847c0c225ad524c6b4a7ed078fec1a9dd0f4ae36f88b5b3adca6e1f63d9f592` | rika-slide：`80820a754e43b8384d247adfa0143eb07db547658386379716093e8254ee2ce1` |
 | packs-ikimono-shima.zip | 2026-11-23 14:56 | `cfa0ba434b569bed22e1093c0c910030d254675ca92b039999a5fc0da694d04b` | ikimono-shima：`bbf5ca7d3aa27d9c4f0fba994609ca0a0c2f1851fc139312c20d0ca6adf3edff` |
 | packs-kotoba-slide.zip | 2026-11-23 12:40 | `074c39c9f7fd2e2117dd98c6a40e544e11e332b1f2399392b0e29af1e19974a2` | kanyouku-slide：`b016ec4db6d5a6a8332182448d08027f02b6e7134cb390599979aac939467950`<br>kotowaza-slide：`7447db4634ed81bf9d8da7a842c307838a4ab30181e89d158d0fc94f2f65ad68` |
 | packs-sengoku-daimyo.zip | 2026-11-11 16:16 | `db79ced8f1185a44bea13e6cbafb8684a316ed8a83b70bed648bfd64644d9cbb` | sengoku-daimyo：`c0f7a61b4ff1bc718c2cc918eb13f6a309a5195f677359020ca405be211ae158` |
