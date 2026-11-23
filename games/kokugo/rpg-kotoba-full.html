@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="ぼうけんRPG">
+<meta name="game:grade" content="小3〜">
+<meta name="game:players" content="1人">
+<meta name="game:paid" content="利用コード">
+<meta name="description" content="【有料版】ことわざ・慣用句・四字熟語・文法で たたかう 国語RPG「ハコロンと ことばの まち」（全3章）。第1章は無料、第2章・第3章は有料版。対義語・類義語・同じ読みの漢字・部首・熟語の組み立て・敬語も。">
+<title>ハコロンと ことばの まち 有料版</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#1b2340;color:#fff;font-family:'M PLUS Rounded 1c',sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#game{max-width:540px;margin:0 auto;padding:8px 8px 24px}
+#top{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:2px 2px 6px;opacity:.9}
+#top button{font-size:14px;padding:2px 10px;border-width:2px}
+#screen{position:relative;border:4px solid #fff;border-radius:12px;overflow:hidden;background:#000}
+canvas{display:block;width:100%;height:auto}
+#status{display:flex;flex-wrap:wrap;gap:2px 14px;background:#0f1630;border:3px solid #fff;border-radius:10px;padding:6px 10px;margin:8px 0;font-weight:800;font-size:15px}
+#st-hp.low{color:#ff8a80}
+#msg{position:absolute;left:8px;right:8px;bottom:8px;background:rgba(15,22,60,.96);border:3px solid #fff;border-radius:10px;padding:8px 14px 20px;min-height:84px;font-size:18px;line-height:1.6;font-weight:700;cursor:pointer;z-index:5}
+#msgwho{display:inline-block;background:#fff;color:#1b2340;border-radius:6px;padding:0 8px;font-size:14px;margin-bottom:2px}
+#msgnext{position:absolute;right:12px;bottom:2px;font-size:14px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+.hidden{display:none!important}
+button{font-family:inherit;font-weight:800;border:3px solid #fff;border-radius:10px;background:#2c3e8f;color:#fff;font-size:17px;cursor:pointer;touch-action:manipulation}
+button:active{transform:translateY(2px);filter:brightness(1.2)}
+#controls{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dpad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,58px);gap:5px}
+.dpad button{font-size:24px;touch-action:none}
+.dpad .ok{font-size:15px;background:#5c6bc0}
+.side{display:flex;flex-direction:column;gap:8px;flex:1;max-width:170px}
+.side button{padding:10px 6px;font-size:16px}
+#bhud{position:absolute;top:8px;left:8px;right:8px;background:rgba(15,22,60,.85);border:3px solid #fff;border-radius:10px;padding:6px 10px;font-weight:800;font-size:17px;z-index:4}
+.hpbar{height:10px;background:#555;border-radius:5px;overflow:hidden;margin-top:4px}
+.hpbar i{display:block;height:100%;background:#ef5350;transition:width .4s}
+#qbox{background:#fff;color:#1b2340;border-radius:12px;padding:6px 10px;text-align:center}
+#qtext{font-size:30px;font-weight:800;line-height:1.3}
+#qtext.word{font-size:16px;text-align:left;line-height:1.55}
+.wq{text-align:center;font-size:24px;margin-top:2px}
+#ansval{display:inline-block;min-width:64px;border-bottom:4px solid #1b2340;color:#1e88e5;padding:0 6px}
+#ansval.ok{color:#2e7d32}
+#ansval.ng{color:#c62828;text-decoration:line-through}
+.again{font-size:15px;color:#e65100}
+#speedbar{height:7px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin-top:5px}
+#speedbar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffca28,#ff7043)}
+.spd{font-size:11px;color:#777;margin-top:1px}
+#testAns{font-size:13px;color:#c62828}
+#pad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+#pad button{height:clamp(40px,6.4vh,54px);font-size:24px}
+#pad .del{background:#6d4c41;font-size:18px}
+#pad .go{background:#2e7d32;font-size:18px}
+#bactions{display:flex;gap:5px;margin-top:5px}
+#bactions button{flex:1;height:clamp(36px,5.4vh,44px);font-size:15px}
+.box{background:#fffbe6;color:#333;border-radius:12px;padding:10px 14px;font-size:17px;line-height:1.8;margin-top:8px;font-weight:700}
+.ext{font-weight:800;color:#e65100}
+.box b{color:#c62828;font-size:20px}
+.dot{display:inline-block;width:18px;height:18px;border-radius:50%;background:#e53935;margin:2px;vertical-align:middle;position:relative}
+.dot.blue{background:#1e88e5}
+.dot.empty{background:transparent;border:2px dashed #999}
+.dot.gone{background:#bbb}
+.dot.gone::after{content:'✕';position:absolute;inset:0;color:#c62828;font-size:15px;line-height:18px;text-align:center;font-weight:800}
+.frame{display:grid;grid-template-columns:repeat(5,22px);gap:2px;margin:4px 0;background:#eee;padding:4px;border-radius:6px;width:max-content}
+.cherry{display:inline-flex;flex-direction:column;align-items:center;margin:2px 12px;vertical-align:middle;font-weight:800;float:right}
+.cn{font-size:22px}
+.cb{font-size:15px;letter-spacing:8px;line-height:1}
+.cl{display:flex;gap:8px}
+.cc{display:inline-flex;width:32px;height:32px;border-radius:50%;background:#ffcdd2;align-items:center;justify-content:center;font-size:18px}
+.hs{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;line-height:1.3;margin:4px 0;background:#f1f1f1;padding:4px 12px;border-radius:6px;display:inline-block;color:#333;float:right}
+.clr{clear:both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .4s}
+#flash{position:absolute;inset:0;background:#f44336;opacity:0;pointer-events:none;z-index:3}
+#flash.on{animation:flash .45s}
+@keyframes flash{0%{opacity:.5}100%{opacity:0}}
+.pop{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:44px;font-weight:800;color:#fff;text-shadow:0 3px 0 #c62828,0 0 8px #000;animation:pop .9s forwards;z-index:4;pointer-events:none;white-space:nowrap}
+.pop.sp{color:#ffeb3b;font-size:52px}
+@keyframes pop{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-60px);opacity:0}}
+.ov{position:fixed;inset:0;background:rgba(10,15,40,.96);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;overflow:auto}
+.card{background:#22306a;border:4px solid #fff;border-radius:16px;padding:18px;max-width:460px;width:100%;margin:auto}
+.center{text-align:center}
+.brand{font-size:13px;opacity:.8}
+h1{font-size:38px;line-height:1.25;margin:6px 0;text-shadow:0 4px 0 #0d1330}
+h2{margin:0 0 8px;font-size:22px}
+.sub{font-size:16px;color:#ffe082;font-weight:800}
+#titleBtns,#nameBox{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+#titleBtns button,#nameBox button{padding:12px;font-size:20px}
+#nameIn{font-family:inherit;font-size:22px;padding:10px;border-radius:10px;border:3px solid #fff;text-align:center;font-weight:800}
+.proto{margin-top:14px;font-size:13px;color:#ffcc80}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid button{font-size:14px;padding:8px 4px}
+.note{font-size:13px;color:#ffcc80;margin:0 0 10px}
+.close{width:100%;margin-top:12px;padding:10px}
+.tb{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+.tb td,.tb th{border-bottom:1px solid rgba(255,255,255,.3);padding:5px 4px;text-align:left}
+.keys{font-size:12px;opacity:.6;text-align:center;margin-top:8px}
+@media (max-height:700px){body.battle #batcv{height:26vh;width:auto;margin:0 auto}body.battle .spd{display:none}body.battle #qbox{padding:4px 8px}}
+@media (max-height:600px){body.battle #batcv{height:20vh}body.battle #status{display:none}}
+.lockbtn{display:block;text-align:center;background:#e65100;color:#fff;border:3px solid #fff;border-radius:10px;padding:10px;font-weight:800;font-size:18px;text-decoration:none}
+#lockBox{color:#fff}
+.lessoncard{background:#fffbe6;color:#333;font-weight:700;line-height:1.75;font-size:16px}
+.lessoncard h3{margin:0 0 8px;color:#e65100;font-size:19px}.lessoncard p{margin:8px 0}
+.yomi{color:#1e88e5}.bigk{font-size:60px;line-height:1.1}
+.lbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.lbtns button{font-size:14px;padding:6px 10px}
+body.battle #top,body.battle .keys{display:none}
+body.battle #game{padding-top:4px}
+body.battle #status{margin:5px 0;padding:3px 8px;font-size:14px}
+body.battle #msg{font-size:16px;min-height:60px;padding:5px 12px 16px;line-height:1.5}
+body.battle #msgwho{font-size:12px}
+#hintbox{position:absolute;top:56px;left:8px;right:8px;max-height:calc(100% - 64px);overflow:auto;z-index:4;margin:0;font-size:15px;line-height:1.6;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+#mapcv{transition:filter 1.6s}
+#opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+#opts.long{grid-template-columns:1fr;gap:5px}
+#opts button{min-height:clamp(46px,7.5vh,60px);font-size:24px;padding:4px 8px 4px 22px;position:relative;line-height:1.25}
+#opts.long button{font-size:15px;text-align:left;min-height:clamp(40px,6.2vh,52px);padding:5px 10px 5px 30px}
+#opts .no{position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.65}
+#opts.g8{grid-template-columns:repeat(4,1fr);gap:5px}
+#opts.g8 button{font-size:20px;min-height:clamp(42px,6.5vh,54px);padding:4px 4px 4px 16px}
+#opts.g8m{grid-template-columns:1fr 1fr;gap:5px}
+#opts.g8m button{font-size:13px;text-align:left;min-height:clamp(40px,6vh,52px);padding:4px 6px 4px 20px;line-height:1.3}
+#opts.g8 .no,#opts.g8m .no{left:5px;font-size:10px}
+#opts button.out{opacity:.22;pointer-events:none}
+#opts button.right{background:#2e7d32}
+#opts button.wrong{background:#c62828}
+#qtext.kq{font-size:30px}
+#qtext.kq.word{font-size:18px;text-align:center;line-height:1.5}
+.mean{font-size:15px;color:#555;margin-top:2px;font-weight:700;line-height:1.4}
+rt{font-size:.5em}
+#choices{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+#choices:empty{display:none}
+#choices button{font-size:17px;padding:8px;background:#3949ab;text-align:left}
+#combo{float:right;font-size:14px;color:#ffe082;margin-top:2px}
+#combo.cage{color:#ff8a80}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="game">
+  <div id="top"><span>まなびゲーム箱 ｜ こくご</span><button id="btnSnd">🔊 おと</button></div>
+  <div id="screen">
+    <canvas id="mapcv"></canvas>
+    <canvas id="batcv" class="hidden"></canvas>
+    <div id="bhud" class="hidden"><span id="monName"></span><span id="combo"></span><div class="hpbar"><i id="monHp"></i></div></div>
+    <div id="flash"></div>
+    <div id="hintbox" class="box hidden"></div>
+    <div id="msg" class="hidden"><span id="msgwho" class="hidden"></span><div id="msgtext"></div><div id="choices"></div><span id="msgnext">▼</span></div>
+  </div>
+  <div id="status"><span id="st-name"></span><span id="st-lv"></span><span id="st-hp"></span><span id="st-gumi"></span><span id="st-stone"></span></div>
+
+  <div id="controls">
+    <div class="dpad">
+      <span></span><button data-d="up" aria-label="うえ">▲</button><span></span>
+      <button data-d="left" aria-label="ひだり">◀</button><button class="ok" id="btnOk">OK</button><button data-d="right" aria-label="みぎ">▶</button>
+      <span></span><button data-d="down" aria-label="した">▼</button><span></span>
+    </div>
+    <div class="side">
+      <button id="btnGumi">🍬 グミを たべる</button>
+      <button id="btnStats">📊 つよさ</button>
+      <button id="btnTest" style="background:#6a1b9a">🛠 テスト</button>
+    </div>
+  </div>
+
+  <div id="probPanel" class="hidden">
+    <div id="qbox">
+      <div id="qtext"></div>
+      <div id="speedbar"><i></i></div>
+      <div class="spd">⚡ バーが のこっている うちに こたえると スピードこうげき！</div>
+      <div id="testAns"></div>
+    </div>
+    <div id="explainbox" class="box hidden"></div>
+    <div id="opts"></div>
+    <div id="bactions"><button id="bHint">💡 ヒント</button><button id="bGumi">🍬 グミ</button><button id="bRun">🏃 にげる</button></div>
+  </div>
+  <div class="keys">パソコンでは やじるしキーで いどう、すうじキー（1〜8）で こたえを えらべるよ</div>
+</div>
+
+<div id="title" class="ov">
+  <div class="card center">
+    <div class="brand">まなびゲーム箱 ・ 中学受験コース こくご</div>
+    <div id="hakoBig"></div>
+    <h1>ハコロンと<br>ことばの まち</h1>
+    <div class="sub">だい1しょう　ことのはの ページ</div>
+    <div id="titleBtns"><button id="btnNew">はじめから</button><button id="btnCont" class="hidden">つづきから</button></div>
+    <div id="nameBox" class="hidden"><div>なまえを いれてね（6もじ まで）</div><input id="nameIn" maxlength="6" placeholder="ゆうしゃ" autocomplete="off"><button id="btnName">けってい</button></div>
+    <div class="proto" id="planNote">だい1しょうは むりょう ／ だい2・3しょうは 有料版</div>
+  </div>
+</div>
+
+<div id="statsPanel" class="ov hidden"><div class="card"><h2>📊 つよさ</h2><div id="statBody"></div><button class="close" data-close>とじる</button></div></div>
+
+<div id="chLock" class="ov hidden"><div class="card center"><h2>🔒 この さきは 有料版</h2><p id="chLockMsg">だい2しょう・だい3しょうは 有料版で あそべます（国語の プラン）。<br>だい1しょうの きろくは、有料版でも そのまま つづけられます。</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><a class="lockbtn" href="rpg-kotoba-full.html">▶ 有料版を ひらく</a><button class="close" id="btnChLockClose">とじる</button></div></div></div>
+<div id="lockOv" class="ov hidden" style="z-index:80"><div class="card"><div id="lockBox"></div></div></div>
+<div id="lesson" class="ov hidden"><div class="card lessoncard"><div id="lessonBody"></div><button class="close" id="btnLesson">わかった！</button></div></div>
+<div id="ending" class="ov hidden"><div class="card center"><h2 id="endTitle">🎉 だい1しょう クリア！</h2><div id="endBody"></div><button class="close" id="btnNextCh" style="background:#e65100">▶ だい2しょうへ すすむ</button><button class="close" id="btnEndClose">ぼうけんを つづける</button></div></div>
+
+<div id="testPanel" class="ov hidden"><div class="card">
+  <h2>🛠 テストメニュー</h2>
+  <p class="note">ためしに あそぶ ための きのうです（ほんばんでは けします）</p>
+  <div class="grid">
+    <button data-t="heal">HPを ぜんかい</button><button data-t="lv">レベル +1</button>
+    <button data-t="gumi">グミ +3</button><button data-t="ans">こたえ ひょうじ：<span id="tAns">OFF</span></button>
+    <button data-t="enc">ざこてき：<span id="tEnc">でる</span></button><button data-t="w1">まちへ ワープ</button>
+    <button data-t="w2">もりへ ワープ</button><button data-t="w3">おかへ ワープ</button>
+    <button data-t="b1">1ばんめの ボス</button><button data-t="b2">2ばんめの ボス</button>
+    <button data-t="b3">さいごの ボス</button><button data-t="ch2">だい2しょうへ</button><button data-t="ch3">だい3しょうへ</button><button data-t="del" id="tDel">データを けす</button>
+  </div>
+  <button class="close" data-close>とじる</button>
+</div></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const TS=48,VW=11,VH=9;
+
+/* ---------- マップ ---------- */
+const MAP_SRC=[
+"TTTTTTTTTTTTTTTTTTTT",
+"T::::::::::B:::::::T",
+"T:::TT:::::::::TT::T",
+"T::::::::TT::::::::T",
+"TTTTTTTT2TTTTTTTTTTT",
+"T,,,,,,,,,,,,,,TTTTT",
+"T,,TT,,,,,,TT,,,,,,T",
+"T,,,,,,,TT,,,,,,TT,T",
+"T,,,,,,,,,,,,,,,,,,T",
+"WWWWWWWWWWWWWWW1WWWW",
+"T.......aPPP.......T",
+"T..TT...PHHP...TT..T",
+"T.......PPPb.......T",
+"T...TT....P....TT..T",
+"T.........S........T",
+"TTTTTTTTTTTTTTTTTTTT"];
+const W=20,H=MAP_SRC.length;
+let MAP;
+function resetMap(){MAP=CH.map.map(r=>r.split(''));}
+const WALK='.,:PS=',ENC='.,:';
+const zoneOf=y=>y<=3?3:y<=8?2:1;
+
+/* ---------- データ ---------- */
+const MON={
+ mojimushi:{name:'もじむし',hp:6,atk:2,exp:3,draw:'mojimushi'},
+ hikouki:{name:'かみひこうき',hp:5,atk:2,exp:3,draw:'hikouki'},
+ sumidama:{name:'すみだま',hp:10,atk:3,exp:6,draw:'sumidama'},
+ fude:{name:'ふでおばけ',hp:11,atk:3,exp:7,draw:'fude'},
+ hatenan:{name:'はてなん',hp:15,atk:4,exp:10,draw:'hatenan'},
+ makimono:{name:'まきもの',hp:13,atk:4,exp:10,draw:'makimono'},
+ oumu:{name:'おしゃべりオウム',hp:16,atk:3,exp:12,draw:'oumu',boss:true,talk:[[0.5,['おしゃべりオウム｜オウッ！？ ほんものの ことわざ、つよいオウ…']]]},
+ tako:{name:'すみつぼダコ',hp:24,atk:4,exp:20,draw:'tako',boss:true,talk:[[0.5,['すみつぼダコ｜タコッ！ すみが… すみが きかないタコ…']]]},
+ mugon:{name:'ムゴン',hp:50,atk:5,exp:40,draw:'mugon',boss:true,cage:true,talk:[[0.75,['ムゴン｜……なぜ、そんなに ことばを しっている。']],[0.2,['ムゴン｜……ほんとうは……だれかと……はなしたかった……']]]}
+};
+const ZONE_MON={1:['mojimushi','hikouki'],2:['sumidama','fude'],3:['hatenan','makimono']};
+const POOLS={z1:['kotowaza','kanyo'],g1:['kotowaza','kanyo'],z2:['yoji'],g2:['yoji','kanyo'],z3:['bunpo'],boss:['kotowaza','kanyo','yoji','bunpo']};
+const TYPE_NAME={kotowaza:'ことわざ',kanyo:'慣用句（かんようく）',yoji:'四字熟語（よじじゅくご）',bunpo:'文法（ぶんぽう）'};
+const LV=[0,0,8,20,36,56,80,110,150,200,260];
+
+/* ---------- もんだいデータ（すべて オリジナルの 出題文） ---------- */
+const KOTO=[
+ {w:'さるも ＿から 落ちる',f:'木',d:['屋根','山','空'],m:'名人でも 失敗する ことが ある',r:'にた いみ：「かっぱの 川流れ」「[弘法:こうぼう]にも 筆の [誤:あやま]り」'},
+ {g:'neba',w:'石の 上にも ＿',f:'三年',d:['一年','十年','百年'],m:'つらくても しんぼう強く 続ければ、いつか 成功する'},
+ {w:'急がば ＿',f:'回れ',d:['走れ','止まれ','進め'],m:'急ぐ ときほど、遠回りでも 安全で 確実な 方法を とるほうが よい'},
+ {w:'ねこに ＿',f:'[小判:こばん]',d:['お金','魚','[宝石:ほうせき]'],m:'ねうちの わからない 人に よい物を あたえても 役に 立たない',r:'にた いみ：「ぶたに [真珠:しんじゅ]」'},
+ {w:'花より ＿',f:'[団子:だんご]',d:['もち','おかし','ごはん'],m:'見た目の 美しさより、実際に 役に立つ ものを 選ぶ'},
+ {w:'ちりも [積:つ]もれば ＿と なる',f:'山',d:['川','海','星'],m:'小さな ものでも 積み重なれば 大きな ものに なる'},
+ {w:'犬も 歩けば ＿に 当たる',f:'[棒:ぼう]',d:['石','人','木'],m:'何かを しようとすると、思いがけない 災難（または 幸運）に 出会う'},
+ {w:'雨ふって ＿ 固まる',f:'地',d:['道','山','心'],m:'もめごとの あとは、かえって 前より よい 状態に なる'},
+ {w:'百聞は ＿に しかず',f:'一見',d:['一回','一度','一歩'],m:'何度も 聞くより、一度 自分の 目で 見るほうが よく わかる'},
+ {w:'早起きは ＿の 徳',f:'三文',d:['一文','十文','百文'],m:'朝 早く 起きると、少しでも 何か よい ことが ある',r:'「徳」は「得」と 書くことも ある。「三文」は ごく わずかな お金の こと'},
+ {w:'[二兎:にと]を 追う 者は ＿をも 得ず',f:'[一兎:いっと]',d:['[二兎:にと]','[一石:いっせき]','[一鳥:いっちょう]'],m:'同時に 二つの ことを しようとすると、どちらも うまく いかない'},
+ {w:'[案:あん]ずるより ＿が やすし',f:'[産:う]む',d:['話す','見る','歩く'],m:'あれこれ 心配するより、やってみると 案外 かんたんな ものだ'},
+ {w:'[能:のう]ある [鷹:たか]は ＿を かくす',f:'[爪:つめ]',d:['羽','目','くちばし'],m:'本当に 力の ある 人は、それを むやみに 見せびらかさない'},
+ {w:'＿ もと暗し',f:'[灯台:とうだい]',d:['[電灯:でんとう]','[屋台:やたい]','太陽'],m:'身近な ことは、かえって 気づきにくい'},
+ {w:'[良薬:りょうやく]は ＿に 苦し',f:'口',d:['目','耳','心'],m:'ためになる [忠告:ちゅうこく]ほど、聞くのが つらい'},
+ {w:'馬の 耳に ＿',f:'[念仏:ねんぶつ]',d:['歌','手紙','[説明:せつめい]'],m:'いくら 言って 聞かせても、少しも 効き目が ない'},
+ {g:'neba',w:'七転び ＿起き',f:'八',d:['七','九','十'],m:'何度 失敗しても、くじけずに 立ち上がる'},
+ {w:'好きこそ ものの ＿なれ',f:'上手',d:['下手','名人','先生'],m:'好きな ことは 熱心に やるので、上達が 早い'},
+ {w:'＿ 寄れば [文殊:もんじゅ]の [知恵:ちえ]',f:'三人',d:['二人','五人','十人'],m:'ふつうの 人でも 三人 集まって 相談すれば、よい 考えが 出る'},
+ {g:'neba',w:'失敗は 成功の ＿',f:'もと',d:['あと','さき','まえ'],m:'失敗から 学べば、次の 成功に つながる'},
+ {g:'yoi',w:'＿あれば [憂:うれ]いなし',f:'[備:そな]え',d:['力','お金','夢'],m:'ふだんから 準備を しておけば、何が 起きても 心配ない'},
+ {w:'習うより ＿',f:'[慣:な]れよ',d:['覚えよ','学べ','急げ'],m:'人に 教わるより、自分で 何度も やって 体で 覚えるほうが 身につく'},
+ {w:'かえるの 子は ＿',f:'かえる',d:['おたまじゃくし','さかな','へび'],m:'子どもは 親に にる ものだ'},
+ {g:'yoi',w:'[転:ころ]ばぬ 先の ＿',f:'[杖:つえ]',d:['[傘:かさ]','くつ','手'],m:'失敗しないように、前もって 用心する こと'},
+ {w:'[情:なさ]けは 人の ためならず',mOnly:true,m:'人に 親切に すると、めぐりめぐって 自分にも よい ことが 返ってくる',wrong:'人に 親切に するのは、その 人の ために ならない',r:'「その 人の ために ならない」と 思うのは まちがい。大人でも かんちがい しやすい ことわざだよ'}
+];
+const KANYO=[
+ {w:'＿が 広い',f:'顔',d:['口','耳','目'],m:'知り合いが 多い'},
+ {w:'＿を 焼く',f:'手',d:['足','目','口'],m:'どう あつかえば よいか こまる'},
+ {w:'＿が 痛い',f:'耳',d:['目','鼻','歯'],m:'自分の 弱い ところを 言われて、聞くのが つらい'},
+ {w:'＿が 軽い',f:'口',d:['目','耳','鼻'],m:'ひみつを すぐ 人に 話して しまう'},
+ {w:'＿が 高い',f:'鼻',d:['耳','手','首'],m:'ほこらしい・とくいな 気持ちに なる'},
+ {w:'＿を 洗う',f:'足',d:['耳','顔','口'],m:'よくない 仕事や 生活を やめる'},
+ {w:'＿を 長くする',f:'首',d:['手','足','耳'],m:'今か 今かと 待ちこがれる'},
+ {w:'＿が 立つ',f:'腹',d:['頭','胸','肩'],m:'おこる'},
+ {w:'＿を なでおろす',f:'胸',d:['頭','肩','腹'],m:'ほっと 安心する'},
+ {w:'＿を 落とす',f:'肩',d:['耳','鼻','口'],m:'がっかりする'},
+ {w:'＿が 立たない',f:'歯',d:['手','耳','目'],m:'相手が 強すぎて かなわない'},
+ {g:'odo',w:'＿を 丸くする',f:'目',d:['口','顔','背中'],m:'おどろく'},
+ {w:'＿に あせを にぎる',f:'手',d:['足','顔','首'],m:'はらはら・どきどき しながら 見る'},
+ {w:'＿を 巻く',f:'舌',d:['手','首','耳'],m:'とても 感心する'},
+ {w:'＿を 売る',f:'油',d:['米','塩','水'],m:'仕事の とちゅうで むだ話を して なまける'},
+ {w:'＿の 手も 借りたい',f:'ねこ',d:['犬','さる','くま'],m:'とても いそがしい'},
+ {w:'＿が 合う',f:'馬',d:['牛','犬','鳥'],m:'気が 合う'},
+ {w:'＿が 折れる',f:'骨',d:['うで','指','首'],m:'苦労する・手間が かかる'},
+ {w:'＿を のばす',f:'羽',d:['耳','目','歯'],m:'自由に のびのびする'},
+ {g:'odo',w:'＿に 水',f:'[寝耳:ねみみ]',d:['[寝顔:ねがお]','[寝言:ねごと]','[小耳:こみみ]'],m:'思いがけない 出来事に おどろく'}
+];
+const YOJI=[
+ {k:'一石二鳥',y:'いっせきにちょう',i:2,d:['三','一','百'],m:'一つの ことで、二つの 得を する'},
+ {g:'sama',k:'十人十色',y:'じゅうにんといろ',i:3,d:['人','様','声'],m:'好みや 考えは 人それぞれ ちがう'},
+ {k:'一期一会',y:'いちごいちえ',i:3,d:['回','生','度'],m:'一生に 一度の 出会いと 思って 大切に する'},
+ {k:'自業自得',y:'じごうじとく',i:3,d:['失','在','分'],m:'自分の した ことの むくいを 自分が 受ける'},
+ {k:'異口同音',y:'いくどうおん',i:3,d:['声','意','語'],m:'多くの 人が 口を そろえて 同じ ことを 言う'},
+ {k:'半信半疑',y:'はんしんはんぎ',i:3,d:['心','知','分'],m:'半分 信じて、半分 うたがっている'},
+ {k:'油断大敵',y:'ゆだんたいてき',i:3,d:['事','切','変'],m:'気を ゆるめると、それが 失敗の もとに なる'},
+ {k:'以心伝心',y:'いしんでんしん',i:3,d:['言','意','話'],m:'ことばに しなくても、気持ちが 通じ合う'},
+ {k:'電光石火',y:'でんこうせっか',i:3,d:['光','化','花'],m:'動きが ひじょうに すばやい'},
+ {g:'kiki',k:'危機一髪',y:'ききいっぱつ',i:3,d:['発','初','番'],m:'ほんの 少しの ちがいで、大きな 危険に なりそうな ところ',r:'「一発」と 書くのは まちがい'},
+ {g:'kiki',k:'絶体絶命',y:'ぜったいぜつめい',i:1,d:['対','大','態'],m:'どうしても のがれられない、追いつめられた 状態',r:'「絶対」と 書くのは まちがい'},
+ {k:'弱肉強食',y:'じゃくにくきょうしょく',i:3,d:['者','力','国'],m:'強い 者が 弱い 者を 負かして 栄える'},
+ {k:'一心不乱',y:'いっしんふらん',i:3,d:['安','動','変'],m:'一つの ことに 集中して、ほかの ことに 気を とられない'},
+ {k:'起承転結',y:'きしょうてんけつ',i:3,d:['終','決','末'],m:'文章や 話の 組み立て方（始まり→発展→変化→まとめ）'},
+ {g:'sama',k:'千差万別',y:'せんさばんべつ',i:3,d:['化','様','分'],m:'さまざまな ちがいが ある'},
+ {k:'日進月歩',y:'にっしんげっぽ',i:3,d:['走','進','年'],m:'たえず、どんどん 進歩する'},
+ {k:'有言実行',y:'ゆうげんじっこう',i:3,d:['現','力','験'],m:'言った ことを 必ず 実行する'},
+ {k:'前代未聞',y:'ぜんだいみもん',i:3,d:['問','見','来'],m:'今までに 聞いたことも ないような めずらしい こと'},
+ {k:'大器晩成',y:'たいきばんせい',i:3,d:['生','年','作'],m:'大人物は、年を とってから 大きく 成功する'},
+ {k:'一長一短',y:'いっちょういったん',i:3,d:['低','少','弱'],m:'よい ところも あれば、悪い ところも ある'},
+ {k:'単刀直入',y:'たんとうちょくにゅう',i:3,d:['進','行','接'],m:'前置きなしに、いきなり 本題に 入る',r:'「短刀」と 書くのは まちがい'},
+ {k:'心機一転',y:'しんきいってん',i:3,d:['変','新','点'],m:'ある ことを きっかけに、気持ちを すっかり 入れかえる'},
+ {k:'三寒四温',y:'さんかんしおん',i:3,d:['暖','暑','熱'],m:'寒い日が 三日ほど 続くと 暖かい日が 四日ほど 続き、これを くり返す こと'},
+ {k:'公明正大',y:'こうめいせいだい',i:3,d:['直','当','義'],m:'かくしごとが なく、正しくて 堂々と している'}
+];
+const BUNPO=[
+ {q:'「赤い 花が 庭に さいた。」<br>この 文の 主語は？',o:['花が','赤い','庭に','さいた'],e:'主語は「何が（だれが）」に あたる ことば。<br>「何が さいた？」→「<b>花が</b>」'},
+ {q:'「赤い 花が 庭に さいた。」<br>この 文の 述語は？',o:['さいた','花が','庭に','赤い'],e:'述語は「どうする・どんなだ・何だ」に あたる ことば。ふつう 文の 終わりに ある。→「<b>さいた</b>」'},
+ {q:'「ぼくの 弟は 毎朝 牛乳を 飲む。」<br>この 文の 主語は？',o:['弟は','ぼくの','牛乳を','飲む'],e:'「だれが（は）飲む？」→「<b>弟は</b>」。主語には「が」だけでなく「は」も つく。'},
+ {q:'「夜空の 星は とても きれいだ。」<br>この 文の 述語は？',o:['きれいだ','星は','とても','夜空の'],e:'「星は どんなだ？」→「<b>きれいだ</b>」。'},
+ {q:'「きのう 公園で サッカーを した。」<br>この 文の 主語は？',o:['書かれていない','きのう','公園で','サッカーを'],e:'「だれが した？」に あたる ことばが 文に ない。日本語では 主語が <b>省略</b>される ことが 多いよ。'},
+ {q:'「妹も いっしょに 歌った。」<br>この 文の 主語は？',o:['妹も','いっしょに','歌った','書かれていない'],e:'「だれが 歌った？」→「<b>妹も</b>」。主語には「も」が つく ことも ある。'},
+ {q:'「小さな 犬が ゆっくり 歩く。」<br>「ゆっくり」が くわしく している ことばは？',o:['歩く','犬が','小さな','どれでもない'],e:'「どのように 歩く？」→「ゆっくり」。だから「ゆっくり」は「<b>歩く</b>」を くわしく している（修飾 している）。'},
+ {q:'「白い 雲が 青い 空に うかぶ。」<br>「青い」が くわしく している ことばは？',o:['空に','雲が','白い','うかぶ'],e:'「どんな 空？」→「青い 空」。「青い」は「<b>空に</b>」を くわしく している。'},
+ {q:'「走る」の 品詞は？',o:['動詞','名詞','形容詞','副詞'],e:'動きを 表し、言い切りの 形が「う」の 段（走<b>る</b>）で 終わる → <b>動詞</b>'},
+ {q:'「美しい」の 品詞は？',o:['形容詞','形容動詞','動詞','名詞'],e:'ようすを 表し、言い切りの 形が「い」で 終わる → <b>形容詞</b>'},
+ {q:'「静かだ」の 品詞は？',o:['形容動詞','形容詞','動詞','名詞'],e:'ようすを 表し、言い切りの 形が「だ」で 終わる（「静かな 部屋」とも なる）→ <b>形容動詞</b>'},
+ {q:'「とても」の 品詞は？',o:['副詞','形容詞','名詞','動詞'],e:'おもに 動詞や 形容詞などを くわしく し、形が 変わらない → <b>副詞</b>'},
+ {q:'「学校」の 品詞は？',o:['名詞','動詞','副詞','形容詞'],e:'ものの 名前を 表し、「が」を つけて 主語に なれる → <b>名詞</b>'},
+ {q:'「雨が ふった。（　）、遠足は 中止に なった。」<br>（　）に 入る ことばは？',o:['だから','しかし','または','ところで'],e:'前が 理由、後ろが その 結果 → 「<b>だから</b>」（順接の 接続語）'},
+ {q:'「毎日 練習した。（　）、試合に 負けた。」<br>（　）に 入る ことばは？',o:['しかし','だから','そして','つまり'],e:'前から 予想される ことと ぎゃくの 結果 → 「<b>しかし</b>」（逆接の 接続語）'},
+ {q:'「先生が 来る」の「来る」を 尊敬語に すると？',o:['いらっしゃる','まいる','うかがう','おる'],e:'目上の 人の 動作を 高めるのが 尊敬語 → 「<b>いらっしゃる</b>」。「まいる」「うかがう」は 自分が へりくだる 謙譲語。'},
+ {q:'「わたしが 先生の 家に 行く」の「行く」を 謙譲語に すると？',o:['うかがう','いらっしゃる','おいでになる','来られる'],e:'自分の 動作を へりくだって 相手を 立てるのが 謙譲語 → 「<b>うかがう</b>」'},
+ {q:'「食べる」の 尊敬語は？',o:['めしあがる','いただく','ちょうだいする','食べます'],e:'尊敬語は「<b>めしあがる</b>」。「いただく」「ちょうだいする」は 謙譲語、「食べます」は 丁寧語。'},
+ {q:'「言う」の 謙譲語は？',o:['申す','おっしゃる','言われる','話される'],e:'謙譲語は「<b>申す</b>」。「おっしゃる」「言われる」は 尊敬語。'},
+ {q:'次の うち、丁寧語は どれ？',o:['行きます','いらっしゃる','うかがう','めしあがる'],e:'「です・ます」を つけて ていねいに 言うのが 丁寧語 → 「<b>行きます</b>」'},
+ {q:'「長所」の 反対の 意味の ことばは？',o:['短所','長方','所長','近所'],e:'「長所」は よい ところ。反対は わるい ところ →「<b>短所</b>」'},
+ {q:'「消費」の 反対の 意味の ことばは？',o:['生産','消化','費用','出費'],e:'「消費」は 使って なくす こと。反対は 作り出す こと →「<b>生産</b>」'},
+ {q:'「雨が ザーザー ふる」の「ザーザー」は どれ？',o:['擬音語（音を まねた ことば）','擬態語（ようすを 表す ことば）','接続語','敬語'],e:'雨の「音」を まねた ことば → <b>擬音語</b>。「にこにこ」のように ようすを 表すのは 擬態語。'}
+];
+
+/* ---------- もんだいを つくる ---------- */
+const rb=s=>String(s).replace(/\[([^:\]]+):([^\]]+)\]/g,'<ruby>$1<rt>$2</rt></ruby>');
+const plain=s=>String(s).replace(/\[([^:\]]+):([^\]]+)\]/g,'$1').replace(/<[^>]+>/g,'');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let RECENT=[];
+function pick(arr,key){let i=0;for(let k=0;k<12;k++){i=R(0,arr.length-1);if(!RECENT.includes(key+i))break;}RECENT.push(key+i);if(RECENT.length>10)RECENT.shift();return [arr[i],i];}
+function others(arr,i,n,fn){const g=arr[i]&&arr[i].g;const idx=shuffle(arr.map((_,j)=>j).filter(j=>j!==i&&!(g&&arr[j].g===g))).slice(0,n);return idx.map(j=>fn(arr[j]));}
+const full=it=>it.w.replace('＿',it.f||'');
+function mk(type,q,ans,wrongs,explain,hint,crit){return{type,q,ans,opts:shuffle([ans,...wrongs]),explain,hint:hint||'',crit};}
+const GEN={
+ kotowaza(){const[it,i]=pick(KOTO,'k');
+  const ex=`「${rb(full(it))}」<br>いみ：<b>${rb(it.m)}</b>`+(it.r?`<br>${rb(it.r)}`:'');
+  if(it.mOnly||Math.random()<0.4){const w=it.wrong?[it.wrong,...others(KOTO,i,2,o=>o.m)]:others(KOTO,i,3,o=>o.m);
+   return mk('kotowaza',`「${rb(full(it))}」<br>の いみは？`,it.m,w,ex,'',14000);}
+  return mk('kotowaza',rb(it.w.replace('＿','□')),it.f,it.d,ex,`いみ：${rb(it.m)}`,9000);},
+ kanyo(){const[it,i]=pick(KANYO,'n');const ex=`「${rb(full(it))}」<br>いみ：<b>${rb(it.m)}</b>`;
+  if(Math.random()<0.4)return mk('kanyo',`「${rb(full(it))}」<br>の いみは？`,it.m,others(KANYO,i,3,o=>o.m),ex,'',14000);
+  return mk('kanyo',rb(it.w.replace('＿','□'))+`<div class="mean">いみ：${rb(it.m)}</div>`,it.f,it.d,ex,'体の 部分や 動物を 使った 慣用句が 多いよ。',9000);},
+ yoji(){const[it,i]=pick(YOJI,'y');const ex=`${it.k}（${it.y}）<br>いみ：<b>${it.m}</b>`+(it.r?`<br>⚠ ${it.r}`:'');
+  if(Math.random()<0.4)return mk('yoji',`「${it.m}」<br>という いみの 四字熟語は？`,it.k,others(YOJI,i,3,o=>o.k),ex,'',14000);
+  const c=it.k.split('');const ans=c[it.i];c[it.i]='□';
+  return mk('yoji',c.join(''),ans,it.d,ex,`読み：${it.y}<br>いみ：${it.m}`,9000);},
+ bunpo(){const[it]=pick(BUNPO,'b');return mk('bunpo',rb(it.q),it.o[0],it.o.slice(1),it.e,'',14000);}
+};
+
+/* ---------- だい2しょう データ ---------- */
+Object.assign(MON,{
+ kaeru:{name:'ハンタイガエル',hp:14,atk:4,exp:9,draw:'kaeru'},
+ seesaw:{name:'シーソーン',hp:13,atk:4,exp:9,draw:'seesaw'},
+ neko:{name:'ニタモノネコ',hp:18,atk:5,exp:12,draw:'neko'},
+ kame:{name:'ブシュガメ',hp:19,atk:5,exp:13,draw:'kame'},
+ hachi:{name:'テニヲハチ',hp:22,atk:6,exp:15,draw:'hachi'},
+ tama:{name:'ふしぎだま',hp:21,atk:6,exp:15,draw:'tama'},
+ kani:{name:'サカサガニ',hp:28,atk:5,exp:25,draw:'kani',boss:true,talk:[[0.5,['サカサガニ｜カニッ！？ ほんものの はんたいことばは つよいカニ…']]]},
+ douon:{name:'ドウオン きょうだい',hp:36,atk:6,exp:35,draw:'douon',boss:true,talk:[[0.5,['ドウオン きょうだい｜「「ぼくたちの ちがい、みえてきた…？」」']]]},
+ urahara:{name:'ウラハラ',hp:70,atk:7,exp:60,draw:'urahara',boss:true,cage:true,
+  cageLines:['ウラハラ｜かがみよ、うつせ！ アベコベに！','ハコロンが かがみの なかに とじこめられた！','ハコロン｜（かがみの なかから こえが とどかない… {name}、3もん つづけて せいかい して！）','（ハコロンが しゃべれないので、ヒントは つかえない！）'],
+  talk:[[0.75,['ウラハラ｜な、なぜ アベコベの ことばに まどわされない！？']],[0.2,['ウラハラ｜……ほんとうは……「なかよく したい」って……いいたかった……']]]}
+});
+MON.mugon.cageLines=['ムゴン｜……だまれ。','ハコロンが「だまりの かご」に とじこめられた！','ハコロン｜（……！ こえが でない… {name}、3もん つづけて せいかい して！）','（ハコロンが しゃべれないので、ヒントは つかえない！）'];
+Object.assign(TYPE_NAME,{taigi:'対義語（はんたいの ことば）',ruigi:'類義語（にた ことば）',douon:'同じ 読みの ことば',bushu:'部首（ぶしゅ）',bunpo2:'文法（きほん）'});
+let TAIGI=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let RUIGI=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let DOUON=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let BUSHU=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let BUNPO2=[];   // 有料版のパック（rpg-kotoba）から受け取る
+Object.assign(GEN,{
+ taigi(){const[it]=pick(TAIGI,'t');return mk('taigi',`「${rb(it[0])}」の<br>対義語（はんたいの いみ）は？`,it[1],it[2],`${rb(it[0])} ↔ <b>${rb(it[1])}</b><br>漢字 1字ずつ はんたいの いみに なっている ものも 多いよ。`,'漢字 1字ずつ、はんたいの いみか くらべてみよう。',12000);},
+ ruigi(){const[it]=pick(RUIGI,'r');return mk('ruigi',`「${rb(it[0])}」の<br>類義語（にた いみ）は？`,it[1],it[2],`${rb(it[0])} ≒ <b>${rb(it[1])}</b>`+(it[3]?`<br>${rb(it[3])}`:''),'文の なかで 入れかえても 意味が かわらない ことばを さがそう。',12000);},
+ douon(){const[it]=pick(DOUON,'o');const q=rb(it.s).replace(/（[^）]+）/,m=>`<span class="yomi">${m}</span>`);
+  return mk('douon',`${q}<br>（　）に 合う 漢字は？`,it.a,it.d,`こたえ：<b>${it.a}</b><br>${it.e}`,'それぞれの 漢字の 意味を 考えよう。熟語を 1つ 思い出すと ヒントに なるよ。',12000);},
+ bushu(){const[it]=pick(BUSHU,'s');return mk('bushu',`<span class="bigk">${it.k}</span><br>この 漢字の 部首は？`,it.a,it.d,`「${it.k}」の 部首は <b>${it.a}</b>。<br>${it.e}`,'へん（左）・つくり（右）・かんむり（上）・あし（下）・たれ・にょう・かまえ を 思い出そう。',12000);},
+ bunpo2(){const[it]=pick(BUNPO2,'2');return mk('bunpo2',rb(it.q),it.o[0],it.o.slice(1),it.e,'',14000);}
+});
+let LESSONS={};   // 有料版のパック（rpg-kotoba）から受け取る
+
+/* ---------- だい3しょう データ ---------- */
+LV.push(330,410,500,600,720);
+Object.assign(MON,{
+ yuki:{name:'ゆきだるマン',hp:22,atk:6,exp:15,draw:'yuki'},
+ tsurara:{name:'つららコウモリ',hp:20,atk:6,exp:15,draw:'tsurara'},
+ kitsune:{name:'かんじギツネ',hp:26,atk:7,exp:18,draw:'kitsune'},
+ matsu:{name:'まつぼっくりん',hp:25,atk:7,exp:18,draw:'matsu'},
+ inku:{name:'インクつぼ',hp:30,atk:7,exp:21,draw:'inku'},
+ hondana:{name:'ほんだなゴーレム',hp:32,atk:8,exp:22,draw:'hondana'},
+ karakuri:{name:'カラクリハカセ',hp:40,atk:7,exp:45,draw:'karakuri',boss:true,talk:[[0.5,['カラクリハカセ｜ギギッ… ワタシの ことわざ データが… たりなイ…']]]},
+ jukugon:{name:'ジュクゴン',hp:50,atk:8,exp:60,draw:'jukugon',boss:true,talk:[[0.5,['ジュクゴン｜「「……ふたりで うごくと、つよい…？」」']]]},
+ keshimaru:{name:'ケシマル',hp:90,atk:9,exp:100,draw:'keshimaru',boss:true,cage:true,
+  cageLines:['ケシマル｜ハコロン、おまえの ことばも けして やる！','ハコロンが けしごむの かすに つつまれて しまった！','ハコロン｜（……こえが… {name}、3もん つづけて せいかい して！）','（ハコロンが しゃべれないので、ヒントは つかえない！）'],
+  talk:[[0.75,['ケシマル｜なぜだ… なぜ まちがえても、まえに すすめる！？']],[0.2,['ケシマル｜……ほんとうは… けしたく なかった… あの子の てがみを……']]]}
+});
+Object.assign(TYPE_NAME,{koto3:'ことわざ（むずかしい）',kanyo3:'慣用句（むずかしい）',yoji3:'四字熟語（むずかしい）',kousei:'熟語の 組み立て',bunpo3:'文法（むずかしい）'});
+let KOTO3=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let KOTO_OTHER=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let KANYO3=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let YOJI3=[];   // 有料版のパック（rpg-kotoba）から受け取る
+let KOUSEI={};   // 有料版のパック（rpg-kotoba）から受け取る
+let BUNPO3=[];   // 有料版のパック（rpg-kotoba）から受け取る
+Object.assign(GEN,{
+ koto3(){const[it,i]=pick(KOTO3,'K');const full3=it.w.replace('＿',it.f||'');
+  const ex=`「${rb(full3)}」<br>いみ：<b>${rb(it.m)}</b>`+(it.sim?`<br>にた いみ：「${rb(it.sim)}」`:'');
+  const r=Math.random();
+  if(it.sim&&r<0.3){const w=shuffle(KOTO_OTHER.filter(o=>plain(o)!==plain(full3))).slice(0,5);return mk('koto3',`「${rb(full3)}」<br>と にた いみの ことわざは？`,it.sim,w,ex,'',18000);}
+  if(it.mOnly||r<0.6)return mk('koto3',`「${rb(full3)}」<br>の いみは？`,it.m,shuffle(KOTO3.filter((o,j)=>j!==i&&!(o.g&&o.g===it.g))).slice(0,5).map(o=>o.m),ex,'',18000);
+  return mk('koto3',rb(it.w.replace('＿','□')),it.f,it.d,ex,`いみ：${rb(it.m)}`,12000);},
+ kanyo3(){const[it,i]=pick(KANYO3,'N');const full3=it.w.replace('＿',it.f);const ex=`「${rb(full3)}」<br>いみ：<b>${rb(it.m)}</b>`;
+  if(Math.random()<0.4)return mk('kanyo3',`「${rb(full3)}」<br>の いみは？`,it.m,others(KANYO3,i,5,o=>o.m),ex,'',18000);
+  return mk('kanyo3',rb(it.w.replace('＿','□'))+`<div class="mean">いみ：${rb(it.m)}</div>`,it.f,it.d,ex,'体の 部分を 1つずつ 当てはめて、意味が 合うか 考えよう。',12000);},
+ yoji3(){const[it,i]=pick(YOJI3,'Y');const ex=`${it.k}（${it.y}）<br>いみ：<b>${it.m}</b>`+(it.r?`<br>⚠ ${it.r}`:'');
+  if(Math.random()<0.4)return mk('yoji3',`「${it.m}」<br>という いみの 四字熟語は？`,it.k,others(YOJI3,i,7,o=>o.k),ex,'',18000);
+  const c=it.k.split('');const ans=c[it.i];c[it.i]='□';return mk('yoji3',c.join(''),ans,it.d,ex,`読み：${it.y}<br>いみ：${it.m}`,12000);},
+ kousei(){const keys=Object.keys(KOUSEI);const k=keys[R(0,keys.length-1)];const T=KOUSEI[k];const ws=shuffle(T.w);const t=ws[0];
+  if(Math.random()<0.45){return mk('kousei',`「${rb(t)}」の<br>組み立ては？`,T.n,keys.filter(x=>x!==k).map(x=>KOUSEI[x].n),`「${rb(t)}」は <b>${T.n}</b> 組み立て。<br>れい：${rb(T.ex)}`,'1字ずつ 読みくだして みよう（例：読書→書を 読む）。',16000);}
+  const ans=ws[1];const pool=shuffle(keys.filter(x=>x!==k).flatMap(x=>KOUSEI[x].w)).slice(0,7);
+  return mk('kousei',`「${rb(t)}」と<br>同じ 組み立ての 熟語は？`,ans,pool,`「${rb(t)}」も「${rb(ans)}」も <b>${T.n}</b> 組み立て。<br>れい：${rb(T.ex)}`,'まず「'+plain(t)+'」の 組み立てを 考えてから、同じ 組み立てを さがそう。',16000);},
+ bunpo3(){const[it]=pick(BUNPO3,'B');return mk('bunpo3',rb(it.q),it.o[0],it.o.slice(1),it.e,'',18000);}
+});
+let LESSONS3={};   // 有料版のパック（rpg-kotoba）から受け取る
+
+/* ---------- おと ---------- */
+let AC=null,soundOn=true;
+function initAudio(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;}}
+const SFX={ok:[[660,.07],[880,.12]],speed:[[660,.05],[880,.05],[1320,.18]],ng:[[247,.12],[196,.22]],hurt:[[140,.15]],win:[[784,.09],[988,.09],[1175,.22]],lv:[[523,.09],[659,.09],[784,.09],[1047,.28]],enc:[[392,.06],[523,.06],[392,.06],[523,.1]],heal:[[523,.08],[784,.15]]};
+function snd(k){if(!soundOn||!AC)return;try{if(AC.state==='suspended')AC.resume();let t=AC.currentTime;(SFX[k]||[]).forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(0.05,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+0.02);t+=d;});}catch(e){}}
+document.addEventListener('pointerdown',initAudio);document.addEventListener('keydown',initAudio);
+$('btnSnd').onclick=()=>{soundOn=!soundOn;$('btnSnd').textContent=soundOn?'🔊 おと':'🔇 おと';};
+
+/* ---------- えがく ---------- */
+const mcv=$('mapcv'),mc=mcv.getContext('2d'),bcv=$('batcv'),bc=bcv.getContext('2d');
+function setupCanvas(cv,ctx,w,h){const d=Math.min(2,window.devicePixelRatio||1);cv.width=w*d;cv.height=h*d;ctx.setTransform(d,0,0,d,0,0);}
+setupCanvas(mcv,mc,VW*TS,VH*TS);setupCanvas(bcv,bc,528,300);
+function circ(c,x,y,r,col){c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();}
+function ell(c,x,y,rx,ry,col){c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function poly(c,pts,col){c.fillStyle=col;c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();}
+function eyes2(c,x,y,s,gap,r){[-1,1].forEach(k=>{const ex=x+k*gap*s;circ(c,ex,y,r*s,'#fff');circ(c,ex+r*.25*s,y+r*.15*s,r*.55*s,'#222');circ(c,ex+r*.45*s,y-r*.2*s,r*.18*s,'#fff');});}
+function mouth(c,x,y,s,w){c.strokeStyle='#222';c.lineWidth=3*s;c.lineCap='round';c.beginPath();c.arc(x,y,w*s,.15*Math.PI,.85*Math.PI);c.stroke();}
+function cheeks(c,x,y,s,gap){circ(c,x-gap*s,y,6*s,'rgba(255,120,150,.5)');circ(c,x+gap*s,y,6*s,'rgba(255,120,150,.5)');}
+function line(c,x1,y1,x2,y2,col,w){c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();}
+
+const DRAW={
+ mojimushi(c,x,y,s){const segs=[[38,18,'う'],[14,10,'い'],[-10,4,'あ']];
+  segs.forEach(([dx,dy,ch])=>{circ(c,x+dx*s,y+dy*s,24*s,'#9ccc65');c.strokeStyle='#689f38';c.lineWidth=3*s;c.beginPath();c.arc(x+dx*s,y+dy*s,24*s,0,Math.PI*2);c.stroke();
+   c.fillStyle='#33691e';c.font=`800 ${22*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(ch,x+dx*s,y+dy*s+2*s);});
+  circ(c,x-40*s,y-14*s,30*s,'#aed581');line(c,x-50*s,y-40*s,x-60*s,y-62*s,'#558b2f',3*s);line(c,x-30*s,y-42*s,x-24*s,y-64*s,'#558b2f',3*s);
+  circ(c,x-60*s,y-64*s,5*s,'#ffca28');circ(c,x-24*s,y-66*s,5*s,'#ffca28');eyes2(c,x-40*s,y-18*s,s,11,8);mouth(c,x-40*s,y-4*s,s,7);c.textBaseline='alphabetic';},
+ hikouki(c,x,y,s){poly(c,[[x-70*s,y+10*s],[x+65*s,y-30*s],[x-20*s,y+40*s]],'#ffffff');poly(c,[[x-20*s,y+40*s],[x+65*s,y-30*s],[x-5*s,y+12*s]],'#e0e0e0');
+  c.strokeStyle='#90a4ae';c.lineWidth=2*s;c.beginPath();c.moveTo(x-70*s,y+10*s);c.lineTo(x+65*s,y-30*s);c.lineTo(x-20*s,y+40*s);c.closePath();c.stroke();
+  line(c,x-90*s,y+30*s,x-110*s,y+30*s,'#b3e5fc',3*s);line(c,x-85*s,y+44*s,x-100*s,y+44*s,'#b3e5fc',3*s);
+  eyes2(c,x-12*s,y+6*s,s,11,7);mouth(c,x-12*s,y+18*s,s,6);},
+ sumidama(c,x,y,s){ell(c,x,y+5*s,52*s,46*s,'#212121');[[-40,30,12],[30,40,10],[45,10,9],[-50,-5,8]].forEach(p=>circ(c,x+p[0]*s,y+p[1]*s,p[2]*s,'#212121'));
+  c.fillStyle='#212121';c.fillRect(x-20*s,y+40*s,8*s,22*s);circ(c,x-16*s,y+62*s,5*s,'#212121');c.fillRect(x+18*s,y+44*s,6*s,14*s);circ(c,x+21*s,y+58*s,4*s,'#212121');
+  circ(c,x-20*s,y-20*s,8*s,'rgba(255,255,255,.25)');eyes2(c,x,y-2*s,s,16,11);mouth(c,x,y+18*s,s,8);c.strokeStyle='#fff';c.lineWidth=3*s;c.beginPath();c.arc(x,y+18*s,8*s,.15*Math.PI,.85*Math.PI);c.stroke();},
+ fude(c,x,y,s){c.fillStyle='#8d6e63';rr(c,x-16*s,y-62*s,32*s,80*s,10*s);c.fill();c.fillStyle='#d7ccc8';c.fillRect(x-16*s,y+6*s,32*s,10*s);
+  c.fillStyle='#212121';c.beginPath();c.moveTo(x-18*s,y+16*s);c.quadraticCurveTo(x-22*s,y+50*s,x,y+70*s);c.quadraticCurveTo(x+22*s,y+50*s,x+18*s,y+16*s);c.closePath();c.fill();
+  line(c,x-16*s,y-20*s,x-46*s,y-36*s,'#8d6e63',5*s);line(c,x+16*s,y-20*s,x+46*s,y-36*s,'#8d6e63',5*s);
+  eyes2(c,x,y-34*s,s,8,6);mouth(c,x,y-20*s,s,5);c.strokeStyle='rgba(33,33,33,.5)';c.lineWidth=6*s;c.beginPath();c.moveTo(x+40*s,y+70*s);c.quadraticCurveTo(x+70*s,y+50*s,x+60*s,y+20*s);c.stroke();},
+ hatenan(c,x,y,s){c.strokeStyle='#ffb300';c.lineWidth=22*s;c.lineCap='round';c.beginPath();c.arc(x,y-24*s,32*s,Math.PI*1.05,Math.PI*2.35);c.stroke();
+  c.beginPath();c.moveTo(x+18*s,y+4*s);c.quadraticCurveTo(x,y+10*s,x,y+28*s);c.stroke();circ(c,x,y+56*s,13*s,'#ffb300');
+  eyes2(c,x-4*s,y-28*s,s,12,8);c.fillStyle='#e65100';c.beginPath();c.ellipse(x-4*s,y-12*s,5*s,3*s,0,0,Math.PI*2);c.fill();},
+ makimono(c,x,y,s){c.fillStyle='#fff8e1';c.fillRect(x-40*s,y-46*s,80*s,96*s);c.strokeStyle='#d7ccc8';c.lineWidth=2*s;c.strokeRect(x-40*s,y-46*s,80*s,96*s);
+  [-52,52].forEach(k=>{c.fillStyle='#a1887f';rr(c,x-50*s,y+k*s-8*s,100*s,16*s,8*s);c.fill();});
+  for(let i=0;i<3;i++)line(c,x+26*s-i*14*s,y+10*s,x+26*s-i*14*s,y+38*s,'#795548',3*s);
+  eyes2(c,x,y-20*s,s,14,8);mouth(c,x,y-6*s,s,7);cheeks(c,x,y-6*s,s,26);},
+ oumu(c,x,y,s){poly(c,[[x-10*s,y+40*s],[x-30*s,y+90*s],[x+5*s,y+60*s]],'#1e88e5');poly(c,[[x+5*s,y+40*s],[x+10*s,y+92*s],[x+22*s,y+55*s]],'#43a047');
+  ell(c,x,y+10*s,40*s,50*s,'#e53935');ell(c,x-30*s,y+18*s,18*s,36*s,'#1e88e5');ell(c,x+30*s,y+18*s,18*s,36*s,'#fdd835');circ(c,x,y-40*s,30*s,'#e53935');
+  circ(c,x-10*s,y-42*s,12*s,'#fff');circ(c,x-8*s,y-42*s,6*s,'#222');c.fillStyle='#424242';c.beginPath();c.moveTo(x+8*s,y-46*s);c.quadraticCurveTo(x+44*s,y-44*s,x+30*s,y-14*s);c.quadraticCurveTo(x+26*s,y-30*s,x+8*s,y-30*s);c.closePath();c.fill();
+  c.fillStyle='#fff';rr(c,x+40*s,y-92*s,70*s,34*s,10*s);c.fill();poly(c,[[x+50*s,y-60*s],[x+40*s,y-46*s],[x+62*s,y-60*s]],'#fff');
+  c.fillStyle='#e53935';c.font=`800 ${18*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('オウ？',x+75*s,y-69*s);},
+ tako(c,x,y,s){for(let i=0;i<6;i++){const ax=x+(-50+i*20)*s;c.strokeStyle='#8e24aa';c.lineWidth=14*s;c.lineCap='round';c.beginPath();c.moveTo(ax,y+20*s);c.quadraticCurveTo(ax+(i%2?16:-16)*s,y+55*s,ax+(i<3?-10:10)*s,y+78*s);c.stroke();}
+  ell(c,x,y-14*s,50*s,52*s,'#ab47bc');circ(c,x-18*s,y-40*s,8*s,'rgba(255,255,255,.3)');eyes2(c,x,y-12*s,s,17,10);
+  ell(c,x+26*s,y+16*s,10*s,8*s,'#7b1fa2');c.fillStyle='#212121';c.beginPath();c.moveTo(x+34*s,y+14*s);c.lineTo(x+70*s,y+4*s);c.lineTo(x+64*s,y+24*s);c.closePath();c.fill();
+  circ(c,x+78*s,y+8*s,8*s,'#212121');circ(c,x+90*s,y+20*s,6*s,'#212121');},
+ mugon(c,x,y,s){c.fillStyle='rgba(120,90,200,.25)';[['あ',-80,-40],['言',72,-50],['？',84,20],['の',-86,30]].forEach(t=>{c.font=`800 ${26*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText(t[0],x+t[1]*s,y+t[2]*s);});
+  c.fillStyle='#1a1033';c.beginPath();c.moveTo(x,y-80*s);c.quadraticCurveTo(x+56*s,y-70*s,x+60*s,y+10*s);c.lineTo(x+70*s,y+70*s);
+  for(let i=0;i<5;i++){const x1=x+70*s-i*28*s;c.quadraticCurveTo(x1-14*s,y+56*s,x1-28*s,y+70*s);}c.quadraticCurveTo(x-56*s,y-70*s,x,y-80*s);c.fill();
+  ell(c,x,y-26*s,30*s,36*s,'#eceff1');circ(c,x-12*s,y-32*s,6*s,'#7c4dff');circ(c,x+12*s,y-32*s,6*s,'#7c4dff');circ(c,x-12*s,y-32*s,2.5*s,'#fff');circ(c,x+12*s,y-32*s,2.5*s,'#fff');
+  line(c,x-10*s,y-6*s,x+10*s,y-6*s,'#90a4ae',3*s);line(c,x-6*s,y-10*s,x+6*s,y-2*s,'#90a4ae',2*s);line(c,x+6*s,y-10*s,x-6*s,y-2*s,'#90a4ae',2*s);}
+};
+
+Object.assign(DRAW,{
+ kaeru(c,x,y,s){ell(c,x,y+18*s,52*s,40*s,'#66bb6a');ell(c,x,y+28*s,34*s,24*s,'#c5e1a5');circ(c,x-24*s,y-18*s,18*s,'#66bb6a');circ(c,x+24*s,y-18*s,18*s,'#66bb6a');
+  eyes2(c,x,y-18*s,s,24,11);c.strokeStyle='#1b5e20';c.lineWidth=3*s;c.beginPath();c.arc(x,y+8*s,22*s,.1*Math.PI,.9*Math.PI);c.stroke();
+  c.fillStyle='#7e57c2';c.font=`800 ${34*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('⇅',x+70*s,y+10*s);},
+ seesaw(c,x,y,s){poly(c,[[x,y+20*s],[x-22*s,y+60*s],[x+22*s,y+60*s]],'#8d6e63');c.save();c.translate(x,y+18*s);c.rotate(-0.25);c.fillStyle='#ffb74d';rr(c,-90*s,-8*s,180*s,16*s,6*s);c.fill();
+  circ(c,-70*s,-28*s,22*s,'#4fc3f7');circ(c,70*s,-28*s,22*s,'#f06292');eyes2(c,-70*s,-32*s,s,8,5);mouth(c,-70*s,-22*s,s,7);eyes2(c,70*s,-32*s,s,8,5);
+  c.strokeStyle='#222';c.lineWidth=3*s;c.beginPath();c.arc(70*s,-14*s,7*s,1.15*Math.PI,1.85*Math.PI);c.stroke();c.restore();},
+ neko(c,x,y,s){poly(c,[[x-40*s,y-20*s],[x-34*s,y-62*s],[x-10*s,y-36*s]],'#ffa726');poly(c,[[x+40*s,y-20*s],[x+34*s,y-62*s],[x+10*s,y-36*s]],'#ffa726');
+  ell(c,x,y+40*s,40*s,30*s,'#ffa726');circ(c,x,y-8*s,42*s,'#ffb74d');eyes2(c,x,y-12*s,s,16,9);poly(c,[[x-5*s,y+2*s],[x+5*s,y+2*s],[x,y+8*s]],'#e91e63');
+  [-1,1].forEach(k=>{line(c,x+k*18*s,y+6*s,x+k*50*s,y,'#5d4037',2*s);line(c,x+k*18*s,y+10*s,x+k*50*s,y+14*s,'#5d4037',2*s);});
+  c.fillStyle='#fff';rr(c,x+38*s,y-76*s,70*s,30*s,10*s);c.fill();c.fillStyle='#e65100';c.font=`800 ${16*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('あつい？',x+73*s,y-56*s);},
+ kame(c,x,y,s){circ(c,x+58*s,y+6*s,16*s,'#9ccc65');eyes2(c,x+62*s,y+2*s,s,6,4);[[-34,40],[30,40]].forEach(p=>ell(c,x+p[0]*s,y+p[1]*s,12*s,9*s,'#9ccc65'));
+  c.fillStyle='#2e7d32';c.beginPath();c.ellipse(x,y+26*s,52*s,46*s,0,Math.PI,0);c.closePath();c.fill();
+  c.fillStyle='#c8e6c9';c.font=`800 ${22*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('亻',x-22*s,y+6*s);c.fillText('氵',x+20*s,y+6*s);c.fillText('艹',x,y-8*s);},
+ hachi(c,x,y,s){ell(c,x-16*s,y-30*s,24*s,16*s,'rgba(225,245,254,.9)');ell(c,x+16*s,y-30*s,24*s,16*s,'rgba(225,245,254,.9)');
+  ell(c,x,y,46*s,34*s,'#fdd835');c.save();c.beginPath();c.ellipse(x,y,46*s,34*s,0,0,Math.PI*2);c.clip();c.fillStyle='#212121';[-14,8,30].forEach(o=>c.fillRect(x+o*s,y-40*s,10*s,80*s));c.restore();
+  circ(c,x-38*s,y-4*s,20*s,'#fdd835');eyes2(c,x-40*s,y-8*s,s,8,5);mouth(c,x-40*s,y+2*s,s,5);poly(c,[[x+44*s,y-4*s],[x+64*s,y],[x+44*s,y+6*s]],'#212121');
+  c.fillStyle='#6a1b9a';c.font=`800 ${18*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';[['て',-70,-40],['に',60,-46],['を',74,30],['は',-70,40]].forEach(t=>c.fillText(t[0],x+t[1]*s,y+t[2]*s));},
+ tama(c,x,y,s){c.fillStyle='#795548';rr(c,x-34*s,y+34*s,68*s,18*s,6*s);c.fill();const g=c.createRadialGradient(x-14*s,y-16*s,4*s,x,y,46*s);g.addColorStop(0,'#e1f5fe');g.addColorStop(1,'#4fc3f7');
+  c.fillStyle=g;c.beginPath();c.arc(x,y,44*s,0,Math.PI*2);c.fill();eyes2(c,x,y,s,14,8);mouth(c,x,y+14*s,s,7);c.fillStyle='#fff';c.font=`800 ${20*s}px sans-serif`;c.fillText('✦',x+24*s,y-22*s);},
+ kani(c,x,y,s){[-1,1].forEach(k=>{for(let i=0;i<3;i++)line(c,x+k*30*s,y+20*s+i*8*s,x+k*62*s,y+34*s+i*10*s,'#c62828',5*s);
+   line(c,x+k*36*s,y-6*s,x+k*62*s,y-30*s,'#c62828',6*s);circ(c,x+k*70*s,y-40*s,18*s,'#e53935');poly(c,[[x+k*70*s,y-40*s],[x+k*90*s,y-54*s],[x+k*88*s,y-34*s]],'#ffcdd2');});
+  ell(c,x,y+10*s,50*s,34*s,'#e53935');line(c,x-12*s,y-20*s,x-14*s,y-40*s,'#c62828',4*s);line(c,x+12*s,y-20*s,x+14*s,y-40*s,'#c62828',4*s);
+  circ(c,x-14*s,y-44*s,9*s,'#fff');circ(c,x+14*s,y-44*s,9*s,'#fff');circ(c,x-13*s,y-43*s,4.5*s,'#222');circ(c,x+15*s,y-43*s,4.5*s,'#222');
+  c.save();c.translate(x,y+16*s);c.rotate(Math.PI);mouth(c,0,0,s,10);c.restore();},
+ douon(c,x,y,s){const g=(gx,col,orn)=>{c.fillStyle=col;c.beginPath();c.moveTo(gx-30*s,y+44*s);c.lineTo(gx-30*s,y-6*s);c.arc(gx,y-6*s,30*s,Math.PI,0);c.lineTo(gx+30*s,y+44*s);
+   for(let i=0;i<3;i++){const x1=gx+30*s-i*20*s;c.quadraticCurveTo(x1-10*s,y+56*s,x1-20*s,y+44*s);}c.closePath();c.fill();eyes2(c,gx,y-6*s,s,10,7);mouth(c,gx,y+8*s,s,6);
+   c.fillStyle='#fff59d';c.font=`800 ${20*s}px sans-serif`;c.textAlign='center';c.fillText(orn,gx,y-40*s);};
+  g(x-36*s,'#ffcc80','★');g(x+36*s,'#90caf9','☾');},
+ urahara(c,x,y,s){c.fillStyle='#ffca28';c.beginPath();c.ellipse(x,y-6*s,58*s,74*s,0,0,Math.PI*2);c.fill();
+  const g=c.createLinearGradient(x-40*s,y-60*s,x+40*s,y+60*s);g.addColorStop(0,'#e1f5fe');g.addColorStop(.5,'#81d4fa');g.addColorStop(1,'#b3e5fc');c.fillStyle=g;c.beginPath();c.ellipse(x,y-6*s,46*s,62*s,0,0,Math.PI*2);c.fill();
+  line(c,x-24*s,y-48*s,x-6*s,y-60*s,'rgba(255,255,255,.8)',4*s);eyes2(c,x,y-14*s,s,16,9);line(c,x-26*s,y-30*s,x-8*s,y-26*s,'#37474f',3*s);line(c,x+26*s,y-26*s,x+8*s,y-30*s,'#37474f',3*s);
+  c.save();c.translate(x,y+10*s);c.rotate(Math.PI);mouth(c,0,0,s,10);c.restore();
+  c.fillStyle='#8d6e63';c.fillRect(x-8*s,y+66*s,16*s,14*s);ell(c,x,y+82*s,30*s,8*s,'#8d6e63');
+  c.save();c.translate(x+78*s,y-40*s);c.scale(-1,1);c.fillStyle='rgba(255,255,255,.6)';c.font=`800 ${20*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('すき',0,0);c.restore();},
+ kotoha(c,x,y,s){c.fillStyle='#9575cd';c.beginPath();c.moveTo(x,y-34*s);c.quadraticCurveTo(x+26*s,y-30*s,x+28*s,y+4*s);c.lineTo(x+32*s,y+34*s);c.lineTo(x-32*s,y+34*s);c.lineTo(x-28*s,y+4*s);c.quadraticCurveTo(x-26*s,y-30*s,x,y-34*s);c.fill();
+  ell(c,x,y-10*s,15*s,18*s,'#eceff1');circ(c,x-6*s,y-13*s,3*s,'#7c4dff');circ(c,x+6*s,y-13*s,3*s,'#7c4dff');c.strokeStyle='#90a4ae';c.lineWidth=2*s;c.beginPath();c.arc(x,y-4*s,5*s,.15*Math.PI,.85*Math.PI);c.stroke();
+  circ(c,x-10*s,y-4*s,3*s,'rgba(255,120,150,.5)');circ(c,x+10*s,y-4*s,3*s,'rgba(255,120,150,.5)');}
+});
+
+Object.assign(DRAW,{
+ yuki(c,x,y,s){circ(c,x,y+30*s,40*s,'#fafafa');circ(c,x,y-22*s,28*s,'#ffffff');c.strokeStyle='#b0bec5';c.lineWidth=2*s;c.beginPath();c.arc(x,y+30*s,40*s,0,Math.PI*2);c.stroke();c.beginPath();c.arc(x,y-22*s,28*s,0,Math.PI*2);c.stroke();
+  c.fillStyle='#37474f';c.fillRect(x-22*s,y-58*s,44*s,8*s);c.fillRect(x-14*s,y-84*s,28*s,28*s);c.fillStyle='#e53935';c.fillRect(x-14*s,y-64*s,28*s,6*s);
+  eyes2(c,x,y-26*s,s,10,6);poly(c,[[x,y-16*s],[x+24*s,y-12*s],[x,y-10*s]],'#ff9800');
+  line(c,x-38*s,y+20*s,x-70*s,y,'#6d4c41',4*s);line(c,x+38*s,y+20*s,x+70*s,y,'#6d4c41',4*s);[0,14,28].forEach(o=>circ(c,x,y+16*s+o*s,4*s,'#455a64'));},
+ tsurara(c,x,y,s){poly(c,[[x-20*s,y-10*s],[x-90*s,y-30*s],[x-70*s,y+10*s],[x-50*s,y-4*s],[x-36*s,y+16*s]],'#5e35b1');poly(c,[[x+20*s,y-10*s],[x+90*s,y-30*s],[x+70*s,y+10*s],[x+50*s,y-4*s],[x+36*s,y+16*s]],'#5e35b1');
+  ell(c,x,y,30*s,34*s,'#7e57c2');poly(c,[[x-22*s,y-26*s],[x-14*s,y-52*s],[x-6*s,y-30*s]],'#7e57c2');poly(c,[[x+22*s,y-26*s],[x+14*s,y-52*s],[x+6*s,y-30*s]],'#7e57c2');
+  eyes2(c,x,y-6*s,s,11,7);poly(c,[[x-6*s,y+12*s],[x-2*s,y+20*s],[x+2*s,y+12*s]],'#fff');
+  [-60,-40,40,60].forEach(o=>poly(c,[[x+o*s-5*s,y+8*s],[x+o*s+5*s,y+8*s],[x+o*s,y+40*s]],'#e1f5fe'));},
+ kitsune(c,x,y,s){c.fillStyle='#ff8f00';c.beginPath();c.moveTo(x+30*s,y+30*s);c.quadraticCurveTo(x+100*s,y+20*s,x+80*s,y-40*s);c.quadraticCurveTo(x+60*s,y+10*s,x+20*s,y+10*s);c.fill();circ(c,x+82*s,y-36*s,10*s,'#fff');
+  ell(c,x,y+30*s,34*s,30*s,'#ffa726');poly(c,[[x-40*s,y-10*s],[x,y+40*s],[x+40*s,y-10*s],[x,y-40*s]],'#ffb74d');poly(c,[[x-36*s,y-20*s],[x-30*s,y-62*s],[x-10*s,y-36*s]],'#ffa726');poly(c,[[x+36*s,y-20*s],[x+30*s,y-62*s],[x+10*s,y-36*s]],'#ffa726');
+  eyes2(c,x,y-8*s,s,14,7);circ(c,x,y+18*s,5*s,'#3e2723');c.fillStyle='#bf360c';c.font=`800 ${18*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('字',x+74*s,y+8*s);},
+ matsu(c,x,y,s){ell(c,x,y+6*s,40*s,54*s,'#8d6e63');c.strokeStyle='#5d4037';c.lineWidth=2*s;for(let i=-3;i<=3;i++){c.beginPath();c.arc(x,y+i*14*s,34*s,.15*Math.PI,.85*Math.PI);c.stroke();}
+  circ(c,x,y-56*s,8*s,'#6d4c41');eyes2(c,x,y-4*s,s,13,8);mouth(c,x,y+10*s,s,7);cheeks(c,x,y+10*s,s,24);},
+ inku(c,x,y,s){c.fillStyle='#1a237e';rr(c,x-42*s,y-20*s,84*s,70*s,16*s);c.fill();c.fillStyle='#283593';c.fillRect(x-24*s,y-36*s,48*s,18*s);
+  [[-16,-52,10],[10,-60,13],[30,-46,8]].forEach(p=>circ(c,x+p[0]*s,y+p[1]*s,p[2]*s,'#0d47a1'));c.fillStyle='#fff';c.fillRect(x-30*s,y+6*s,60*s,22*s);
+  eyes2(c,x,y+16*s,s,13,7);line(c,x+46*s,y-10*s,x+70*s,y-60*s,'#ffd54f',4*s);poly(c,[[x+66*s,y-58*s],[x+76*s,y-62*s],[x+70*s,y-74*s]],'#fff59d');},
+ hondana(c,x,y,s){c.fillStyle='#795548';c.fillRect(x-50*s,y-60*s,100*s,120*s);c.fillStyle='#4e342e';[ -20,20].forEach(o=>c.fillRect(x-50*s,y+o*s,100*s,6*s));
+  const cols=['#e53935','#1e88e5','#43a047','#fdd835','#8e24aa','#ff7043'];for(let r=0;r<3;r++)for(let i=0;i<6;i++){c.fillStyle=cols[(i+r)%6];c.fillRect(x-44*s+i*15*s,y-54*s+r*40*s,11*s,(r===1?0:0)+30*s);}
+  c.fillStyle='rgba(255,255,255,.85)';rr(c,x-34*s,y-18*s,68*s,34*s,8*s);c.fill();eyes2(c,x,y-4*s,s,14,8);line(c,x-50*s,y,x-74*s,y+30*s,'#795548',8*s);line(c,x+50*s,y,x+74*s,y+30*s,'#795548',8*s);},
+ karakuri(c,x,y,s){c.fillStyle='#90a4ae';rr(c,x-34*s,y-10*s,68*s,62*s,8*s);c.fill();c.fillStyle='#b0bec5';rr(c,x-30*s,y-62*s,60*s,48*s,10*s);c.fill();
+  circ(c,x-12*s,y-40*s,9*s,'#fff');circ(c,x+12*s,y-40*s,9*s,'#fff');circ(c,x-12*s,y-40*s,4*s,'#ff7043');circ(c,x+12*s,y-40*s,4*s,'#ff7043');c.fillStyle='#455a64';c.fillRect(x-12*s,y-26*s,24*s,4*s);
+  line(c,x,y-62*s,x,y-78*s,'#607d8b',3*s);circ(c,x,y-80*s,5*s,'#ffca28');
+  c.strokeStyle='#ffca28';c.lineWidth=5*s;c.beginPath();c.moveTo(x+34*s,y+10*s);c.lineTo(x+58*s,y+10*s);c.stroke();c.beginPath();c.ellipse(x+66*s,y+2*s,8*s,12*s,0,0,Math.PI*2);c.stroke();c.beginPath();c.ellipse(x+66*s,y+18*s,8*s,12*s,0,0,Math.PI*2);c.stroke();
+  circ(c,x-14*s,y+20*s,10*s,'#78909c');circ(c,x+12*s,y+30*s,8*s,'#78909c');line(c,x-34*s,y+10*s,x-60*s,y+30*s,'#90a4ae',7*s);},
+ jukugon(c,x,y,s){ell(c,x,y+30*s,56*s,38*s,'#43a047');ell(c,x,y+40*s,36*s,22*s,'#c5e1a5');poly(c,[[x+40*s,y+40*s],[x+96*s,y+56*s],[x+50*s,y+20*s]],'#43a047');
+  [[-1,'海','#66bb6a'],[1,'水','#81c784']].forEach(([k,ch,col])=>{line(c,x+k*20*s,y+4*s,x+k*44*s,y-40*s,'#43a047',16*s);circ(c,x+k*48*s,y-50*s,24*s,col);
+   circ(c,x+k*48*s-8*s,y-56*s,5*s,'#fff');circ(c,x+k*48*s+8*s,y-56*s,5*s,'#fff');circ(c,x+k*48*s-7*s,y-55*s,2.5*s,'#222');circ(c,x+k*48*s+9*s,y-55*s,2.5*s,'#222');
+   c.fillStyle='#1b5e20';c.font=`800 ${18*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText(ch,x+k*48*s,y-36*s);
+   poly(c,[[x+k*36*s,y-70*s],[x+k*40*s,y-86*s],[x+k*46*s,y-72*s]],'#fdd835');});},
+ keshimaru(c,x,y,s){c.fillStyle='#fce4ec';rr(c,x-60*s,y-40*s,120*s,90*s,12*s);c.fill();c.fillStyle='#1e88e5';c.fillRect(x-60*s,y-10*s,120*s,60*s);c.fillStyle='#fff';c.fillRect(x-60*s,y+4*s,120*s,8*s);
+  c.fillStyle='#0d47a1';c.font=`800 ${16*s}px 'M PLUS Rounded 1c',sans-serif`;c.textAlign='center';c.fillText('KESHIMARU',x,y+36*s);
+  eyes2(c,x,y-22*s,s,18,9);line(c,x-30*s,y-38*s,x-10*s,y-32*s,'#c2185b',3*s);line(c,x+30*s,y-38*s,x+10*s,y-32*s,'#c2185b',3*s);
+  [[-80,50],[-66,62],[70,56],[84,46],[-90,30]].forEach(p=>ell(c,x+p[0]*s,y+p[1]*s,7*s,3*s,'#f8bbd0'));}
+});
+
+function drawHako(c,x,y,s){c.save();c.translate(x,y);c.scale(s,s);
+ ell(c,0,15,11,4,'rgba(0,0,0,.2)');
+ c.fillStyle='#f6d8a8';c.strokeStyle='#8d6e63';c.lineWidth=2;rr(c,-11,-8,22,21,4);c.fill();c.stroke();
+ c.fillStyle='#e9c58f';rr(c,-13,-12,26,6,2);c.fill();c.stroke();
+ ['#e53935','#fdd835','#43a047','#1e88e5'].forEach((k,i)=>{c.fillStyle=k;c.fillRect(-11+i*5.5,5,5.5,4);});
+ circ(c,-4,-1,2,'#222');circ(c,4,-1,2,'#222');c.restore();}
+function drawHero(c,x,y){ell(c,x,y+16,12,4,'rgba(0,0,0,.2)');
+ poly(c,[[x-12,y+14],[x-9,y-2],[x+9,y-2],[x+12,y+14]],'#e53935');
+ c.fillStyle='#1e88e5';rr(c,x-9,y-3,18,17,4);c.fill();
+ circ(c,x,y-11,10,'#ffcc80');c.fillStyle='#4e342e';c.beginPath();c.arc(x,y-13,10,Math.PI,0);c.fill();
+ c.fillStyle='#222';c.fillRect(x-5,y-11,3,3);c.fillRect(x+2,y-11,3,3);}
+
+function drawNpc(c,x,y,kind){ell(c,x,y+16,12,4,'rgba(0,0,0,.2)');
+ if(kind==='a'){c.fillStyle='#8e24aa';rr(c,x-10,y-3,20,18,4);c.fill();c.fillStyle='#fff';c.fillRect(x-6,y,12,13);circ(c,x,y-11,10,'#ffcc80');circ(c,x,y-22,6,'#e0e0e0');c.fillStyle='#e0e0e0';c.beginPath();c.arc(x,y-13,10,Math.PI,0);c.fill();}
+ else{poly(c,[[x-11,y+14],[x-7,y-3],[x+7,y-3],[x+11,y+14]],'#f06292');circ(c,x,y-11,10,'#ffcc80');c.fillStyle='#3e2723';c.beginPath();c.arc(x,y-13,10,Math.PI,0);c.fill();circ(c,x-11,y-9,4,'#3e2723');circ(c,x+11,y-9,4,'#3e2723');}
+ c.fillStyle='#222';c.fillRect(x-5,y-11,3,3);c.fillRect(x+2,y-11,3,3);}
+function bgFor(t,y){if(t==='a'||t==='b')return 'P';if(t==='1'||t==='=')return 'W';if(t==='2')return ',';if(t==='B')return ':';if(t==='T'){const z=zoneOf(y);return z===3?':':z===2?',':'.';}if(t==='H'||t==='S')return 'P';return t;}
+function drawGround(c,g,px,py,x,y){const h=(x*73+y*37)%7;
+ const P=CH.pal;
+ if(g==='.'){c.fillStyle=P['.'][0];c.fillRect(px,py,TS,TS);for(let i=0;i<2;i++){const ox=px+8+((h+i*3)%5)*7,oy=py+12+((h*2+i*5)%4)*7;line(c,ox,oy+6,ox-3,oy,P['.'][1],2);line(c,ox,oy+6,ox+3,oy,P['.'][1],2);}}
+ else if(g===','){c.fillStyle=P[','][0];c.fillRect(px,py,TS,TS);for(let i=0;i<3;i++)circ(c,px+6+((h+i*4)%6)*7,py+8+((h*3+i*5)%5)*8,2,P[','][1]);}
+ else if(g===':'){c.fillStyle=P[':'][0];c.fillRect(px,py,TS,TS);for(let i=0;i<2;i++)ell(c,px+8+((h+i*3)%5)*7,py+10+((h*2+i*3)%4)*8,3,2,P[':'][1]);}
+ else if(g==='P'){c.fillStyle='#ecd9a8';c.fillRect(px,py,TS,TS);}
+ else if(g==='W'){c.fillStyle='#4fc3f7';c.fillRect(px,py,TS,TS);c.strokeStyle='#b3e5fc';c.lineWidth=2;c.beginPath();c.arc(px+14,py+18,6,Math.PI*1.1,Math.PI*1.9);c.stroke();c.beginPath();c.arc(px+32,py+34,6,Math.PI*1.1,Math.PI*1.9);c.stroke();}}
+function drawObj(c,t,px,py,y){
+ if(t==='T'){c.fillStyle='#5d4037';c.fillRect(px+20,py+28,8,14);const tc=zoneOf(y)===3?CH.pal.tree3:CH.pal.tree;circ(c,px+24,py+20,17,tc[0]);circ(c,px+19,py+15,7,tc[1]);}
+ else if(t==='H'){c.fillStyle='#fff3e0';c.fillRect(px+8,py+20,32,22);poly(c,[[px+4,py+22],[px+24,py+4],[px+44,py+22]],'#d84315');c.fillStyle='#6d4c41';c.fillRect(px+20,py+30,9,12);c.fillStyle='#81d4fa';c.fillRect(px+31,py+25,7,6);}
+ if(t==='='||t==='1'){c.fillStyle='#a1887f';c.fillRect(px+6,py,TS-12,TS);for(let i=0;i<6;i++)line(c,px+7,py+4+i*8,px+TS-7,py+4+i*8,'#795548',1.5);c.fillStyle='#6d4c41';c.fillRect(px+4,py,4,TS);c.fillRect(px+TS-8,py,4,TS);}
+ if(t==='a'||t==='b')drawNpc(c,px+24,py+26,t);
+ const gd=CH.guards[t];if(gd)DRAW[gd[0]](c,px+gd[2],py+gd[3],gd[1]);}
+function camera(){return{cx:Math.max(0,Math.min(W-VW,S.x-5)),cy:Math.max(0,Math.min(H-VH,S.y-4))};}
+function drawMap(){const{cx,cy}=camera();mc.clearRect(0,0,VW*TS,VH*TS);
+ for(let j=0;j<VH;j++)for(let i=0;i<VW;i++){const x=cx+i,y=cy+j,t=MAP[y][x];drawGround(mc,bgFor(t,y),i*TS,j*TS,x,y);drawObj(mc,t,i*TS,j*TS,y);}
+ if(S.fx!==S.x||S.fy!==S.y)drawHako(mc,(S.fx-cx)*TS+24,(S.fy-cy)*TS+26,1);
+ drawHero(mc,(S.x-cx)*TS+24,(S.y-cy)*TS+26);
+ if(CUT.crow)DRAW[CH.villain](mc,(CH.cut[0]-cx)*TS+24,(CH.cut[1]-cy)*TS+4,.55);}
+const CUT={crow:false};
+function setColor(){mcv.style.filter=CH.color(Math.min(3,S.stones));}
+
+/* ---------- じょうたい ---------- */
+const KEY='manabi-rpg-kokugo-proto-1';
+let S=null,B=null,mode='title',input='',rafId=0,sessionStart=Date.now();
+const T={showAns:false,noEnc:false};
+function newGame(name){CH=CHS[1];resetMap();S={ch:1,name,lv:1,hp:20,maxhp:20,atk:3,exp:0,gumi:3,x:10,y:14,fx:10,fy:14,stones:0,flags:{},stats:{},ok:0,total:0,speed:0,steps:0,playMs:0};}
+function save(){if(!S)return;try{S.playMs=(S.playMs||0)+(Date.now()-sessionStart);sessionStart=Date.now();localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function applyFlags(){CH=CHS[S.ch||1];resetMap();if(S.flags.g1)MAP[CH.g1[1]][CH.g1[0]]='=';if(S.flags.g2)MAP[CH.g2[1]][CH.g2[0]]='P';if(S.flags.boss)MAP[CH.gb[1]][CH.gb[0]]=':';}
+function updStatus(){if(!S)return;$('st-name').textContent=S.name;$('st-lv').textContent='Lv'+S.lv;const hp=$('st-hp');hp.textContent=`HP ${S.hp}/${S.maxhp}`;hp.classList.toggle('low',S.hp<=S.maxhp*0.3);
+ $('st-gumi').textContent='🍬×'+S.gumi;$('st-stone').textContent=CH.item+' '+'◆'.repeat(S.stones)+'◇'.repeat(3-S.stones);}
+
+/* ---------- メッセージ ---------- */
+const M={q:[],cb:null,typing:false,full:'',timer:null,active:false,choice:false};
+function say(lines,cb){M.q=lines.slice();M.cb=cb||null;M.active=true;M.choice=false;$('choices').innerHTML='';$('msg').classList.remove('hidden');M.typing=false;nextMsg();}
+function ask(text,opts,cb){clearInterval(M.timer);M.typing=false;M.q=[];M.cb=null;M.active=true;M.choice=true;$('msg').classList.remove('hidden');
+ $('msgwho').classList.add('hidden');$('msgtext').textContent=text.split('{name}').join(S.name);$('msgnext').classList.add('hidden');
+ const box=$('choices');box.innerHTML='';opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='▶ '+o;
+  b.onclick=e=>{e.stopPropagation();box.innerHTML='';M.choice=false;M.active=false;$('msg').classList.add('hidden');snd('ok');cb(i);};box.appendChild(b);});}
+function nextMsg(){
+ if(!M.active||M.choice)return;
+ if(M.typing){clearInterval(M.timer);M.typing=false;$('msgtext').textContent=M.full;$('msgnext').classList.remove('hidden');return;}
+ while(M.q.length&&typeof M.q[0]==='function')M.q.shift()();
+ if(!M.q.length){M.active=false;$('msg').classList.add('hidden');const c=M.cb;M.cb=null;if(c)c();return;}
+ let s=M.q.shift().split('{name}').join(S?S.name:''),who='';const i=s.indexOf('｜');if(i>=0){who=s.slice(0,i);s=s.slice(i+1);}
+ $('msgwho').textContent=who;$('msgwho').classList.toggle('hidden',!who);
+ M.full=s;let n=0;M.typing=true;$('msgnext').classList.add('hidden');$('msgtext').textContent='';
+ clearInterval(M.timer);M.timer=setInterval(()=>{n++;$('msgtext').textContent=s.slice(0,n);if(n>=s.length){clearInterval(M.timer);M.typing=false;$('msgnext').classList.remove('hidden');}},24);}
+$('msg').addEventListener('click',nextMsg);
+$('btnOk').addEventListener('click',()=>{if(M.active)nextMsg();});
+const overlayOpen=()=>[...document.querySelectorAll('.ov')].some(e=>!e.classList.contains('hidden'));
+
+/* ---------- いどう ---------- */
+const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};let lastMove=0;
+function move(d){if(mode!=='map'||M.active||overlayOpen())return;const now=performance.now();if(now-lastMove<140)return;lastMove=now;
+ const[dx,dy]=DIRS[d],nx=S.x+dx,ny=S.y+dy;if(nx<0||ny<0||nx>=W||ny>=H)return;const t=MAP[ny][nx];
+ if(WALK.includes(t)){S.fx=S.x;S.fy=S.y;S.x=nx;S.y=ny;drawMap();
+  if(ENC.includes(t)&&!T.noEnc){S.steps=(S.steps||0)+1;if(S.steps>=3&&Math.random()<0.13){S.steps=0;encounter();}}}
+ else if('H12Bab'.includes(t))bump(t);}
+document.querySelectorAll('.dpad [data-d]').forEach(b=>{let t=null;const go=()=>move(b.dataset.d);
+ b.addEventListener('pointerdown',e=>{e.preventDefault();go();clearInterval(t);t=setInterval(go,170);});
+ ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>clearInterval(t)));});
+
+/* ---------- できごと ---------- */
+function encounter(){const z=zoneOf(S.y),list=CH.zoneMon[z];withLesson(z,()=>startBattle(list[R(0,list.length-1)],{pool:'z'+z,zone:z}));}
+function chief(){const heal=()=>{S.hp=S.maxhp;updStatus();save();snd('heal');};
+ if(!S.flags.chief){S.flags.chief=true;say(['ちょうろう｜おお、{name}。ハコロンから はなしは きいたぞ。','ちょうろう｜'+CH.chief1,'ちょうろう｜つかれたら いつでも ここへ おいで。げんきに してあげよう。'],()=>{heal();say(['{name}の HPが ぜんぶ かいふくした！','（ぼうけんの きろくを のこしました）']);});}
+ else{heal();say(['ちょうろう｜よく がんばっておるな。ゆっくり やすみなされ。','{name}の HPが ぜんぶ かいふくした！','（ぼうけんの きろくを のこしました）']);}}
+function getStone(n,extra){return [()=>{S.stones=Math.max(S.stones,n);updStatus();setColor();drawMap();snd('lv');},`${['','1まいめ','2まいめ','3まいめ'][n]}の ことのはの ページを てにいれた！`,n<3?'まちに すこし いろが もどった！':'まちに いろと ことばが ぜんぶ もどった！'].concat(extra||[]);}
+function fightG1(){say(['おしゃべりオウム｜オウオウ！ ワタシは ことわざ はかせ！','おしゃべりオウム｜「ねこに ぼうし」！「さるも 木から ねる」！ どうだ、すごいオウ！','ハコロン｜…{name}、なんだか ぜんぶ ちがう きがする…'],()=>startBattle('oumu',{pool:'g1',zone:1,after:()=>{
+ say(['おしゃべりオウム｜オウ〜… まいったオウ…','おしゃべりオウム｜…ほんとうはね、いみも しらずに まねして いただけオウ…','おしゃべりオウム｜「すごい」って いわれたくて… ムゴンに もらった ページで かっこつけてたオウ…'],()=>ask('オウムに なんて いう？',['いみを いっしょに おぼえよう','まちがいを みとめて えらいね'],i=>{
+  const r=i===0?['{name}｜いみを いっしょに おぼえようよ！','おしゃべりオウム｜…いいオウか？ ほんものの ことわざ はかせに なるオウ！']:['{name}｜まちがいを みとめるって、えらいよ。','おしゃべりオウム｜…オウ。ちょっと うれしいオウ。'];
+  if(i===0)S.flags.friend1=true;
+  say(r.concat([()=>{S.flags.g1=true;MAP[9][15]='=';}],getStone(1,['はしを わたれるように なった！','おしゃべりオウム｜ムゴンは もじの もりの むこうの おかに いるオウ。…あいつ、ずっと ひとことも しゃべらないオウ。','ハコロン｜きたの もりでは「四字熟語」の もんだいが でるよ。漢字 1もじ 1もじの いみを かんがえるのが コツだよ！'])),save);}));}}));}
+function fightG2(){say(['すみつぼダコ｜タコタコ〜！ この もりの 漢字は ぜんぶ すみで ぬりつぶしたタコ！','すみつぼダコ｜よめなければ、だれも おかには いけないタコ〜！'],()=>startBattle('tako',{pool:'g2',zone:2,after:()=>{
+ say(['すみつぼダコ｜タコ〜… すみが きれちゃった…','すみつぼダコ｜ムゴンに たのまれたタコ。「だれも おかに こさせるな」って…','すみつぼダコ｜ムゴンは むかし、ことばで すごく きずつけられたって いってたタコ。','すみつぼダコ｜「ことばなんて ぜんぶ なくなれば いい」って…','ハコロン｜……ことばで、きずついたんだ……',()=>{S.flags.g2=true;MAP[4][8]='P';}].concat(getStone(2,['ハコロン｜{name}… ムゴンを やっつけるだけじゃ、だめなのかも しれないね。','ハコロン｜おかでは「文法」の もんだいが でるよ。主語・述語や 敬語を おもいだしてね。まちで やすんでから いこう！'])),save);}}));}
+function fightBoss(){say(['ムゴン｜…………。','ムゴン｜……ことばは、ひとを きずつける。だから、ぜんぶ けす。','ハコロン｜ちがうよ！ ことばは、ひとを げんきにも できるんだ！','ムゴン｜……なら、しょうこを みせてみろ。'],()=>startBattle('mugon',{pool:'boss',zone:4,after:()=>{
+ say(['ムゴン｜……まけた。','ムゴン｜……むかし、いっしょうけんめい はなしたら「へんな ことば」って わらわれた。','ムゴン｜それから、だまる ことに した。ことばが なければ、もう きずつかないと おもった……'],()=>ask('ムゴンに なんて いう？',['きみの ことば、ききたいな','いっしょに すてきな ことばを さがそう'],i=>{
+  const r=i===0?['{name}｜きみの ことば、もっと ききたいな。','ムゴン｜……ぼくの、ことばを？']:['{name}｜いっしょに すてきな ことばを さがそうよ！','ムゴン｜……すてきな、ことば……？'];
+  const tail=['としょかんの おばあさん｜（とおくから）ほんの もじが もどってきたわ〜！','ユイ｜（とおくから）{name}、ありがとうー！'];
+  if(S.flags.friend1)tail.push('おしゃべりオウム｜（とおくから）こんどは いみも ちゃんと いえるオウー！');
+  say(r.concat(['ハコロン｜ことわざにも あるよ。「雨ふって 地 固まる」。つらい ことの あとは、まえより なかよく なれるんだ！','ムゴン｜……あめふって、じ かたまる……','ムゴン｜……ありがとう。','ムゴン｜……ぼくの ほんとうの なまえは「コトハ」。ページは、かえすよ。……ごめんなさい。',()=>{S.flags.boss=true;MAP[1][11]=':';}],getStone(3,tail)),()=>{save();showEnding();});}));}}));}
+const BAA=['としょかんの おばあさん｜「さるも 木から…」 つづきが でてこないの。ほんの ページも まっしろよ…','としょかんの おばあさん｜「さるも 木から 落ちる」！ おもいだしたわ。名人でも 失敗する ことが ある って いみよ。','としょかんの おばあさん｜もりの すみが はれたのね。漢字が よめるように なってきたわ。','としょかんの おばあさん｜ほんの ページが ぜんぶ もどったわ。ありがとうね。'];
+const YUI=['ユイ｜ともだちに てがみを かきたいのに、ことばが うかばないの…','ユイ｜ハコロンって なんでも しってるの？ いいなあ。','ユイ｜「一石二鳥」って しってる？ 1つの ことで 2つ とくする ことなんだって！','ユイ｜てがみ かけたよ！「いつも ありがとう」って。ことばって すてきだね。'];
+function npc(t){const k=Math.min(3,S.stones);if(t==='a'){const L=[BAA[k]];if(k>=1&&!S.flags.gift){S.flags.gift=true;S.gumi+=2;L.push('としょかんの おばあさん｜おれいに これを あげるわ。','げんきグミを 2こ もらった！',()=>{updStatus();save();snd('heal');});}say(L);}else say([YUI[k]]);}
+function bump(t){if(t==='H')chief();else if(t==='1')CH.f1();else if(t==='2')CH.f2();else if(t==='B')CH.fb();else CH.npc(t);}
+
+/* ---------- バトル ---------- */
+function startBattle(key,opts){const m=MON[key];B={key,m,hp:m.hp,pool:CH.pools[opts.pool],shield:CH.shields||0,zone:opts.zone,opts,retry:[],locked:true,prob:null,last:'',combo:0,said:{},caged:false,cageDone:false,free:0,cheered:false};
+ mode='battle';document.body.classList.add('battle');$('mapcv').classList.add('hidden');$('batcv').classList.remove('hidden');$('bhud').classList.remove('hidden');
+ $('controls').classList.add('hidden');$('probPanel').classList.remove('hidden');$('explainbox').classList.add('hidden');$('hintbox').classList.add('hidden');$('opts').classList.remove('hidden');
+ $('qtext').innerHTML='';$('qtext').className='';$('testAns').textContent='';updHud();drawBattle();snd('enc');
+ fitPad();say([`${m.name}が あらわれた！`],nextProblem);}
+function fitPad(){requestAnimationFrame(()=>{const r=$('bactions').getBoundingClientRect(),t=$('screen').getBoundingClientRect();if(r.bottom>innerHeight)window.scrollBy(0,Math.min(r.bottom-innerHeight+6,t.top-2));else if(t.top<0)window.scrollBy(0,t.top-2);});}
+function updHud(){$('monName').textContent=B.m.name;$('monHp').style.width=Math.max(0,B.hp/B.m.hp*100)+'%';
+ const cb=$('combo');if(B.caged){cb.textContent=`🔒 たすけるまで あと${B.free}もん`;cb.className='cage';}
+ else{const n=B.combo%3;cb.textContent='ハコロン '+'★'.repeat(n)+'☆'.repeat(3-n);cb.className='';}}
+function drawBattle(o){o=o||{};const c=bc;const pal={1:['#bfe7ff','#9ccc65'],2:['#5b7f47','#2e4d23'],3:['#ffe0b2','#c9a45c'],4:['#2a1e4a','#5a4290']}[B.zone];
+ const g=c.createLinearGradient(0,0,0,300);g.addColorStop(0,pal[0]);g.addColorStop(1,pal[1]);c.fillStyle=g;c.fillRect(0,0,528,300);
+ ell(c,264,240,90,18,'rgba(0,0,0,.18)');
+ c.save();c.globalAlpha=o.alpha==null?1:Math.max(0,o.alpha);DRAW[B.m.draw](c,264+(o.shake||0),168,1.12);c.restore();
+ const hx=58,hy=200+(o.hop||0);drawHako(c,hx,hy,2);if(CH.companion)DRAW.kotoha(c,112,206,1.1);if(CH.id>=3)DRAW.urahara(c,150,236,.3);
+ if(B.caged){c.strokeStyle='#cfd8dc';c.lineWidth=4;c.beginPath();c.arc(hx,hy-12,33,Math.PI,0);c.stroke();for(let i=-3;i<=3;i++){c.beginPath();c.moveTo(hx+i*10,hy-12-Math.sqrt(Math.max(0,33*33-(i*10)**2)));c.lineTo(hx+i*10,hy+35);c.stroke();}
+  c.fillStyle='#90a4ae';c.fillRect(hx-37,hy+33,74,7);circ(c,hx,hy+8,5,'#ffca28');}
+ if(o.flash){c.fillStyle='rgba(255,255,255,.55)';c.fillRect(0,0,528,300);}}
+function hakoHop(){let t=0;const f=()=>{if(!B)return;t++;drawBattle({hop:-Math.sin(t/12*Math.PI)*28});if(t<12)requestAnimationFrame(f);};f();}
+function animMon(type){let t=0;const f=()=>{if(!B)return;t++;
+ drawBattle(type==='hit'?{shake:Math.sin(t*1.8)*10*(1-t/14),flash:t<4}:{alpha:1-t/16});if(t<16)requestAnimationFrame(f);};f();}
+function hurt(){const s=$('screen'),fl=$('flash');s.classList.remove('shake');fl.classList.remove('on');void s.offsetWidth;s.classList.add('shake');fl.classList.add('on');snd('hurt');}
+function popDmg(n,sp){const d=document.createElement('div');d.className='pop'+(sp?' sp':'');d.textContent=(sp?'⚡':'')+n;$('screen').appendChild(d);setTimeout(()=>d.remove(),950);}
+function renderProb(p,again){const q=$('qtext');const long=plain(p.q.replace(/<div class="mean">.*<\/div>/,'')).length>12||p.q.includes('<br>');q.className=long?'kq word':'kq';
+ q.innerHTML=(again?'<div class="again">🔁 もういちど！</div>':p.review?'<div class="again">📚 ふくしゅう もんだい！</div>':'')+p.q.replace('□','<span id="ansval">？</span>');
+ $('testAns').innerHTML=T.showAns?`（テスト：こたえ ${rb(p.ans)}）`:'';
+ const box=$('opts');box.innerHTML='';const ml=Math.max(...p.opts.map(o=>plain(o).length));box.className=p.opts.length>4?(ml<=3?'g8':'g8m'):(ml>7?'long':'');
+ p.opts.forEach((o,i)=>{const b=document.createElement('button');b.innerHTML=`<span class="no">${i+1}</span>${rb(o)}`;b.onclick=()=>choose(i);box.appendChild(b);});}
+function setAns(v,cls){const e=$('ansval');if(e){e.innerHTML=v===''?'？':rb(v);e.className=cls||'';}}
+function speedLoop(){if(!B||!B.prob||B.locked)return;const r=B.hintUsed?0:Math.max(0,1-(performance.now()-B.t0)/B.prob.crit);$('speedbar').firstElementChild.style.width=(r*100)+'%';rafId=requestAnimationFrame(speedLoop);}
+function startSpeed(){cancelAnimationFrame(rafId);rafId=requestAnimationFrame(speedLoop);}
+function nextProblem(){if(!B)return;$('explainbox').classList.add('hidden');$('hintbox').classList.add('hidden');$('opts').classList.remove('hidden');
+ let p=null,again=false;B.retry.forEach(r=>r.wait--);const idx=B.retry.findIndex(r=>r.wait<0);
+ if(idx>=0){p=B.retry.splice(idx,1)[0].p;p.opts=shuffle(p.opts);again=true;}
+ if(!p&&CH.review&&Math.random()<(B.m.boss?0.3:0.2)){const w=weakType();if(w&&GEN[w]){p=GEN[w==='bunpo'?'bunpo2':w]();p.review=true;}}
+ if(!p){for(let k=0;k<6;k++){const ty=B.pool[R(0,B.pool.length-1)];p=GEN[ty]();if(p.q!==B.last)break;}}
+ B.last=p.q;B.prob=p;B.hintUsed=false;renderProb(p,again);fitPad();B.t0=performance.now();B.locked=false;startSpeed();}
+function stat(type,ok){S.total++;if(ok)S.ok++;const st=S.stats[type]||(S.stats[type]={n:0,ok:0});st.n++;if(ok)st.ok++;}
+function hitMon(n){B.hp=Math.max(B.m.cage&&!B.cageDone?1:0,B.hp-n);}
+function choose(ci){if(!B||!B.prob||B.locked||M.active)return;const p=B.prob,v=p.opts[ci];if(v===undefined)return;
+ const btns=[...$('opts').children];if(btns[ci].classList.contains('out'))return;B.locked=true;
+ const ms=performance.now()-B.t0;const ok=v===p.ans;stat(p.type,ok);
+ btns.forEach((b,i)=>{if(p.opts[i]===p.ans)b.classList.add('right');else if(i===ci)b.classList.add('wrong');});
+ if(ok){const speed=!B.hintUsed&&ms<=p.crit;let dmg=S.atk+R(0,1);if(speed){dmg*=2;S.speed++;}if(B.hintUsed)dmg=Math.max(1,Math.ceil(dmg/2));
+  B.combo++;hitMon(dmg);snd(speed?'speed':'ok');setAns(v,'ok');animMon('hit');popDmg(dmg,speed);updHud();
+  const L=[(speed?'⚡スピードこうげき！ ':'せいかい！ ')+`${B.m.name}に ${dmg}の ダメージ！`];
+  if(B.caged){B.free--;
+   if(B.free>0)L.push(()=>updHud(),`かごの かぎが ひとつ ひかった！ あと ${B.free}もん！`);
+   else{B.caged=false;B.cageDone=true;const big=10+S.lv*2;hitMon(big);
+    L.push(()=>{drawBattle();updHud();snd('lv');},'カチャッ！ かごの かぎが あいた！','ハコロン｜……っ、こえが でる！ ありがとう、{name}！',...(CH.companion?['コトハ｜……いまだ。3人で！','ハコロン｜いくよ… みんなの ことばの ちからを あわせて！']:['ハコロン｜いくよ… ふたりの ことばの ちからを あわせて！']),
+     ()=>{hakoHop();setTimeout(()=>{if(!B)return;animMon('hit');popDmg(big,true);updHud();snd('speed');},250);},`🌟 ことだまの だいこうげき！ ${B.m.name}に ${big}の ダメージ！`);}}
+  else if(B.combo%3===0){const h=2+Math.floor(S.lv/2);hitMon(h);
+   L.push(()=>{updHud();hakoHop();},'ハコロン｜3もん れんぞく せいかい！ ぼくも いくよ！',()=>{animMon('hit');popDmg(h,false);updHud();snd('ok');},`ハコロンの たいあたり！ ${h}の ダメージ！`);}
+  if(B.hp>0){(B.m.talk||[]).forEach(([th,ls])=>{if(B.hp/B.m.hp<=th&&!B.said[th]){B.said[th]=1;L.push(...ls);}});
+   if(B.m.cage&&!B.caged&&!B.cageDone&&B.hp<=B.m.hp*0.5){B.caged=true;B.free=3;B.combo=0;
+    const cl=B.m.cageLines;L.push(cl[0],()=>{drawBattle();updHud();hurt();},...cl.slice(1));}}
+  say(L,()=>{updHud();if(B.hp<=0)win();else nextProblem();});}
+ else{snd('ng');setAns(v,'ng');B.retry.push({p,wait:1});B.combo=0;
+  $('opts').classList.add('hidden');$('hintbox').classList.add('hidden');$('explainbox').innerHTML=`<div class="ext">📖 ${B.caged?'こたえと せつめい':'ハコロンの せつめい'}</div>こたえ：<b>${rb(p.ans)}</b><br>`+p.explain;$('explainbox').classList.remove('hidden');
+  const d=Math.max(1,B.m.atk+R(-1,1));
+  const first=[B.caged?'（ハコロンが かごの なかで くやしそうに している…）':`ハコロン｜おしい！ こたえは「${plain(p.ans)}」だよ。したの せつめいを みてね。`];
+  if(B.caged&&B.free<3){B.free=3;first.push(()=>updHud(),'かごの かぎが しまっちゃった… もういちど 3もん れんぞくで！');}
+  updHud();
+  if(B.shield>0){const uh=CH.shields===2&&B.shield===1;B.shield--;say(first.concat([`${B.m.name}の こうげき！`,...(uh?['ウラハラ｜べ、べつに まもって なんか ないぞ！',()=>snd('heal'),'ウラハラの「かがみの たて」！ ダメージを はねかえした！']:['コトハ｜……まもる。',()=>snd('heal'),'コトハの「ことばの たて」！ ダメージを ふせいだ！'])]),nextProblem);return;}
+  say(first.concat([`${B.m.name}の こうげき！`]),()=>{S.hp=Math.max(0,S.hp-d);hurt();updStatus();
+   const L=[`{name}は ${d}の ダメージを うけた！`];
+   if(S.hp>0&&S.hp<=S.maxhp*0.3&&!B.cheered){B.cheered=true;L.push(B.caged?'（かごの なかで、ハコロンが「がんばれ」と 口を うごかしている…！）':'ハコロン｜{name}、まけないで！ あわてなくて だいじょうぶ。ゆっくり かんがえよう！');}
+   say(L,()=>{if(S.hp<=0)lose();else nextProblem();});});}}
+function useHint(){if(!B||B.locked||M.active||B.hintUsed)return;
+ if(B.caged){B.locked=true;say(['ハコロンは かごの なかで しゃべれない！ ヒントは つかえないよ。'],()=>{B.locked=false;startSpeed();});return;}
+ B.hintUsed=true;const p=B.prob;const btns=[...$('opts').children];
+ const wl=btns.map((b,i)=>i).filter(i=>p.opts[i]!==p.ans);const wrong=shuffle(wl).slice(0,Math.ceil(wl.length/2));wrong.forEach(i=>btns[i].classList.add('out'));
+ $('hintbox').innerHTML=`💡 ハコロン：ちがう こたえを ${wrong.length}つ けしたよ！`+(p.hint?`<br>${p.hint}`:'');$('hintbox').classList.remove('hidden');}
+$('bHint').onclick=useHint;
+$('hintbox').onclick=()=>$('hintbox').classList.add('hidden');
+$('bGumi').onclick=()=>{if(!B||B.locked||M.active)return;
+ if(S.gumi<=0){say(['げんきグミを もっていない！'],()=>{});return;}
+ if(S.hp>=S.maxhp){say(['HPは まんたんだよ。'],()=>{});return;}
+ B.locked=true;S.gumi--;const h=Math.min(15,S.maxhp-S.hp);S.hp+=h;updStatus();snd('heal');
+ say([`げんきグミを たべた！ HPが ${h} かいふく！`],()=>{B.locked=false;B.t0=performance.now();startSpeed();});};
+$('bRun').onclick=()=>{if(!B||B.locked||M.active)return;B.locked=true;
+ if(B.m.boss){say(['この あいてからは にげられない！'],()=>{B.locked=false;B.t0=performance.now();startSpeed();});return;}
+ say(['うまく にげきれた！'],endBattle);};
+function win(){snd('win');animMon('die');const m=B.m;const lines=[`${m.name}を やっつけた！`,`けいけんちを ${m.exp} もらった！`];S.exp+=m.exp;let up=false;
+ if(!m.boss&&Math.random()<0.2){S.gumi++;lines.push('げんきグミを 1こ ひろった！');}
+ while(S.lv<LV.length-1&&S.exp>=LV[S.lv+1]){S.lv++;S.maxhp+=4;S.atk+=1;S.hp=Math.min(S.maxhp,S.hp+4);up=true;lines.push(`レベルが あがった！ Lv${S.lv} に なった！`,'HPと こうげきりょくが あがった！');}
+ if(up)setTimeout(()=>snd('lv'),700);updStatus();
+ const after=B.opts.after;say(lines,()=>{endBattle();if(after)after();});}
+function lose(){say(['{name}は たおれてしまった…','ハコロン｜だいじょうぶ！ まちまで はこんであげるね。'],()=>{S.hp=S.maxhp;S.x=CH.spawn[0];S.y=CH.spawn[1];S.fx=S.x;S.fy=S.y;endBattle();say(['ハコロン｜ちょうろうに げんきに してもらったよ。もういちど いってみよう！']);});}
+function endBattle(){B=null;document.body.classList.remove('battle');cancelAnimationFrame(rafId);mode='map';$('batcv').classList.add('hidden');$('bhud').classList.add('hidden');$('probPanel').classList.add('hidden');
+ $('mapcv').classList.remove('hidden');$('controls').classList.remove('hidden');drawMap();updStatus();save();}
+
+/* ---------- パネル ---------- */
+function statTable(){const ks=Object.keys(S.stats);if(!ks.length)return '<p>まだ もんだいを といていないよ。</p>';
+ let h='<table class="tb"><tr><th>もんだい</th><th>せいかい</th></tr>';ks.forEach(k=>{const v=S.stats[k];h+=`<tr><td>${TYPE_NAME[k]||k}</td><td>${v.ok} / ${v.n}（${Math.round(v.ok/v.n*100)}%）</td></tr>`;});return h+'</table>';}
+$('btnStats').onclick=()=>{if(M.active)return;const nx=S.lv<LV.length-1?LV[S.lv+1]-S.exp:0;
+ $('statBody').innerHTML=`<p>${S.name}　Lv${S.lv}<br>HP ${S.hp} / ${S.maxhp}　こうげき ${S.atk}<br>つぎの レベルまで あと ${nx}<br>⚡スピードこうげき ${S.speed}かい</p>`+statTable()+(CH.lessons?`<div class="lbtns">📘 じゅぎょう：${(CH.lessonNames||[]).map((n,i)=>`<button data-ls="${i+1}">${n}</button>`).join('')}</div>`:'');
+ $('statBody').querySelectorAll('[data-ls]').forEach(b=>b.onclick=()=>{$('statsPanel').classList.add('hidden');showLesson(+b.dataset.ls,null);});$('statsPanel').classList.remove('hidden');};
+$('btnGumi').onclick=()=>{if(mode!=='map'||M.active)return;if(S.gumi<=0){say(['げんきグミを もっていない！']);return;}if(S.hp>=S.maxhp){say(['HPは まんたんだよ。']);return;}
+ S.gumi--;const h=Math.min(15,S.maxhp-S.hp);S.hp+=h;updStatus();snd('heal');say([`げんきグミを たべた！ HPが ${h} かいふく！`]);save();};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.ov').classList.add('hidden'));
+function showEnding(){const acc=S.total?Math.round(S.ok/S.total*100):0;const mins=Math.max(1,Math.round(((S.playMs||0)+(Date.now()-sessionStart))/60000));
+ let weak='';const ks=Object.keys(S.stats).filter(k=>S.stats[k].n>=3);if(ks.length){ks.sort((a,b)=>S.stats[a].ok/S.stats[a].n-S.stats[b].ok/S.stats[b].n);weak=`<p>もうすこし れんしゅう：<b>${TYPE_NAME[ks[0]]}</b></p>`;}
+ $('endBody').innerHTML=`<p>${CH.id===1?'まちに ことばと いろが もどった！':CH.id===2?'まちの ことばが まっすぐに もどった！':'まちに インクと ことばが もどった！'}<br>ありがとう、${S.name}！</p><p>せいかい ${S.ok} / ${S.total}もん（${acc}%）<br>⚡スピードこうげき ${S.speed}かい<br>レベル ${S.lv}　あそんだ じかん やく${mins}ぷん</p>${weak}${statTable()}${CH.id===3?`<p>大きな 本の さいごの ページには「${S.flags.lastWord||'ありがとう'}」の 文字。<br>ケシマルは、としょかんの「まちがいノート」の まもりがみに なった。${S.flags.friend1?'<br>カラクリハカセは、まいにち ネジを まいて もらっている。':''}${S.flags.friend2?'<br>ジュクゴンは、ふたりで 一つの ことばを おしえる 先生に なった。':''}</p><p style="color:#ffe082">ハコロンの ことばの ぼうけん、いったん おしまい！ あそんで くれて ありがとう！</p>`:CH.id===1?`<p>ムゴン（コトハ）は、まちの なかまに なった。${S.flags.friend1?'<br>おしゃべりオウムは、ことわざの いみを べんきょう しはじめた。':''}</p>`:`<p>ウラハラも、ことばまつりに やってきた。${S.flags.friend1?'<br>サカサガニは、よこあるきの おどりで にんきものに なった。':''}${S.flags.names?'<br>ソラと ウミは、はじめて べつべつに なまえを よばれた。':'<br>ドウオン きょうだいは、ふたりの ちがいに 気づいて もらえた。'}</p>`}`;
+ $('endTitle').textContent=`🎉 だい${CH.id}しょう クリア！`;$('btnNextCh').classList.toggle('hidden',!CHS[CH.id+1]);$('btnNextCh').textContent=`▶ だい${CH.id+1}しょうへ すすむ`;
+ $('ending').classList.remove('hidden');}
+$('btnEndClose').onclick=()=>{$('ending').classList.add('hidden');};
+$('btnNextCh').onclick=()=>startCh(CH.id+1);
+$('btnTest').onclick=()=>{if(M.active)return;$('testPanel').classList.remove('hidden');};
+let delArm=0;
+document.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.t;
+ const warp=(x,y)=>{S.x=x;S.y=y;S.fx=x;S.fy=y;drawMap();$('testPanel').classList.add('hidden');};
+ const fight=f=>{$('testPanel').classList.add('hidden');f();};
+ if(mode!=='map'&&k!=='ans')return;
+ if(k==='heal'){S.hp=S.maxhp;}
+ else if(k==='lv'&&S.lv<LV.length-1){S.exp=LV[S.lv+1];S.lv++;S.maxhp+=4;S.atk++;S.hp=S.maxhp;}
+ else if(k==='gumi'){S.gumi+=3;}
+ else if(k==='ans'){T.showAns=!T.showAns;$('tAns').textContent=T.showAns?'ON':'OFF';}
+ else if(k==='enc'){T.noEnc=!T.noEnc;$('tEnc').textContent=T.noEnc?'でない':'でる';}
+ else if(k==='w1')warp(...CH.warps[0]);else if(k==='w2')warp(...CH.warps[1]);else if(k==='w3')warp(...CH.warps[2]);else if(k==='ch2'||k==='ch3'){$('testPanel').classList.add('hidden');startCh(+k.slice(2));return;}
+ else if(k==='b1')fight(CH.f1);else if(k==='b2')fight(CH.f2);else if(k==='b3')fight(CH.fb);
+ else if(k==='del'){if(Date.now()-delArm<4000){try{localStorage.removeItem(KEY);}catch(e){}delArm=0;b.textContent='データを けす';$('testPanel').classList.add('hidden');showTitle();return;}
+  delArm=Date.now();b.textContent='もういちど おすと けします';setTimeout(()=>{b.textContent='データを けす';},4000);}
+ updStatus();save();}));
+
+/* ---------- キーボード ---------- */
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'){if(e.key==='Enter')$('btnName').click();return;}
+ if(overlayOpen())return;
+ if(M.active){if(e.key==='Enter'||e.key===' '||e.key==='z'){e.preventDefault();nextMsg();}return;}
+ if(mode==='map'){const k={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'}[e.key];if(k){e.preventDefault();move(k);}}
+ else if(mode==='battle'){if(/^[1-8]$/.test(e.key))choose(+e.key-1);else if(e.key==='h')useHint();}});
+
+/* ---------- タイトル ---------- */
+$('hakoBig').innerHTML=`<svg viewBox="0 0 120 110" width="130" height="120" aria-label="ハコロン"><rect x="15" y="28" width="90" height="72" rx="12" fill="#f6d8a8" stroke="#8d6e63" stroke-width="4"/><rect x="8" y="14" width="104" height="20" rx="6" fill="#e9c58f" stroke="#8d6e63" stroke-width="4"/><rect x="17" y="74" width="21.5" height="10" fill="#e53935"/><rect x="38.5" y="74" width="21.5" height="10" fill="#fdd835"/><rect x="60" y="74" width="21.5" height="10" fill="#43a047"/><rect x="81.5" y="74" width="21.5" height="10" fill="#1e88e5"/><circle cx="45" cy="52" r="7" fill="#222"/><circle cx="75" cy="52" r="7" fill="#222"/><circle cx="47" cy="50" r="2.2" fill="#fff"/><circle cx="77" cy="50" r="2.2" fill="#fff"/><circle cx="34" cy="64" r="5" fill="#ff8fab" opacity=".6"/><circle cx="86" cy="64" r="5" fill="#ff8fab" opacity=".6"/><path d="M52 62 Q60 70 68 62" stroke="#222" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`;
+const INTRO=[()=>{CUT.crow=false;mcv.style.filter='';drawMap();},'（ここは ことのはの まち。ことばと いろに あふれた、にぎやかな まち…）',
+ ()=>{CUT.crow=true;drawMap();hurt();},'ムゴン｜…………ことばなんて、いらない。','ムゴン｜……「ことのはの ページ」は、もらっていく。',
+ ()=>{CUT.crow=false;setColor();drawMap();snd('ng');},'おおきな ほんから、ことのはの ページが 3まい、そらへ きえていった…','まちから、いろが きえていく……',
+ 'としょかんの おばあさん｜あれ…？「さるも 木から…」 つづきが… おもいだせないわ…',
+ 'ハコロン｜{name}！ だいじょうぶ！？','ハコロン｜ぼく、ハコロン！ まなびの はこから うまれた ようせいだよ。','ハコロン｜ページが ないと、みんな ことばを わすれちゃう。まちの いろも もどらないんだ。','ハコロン｜おねがい、いっしょに とりかえして！',
+ 'ハコロン｜まものが でたら、4つの こたえから ただしい ものを えらんで こうげき！ はやく こたえると「スピードこうげき」で 2ばいの ダメージだよ。','ハコロン｜3もん つづけて せいかいすると、ぼくも いっしょに こうげき するからね！','ハコロン｜わからない ときは 💡ヒント！ ちがう こたえを 2つ けしてあげる。まちがえても ぼくが せつめい するから だいじょうぶ！',
+ 'ハコロン｜まずは みなみの はらっぱで ことわざと 慣用句の れんしゅう！ きたの はしに いる「おしゃべりオウム」が 1まいめの ページを もってるよ！','ハコロン｜まちの ひとたちにも はなしかけてみてね。いえの ちょうろうは げんきに してくれるよ。'];
+/* ---------- だい2しょう ものがたり ---------- */
+function withLesson(z,cb){if(CH.lessons&&CH.lessons[z]&&!S.flags['L'+z]){S.flags['L'+z]=1;showLesson(z,cb);}else cb();}
+function showLesson(z,cb){$('lessonBody').innerHTML=rb(CH.lessons[z]);$('lesson').classList.remove('hidden');snd('heal');
+ $('btnLesson').textContent=cb?'わかった！ たたかう':'とじる';$('btnLesson').onclick=()=>{$('lesson').classList.add('hidden');if(cb)cb();};}
+function c2f1(){withLesson(1,()=>say(['サカサガニ｜カニカニ〜！ こんばんは！（いまは おひるだけど）','サカサガニ｜おれは ぜんぶ ぎゃくに いう カニ！ とおりたければ「はんたいの ことば」で しょうぶだ！'],()=>startBattle('kani',{pool:'g1',zone:1,after:()=>{
+ say(['サカサガニ｜カニ〜… まけた…','サカサガニ｜…おれ、みんなと ちがって よこにしか あるけないカニ。','サカサガニ｜「へんな あるきかた」って わらわれて… だったら ことばも ぎゃくに しちゃえって…'],()=>ask('サカサガニに なんて いう？',['よこあるき、かっこいいよ','みんなと ちがっても いいんだよ'],i=>{
+  const r=i===0?['{name}｜よこあるき、かっこいいよ！','サカサガニ｜…ほんとカニ？ …えへへ、てれるカニ。']:['{name}｜みんなと ちがっても いいんだよ。','コトハ｜……ぼくも、ずっと「ちがう」って おもってた。でも、いまは ここに いる。','サカサガニ｜…カニ。'];
+  if(i===0)S.flags.friend1=true;
+  say(r.concat([()=>{S.flags.g1=true;MAP[CH.g1[1]][CH.g1[0]]='=';}],getStone(1,['はしを わたれるように なった！','サカサガニ｜もりには「ドウオン きょうだい」が いるカニ。ふたりの こえは そっくりで、だれも みわけられないカニ。','ハコロン｜もりでは「同じ 読みの ことば」と「部首」の もんだいが でるよ！'])),save);}));}})));}
+function c2f2(){withLesson(2,()=>say(['ドウオン きょうだい｜「「ぼくたちの ちがいが わかるかな〜？」」','ドウオン きょうだい｜「「わからなければ、ここは とおさない〜！」」'],()=>startBattle('douon',{pool:'g2',zone:2,after:()=>{
+ say(['ドウオン（あに）｜…まけた。','ドウオン（おとうと）｜…ぼくたち、こえも かおも そっくりで、いつも まちがえられるんだ。','ドウオン（あに）｜だから ウラハラに たのまれて、ことばも まちがえさせて やろうって…'],()=>ask('ドウオン きょうだいに なんて いう？',['ふたりの ちがい、みつけたよ','ふたりの なまえを おしえて'],i=>{
+  const r=i===0?['{name}｜ちがい、みつけたよ！ おにいさんは ほしの かざり、おとうとさんは つきの かざり！','ドウオン きょうだい｜「「…ちゃんと、みて くれてたんだ！」」']:['{name}｜ふたりの なまえを おしえて！','ドウオン（あに）｜…ソラ。','ドウオン（おとうと）｜…ウミ。','ドウオン きょうだい｜「「なまえを きかれたの、はじめて…！」」'];
+  if(i===1)S.flags.names=true;
+  say(r.concat([()=>{S.flags.g2=true;MAP[CH.g2[1]][CH.g2[0]]='P';}],getStone(2,['ドウオン（あに）｜ウラハラは、ほんとうは わるい やつじゃ ないんだ。','ドウオン（おとうと）｜あいつは なにを いっても、はんたいの ことばに なっちゃう かがみ なんだ…','コトハ｜……いいたい ことが、いえない……。','ハコロン｜おかでは「文法」が でるよ。まえより やさしいから、じゅぎょうを おもいだしてね！'])),save);}));}})));}
+function c2fb(){withLesson(3,()=>say(['ウラハラ｜よく きたな！ ……ほんとうは「きてくれて うれしい」…… ちがう！「かえれ」！','ウラハラ｜ことばなんて、ぜんぶ アベコベだ！','コトハ｜……ウラハラ。ほんとうの ことば、きかせて。'],()=>startBattle('urahara',{pool:'boss',zone:4,after:()=>{
+ say(['ウラハラ｜……まけた。……ちがう、「かった」…… ああ、また ぎゃくだ……','ウラハラ｜おれは かがみ。なにを いっても、はんたいに うつって しまう。','ウラハラ｜「ありがとう」も「ごめん」も、いちども ちゃんと いえなかった……'],()=>ask('ウラハラに なんて いう？',['ゆっくりで いいよ','ことばに しなくても つたわるよ'],i=>{
+  const r=i===0?['{name}｜ゆっくりで いいよ。まってるから。','コトハ｜……ぼくも、ずっと しゃべれなかった。でも、{name}が まって くれた。']:['{name}｜ことばに しなくても、きもちは つたわるよ。','ハコロン｜「以心伝心」って いうんだよ！'];
+  const tail=['ユイ｜（とおくから）おはよう！ …ちゃんと いえた〜！','としょかんの おばあさん｜（とおくから）ことばまつりの はじまりよ〜！'];
+  if(S.flags.friend1)tail.push('サカサガニ｜（とおくから）よこあるきで おどるカニー！');
+  tail.push(S.flags.names?'ソラ と ウミ｜（とおくから）「「おまつり、たのしみ！」」':'ドウオン きょうだい｜（とおくから）「「おまつり、たのしみ！」」');
+  say(r.concat(['ウラハラ｜…………あ……','ウラハラ｜……あ、り、が、と、う。','（かがみが ひかり、ことばが まっすぐ とどいた！）','ウラハラ｜……いえた。はんたいに ならずに、いえた……！','ウラハラ｜しおりは かえす。……ごめんなさい。それと……おまつり、おれも いって いいか？','コトハ｜……もちろん。',()=>{S.flags.boss=true;MAP[CH.gb[1]][CH.gb[0]]=':';}],getStone(3,tail)),()=>{save();showEnding();});}));}})));}
+const BAA2=['としょかんの おばあさん｜ほんの ことばが ぜんぶ はんたいに なってるの。「あつい」が「さむい」に…','としょかんの おばあさん｜「はんたいの ことば」が もどってきたわ。[賛成:さんせい]の はんたいは [反対:はんたい]ね！','としょかんの おばあさん｜「あつい」にも 暑い・熱い・厚いが あるのよね。ちゃんと もどってきたわ。','としょかんの おばあさん｜これで ことばまつりが できるわ。ありがとうね。'];
+const YUI2=['ユイ｜おはよう… じゃなくて おやすみ…？ いいたい ことが ぎゃくに なっちゃう…','ユイ｜コトハ、まえより たくさん しゃべるように なったね！','ユイ｜「きく」にも 聞く・効くが あるんだって。おもしろいね！','ユイ｜ことばまつり、いっしょに いこうね！'];
+function npc2(t){const k=Math.min(3,S.stones);if(t==='a'){const L=[BAA2[k]];if(k>=1&&!S.flags.gift){S.flags.gift=true;S.gumi+=2;L.push('としょかんの おばあさん｜おれいに これを あげるわ。','げんきグミを 2こ もらった！',()=>{updStatus();save();snd('heal');});}say(L.map(x=>typeof x==='string'?plain(x):x));}else say([YUI2[k]]);}
+const INTRO2=[()=>{CUT.crow=false;mcv.style.filter='';drawMap();},'（ことのはの まちでは「ことばまつり」の じゅんびが すすんでいた…）','コトハ｜……{name}、ハコロン。……おまつり、はじめて。たのしみ。','ハコロン｜コトハ、すっかり なかよしだね！',
+ ()=>{CUT.crow=true;drawMap();hurt();},'ウラハラ｜ハーッハッハ！「たのしい」は「つまらない」！「すき」は「きらい」！','ウラハラ｜この まちの ことばは、ぜんぶ アベコベに してやる！',
+ ()=>{CUT.crow=false;setColor();drawMap();snd('ng');},'ことばの しおりが 3まい、かがみの なかへ すいこまれた…','まちの いろが、さかさまに なっていく……',
+ 'ユイ｜おはよう… じゃなくて、おやすみ…？ あれ？ はんたいの ことばが でちゃう…','コトハ｜……あいつ、しってる。としょかんの「うらの かがみ」。','コトハ｜……ことばで こまってる ひとが いる。……ぼくも、いく。',
+ ()=>snd('lv'),'コトハが なかまに なった！','ハコロン｜コトハは「ことばの たて」で、1かいの バトルで 1どだけ ダメージを ふせいで くれるよ！','ハコロン｜あたらしい もんだいの まえには、ぼくが「30びょう じゅぎょう」を するね。「📊 つよさ」から いつでも よみなおせるよ。',
+ 'ハコロン｜まずは みなみの 川べで「はんたいの ことば」と「にた ことば」！ はしの「サカサガニ」が 1まいめの しおりを もってるよ。'];
+const MAP_SRC2=[
+"TTTTTTTTTTTTTTTTTTTT",
+"T:::::B::::::::::::T",
+"T::TT::::::TT::::::T",
+"T::::::TT::::::TT::T",
+"TTTTTTTTTTTTT2TTTTTT",
+"T,,,,,,,,,,,,,,,,,,T",
+"T,TT,,,,,TTT,,,,TT,T",
+"T,,,,TT,,,,,,,TT,,,T",
+"T,,,,,,,,,,,,,,,,,,T",
+"WWWW1WWWWWWWWWWWWWWW",
+"T...PPPPPPPP.......T",
+"T...PPPHHPPP...TT..T",
+"T.a.PPPPPPPP..b....T",
+"T...PPPPPPPP.......T",
+"T..TT....S.....TT..T",
+"TTTTTTTTTTTTTTTTTTTT"];
+const CHS={
+ 1:{id:1,map:MAP_SRC,zoneMon:ZONE_MON,pools:POOLS,f1:fightG1,f2:fightG2,fb:fightBoss,npc:npc,intro:INTRO,item:'ページ',g1:[15,9],g2:[8,4],gb:[11,1],start:[10,14],spawn:[10,12],cut:[10,10],villain:'mugon',
+   guards:{'1':['oumu',.3,22,30],'2':['tako',.34,22,24],'B':['mugon',.32,24,28]},warps:[[10,12],[8,8],[8,3]],
+   pal:{'.':['#9ccc65','#7cb342'],',':['#7cb342','#689f38'],':':['#dcc685','#bfa95d'],tree:['#2e7d32','#43a047'],tree3:['#689f38','#8bc34a']},
+   color:n=>{const g=[0.9,0.6,0.3,0][n];return g?`grayscale(${g})`:'';},chief1:'ことのはの ページが ないと、まちの みんなが ことばを わすれてしまう…'},
+ 2:{id:2,map:MAP_SRC2,zoneMon:{1:['kaeru','seesaw'],2:['neko','kame'],3:['hachi','tama']},pools:{z1:['taigi','ruigi'],g1:['taigi','ruigi'],z2:['douon','bushu'],g2:['douon','bushu'],z3:['bunpo2'],boss:['taigi','ruigi','douon','bushu','bunpo2']},
+   f1:c2f1,f2:c2f2,fb:c2fb,npc:npc2,intro:INTRO2,item:'しおり',g1:[4,9],g2:[13,4],gb:[6,1],start:[9,14],spawn:[8,12],cut:[8,10],villain:'urahara',lessons:LESSONS,review:true,companion:true,
+   guards:{'1':['kani',.3,24,30],'2':['douon',.3,24,28],'B':['urahara',.28,24,28]},warps:[[8,12],[8,8],[9,3]],
+   pal:{'.':['#e6cf7e','#c9a94e'],',':['#d39a52','#b57a34'],':':['#cfd8dc','#b0bec5'],tree:['#e65100','#ff9800'],tree3:['#8d6e63','#a1887f']},
+   color:n=>{const g=[180,120,60,0][n];return g?`hue-rotate(${g}deg)`:'';},chief1:'ことばが アベコベに なって、まつりが できないんじゃ…'}
+};
+let CH=CHS[1];
+function weakType(){let best=null,br=0.85;Object.keys(S.stats).forEach(k=>{const v=S.stats[k];if(v.n>=3&&v.ok/v.n<br){br=v.ok/v.n;best=k;}});return best;}
+function startCh2(){S.ch=2;CH=CHS[2];S.stones=0;S.flags={};S.x=CH.start[0];S.y=CH.start[1];S.fx=S.x;S.fy=S.y;S.hp=S.maxhp;S.gumi+=3;S.ch1done=true;
+ resetMap();$('ending').classList.add('hidden');updStatus();drawMap();save();say(CH.intro);}
+
+/* ---------- だい3しょう ものがたり ---------- */
+function c3f1(){withLesson(1,()=>say(['カラクリハカセ｜ギギ…… ワタシハ ことわざ カラクリ……','カラクリハカセ｜ぜんぶの ことわざを ただしく いえる モノしか、ここは とおさナイ……！'],()=>startBattle('karakuri',{pool:'g1',zone:1,after:()=>{
+ say(['カラクリハカセ｜ギギ…… ネジが… きれ…る……','カラクリハカセ｜……むかし、としょかんの おじいさんが ワタシを つくって くれタ。','カラクリハカセ｜まいにち ことわざを おしえあった。でも おじいさんは とおくへ ひっこして… それから だれも ネジを まいて くれなかっタ……','カラクリハカセ｜ケシマルは「ふるい ものは けせば いい」と いっタ……'],()=>ask('カラクリハカセに どうする？',['ネジを まいて あげる','いっしょに ことわざを いいあう'],i=>{
+  const r=i===0?['（{name}は、カラクリハカセの ネジを ゆっくり まいた。）','カラクリハカセ｜……あったかイ。ありがとウ。']:['{name}｜「いそがば…」','カラクリハカセ｜「…まわれ」！ ギギ… たのしイ！'];
+  S.flags.friend1=true;
+  say(r.concat([()=>{S.flags.g1=true;MAP[CH.g1[1]][CH.g1[0]]='=';}],getStone(1,['はしを わたれるように なった！','カラクリハカセ｜もりには 2つの あたまの ドラゴン「ジュクゴン」が いル。あたまどうしが いつも けんかして いるヨ。','ハコロン｜もりでは「四字熟語」と「熟語の 組み立て」！ じゅぎょうを よく きいてね。'])),save);}));}})));}
+function c3f2(){withLesson(2,()=>say(['ジュクゴン（ひだり）｜おれが さきだ！「海」が さきだから「海水」だ！','ジュクゴン（みぎ）｜ちがう！ おれが だいじだ！「水」が なければ ただの「海」だ！','ジュクゴン｜「「じゃまを するな〜！」」'],()=>startBattle('jukugon',{pool:'g2',zone:2,after:()=>{
+ say(['ジュクゴン（ひだり）｜……まけた。','ジュクゴン（みぎ）｜……ケシマルが いったんだ。「どちらかは いらない 字だ。けして やろう」って。','ジュクゴン（ひだり）｜そしたら、おれたち どっちが いらないか、けんかに なって……'],()=>ask('ジュクゴンに なんて いう？',['ふたつで 一つの ことばだよ','どっちも だいじだよ'],i=>{
+  const r=i===0?['{name}｜「海」と「水」で「海水」。ふたつ そろって 一つの ことばだよ！','ジュクゴン｜「「……ふたりで、ひとつ。」」']:['{name}｜どっちも だいじだよ。けしていい 字なんて ないよ。','ハコロン｜漢字は 組み立てで 意味が きまるんだ！'];
+  S.flags.friend2=true;
+  say(r.concat(['ジュクゴン｜「「ケシマルは とうの てっぺんに いる。……あいつ、けすたびに じぶんの からだも すりへって いるんだ」」','コトハ｜……けすたびに、じぶんも へって いく……',()=>{S.flags.g2=true;MAP[CH.g2[1]][CH.g2[0]]='P';}],getStone(2,['ハコロン｜とうでは「文法」！ むずかしいけど、じゅぎょうで コツを おしえるよ。まちで やすんでから いこうね。'])),save);}));}})));}
+function c3fb(){withLesson(3,()=>say(['ケシマル｜ゴシゴシ… きたな。まちがいだらけの ものども。','ケシマル｜まちがいは はずかしい。まちがいは みにくい。だから ぜんぶ けして、まっしろに する！','ウラハラ｜……おれの ことばも、まちがいだって いうのか。','ハコロン｜{name}、いこう！ さいごの たたかいだ！'],()=>startBattle('keshimaru',{pool:'boss',zone:4,after:()=>{
+ say(['ケシマル｜……まけた。もう、からだも こんなに ちいさく なって しまった。','ケシマル｜むかし、ある 子が おばあちゃんに てがみを 書こうと した。','ケシマル｜でも 字を まちがえるたびに、わたしで けして… けして… けしすぎて、かみが やぶれて しまった。','ケシマル｜てがみは とどかなかった。……それから おもったんだ。まちがいなんか、さいしょから なければ いいって。'],()=>ask('ケシマルに なんて いう？',['まちがいの あとも、がんばった しるしだよ','いっしょに さいごの ページを 書こう'],i=>{
+  const r=i===0?['{name}｜けした あとも、まちがえた あとも、がんばった しるしだよ。','コトハ｜……ぼくの ことばも、ウラハラの ことばも、まちがいから はじまった。']:['{name}｜いっしょに さいごの ページを 書こうよ。まちがえても いいから！','ウラハラ｜……けさないで、そのまま のこせば いいんだ。'];
+  const tail=['としょかんの おばあさん｜（とおくから）本の 字が もどって きたわ〜！','ユイ｜（とおくから）おばあちゃんへの てがみ、書けたよー！'];
+  if(S.flags.friend1)tail.push('カラクリハカセ｜（とおくから）ギギ… おまつりの ことわざ がかり、まかせテ！');
+  if(S.flags.friend2)tail.push('ジュクゴン｜「「（とおくから）ふたりで おどるぞ〜！」」');
+  say(r.concat(['ケシマル｜……がんばった、しるし……','ケシマル｜……インクは かえす。そして、たのみが ある。','ケシマル｜あの子が 書けなかった ことばを… さいごの ページに、いっしょに 書いて くれないか。',()=>{S.flags.boss=true;MAP[CH.gb[1]][CH.gb[0]]=':';}],getStone(3,tail)),()=>ask('さいごの ページに なんて 書く？',['ありがとう','だいすき','また あおうね'],j=>{
+   const w=['ありがとう','だいすき','また あおうね'][j];S.flags.lastWord=w;
+   say([`（みんなで、さいごの ページに「${w}」と 書いた。）`,'（すこし ゆがんだ 字も、けした あとも、そのまま のこして。）','ケシマル｜……いい ことばだ。……あの子にも、きっと とどく。','ハコロン｜ことばって、まちがえながら つたえて いく ものなんだね！'],()=>{save();showEnding();});}));}));}})));}
+const BAA3=['としょかんの おばあさん｜本の さいごの ページが まっしろに なって しまったの…','としょかんの おばあさん｜「立つ鳥 跡を にごさず」… ことわざが もどって きたわ。','としょかんの おばあさん｜熟語の 字も もどって きたわ。「海水」は 海の 水ね。','としょかんの おばあさん｜さいごの ページ、ゆがんだ 字も すてきね。ありがとう。'];
+const YUI3=['ユイ｜おばあちゃんへの てがみ、字が きえちゃったの…','ユイ｜ウラハラ、まえより ずっと やさしく なったね！','ユイ｜まちがえた 字、けさないで のこして みようかな。','ユイ｜てがみ、まちがえた ところも そのまま 出したよ。おばあちゃん、よろこんで くれるかな。'];
+function npc3(t){const k=Math.min(3,S.stones);if(t==='a'){const L=[BAA3[k]];if(k>=1&&!S.flags.gift){S.flags.gift=true;S.gumi+=2;L.push('としょかんの おばあさん｜おれいに これを あげるわ。','げんきグミを 2こ もらった！',()=>{updStatus();save();snd('heal');});}say(L);}else say([YUI3[k]]);}
+const INTRO3=[()=>{CUT.crow=false;mcv.style.filter='';drawMap();},'（ことばまつりの よる。まちの みんなは、大きな 本の さいごの ページに「ことし いちばんの ことば」を 書こうと していた…）','ウラハラ｜……お、おれも 書いて いいのか？','コトハ｜……もちろん。',
+ ()=>{CUT.crow=true;drawMap();hurt();},'ケシマル｜ゴシゴシゴシ……！ まちがいだらけの ことばは、ぜんぶ けして やる！','ケシマル｜まちがった 字、へたな 字、アベコベの ことば… そんな ものは この 本に いらない！',
+ ()=>{CUT.crow=false;setColor();drawMap();snd('ng');},'本の さいごの ページが まっしろに けされ、ことばの インクが 3つ、とうの 上へ もっていかれた…','まちの かんばんの 字が、うすく きえかけて いく……',
+ 'ユイ｜おばあちゃんへの てがみも… 字が きえちゃった……','ウラハラ｜……おれの 書いた ことばも、きっと「まちがい」だって けされたんだ……','コトハ｜……ちがう。まちがいは、けさなくて いい。',
+ 'ハコロン｜{name}！ ことばの インクを とりもどして、さいごの ページを みんなで 書こう！',()=>snd('lv'),'ウラハラが なかまに なった！',
+ 'ハコロン｜こんどの もんだいは むずかしいよ。こたえを 8つの なかから えらぶ ものも ある！ ヒントを つかうと、ちがう こたえを 半分 けして あげる。','ハコロン｜コトハと ウラハラが、1かいの バトルで 1どずつ まもって くれるよ。',
+ 'ハコロン｜まずは みなみの ゆきの はらっぱで ことわざと 慣用句！ はしの「カラクリハカセ」が 1つめの インクを もってるよ。'];
+const MAP_SRC3=[
+"TTTTTTTTTTTTTTTTTTTT",
+"T::::::::::::::B:::T",
+"T::TT::::TT::::::::T",
+"T::::::::::::TT::::T",
+"TTT2TTTTTTTTTTTTTTTT",
+"T,,,,,,,,,,,,,,,,,,T",
+"T,,TT,,,,TT,,,,TT,,T",
+"T,,,,,TT,,,,,TT,,,,T",
+"T,,,,,,,,,,,,,,,,,,T",
+"WWWWWWWWWW1WWWWWWWWW",
+"T......PPPPPP......T",
+"T..TT..PHHPPP..TT..T",
+"T..a...PPPPPP...b..T",
+"T......PPPPPP......T",
+"T..TT....S......TT.T",
+"TTTTTTTTTTTTTTTTTTTT"];
+CHS[3]={id:3,map:MAP_SRC3,zoneMon:{1:['yuki','tsurara'],2:['kitsune','matsu'],3:['inku','hondana']},pools:{z1:['koto3','kanyo3'],g1:['koto3','kanyo3'],z2:['yoji3','kousei'],g2:['yoji3','kousei'],z3:['bunpo3'],boss:['koto3','kanyo3','yoji3','kousei','bunpo3','douon','taigi']},
+ f1:c3f1,f2:c3f2,fb:c3fb,npc:npc3,intro:INTRO3,item:'インク',g1:[10,9],g2:[3,4],gb:[15,1],start:[9,14],spawn:[9,12],cut:[10,10],villain:'keshimaru',lessons:LESSONS3,review:true,companion:true,shields:2,
+ lessonNames:['ことわざ・慣用句','熟語の 組み立て','文法（むずかしい）'],
+ guards:{'1':['karakuri',.3,24,30],'2':['jukugon',.28,24,30],'B':['keshimaru',.28,24,30]},warps:[[9,12],[9,8],[8,3]],
+ pal:{'.':['#eef3f7','#cfd8dc'],',':['#cfd8dc','#b0bec5'],':':['#d7ccc8','#bcaaa4'],tree:['#2e7d32','#ffffff'],tree3:['#5d4037','#d7ccc8']},
+ color:n=>{const a=[[0.15,1.3],[0.45,1.2],[0.75,1.1],[1,1]][n];return n>=3?'':`saturate(${a[0]}) brightness(${a[1]})`;},chief1:'インクが ないと、さいごの ページが 書けんのじゃ…'};
+CHS[2].lessonNames=['はんたい・にた ことば','同じ 読み・部首','文法'];CHS[2].shields=1;
+const PAID=/-full(\.html)?$/.test(location.pathname);   // rpg-kotoba-full.html が 有料版（中身は 同じ プログラム）
+let PACK_OK=false;
+function applyPack(p){
+ if(!p||!p.ch2||!p.ch3||!Array.isArray(p.ch2.TAIGI)||!Array.isArray(p.ch3.KOTO3)||!p.ch3.KOUSEI)throw{error:'no_data'};
+ ({TAIGI,RUIGI,DOUON,BUSHU,BUNPO2,LESSONS}=p.ch2);({KOTO3,KOTO_OTHER,KANYO3,YOJI3,KOUSEI,BUNPO3,LESSONS3}=p.ch3);
+ CHS[2].lessons=LESSONS;CHS[3].lessons=LESSONS3;PACK_OK=true;}
+function chLocked(n){return n>=2&&!PACK_OK;}
+function showChLock(){$('chLock').classList.remove('hidden');}
+$('btnChLockClose').onclick=()=>{$('chLock').classList.add('hidden');};
+function startCh(n){if(chLocked(n)){$('ending').classList.add('hidden');showChLock();return;}S.ch=n;CH=CHS[n];S.stones=0;S.flags={};S.x=CH.start[0];S.y=CH.start[1];S.fx=S.x;S.fy=S.y;S.hp=S.maxhp;S.gumi+=3;S['ch'+(n-1)+'done']=true;
+ resetMap();$('ending').classList.add('hidden');updStatus();drawMap();save();say(CH.intro);}
+
+const CH_TITLE={1:'ことのはの ページ',2:'ことばまつりと うらの かがみ',3:'ことばの インクと さいごの ページ'};
+function showTitle(){mode='title';B=null;$('title').classList.remove('hidden');$('titleBtns').classList.remove('hidden');$('nameBox').classList.add('hidden');$('btnCont').classList.toggle('hidden',!load());const sv=load(),cn=(sv&&sv.ch)||1;document.querySelector('#title .sub').textContent=`だい${cn}しょう　${CH_TITLE[cn]||''}`;}
+function start(isNew){$('title').classList.add('hidden');mode='map';sessionStart=Date.now();
+ $('batcv').classList.add('hidden');$('bhud').classList.add('hidden');$('probPanel').classList.add('hidden');$('mapcv').classList.remove('hidden');$('controls').classList.remove('hidden');
+ updStatus();if(!isNew)setColor();drawMap();save();say(isNew?CH.intro:['ハコロン｜おかえり、{name}！ ぼうけんの つづきだよ。']);}
+$('btnNew').onclick=()=>{$('titleBtns').classList.add('hidden');$('nameBox').classList.remove('hidden');$('nameIn').value='';$('nameIn').focus();};
+$('btnName').onclick=()=>{const n=($('nameIn').value.trim()||'ゆうしゃ').slice(0,6);newGame(n);start(true);};
+$('btnCont').onclick=()=>{const d=load();if(!d)return;if(chLocked(d.ch||1)){showChLock();return;}S=d;applyFlags();if(S.flags.boss&&CHS[CH.id+1]){start(false);M.q=[];const nx=CH.id+1;say([`ハコロン｜おかえり、{name}！ だい${CH.id}しょう クリア おめでとう！`,'ハコロン｜まちで あたらしい じけんが おきてるみたい… いこう！'],()=>startCh(nx));}else start(false);};
+resetMap();showTitle();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(S&&mode==='map')drawMap();});
+/* ---- 有料版：利用コードを 確かめて、だい2・3しょうの パックを 受け取る ---- */
+async function loadPack(){applyPack(await mnAccess.load('rpg-kotoba'));}
+function lockScreen(err){
+ $('lockOv').classList.remove('hidden');
+ if(!window.mnAccess){$('lockBox').textContent='有料版は、サイトの 上で ひらいて ください。';return;}
+ mnAccess.lock($('lockBox'),{game:'rpg-kotoba',err:err,free:'rpg-kotoba.html',onOpen:async()=>{await loadPack();$('lockOv').classList.add('hidden');}});
+}
+if(PAID){
+ $('planNote').textContent='有料版（全3しょう）';
+ $('lockOv').classList.remove('hidden');$('lockBox').textContent='よみこみ中…';
+ (window.mnAccess?loadPack():Promise.reject({error:'net'})).then(()=>$('lockOv').classList.add('hidden')).catch(lockScreen);
+}
+window.__rpg={applyPack,get PACK_OK(){return PACK_OK;},get S(){return S;},get B(){return B;},GEN,POOLS,MAP:()=>MAP};
+})();
+</script>
+</body>
+</html>
