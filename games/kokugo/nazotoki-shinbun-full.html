@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="game:paid" content="利用コード">
+<meta name="game:subject" content="国語">
+<meta name="game:unit" content="推理・矛盾さがし">
+<meta name="game:grade" content="小5〜">
+<meta name="game:players" content="1人">
+<meta name="description" content="【有料版】証言や資料の「おかしいところ」を見つけて、証拠を見せる推理ゲーム「なぞとき新聞部」（全3話）。第1話は無料、第2話・第3話は有料版。主語と述語・敬語・指示語・呼応の副詞・助詞・送りがな・「そうだ」・使役・修飾語。">
+<title>なぞとき新聞部 有料版</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#efe9dc;color:#24304a;font-family:'M PLUS Rounded 1c','Hiragino Maru Gothic ProN','Noto Sans JP',sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:480px;margin:0 auto;padding:10px 10px 30px;min-height:100vh}
+.hidden{display:none!important}
+button{font-family:inherit;font-weight:800;color:inherit;cursor:pointer;touch-action:manipulation}
+h1{font-size:27px;margin:16px 0 2px;text-align:center;line-height:1.3}
+.sub{text-align:center;font-size:16px;font-weight:800;color:#8a3b12;margin:2px 0 4px}
+.proto{text-align:center;font-size:13px;color:#8a5a00;background:#ffe9b0;border-radius:99px;padding:2px 12px;display:table;margin:6px auto 12px}
+.big{display:block;width:100%;font-size:18px;padding:12px 10px;margin:9px 0;border:3px solid #24304a;border-radius:14px;background:#fff;box-shadow:0 4px 0 #24304a}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #24304a}
+.big small{display:block;font-size:12px;font-weight:500;color:#5b6780}
+.big.on{background:#24304a;color:#fff}
+.big.on small{color:#cdd6ea!important}
+.box{background:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.75;margin:10px 0}
+#hud{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px;margin-bottom:8px}
+#gauge{letter-spacing:2px;font-size:19px}
+#hud button{font-size:14px;padding:5px 10px;border:2px solid #24304a;border-radius:10px;background:#fff}
+#stage{background:#2d3a57;border-radius:16px;min-height:150px;padding:14px 12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:14px;position:relative}
+.face{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#fff;border:4px solid #fff;flex:none}
+#stageInfo{font-size:14px;line-height:1.5}
+#stageInfo b{font-size:18px;display:block}
+#place{position:absolute;left:10px;top:8px;font-size:12px;opacity:.85}
+#talk{background:#fff;border:3px solid #24304a;border-radius:14px;margin-top:10px;padding:10px 14px 26px;min-height:120px;position:relative;font-size:17px;line-height:1.75}
+#talkName{display:inline-block;background:#24304a;color:#fff;border-radius:8px;padding:0 10px;font-size:14px;margin-bottom:4px}
+#talkNext{position:absolute;right:12px;bottom:4px;font-size:13px;color:#8a3b12;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+#talk.tap{cursor:pointer}
+.stmt{display:block;width:100%;text-align:left;font-size:16px;line-height:1.6;padding:10px 12px;margin:7px 0;border:2px solid #9aa3b8;border-radius:12px;background:#fff;font-weight:500}
+.stmt .no{font-weight:800;color:#8a3b12;margin-right:6px}
+.stmt.sel{border:3px solid #d6453d;background:#fff4f2}
+#acts{display:flex;gap:8px;margin-top:6px}
+#acts button{flex:1;font-size:16px;padding:11px 4px;border:3px solid #24304a;border-radius:12px;background:#fff;box-shadow:0 3px 0 #24304a}
+#acts .shout{background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 3px 0 #a32b25}
+#acts button:disabled{opacity:.35}
+.tip{font-size:13px;color:#5b6780;text-align:center;margin:6px 0}
+#modal{position:fixed;inset:0;background:rgba(20,26,40,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+#sheet{background:#f8f4ea;width:100%;max-width:480px;max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 14px 24px}
+#sheet h2{font-size:19px;margin:2px 0 8px}
+.ev{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #c9c1ae;border-radius:12px;padding:9px 10px;margin:8px 0;text-align:left;width:100%;font-weight:500;font-size:14px;line-height:1.6}
+.ev .ic{font-size:28px;line-height:1}
+.ev b{font-size:15px;display:block}
+.ev.pick{border-color:#24304a}
+.ev.new{border-color:#d6453d}
+.quote{background:#fffbe9;border-left:5px solid #c9a227;padding:6px 10px;border-radius:6px;margin:4px 0;font-size:15px}
+.tmpl{font-size:16px;line-height:2.1;background:#fff;border-radius:12px;padding:10px 12px}
+.blank{display:inline-block;min-width:4.5em;border-bottom:3px solid #24304a;text-align:center;font-weight:800;color:#8a3b12;padding:0 4px;margin:0 2px;cursor:pointer}
+.blank.cur{background:#ffe9b0}
+.blank input{font-family:inherit;font-size:16px;width:7.5em;border:2px solid #24304a;border-radius:8px;padding:2px 6px}
+.cards{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.cards button{font-size:15px;padding:8px 10px;border:2px solid #24304a;border-radius:10px;background:#fff}
+.cards button.used{opacity:.3}
+.cards button.glow{background:#ffe9b0;border-color:#d6453d;animation:hint .6s infinite alternate}
+@keyframes hint{to{transform:scale(1.08)}}
+#stage{cursor:pointer}
+.choice{display:block;width:100%;text-align:left;font-size:15px;line-height:1.6;padding:10px 12px;margin:7px 0;border:2px solid #24304a;border-radius:12px;background:#fff;font-weight:500}
+.ok{color:#1f7a3c;font-weight:800}.ng{color:#d6453d;font-weight:800}
+#shout{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:30;pointer-events:none}
+#shout span{background:#d6453d;color:#fff;font-size:44px;font-weight:800;padding:12px 26px;border-radius:16px;border:5px solid #fff;transform:rotate(-6deg);box-shadow:0 8px 0 #7a1c18;animation:pop .5s ease-out}
+@keyframes pop{from{transform:scale(.3) rotate(-20deg);opacity:0}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.res{text-align:center;font-size:17px;font-weight:800;line-height:1.8}
+.stars{font-size:40px;color:#e0a500;text-align:center}
+.badge{display:inline-block;background:#24304a;color:#fff;border-radius:99px;padding:3px 12px;margin:3px;font-size:14px}
+#btnTest{background:#6a1b9a!important;color:#fff!important;border-color:#6a1b9a!important}
+#testPanel{background:#efe3f6;border-radius:12px;padding:8px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+#testPanel button{font-size:13px;padding:6px 8px;border:2px solid #6a1b9a;border-radius:9px;background:#fff}
+.place{display:flex;align-items:center;gap:10px;text-align:left}
+.place .ic{font-size:30px}
+</style>
+<script>/* 🛠 テストボタンは テストサイトでだけ出す（本番では出ない）。出してよい場所：manabi-games-test.pages.dev・○○-test / ○○-dev の pages.dev・自分のパソコン */(function(){var h=location.hostname;if(/(^|\.)manabi-games-test\.pages\.dev$/.test(h)||/-(test|dev)\.pages\.dev$/.test(h)||h==='localhost'||h==='127.0.0.1'||location.protocol==='file:')return;var s=document.createElement('style');s.textContent='#btnTest,#btest,#testBtn,#bTest,[data-k="test"],#testPanel{display:none!important}';document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+
+<!-- タイトル -->
+<section id="title">
+  <h1>なぞとき新聞部</h1>
+  <div class="box" style="padding-bottom:4px">
+    <b>話を えらんでね</b>
+    <div id="epList"></div>
+  </div>
+  <div class="box">
+    <span id="epIntro"></span><br>
+    証言の中の<b>おかしいところ</b>を見つけて、<b>証拠</b>を 見せよう。<br>
+    <span style="font-size:13px;color:#5b6780" id="epTags"></span>
+  </div>
+  <div class="box" style="padding-bottom:4px">
+    <b>理由の書き方を えらんでね</b>
+    <button class="big lvbtn" data-lv="1">初級<small>理由を 3つから えらぶ</small></button>
+    <button class="big lvbtn" data-lv="2">中級<small>ことばカードを ならべて 理由を作る</small></button>
+    <button class="big lvbtn" data-lv="3">上級<small>理由の 大事なことばを 自分で書く</small></button>
+  </div>
+  <div class="box hidden" id="freeNote" style="font-size:14px;background:#fff7dc">この 話は、無料では <b>事件の はじまりと 調査まで</b>の おためしです。証言の なぞときは <a href="nazotoki-shinbun-full.html" style="color:#0b6b5d;font-weight:800">有料版</a>で あそべます。</div>
+  <button class="big" id="btnStart" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">第1話の 取材を はじめる</button>
+  <button class="big hidden" id="btnReview">📁 見のがしファイル<small id="reviewN"></small></button>
+  <div class="tip" id="bestLine"></div>
+</section>
+
+<!-- ゲーム -->
+<section id="play" class="hidden">
+  <div id="hud"><span>信頼 <span id="gauge"></span></span><span><button id="btnEv">📒 証拠ノート</button></span></div>
+  <div id="stage"><span id="place"></span><div class="face" id="face"></div><div id="stageInfo"></div></div>
+  <div id="talk"><div id="talkName"></div><div id="talkText"></div><div id="talkNext">▼ タップ</div></div>
+  <div id="area"></div>
+  <div style="display:flex;gap:8px;margin-top:14px"><button class="big" id="btnQuit" style="font-size:14px;padding:8px">タイトルへ</button><button class="big" id="btnTest" style="font-size:14px;padding:8px">🛠 テスト</button></div>
+  <div id="testPanel" class="hidden">
+    <button data-t="t1">証言1へ</button><button data-t="t2">証言2へ</button><button data-t="t3a">証言3前半へ</button><button data-t="t3b">証言3後半へ</button><button data-t="end">エンディングへ</button><button data-t="ans">こたえを見る</button><button data-t="miss">見のがし全部に</button><button data-t="reset">記録を消す</button>
+  </div>
+</section>
+
+<!-- 有料版の かぎ -->
+<section id="lock" class="hidden">
+  <h1>なぞとき新聞部</h1>
+  <div class="box" id="lockBox"></div>
+</section>
+
+<!-- 見のがしファイル -->
+<section id="review" class="hidden">
+  <h1 style="font-size:24px">📁 見のがしファイル</h1>
+  <div id="revBody"></div>
+  <button class="big" id="btnRevBack">タイトルへ</button>
+</section>
+
+</div>
+<div id="modal" class="hidden"><div id="sheet"></div></div>
+<div id="shout" class="hidden"><span id="shoutText">そこだ！</span></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY0='manabi-nazotoki-shinbun-ep';
+function track(n,p){try{if(window.mnTrack)mnTrack(n,p);}catch(e){}}
+function loadSave(n){n=n||epNo;try{let s=localStorage.getItem(KEY0+n);if(s===null)s=localStorage.getItem('manabi-nazotoki-shinbun'+n+'-proto-1');return JSON.parse(s)||{};}catch(e){return{};}}
+function putSave(s){try{localStorage.setItem(KEY0+epNo,JSON.stringify(s));}catch(e){}}
+
+/* ---------- 話ごとのデータ ---------- */
+const EPS={};
+EPS[1]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  tsubasa:{name:'ツバサ',sub:'6年・新聞クラブ部長',ch:'翼',col:'#1f7a8c'},
+  haruka:{name:'ハルカ',sub:'6年・演劇クラブ部長',ch:'遥',col:'#b0427a'},
+  kei:{name:'ケイ',sub:'5年・掲示係',ch:'ケ',col:'#5a7d2a'},
+  riku:{name:'リク',sub:'5年・演劇クラブ',ch:'陸',col:'#d9772b'},
+  kyoto:{name:'教頭先生',sub:'',ch:'教',col:'#6b5b45'},
+  mori:{name:'森先生',sub:'新聞クラブ顧問',ch:'森',col:'#3d5a99'},
+  shashin:{name:'写真係',sub:'6年・新聞クラブ',ch:'写',col:'#7a6a9c'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const EV0={
+  1:{ic:'📄',name:'にせのお知らせ',where:'最初から',text:'<div class="quote">明日の学習発表会で、新聞クラブの展示は中止します。空いた理科室は、演劇クラブがお使いします。<br>　担当　森</div>'},
+  2:{ic:'🗂',name:'森先生の いつものお知らせ',where:'部室のファイル',text:'<div class="quote">雨の日は、体育館をお使いください。<br>　顧問　森</div>ほかのお知らせも、署名は いつも「顧問」。'},
+  3:{ic:'📝',name:'森先生のメモ',where:'職員室',text:'<div class="quote">新聞クラブが、展示を中止すると言っても、わたしは続けさせたい。</div>森先生の机の上にあったメモ。'},
+  4:{ic:'📷',name:'掲示板の写真（2まい）',where:'写真係',text:'7時50分の写真：紙は まだ ない。<br>8時10分の写真：紙が 貼ってある。'},
+  5:{ic:'📋',name:'あいさつ当番の記録',where:'正門',text:'<div class="quote">7:35　6年1組　ツバサ<br>7:40　5年2組　リク<br>8:00　5年1組　ケイ</div>'},
+  6:{ic:'🗒',name:'ツバサのメモ',where:'最初から',text:'8時15分に お知らせを はがして 部室へ。このことは まだ だれにも 話していない。'}
+};
+const KEI_NOTE='<br><b>追加：</b>見つけたケイも、だれにも話していない。';
+
+/* ---------- 証言 ---------- */
+const T={
+ t1:{who:'haruka',title:'証言1　中止を決めたのは森先生',
+  stmts:['あたしは 昨日の放課後、職員室に 行ったの。','森先生の 机の上に、メモが 置いてあったわ。','メモには、「新聞クラブ」と「中止」って 書いてあった。','だから、森先生は 新聞クラブの展示を 中止したいのよ。'],
+  press:{
+   0:[['me','何をしに 行ったの？'],['haruka','練習場所の お願いよ。体育館は 下級生で いっぱいだから。']],
+   1:[['me','メモは ちゃんと 読んだ？'],['haruka','……急いでたから、ちらっと 見ただけ。'],['tsubasa','職員室で そのメモを 見せてもらおう！'],['kyoto','森先生の メモかい？ 事情が 事情だから、見ていいよ。','get3']],
+   2:[['me','ほかに 何か 書いてなかった？'],['haruka','さあ……。そこまでは 見てないわ。']],
+   3:[['me','本当に そう 書いてあったの？'],['haruka','「新聞クラブ」「中止」って あったんだから、そういうことでしょ！']]
+  },
+  ans:{s:3,ev:[3]},
+  near:{'2-3':{lines:[['tsubasa','たしかに「新聞クラブ」も「中止」も メモにある。ここは うそじゃないんだ。'],['tsubasa','問題は、そこから 何を 決めつけたかだね。']]}},
+  hint:'メモの文を よく見て。「言っても」の 前と うしろで、だれが 何を しているかな？',
+  noEvHint:'まだ 決め手の証拠が ないみたい。まずは「ききこみ」で 話を くわしく 聞こう。',
+  reason:{
+   tmpl:'メモで「中止すると言っても」の主語は【0】で、森先生の気持ちは【1】だから、森先生が中止したいというのは おかしい。',
+   blanks:[['新聞クラブ','新聞','しんぶん'],['続けさせたい','続けさせる','続けたい','続ける','つづけ','中止したくない','中止させたくない']],
+   cards:['新聞クラブ','森先生','ハルカ','続けさせたい','中止したい','言っている'],
+   choices:['メモで「中止すると言って」いるのは 森先生なので、森先生が 中止を 決めたと 読めるから。','メモで「中止すると言っても」の主語は 新聞クラブで、森先生は「続けさせたい」と書いているから。','メモの「言っても」は「言った」と 同じ 意味なので、新聞クラブが 中止を 決めたから。'],ci:1,
+   explain:'「AがBと言っても、わたしはC」の文では、Bを言っているのはA（仮に言ったとしても、という意味）。森先生の気持ちは、文の終わりの「続けさせたい」です。'
+  },
+  after:[['haruka','……うそ。あたし、読みちがえてた。'],['haruka','でも、あのお知らせを 書いたのは あたしじゃない！'],['tsubasa','じゃあ、お知らせを 見つけた ケイに 話を 聞いてみよう。']]
+ },
+ t2:{who:'kei',title:'証言2　お知らせは本物',
+  stmts:['ぼくは 8時5分に、掲示板で お知らせを 見つけました。','下に「森」と 名前が あったから、森先生が 書いたものです。','ことばづかいも ていねいで、先生らしい 文でした。','見つけたことは、まだ だれにも 話していません。'],
+  press:{
+   0:[['me','そのとき、まわりに だれか いた？'],['kei','いいえ、ぼく ひとりでした。']],
+   1:[['me','名前の ほかに 何か 書いてあった？'],['kei','「担当」って 書いてありました。']],
+   2:[['me','どんなところが 先生らしいの？'],['kei','「〜します」って、ていねいな 言い方だったからです。']],
+   3:[['me','本当に だれにも？'],['kei','はい。掲示係は、勝手に 話しては いけない きまりなんです。','note6']]
+  },
+  ans:{s:2,ev:[1,2]},
+  near:{'1-2':{lines:[['tsubasa','いい目の つけどころ！ 森先生の署名は いつも「顧問」だね。'],['tsubasa','でも 署名は、書きまちがいかもしれない。もっと 決定的なのは、文の 中身だ。']],flag:'observer'}},
+  hint:'森先生の いつものお知らせと くらべてみよう。だれの 動作に、どんな 敬語を 使っている？',
+  follow:{q:'お知らせの どこが おかしい？ タップしてね。',opts:['新聞クラブの展示は 中止します','演劇クラブが お使いします','担当　森'],ci:1,
+   wrong:'「中止します」は 正しい ていねい語だ。だれの動作に、どんな敬語を 使っているか 見てみよう。',
+   wrongs:['「中止します」は 正しい ていねい語だ。だれの動作に、どんな敬語を 使っているか 見てみよう。',,'署名は 書きまちがいかも しれない。もっと 決定的なのは、文の 中の 敬語の 使い方だ。']},
+  reason:{
+   tmpl:'「お〜する」は【0】敬語なので、【1】の動作に使うのは まちがい。いつも「お使いください」と正しく書く 森先生の文とは 言えない。',
+   blanks:[['自分がへりくだる','へりくだる','謙譲','けんじょう'],['演劇クラブ','演劇','えんげき','相手']],
+   cards:['自分がへりくだる','相手を高める','演劇クラブ','森先生','新聞クラブ','ていねいに言う'],
+   choices:['「お〜する」は 相手を 高める 尊敬語なので、演劇クラブの 動作に 使うのは 正しいから。','「お〜する」は 自分が へりくだる 謙譲語なのに、演劇クラブの 動作に 使っているから。','「お〜する」は ていねい語なので、だれの 動作に 使っても よいから。'],ci:1,
+   explain:'「お〜する」（お待ちする・お届けする）は、自分の動作をへりくだって言う謙譲語。ほかの人の動作には「お〜になる」「お〜ください」を使います。正しくは「演劇クラブが 使います」です。'
+  },
+  after:[['kei','たしかに……。森先生なら、こんな 書き方は しない。じゃあ、だれが？'],['tsubasa','朝 早く 来た人が あやしいね。あいさつ当番の 記録を 見てみよう。','get5'],['tsubasa','7時40分に「リク」……。演劇クラブの 5年生だ。']]
+ },
+ t3a:{who:'riku',title:'証言3　ぼくは見ていない（前半）',
+  stmts:['今日は 8時20分に 学校に 来ました。','だから、お知らせは 見ていません。もう はがされていたし。','でも、うわさは 聞きました。新聞クラブが 中止なんですよね。','ぼくには 関係の ない 話です。'],
+  press:{
+   1:[['me','はがされていたって、だれに 聞いたの？'],['riku','えっと……みんなが 言ってました。']],
+   2:[['me','だれから 聞いたうわさ？'],['riku','ハルカ先輩です。昨日、そう 言ってました。']]
+  },
+  ans:{s:0,ev:[5]},
+  hint:'リクが 学校に 来た時刻を、記録と くらべてみよう。',
+  reasonChoiceOnly:true,
+  reason:{
+   choices:['あいさつ当番の記録では 8時に 来ているので、8時20分に来たというのは 少し ずれているから。','あいさつ当番の記録では 7時40分に 来ているので、8時20分に来たというのは おかしいから。','あいさつ当番の記録には リクの 名前が ないので、学校に 来ていないかも しれないから。'],ci:1,
+   explain:'記録には「7:40　5年2組　リク」とある。証言と 記録の 時刻が ちがいます。'
+  },
+  after:[['riku','あ、あれ……時間は かんちがい でした。'],['riku','でも、掲示板の 方には 行ってません！ 本当です！']]
+ },
+ t3b:{who:'riku',title:'証言3　ぼくは見ていない（後半）',
+  stmts:['早く 来たのは、体育館で ひとりで 練習するためです。','お知らせは、一度も 読んでいません。','でも、展示が 中止なら、教室が ひとつ 空きますよね。','空いた理科室で 練習できたら、ハルカ先輩も よろこぶだろうなあ。'],
+  press:{
+   0:[['me','どうして ひとりで？'],['riku','ハルカ先輩の 役に 立ちたくて……。']],
+   1:[['me','一度も？'],['riku','はい。一度も です。']]
+  },
+  ans:{s:3,ev:[1,6]},
+  near:{'1-1':{lines:[['tsubasa','たしかに、それが うそなら 大事件だ。'],['tsubasa','その うそを 証明するには、ほかの 文で リクが 何を 知っているかを 見よう。']]},'1-6':{lines:[['tsubasa','たしかに、それが うそなら 大事件だ。'],['tsubasa','その うそを 証明するには、ほかの 文で リクが 何を 知っているかを 見よう。']]}},
+  hint:'リクが 知っているはずのない ことばは ないかな？ その ことばが 書いてあるのは どこ？',
+  special:{'2':'中止の うわさなら、ハルカから 聞ける。ほかに、リクが 知るはずのない ことばは ない？','3-3':'森先生の メモに「理科室」って 書いてあったかな？'},
+  reason:{
+   tmpl:'【0】を演劇クラブが使うことは【1】にしか書いていない。読んだケイもツバサもだれにも話していないのに、「読んでいない」リクが知っているのは おかしい。',
+   blanks:[['理科室','りかしつ'],['お知らせ','にせのお知らせ','おしらせ']],
+   cards:['理科室','体育館','お知らせ','森先生のメモ','あいさつ当番の記録','演劇クラブ'],
+   choices:['「理科室」を使うことは 森先生の メモに 書いてあり、だれでも 読めたので、リクは 正しいから。','「理科室」を使うことは お知らせにしか書いていないのに、読んでいないはずの リクが 知っているから。','「理科室」を使うことは ハルカが みんなに 話していたので、リクが 知っていても ふしぎは ないから。'],ci:1,
+   explain:'「理科室」は にせのお知らせにしか 書かれていない ことば。読んだ二人は だれにも話していません。「読んでいない」なら、理科室の ことは 知るはずが ありません。'
+  },
+  after:[]
+ }
+};
+
+const FLOW=[
+ {t:'talk',place:'朝・新聞クラブの部室',lines:[['tsubasa','たいへんだ！ 掲示板に こんな紙が 貼ってあったんだ。'],['tsubasa','「新聞クラブの展示は 中止」だって。でも 森先生は、今日は 出張で 午後まで いないんだ。'],['tsubasa','発表会は 明日。このままだと、ぼくたちの 新聞は だれにも 読まれない。'],['tsubasa','新人記者の きみの 力を かしてほしい！'],['tsubasa','記者の きまりは ひとつ。「おかしい」と 言うときは、かならず 証拠を そえること。'],['nar','📒 証拠ノートに「にせのお知らせ」「ツバサのメモ」が 入った。']]},
+ {t:'inv'},
+ {t:'talk',place:'演劇クラブの練習場所',lines:[['tsubasa','まずは「中止らしい」と 言いふらしていた ハルカに 話を 聞こう。'],['haruka','新聞クラブの 展示が 中止？ ええ、知ってるわよ。']]},
+ {t:'test',id:'t1'},
+ {t:'test',id:'t2'},
+ {t:'talk',place:'体育館',lines:[['tsubasa','リク、ちょっと 話を 聞かせて。'],['riku','ぼ、ぼくですか？ なんにも 知りませんよ。']]},
+ {t:'test',id:'t3a'},
+ {t:'test',id:'t3b'},
+ {t:'talk',place:'体育館',lines:[['riku','……ごめんなさい。ハルカ先輩が「新聞クラブは 中止らしい」って 言ってたから、どうせなら 先に お知らせを 出そうと 思ったんです。'],['riku','先生っぽく 書こうとして、うんと ていねいに した つもりだったけど……。'],['haruka','あたしが メモを 読みちがえた せいでも あるわ。新聞クラブの みんな、ごめんなさい。'],['mori','（午後）話は 聞きました。理科室は、午前を 新聞クラブの 展示、午後を 演劇クラブの 練習に しましょう。'],['tsubasa','きみの おかげで、明日の新聞の トップ記事が 決まったよ。「ことばは、うそを つけない」！']]},
+ {t:'end'}
+];
+
+/* ---------- 見のがしファイルの類題 ---------- */
+const REV={
+ t1:{tag:'主語と述語',q:'日記「妹が 行かないと 言っても、ぼくは 海に 行く。」<br>友だち「妹さんは 海に 行くんだね。」<br>友だちの 読みは 正しい？',opts:['正しい。「言っても」の 前の 妹が、海に 行く 人だから。','まちがい。海に 行くのは「ぼく」で、妹は 行かないと 言うかもしれない人。','まちがい。「言っても」が あるので、だれも 海に 行かないから。'],ci:1,ex:'「〜と言っても」の前は、仮に言ったとしても、という部分。「行く」の主語は「ぼく」です。'},
+ t2:{tag:'敬語',q:'店の貼り紙「お客様は、こちらで お待ちしてください。」<br>どこが おかしい？',opts:['「お客様」','「お待ちしてください」','「こちらで」'],ci:1,ex:'「お待ちする」は 自分の動作をへりくだる 謙譲語。お客様の動作には「お待ちください」を使います。'},
+ t3:{tag:'知るはずのないこと',q:'「手紙は 開けていない」と言う人が、手紙にだけ 書いてあった「土曜日の つどい」を 知っていた。おかしいのは なぜ？',opts:['土曜日の つどいは 毎週 あるので、知っていても ふしぎは ないから。','手紙にしか ない ことを 知っているので、開けていないと いうのは おかしいから。','手紙を 開けていない 人は、手紙の 話を しては いけないから。'],ci:1,ex:'その情報が どこにしか ないかを 確かめると、うそが 見えてきます。'}
+};
+
+const INV={req:['bu','kei'],places:[
+ ['bu','🏫','部室','森先生の いつものお知らせ',[['tsubasa','森先生が 前に 出した お知らせが ファイルに とじてあるよ。'],['nar','森先生の お知らせを 見つけた。','get2']]],
+ ['kei','📌','掲示板の前','写真係が いた',[['shashin','けさ、掲示板の 写真を 2まい とったよ。7時50分と、8時10分。'],['nar','写真を もらった。','get4']]],
+ ['shoku','🗄','職員室','教頭先生が いる',[['kyoto','森先生の 机かい？ 勝手に 見せるわけには いかないなあ。'],['tsubasa','何か 理由が 見つかったら、また 来よう。']]]
+]};
+T.t1.needEv=3;T.t1.rev='t1';T.t2.rev='t2';T.t3a.rev='t3';T.t3b.rev='t3';
+return {no:1,name:'にせもののお知らせ',start:[1,6],
+ intro:'学習発表会の前の日。新聞クラブの掲示板に「展示は中止」という、にせもののお知らせが貼られた！',
+ tags:'国語：主語と述語・敬語・根拠のある読み取り',clear:'にせもののお知らせの なぞを 解いた！',
+ rules:'① 「AがBと言っても、わたしはC」── Bを言うのはA、わたしの気持ちはC。<br>② 「お〜する」は 自分の動作をへりくだる 謙譲語。人の動作には「お〜になる」「お〜ください」。<br>③ 「おかしい」と言うときは、それが<b>どこに書いてあるか</b>（根拠）を そえる。',GAME:null,FLOW0:FLOW,P,EV0,T,FLOW,INV,REV,KEI_NOTE};
+})();
+EPS[2]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  tsubasa:{name:'ツバサ',sub:'6年・新聞クラブ部長',ch:'翼',col:'#1f7a8c'},
+  mio:{name:'ミオ',sub:'6年・新聞クラブ副部長',ch:'澪',col:'#9c4f96'},
+  sora:{name:'ソラ',sub:'5年・展示の受付係',ch:'空',col:'#3d7fb8'},
+  nagi:{name:'ナギ',sub:'5年・新聞クラブ',ch:'凪',col:'#5a7d2a'},
+  kota:{name:'コウタ',sub:'6年3組・サッカー好き',ch:'航',col:'#d9772b'},
+  kocho:{name:'校長先生',sub:'',ch:'校',col:'#6b5b45'},
+  kimura:{name:'木村先生',sub:'',ch:'木',col:'#7a6a9c'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const EV0={
+  1:{ic:'📰',name:'展示された記事',where:'最初から',text:'<div class="quote">見出し：校長先生「来年から 宿題を なくします」</div>記事の すみに、小さく「下書き：ナギ」と ある。'},
+  2:{ic:'✉️',name:'ミオの連絡カード',where:'受付のソラ',text:'<div class="quote">古い原稿は、青いファイルに 入れました。新しい原稿は、たなの上の 封筒に 入れて あります。それを、展示室の かべに はってください。　ミオ</div>'},
+  3:{ic:'🎙',name:'インタビューの書き起こし',where:'ミオ',text:'<div class="quote">校長「宿題を なくすことは、決して……（ザザッ　録音の雑音）……。でも、量は 見直したいですね。」</div>'},
+  4:{ic:'📕',name:'国語辞典のメモ',where:'部室の辞典',text:'<div class="quote">けっして【決して】（副詞）あとに「〜ない」「〜ません」などの 打ち消しの ことばが 来て、「どんなことが あっても 〜ない」という 意味を 表す。</div>'},
+};
+
+/* ---------- 証言 ---------- */
+/* ---------- 証言・見のがしファイル・まとめ（有料ぶん）は ページに 書かず、有料版で サーバーの パックから 受け取る ---------- */
+let T={},REV={},SUM='';
+const FLOW0=[{"t": "talk", "place": "学習発表会の朝・展示室", "lines": [["tsubasa", "たいへんだ！ 展示した 新聞の 見出しを 見て！"], ["nar", "📒 証拠ノートに「展示された記事」が 入った。"], ["kocho", "「来年から 宿題を なくします」？ わたしは、そんなことは 言っていませんよ。"], ["tsubasa", "インタビューを まとめたのは 副部長の ミオだ。でも、ミオの 原稿は こんな 見出しじゃ なかった……。"], ["tsubasa", "だれかが 原稿を すりかえたんだ。記者の きまり、おぼえてる？"], ["tsubasa", "「おかしい」と 言うときは、かならず 証拠を そえる！"]]}, {"t": "inv"}];
+let FLOW=FLOW0.concat([{t:'lock'}]);
+const INV={req:['uke','mio'],places:[
+ ['uke','🎫','展示の受付','原稿を はった ソラ',[['sora','受付係の ソラです。原稿を はったのは ぼくです。'],['sora','ミオ先輩から、この カードを もらいました。','get2']]],
+ ['mio','✏️','ミオ','インタビューを まとめた 副部長',[['mio','新しい原稿は、昨日 たなの上の 封筒に 入れたわ。'],['mio','これが インタビューの 書き起こし。録音の 最後は 雑音で 聞こえなかったの。','get3']]],
+ ['bu','🏫','部室','たなと ボールかご',[['tsubasa','たなの上の 封筒は……からっぽだ！'],['nar','部室の すみには、昼休み用の ボールかごが ある。']]]
+]};
+
+/* ---------- 見のがしファイルの類題 ---------- */
+return {no:2,name:'すりかえられた見出し',start:[1],
+ intro:'学習発表会の当日。展示した新聞の見出しが「校長先生『来年から 宿題を なくします』」に すりかわっていた！',
+ tags:'国語：指示語・呼応の副詞・助詞・送りがな　／　第1話を遊んでいなくても楽しめます',clear:'すりかえられた見出しの なぞを 解いた！',
+ GAME:'nazotoki-shinbun2',FLOW0,P,EV0,INV,KEI_NOTE:'',get T(){return T;},set T(v){T=v;},get REV(){return REV;},set REV(v){REV=v;},get rules(){return SUM;},set rules(v){SUM=v;},get FLOW(){return FLOW;},set FLOW(v){FLOW=v;}};
+})();
+EPS[3]=(()=>{
+/* ---------- 人物 ---------- */
+const P={
+  tsubasa:{name:'ツバサ',sub:'6年・新聞クラブ部長',ch:'翼',col:'#1f7a8c'},
+  yuma:{name:'ユウマ',sub:'5年・新聞クラブのカメラ係',ch:'悠',col:'#3d7fb8'},
+  akari:{name:'アカリ',sub:'6年・新聞クラブ',ch:'灯',col:'#9c4f96'},
+  sho:{name:'ショウ',sub:'5年・なわとびの選手',ch:'翔',col:'#d9772b'},
+  koharu:{name:'コハル',sub:'4年・図書係',ch:'春',col:'#c2577f'},
+  kimura:{name:'木村先生',sub:'',ch:'木',col:'#7a6a9c'},
+  me:{name:'きみ',sub:'',ch:'？',col:'#24304a'},
+  nar:{name:'',sub:'',ch:'',col:'#24304a'}
+};
+
+/* ---------- 証拠 ---------- */
+const EV0={
+  1:{ic:'📷',name:'こわれたカメラ',where:'最初から',text:'学校から 借りた カメラ。レンズに ひびが 入っている。三きゃくごと 部室の ゆかに たおれていた。'},
+  2:{ic:'📝',name:'木村先生のメモ（きのう）',where:'職員室',text:'<div class="quote">きのう 3時半　部室の 三きゃく、足の ねじが ゆるんでいて、たおれそうだ。あした なおします。</div>'},
+  3:{ic:'🖍',name:'部室の黒板',where:'部室',text:'<div class="quote">きのう、カメラが 三きゃくごと 落ちたそうだ。　アカリ</div>'},
+  4:{ic:'🪢',name:'なわとび練習の なまえ表',where:'体育館',text:'<div class="quote">きのう 4時〜4時半　なわとび練習<br>5年 ショウ（4時5分で 練習を ぬける）</div>'},
+};
+
+/* ---------- 証言 ---------- */
+/* ---------- 証言・見のがしファイル・まとめ（有料ぶん）は ページに 書かず、有料版で サーバーの パックから 受け取る ---------- */
+let T={},REV={},SUM='';
+const FLOW0=[{"t": "talk", "place": "なわとび大会の前の日・新聞クラブの部室", "lines": [["tsubasa", "たいへんだ！ 学校から 借りた カメラが、三きゃくごと ゆかに たおれて、レンズに ひびが 入ってる！"], ["nar", "📒 証拠ノートに「こわれたカメラ」が 入った。"], ["tsubasa", "あしたの なわとび大会、写真が とれないと 新聞が 出せない……。"], ["tsubasa", "それに、だれも「自分が やった」と 言わないんだ。"], ["tsubasa", "記者の きまり、おぼえてる？「おかしい」と 言うときは、かならず 証拠を そえる！"]]}, {"t": "inv"}];
+let FLOW=FLOW0.concat([{t:'lock'}]);
+const INV={req:['bu','shoku'],places:[
+ ['bu','🏫','部室','たおれた 三きゃく と 黒板',[['tsubasa','三きゃくの 足の ねじが ゆるんでいる……。'],['tsubasa','黒板に、だれかの 書きこみが ある。','get3']]],
+ ['shoku','🗄','職員室','木村先生が いる',[['kimura','部室の 三きゃく？ きのう、メモを 書いたのよ。','get2']]],
+ ['tai','🪢','体育館','なわとびの 練習',[['tsubasa','きのうの 練習の なまえ表が はってある。','get4']]]
+]};
+let KEI_NOTE='';
+
+/* ---------- 見のがしファイルの類題 ---------- */
+return {no:3,name:'こわれたカメラ',start:[1],
+ intro:'なわとび大会の 前の日。学校から 借りた カメラが、三きゃくごと たおれて こわれていた！',
+ tags:'国語：様子の「そうだ」・聞いた「そうだ」・させる言い方（使役）・修飾語　／　第1話・第2話を遊んでいなくても楽しめます',clear:'こわれたカメラの なぞを 解いた！',
+ 
+ GAME:'nazotoki-shinbun3',FLOW0,P,EV0,INV,KEI_NOTE,get T(){return T;},set T(v){T=v;},get REV(){return REV;},set REV(v){REV=v;},get rules(){return SUM;},set rules(v){SUM=v;},get FLOW(){return FLOW;},set FLOW(v){FLOW=v;}};
+})();
+const PAID=/-full(\.html)?$/.test(location.pathname);   // nazotoki-shinbun-full.html が 有料版（中身は 同じ プログラム）
+let EP,P,EV0,T,FLOW,INV,REV,KEI_NOTE,epNo=1;
+function setEp(n){epNo=n;EP=EPS[n];({P,EV0,T,FLOW,INV,REV,KEI_NOTE}=EP);}
+function locked(n){return !PAID&&!!EPS[n].GAME;}
+function applyPack(n,p){if(!p||!p.T||!p.flow)throw{error:'no_data'};const e=EPS[n];Object.assign(e.EV0,p.ev||{});e.T=p.T;e.REV=p.REV||{};e.rules=p.sum||'';e.FLOW=e.FLOW0.concat(p.flow);}
+setEp(1);
+
+/* ---------- 状態 ---------- */
+let lv=2,step,ev,newEv,gauge,mistakes,miss,flags,firstTry,sel,cur,queue,onDone,started=false;
+/* ---------- 選択肢の ならび順を 毎回 まぜる（正解の 場所が いつも 同じに ならないように） ---------- */
+function shuf(n){const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){['title','play','review','lock'].forEach(s=>$(s).classList.toggle('hidden',s!==id));window.scrollTo(0,0);}
+function drawGauge(){$('gauge').textContent='●'.repeat(gauge)+'○'.repeat(5-gauge);}
+function setStage(who,place,extra){
+  const p=P[who]||P.nar;$('place').textContent=place||'';
+  $('face').style.background=p.col;$('face').textContent=p.ch||'📰';
+  $('stageInfo').innerHTML=(p.name?'<b>'+p.name+'</b>'+p.sub:'<b>なぞとき新聞部</b>')+(extra?'<br>'+extra:'');
+}
+let curPlace='';
+/* 会話を順に出す */
+function say(lines,done){queue=lines.slice();onDone=done;
+  $('area').innerHTML='<button class="big" id="sayNext" style="background:#24304a;color:#fff">つぎへ ▶</button>';
+  $('sayNext').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+  nextLine();}
+function nextLine(){
+  if(!queue.length){$('talk').classList.remove('tap');$('talkNext').classList.add('hidden');if($('sayNext'))$('area').innerHTML='';const d=onDone;onDone=null;if(d)d();return;}
+  const [who,text,act]=queue.shift();const p=P[who]||P.nar;
+  $('talkName').textContent=p.name||'ナレーション';$('talkName').style.background=p.col;
+  $('talkText').innerHTML=text;$('talk').classList.add('tap');$('talkNext').classList.remove('hidden');
+  if(who!=='me'&&who!=='nar')setStage(who,curPlace);
+  if(act&&act.startsWith('get'))gain(+act.slice(3));
+  if(act==='note6'){if(!ev[6].kei){ev[6].kei=1;ev[6].text+=KEI_NOTE;}$('talkText').innerHTML+='<br><span class="ok">📒 ツバサのメモに 書き足した。</span>';}
+}
+$('talk').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+$('stage').onclick=()=>{if($('talk').classList.contains('tap'))nextLine();};
+function gain(n){if(!ev[n].have){ev[n].have=1;newEv.add(n);$('talkText').innerHTML+='<br><span class="ok">📒 証拠「'+ev[n].name+'」を 手に入れた！</span>';}}
+
+function newGame(){
+  $('btnQuit').classList.remove('hidden');
+  ev=JSON.parse(JSON.stringify(EV0));for(const k in ev)ev[k].have=0;EP.start.forEach(k=>ev[k].have=1);
+  FLOW=locked(epNo)?EP.FLOW0.concat([{t:'lock'}]):EP.FLOW;
+  newEv=new Set();gauge=5;mistakes=0;miss=new Set();flags={};firstTry=true;step=0;started=true;
+  track('level_start',{level_name:'nazotoki-shinbun-ep'+epNo+'-lv'+lv});show('play');drawGauge();run();
+}
+function run(){
+  const s=FLOW[step];$('area').innerHTML='';$('testPanel').classList.add('hidden');
+  if(s.t==='talk'){curPlace=s.place;setStage('tsubasa',s.place);say(s.lines,()=>{step++;run();});}
+  else if(s.t==='inv')investigate();
+  else if(s.t==='test')testimony(s.id);
+  else if(s.t==='end')ending();
+  else if(s.t==='lock')freeEnd();
+}
+
+/* ---------- 無料版は ここまで ---------- */
+function freeEnd(){
+  $('btnQuit').classList.add('hidden');  // 画面の中に 大きな「タイトルへ」が あるので、下の 小さい ほうは かくす
+  setStage('tsubasa','つづきは 有料版');$('talkName').textContent='ツバサ';$('talkName').style.background=P.tsubasa.col;
+  $('talkText').innerHTML='手がかりは そろった。ここから 先は <b>有料版</b>で、証言の おかしい ところを 見つけて なぞを 解こう！';$('talkNext').classList.add('hidden');$('talk').classList.remove('tap');
+  track('free_end',{level_name:'nazotoki-shinbun-ep'+epNo});
+  $('area').innerHTML='<a class="big" href="nazotoki-shinbun-full.html" style="text-align:center;text-decoration:none;background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">🔓 つづきは 有料版で<small style="color:#fff">証言3人・指摘4回・見のがしファイルつき</small></a>'
+   +'<button class="big" id="goEp1">第1話　にせもののお知らせ<small>さいごまで 無料で あそべます</small></button>'
+   +'<button class="big" id="goTitle">タイトルへ</button>';
+  $('goTitle').onclick=()=>{started=false;titleInit();};
+  $('goEp1').onclick=()=>{setEp(1);started=false;titleInit();};
+}
+
+/* ---------- 調査 ---------- */
+function investigate(){
+  curPlace='調査';setStage('tsubasa','調査パート');
+  const seen=new Set();const ready=()=>INV.req.every(r=>seen.has(r));
+  const draw=()=>{
+    $('talkName').textContent='ツバサ';$('talkName').style.background=P.tsubasa.col;
+    $('talkText').innerHTML=ready()?'よし、手がかりが そろってきた。証言を 聞きに 行こう！':'証拠を 集めよう。どこを 調べる？';
+    $('talkNext').classList.add('hidden');
+    $('area').innerHTML=INV.places.map(x=>'<button class="big place" data-p="'+x[0]+'"><span class="ic">'+x[1]+'</span><span>'+x[2]+(seen.has(x[0])?' ✅':'')+'<small>'+x[3]+'</small></span></button>').join('')
+      +(ready()?'<button class="big" id="goTest" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">証言を 聞きに 行く</button>':'');
+    $('area').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const x=INV.places.find(p=>p[0]===b.dataset.p);curPlace=x[2];$('area').innerHTML='';say(x[4],()=>{seen.add(x[0]);draw();});});
+    if($('goTest'))$('goTest').onclick=()=>{step++;run();};
+  };
+  draw();
+}
+function gainQuiet(n){if(!ev[n].have){ev[n].have=1;newEv.add(n);}}
+
+/* ---------- 証言 ---------- */
+function testimony(id){
+  cur=T[id];cur.id=id;sel=-1;cur.lastHint='';cur.wrongN=0;cur.reasonN=0;curPlace=cur.title;setStage(cur.who,cur.title,'');
+  $('talkName').textContent=P[cur.who].name;$('talkName').style.background=P[cur.who].col;
+  $('talkText').innerHTML='<b>'+cur.title+'</b><br><span style="font-size:14px">おかしいと思う文を タップして、「ききこみ」か「証拠を 見せる」を えらぼう。</span>';
+  $('talkNext').classList.add('hidden');$('talk').classList.remove('tap');
+  drawStmts();
+}
+function drawStmts(){
+  $('area').innerHTML=cur.stmts.map((s,i)=>'<button class="stmt'+(i===sel?' sel':'')+'" data-i="'+i+'"><span class="no">'+'①②③④'[i]+'</span>'+s+'</button>').join('')
+   +'<div id="acts"><button id="aPress" '+(sel<0?'disabled':'')+'>🔍 ききこみ</button><button id="aShout" class="shout" '+(sel<0?'disabled':'')+'>📒 証拠を 見せる</button></div>';
+  $('area').querySelectorAll('.stmt').forEach(b=>b.onclick=()=>{sel=+b.dataset.i;drawStmts();});
+  $('aPress').onclick=()=>press();$('aShout').onclick=()=>openEv(true);
+}
+function press(){
+  const lines=(cur.press&&cur.press[sel])||[['me','もう少し くわしく 教えて。'],[cur.who,'それ以上の ことは 知らないよ。']];
+  $('area').innerHTML='';say(lines,()=>{testimonyKeep();});
+}
+function testimonyKeep(){
+  setStage(cur.who,cur.title);
+  $('talkName').textContent=P[cur.who].name;$('talkName').style.background=P[cur.who].col;
+  $('talkText').innerHTML='<b>'+cur.title+'</b><br><span style="font-size:14px">'+(cur.lastHint?'💡 '+cur.lastHint:'ほかの文も 調べてみよう。')+'</span>';drawStmts();
+}
+
+/* 証拠ノート */
+function openEv(pick){
+  const list=Object.keys(ev).filter(k=>ev[k].have);
+  $('sheet').innerHTML='<h2>📒 証拠ノート'+(pick?'<span style="font-size:14px;font-weight:500">　見せる 証拠を えらぼう</span>':'')+'</h2>'
+   +list.map(k=>'<button class="ev'+(pick?' pick':'')+(newEv.has(+k)?' new':'')+'" data-k="'+k+'"><span class="ic">'+ev[k].ic+'</span><span><b>'+ev[k].name+(newEv.has(+k)?' 🆕':'')+'</b>'+ev[k].text+'</span></button>').join('')
+   +'<button class="big" id="evClose">とじる</button>';
+  $('modal').classList.remove('hidden');
+  $('evClose').onclick=()=>{$('modal').classList.add('hidden');newEv.clear();};
+  if(pick)$('sheet').querySelectorAll('.ev').forEach(b=>b.onclick=()=>{$('modal').classList.add('hidden');newEv.clear();present(+b.dataset.k);});
+}
+$('btnEv').onclick=()=>openEv(false);
+
+function present(k){
+  const key=sel+'-'+k;
+  const S=[].concat(cur.ans.s);
+  if(S.includes(sel)&&cur.ans.ev.includes(k)){shout(()=>afterHit());return;}
+  if(cur.near&&cur.near[key]){const n=cur.near[key];if(n.flag)flags[n.flag]=1;$('area').innerHTML='';say(n.lines,testimonyKeep);return;}
+  // まだ 決め手の証拠を 持っていない ときは、減点せずに ききこみを すすめる
+  if(cur.needEv&&!ev[cur.needEv].have){$('area').innerHTML='';cur.lastHint=cur.noEvHint;say([[cur.who,'え？ それが どうしたの？'],['tsubasa',cur.noEvHint]],testimonyKeep);return;}
+  // まちがい
+  firstTry=false;mistakes++;miss.add(cur.rev);
+  gauge--;drawGauge();$('app').classList.add('shake');setTimeout(()=>$('app').classList.remove('shake'),400);
+  let h=cur.hint;
+  if(cur.special){if(cur.special[key])h=cur.special[key];else if(cur.special[String(sel)])h=cur.special[String(sel)];}
+  const noEv=cur.needEv&&!ev[cur.needEv].have;if(noEv)h=cur.noEvHint;
+  cur.wrongN=(cur.wrongN||0)+1;
+  if(!noEv){
+    if(cur.wrongN>=3)h='ヒント：'+'①②③④'[S[0]]+'の文に、「'+ev[cur.ans.ev[0]].name+'」を 見せてみよう！';
+    else if(cur.wrongN>=2)h=h+'<br>ヒント：あやしいのは '+'①②③④'[S[0]]+'の文だよ。';
+  }
+  $('area').innerHTML='';
+  if(gauge<=0){say([[cur.who,'……それ、関係 ないよね？'],['tsubasa','信頼が なくなってしまった……。もう一度、この証言から やり直そう。']],()=>{gauge=5;drawGauge();testimony(cur.id);});return;}
+  cur.lastHint=h;say([[cur.who,'え？ それが どうしたの？'],['tsubasa',h]],testimonyKeep);
+}
+function shout(fn){$('area').innerHTML='';$('shoutText').textContent='そこだ！';$('shout').classList.remove('hidden');setTimeout(()=>{$('shout').classList.add('hidden');fn();},900);}
+function afterHit(){
+  if(cur.follow){followQ();return;}
+  reasonQ();
+}
+function followQ(){
+  const f=cur.follow;
+  $('talkName').textContent='ツバサ';$('talkName').style.background=P.tsubasa.col;$('talkText').innerHTML=f.q;$('talkNext').classList.add('hidden');
+  $('area').innerHTML='<div class="quote" style="font-size:14px">明日の学習発表会で、新聞クラブの展示は中止します。空いた理科室は、演劇クラブがお使いします。　担当　森</div>'
+   +shuf(f.opts.length).map(i=>'<button class="choice" data-i="'+i+'">'+f.opts[i]+'</button>').join('');
+  $('area').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+    if(+b.dataset.i===f.ci){reasonQ();return;}
+    firstTry=false;mistakes++;miss.add(cur.rev);gauge=Math.max(1,gauge-1);drawGauge();
+    $('talkText').innerHTML='<span class="ng">ちがうみたい。</span>'+((f.wrongs&&f.wrongs[+b.dataset.i])||f.wrong);
+  });
+}
+
+/* ---------- 理由文 ---------- */
+function reasonQ(){
+  const r=cur.reason;const mode=cur.reasonChoiceOnly?1:lv;
+  $('talkName').textContent='ツバサ';$('talkName').style.background=P.tsubasa.col;
+  $('talkText').innerHTML='いいぞ！ じゃあ、<b>なぜ おかしいのか</b> 記事に 書けるように まとめよう。';$('talkNext').classList.add('hidden');
+  if(mode===1){
+    $('area').innerHTML=shuf(r.choices.length).map(i=>'<button class="choice" data-i="'+i+'">'+r.choices[i]+'</button>').join('');
+    $('area').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      if(+b.dataset.i===r.ci)reasonOK();else{reasonNG();b.disabled=true;b.style.opacity=.35;}});
+    return;
+  }
+  const parts=r.tmpl.split(/【(\d)】/);let fill=r.blanks.map(()=>null),curB=0,glow=null;
+  const draw=()=>{
+    let h='<div class="tmpl">';
+    parts.forEach((p,i)=>{if(i%2===0)h+=p;else{const b=+p;
+      if(mode===2)h+='<span class="blank'+(b===curB?' cur':'')+'" data-b="'+b+'">'+(fill[b]||'　')+'</span>';
+      else h+='<span class="blank"><input data-b="'+b+'" value="'+(fill[b]||'')+'" placeholder="？"></span>';}});
+    h+='</div>';
+    if(mode===2)h+='<div class="cards">'+r.cards.map(c=>'<button data-c="'+c+'" class="'+(fill.includes(c)?'used':'')+(c===glow?' glow':'')+'">'+c+'</button>').join('')+'</div>';
+    h+='<button class="big" id="rOK">これで 決まり！</button>';
+    $('area').innerHTML=h;
+    if(mode===2){
+      $('area').querySelectorAll('.blank').forEach(s=>s.onclick=()=>{const b=+s.dataset.b;if(fill[b]){fill[b]=null;}curB=b;draw();});
+      $('area').querySelectorAll('.cards button').forEach(c=>c.onclick=()=>{if(fill.includes(c.dataset.c))return;fill[curB]=c.dataset.c;const n=fill.indexOf(null);curB=n<0?curB:n;draw();});
+    }else{
+      $('area').querySelectorAll('input').forEach(inp=>inp.oninput=()=>{fill[+inp.dataset.b]=inp.value;});
+    }
+    $('rOK').onclick=()=>{
+      if(fill.some(f=>!f||!String(f).trim())){$('talkText').innerHTML='まだ 空いている ところが あるよ。';return;}
+      const norm=s=>String(s).replace(/[\s　「」、。]/g,'');
+      const ok=r.blanks.every((alts,i)=>alts.some(a=>mode===2?fill[i]===a:norm(fill[i]).includes(norm(a))));
+      if(ok){reasonOK();return;}
+      const bad=r.blanks.map((alts,i)=>!alts.some(a=>mode===2?fill[i]===a:norm(fill[i]).includes(norm(a))));
+      reasonNG();cur.reasonN=(cur.reasonN||0)+1;
+      if(cur.reasonN>=3){fill=r.blanks.map(a=>a[0]);draw();$('talkText').innerHTML='<span class="ng">こたえは こうだよ。</span>文を 読んでから「これで 決まり！」を おしてね。';glow=null;return;}
+      bad.forEach((b,i)=>{if(b)fill[i]=null;});curB=fill.indexOf(null);if(curB<0)curB=0;
+      glow=cur.reasonN>=2?r.blanks[curB][0]:null;draw();
+      $('talkText').innerHTML='<span class="ng">ちがっていた らんを 空にしたよ。</span>入る ことばを えらびなおそう。'+(glow?'<br>ヒント：光っている カードを 入れてみよう。':'')+(mode===3&&glow?'<br>ヒント：「'+glow+'」と 書いてみよう。':'');
+    };
+  };
+  draw();
+}
+function reasonNG(){
+  firstTry=false;mistakes++;miss.add(cur.rev);
+  gauge=Math.max(1,gauge-1);drawGauge();
+  $('talkText').innerHTML='<span class="ng">うーん、記事にするには 少し ちがうかも。</span><br>もう一度 えらんでみよう。';
+}
+function reasonOK(){
+  const r=cur.reason;
+  $('talkText').innerHTML='<span class="ok">◎ ばっちり！</span><br><span style="font-size:15px">'+r.explain+'</span>';
+  $('talkNext').classList.add('hidden');
+  $('area').innerHTML='<button class="big" id="rNext">つぎへ</button>';
+  $('rNext').onclick=()=>{$('area').innerHTML='';say(cur.after,()=>{step++;run();});};
+  if(!cur.after.length){$('rNext').onclick=()=>{step++;run();};}
+}
+
+/* ---------- エンディング ---------- */
+function ending(){
+  $('btnQuit').classList.add('hidden');  // 画面の中に 大きな「タイトルへ」が あるので、下の 小さい ほうは かくす
+  const stars=mistakes<=1?3:mistakes<=4?2:1;
+  const badges=['🗞 新人記者'];if(flags.observer)badges.push('🔎 観察の達人');if(firstTry)badges.push('⚡ 一発突破');
+  const sv=loadSave();sv.clear=1;sv.best=Math.max(sv.best||0,stars);sv.badges=Array.from(new Set([...(sv.badges||[]),...badges]));
+  sv.miss=Array.from(new Set([...(sv.miss||[]),...miss]));putSave(sv);
+  track('level_end',{level_name:'nazotoki-shinbun-ep'+epNo+'-lv'+lv,score:stars,success:true});
+  setStage('tsubasa','第'+EP.no+'話 クリア');$('talkName').textContent='第'+EP.no+'話　解決！';$('talkName').style.background='#d6453d';
+  $('talkText').innerHTML=EP.clear;$('talkNext').classList.add('hidden');
+  $('area').innerHTML='<div class="stars">'+'★'.repeat(stars)+'☆'.repeat(3-stars)+'</div>'
+   +'<div class="res">まちがえた回数：'+mistakes+'回<br>'+badges.map(b=>'<span class="badge">'+b+'</span>').join('')+'</div>'
+   +'<div class="box"><b>きょう 使った ことばの きまり</b><br>'+EP.rules+'</div>'
+   +(miss.size?'<button class="big" id="goRev">📁 見のがしファイルで ふくしゅう（'+miss.size+'）</button>':'')
+   +(EPS[epNo+1]?'<button class="big" id="goNext" style="background:#d6453d;color:#fff;border-color:#a32b25;box-shadow:0 4px 0 #a32b25">つぎの話へ　第'+(epNo+1)+'話<small style="color:#fff">'+EPS[epNo+1].name+(locked(epNo+1)?'（おためし）':'')+'</small></button>':'')
+   +'<button class="big" id="goTitle">タイトルへ</button>';
+  if($('goRev'))$('goRev').onclick=()=>openReview();
+  $('goTitle').onclick=()=>{started=false;titleInit();};
+  if($('goNext'))$('goNext').onclick=()=>{setEp(epNo+1);started=false;titleInit();};
+}
+
+/* ---------- 見のがしファイル ---------- */
+function openReview(){
+  const sv=loadSave();const ids=(sv.miss||[]).filter(k=>REV[k]);show('review');
+  if(!ids.length){$('revBody').innerHTML='<div class="box">見のがしは ありません。すばらしい！</div>';return;}
+  let i=0;
+  const q=()=>{const r=REV[ids[i]];
+    $('revBody').innerHTML='<div class="box"><span class="badge">'+r.tag+'</span>　'+(i+1)+' / '+ids.length+'<br>'+r.q+'</div>'+shuf(r.opts.length).map(j=>'<button class="choice" data-j="'+j+'">'+r.opts[j]+'</button>').join('')+'<div id="revMsg"></div>';
+    $('revBody').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      if(+b.dataset.j===r.ci){const s=loadSave();s.miss=(s.miss||[]).filter(x=>x!==ids[i]);putSave(s);
+        $('revMsg').innerHTML='<div class="box"><span class="ok">◎ 正解！ ファイルから 消えたよ。</span><br>'+r.ex+'</div><button class="big" id="revNext">'+(i+1<ids.length?'つぎへ':'おわり')+'</button>';
+        $('revNext').onclick=()=>{i++;if(i<ids.length)q();else{$('revBody').innerHTML='<div class="box">ふくしゅう おわり！</div>';}};
+      }else{$('revMsg').innerHTML='<div class="box"><span class="ng">ちがうよ。</span>もう一度 考えてみよう。</div>';}
+    });};
+  q();
+}
+$('btnReview').onclick=openReview;
+$('btnRevBack').onclick=()=>titleInit();
+
+/* ---------- タイトル ---------- */
+function titleInit(){
+  show('title');const sv=loadSave();
+  $('epList').innerHTML=Object.keys(EPS).map(n=>{const s=loadSave(+n),e=EPS[n];const tag=PAID?'':e.GAME?' <span class="badge" style="background:#8a5a00;font-size:12px">有料</span>':' <span class="badge" style="background:#1f7a3c;font-size:12px">無料</span>';return '<button class="big epbtn'+(+n===epNo?' on':'')+'" data-ep="'+n+'">第'+n+'話　'+e.name+tag+'<small>'+(s.clear?'クリアずみ　'+'★'.repeat(s.best||1):locked(+n)?'無料は 調査まで（おためし）':'まだ あそんでいない')+'</small></button>';}).join('');
+  $('epList').querySelectorAll('.epbtn').forEach(b=>b.onclick=()=>{setEp(+b.dataset.ep);titleInit();});
+  $('epIntro').textContent=EP.intro;$('epTags').textContent=EP.tags;
+  document.querySelectorAll('.lvbtn').forEach(b=>b.classList.toggle('on',+b.dataset.lv===lv));
+  const n=(sv.miss||[]).filter(k=>REV[k]).length;
+  $('btnReview').classList.toggle('hidden',!n);$('reviewN').textContent=n?n+'問 のこっている':'';
+  $('btnStart').textContent='第'+epNo+'話の 取材を はじめる'+(locked(epNo)?'（おためし）':'');
+  $('freeNote').classList.toggle('hidden',!locked(epNo));
+  $('bestLine').textContent=sv.clear?'クリアずみ　最高 '+'★'.repeat(sv.best||1)+'　称号：'+(sv.badges||[]).join('・'):'';
+}
+document.querySelectorAll('.lvbtn').forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;titleInit();});
+$('btnStart').onclick=newGame;
+$('btnQuit').onclick=()=>{started=false;titleInit();};
+
+/* ---------- テスト用 ---------- */
+$('btnTest').onclick=()=>$('testPanel').classList.toggle('hidden');
+$('testPanel').onclick=e=>{const t=e.target.dataset.t;if(!t)return;
+  const go=id=>{for(const k in ev)ev[k].have=1;$('modal').classList.add('hidden');const i=FLOW.findIndex(s=>s.id===id||s.t===id);if(i<0)return;step=i;run();};
+  if(t==='ans'){if(cur&&T[cur.id]){$('talkText').innerHTML='🛠 こたえ：文'+[].concat(cur.ans.s).map(i=>'①②③④'[i]).join('か')+' × 証拠'+cur.ans.ev.join('・');}return;}
+  if(t==='miss'){const s=loadSave();s.miss=Object.keys(REV);putSave(s);$('talkText').innerHTML='🛠 見のがしファイルに 全部 入れた';return;}
+  if(t==='reset'){putSave({});$('talkText').innerHTML='🛠 記録を消した';return;}
+  if(t==='end'){step=FLOW.length-1;run();return;}
+  go(t);
+};
+
+/* ---- 有料版：利用コードを 確かめて、第2話・第3話の パックを 受け取ってから 始める ---- */
+const PACK_EPS=Object.keys(EPS).filter(n=>EPS[n].GAME).map(Number);
+async function loadPacks(){const ps=await Promise.all(PACK_EPS.map(n=>mnAccess.load(EPS[n].GAME)));PACK_EPS.forEach((n,i)=>applyPack(n,ps[i]));setEp(epNo);}
+function lockScreen(err){
+  show('lock');
+  if(!window.mnAccess){$('lockBox').textContent='有料版は、サイトの 上で ひらいて ください。';return;}
+  mnAccess.lock($('lockBox'),{game:'nazotoki-shinbun',err:err,free:'nazotoki-shinbun.html',onOpen:async()=>{await loadPacks();titleInit();}});
+}
+if(PAID){
+  show('lock');$('lockBox').textContent='よみこみ中…';
+  (window.mnAccess?loadPacks():Promise.reject({error:'net'})).then(()=>titleInit()).catch(lockScreen);
+}else{titleInit();}
+</script>
+</body>
+</html>
