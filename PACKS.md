@@ -13,6 +13,7 @@
 
 | zip | 作った日時（日本時間） | zip の SHA-256 | 中のゲーム（json の SHA-256） |
 |---|---|---|---|
+| packs-nazotoki-shinbun.zip（**2026-11-24 作り直し・確認担当の指摘を直し、再確認でOKの版**。なぞとき新聞部：第2話・第3話の証言・正解・理由文・解説・結末・類題・まとめ、と あとから手に入る証拠（第2話の5〜7・第3話の5〜6）） | 2026-11-24 | `884b335134430fb992d80851e4db56ffa528ae92e98dd06ba84762980a5c2c8e` | nazotoki-shinbun2：`e74e41b335e026e4423dc6bfeb734ca79724212033573ab0669d8076f9435613`<br>nazotoki-shinbun3：`d2edb6f5b4f5f3433536e34c88e26cf93621998a036d9771516df8587007f0f3` |
 | packs-nazotoki-kagaku.zip | 2026-11-21 18:55 | `52e46f7e41f227f55633485c8063cfb069230e42c7d01f9bdb2d47a77ae355bf` | nazotoki-kagaku2：`f1466ff88bb3bddde1b773fb6b7db8b54585f94cc9bbb530c05526be29e5196d`<br>nazotoki-kagaku3：`fdeead183f300186cfe7c4d7263e0457bfe0673a9d44667cf9663ff6e1ba644c` |
 | packs-rpg-kotoba.zip | 2026-11-23 17:40 | `6acdea7b9d00c2b3cdfd8d25c15b10d37f254d30847e8b8003d8c9d90c112e85` | rpg-kotoba：`9abc3c83b39f66acf27918eaaac8436ab9570f02d441f9f3feab2190336865ed` |
 | packs-rika-slide.zip | 2026-11-23 17:50 | `3847c0c225ad524c6b4a7ed078fec1a9dd0f4ae36f88b5b3adca6e1f63d9f592` | rika-slide：`80820a754e43b8384d247adfa0143eb07db547658386379716093e8254ee2ce1` |
